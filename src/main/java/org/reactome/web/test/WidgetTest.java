@@ -39,7 +39,7 @@ public class WidgetTest implements EntryPoint {
                 initialise();
 
                 Console.info("");
-                diagram.loadDiagram("REACT_111057");
+                diagram.loadDiagram("R-HSA-1181150");
             }
         });
     }
@@ -47,7 +47,8 @@ public class WidgetTest implements EntryPoint {
     public void initialise() {
         SplitLayoutPanel slp = new SplitLayoutPanel(10);
         slp.addWest(getDemoLeftPanel(), 83);
-        slp.addNorth(getDiseasePanel(), 25);
+        slp.addNorth(getDemoTopPanel(), 25);
+//        slp.addNorth(getDiseasePanel(), 50);
         slp.add(diagram);
         RootLayoutPanel.get().add(slp);
     }
@@ -73,30 +74,30 @@ public class WidgetTest implements EntryPoint {
         FlowPanel fp = new FlowPanel();
 
 
-        fp.add(new Label("REACT_111057"));
+        fp.add(new Label("R-HSA-1181150"));
         fp.add(new Label("Reactions"));
-        fp.add(getSelectionButton("REACT_111228", "Cleavage of NODAL proprotein"));
-        fp.add(getSelectionButton("REACT_111216", "Phospho R-SMAD(SMAD2/3):CO-SMAD(SMAD4):FOXO3 binds FoxO3a-binding elements"));
+        fp.add(getSelectionButton("R-HSA-1181152", "Cleavage of NODAL proprotein"));
+        fp.add(getSelectionButton("R-HSA-1535903", "Phospho R-SMAD(SMAD2/3):CO-SMAD(SMAD4):FOXO3 binds FoxO3a-binding elements"));
 
         fp.add(new Label("--"));
         fp.add(new Label("Sets"));
-        fp.add(getSelectionButton("REACT_7451", "SMAD2/3 [cytosol]"));
-        fp.add(getSelectionButton("REACT_7364", "p-2S-SMAD2/3 [cytosol]"));
+        fp.add(getSelectionButton("R-HSA-171172", "SMAD2/3 [cytosol]"));
+        fp.add(getSelectionButton("R-HSA-171182", "p-2S-SMAD2/3 [cytosol]"));
 
         fp.add(new Label("--"));
         fp.add(new Label("Complexes"));
-        fp.add(getSelectionButton("REACT_111458", "NODAL:p-ACVR1B:ACVR2:EGF-CFC [plasma membrane]"));
-        fp.add(getSelectionButton("REACT_7382", "p-2S-SMAD2/3:SMAD4 [nucleoplasm]"));
+        fp.add(getSelectionButton("R-HSA-1225883", "NODAL:p-ACVR1B:ACVR2:EGF-CFC [plasma membrane]"));
+        fp.add(getSelectionButton("R-HSA-173511", "p-2S-SMAD2/3:SMAD4 [nucleoplasm]"));
 
         fp.add(new Label("--"));
         fp.add(new Label("Protein"));
-        fp.add(getSelectionButton("REACT_111585", "NODAL(27-347) [extracellular region]"));
-        fp.add(getSelectionButton("REACT_111742", "FOXH1 [nucleoplasm]"));
+        fp.add(getSelectionButton("R-HSA-1181114", "NODAL(27-347) [extracellular region]"));
+        fp.add(getSelectionButton("R-HSA-1225914", "FOXH1 [nucleoplasm]"));
 
         fp.add(new Label("--"));
         fp.add(new Label("Chemical"));
-        fp.add(getSelectionButton("REACT_2812", "ATP [cytosol]"));
-        fp.add(getSelectionButton("REACT_2741", "ADP [cytosol]"));
+        fp.add(getSelectionButton("R-ALL-113592", "ATP [cytosol]"));
+        fp.add(getSelectionButton("R-ALL-29370", "ADP [cytosol]"));
 
 
         fp.add(new Label(""));
@@ -139,125 +140,125 @@ public class WidgetTest implements EntryPoint {
 
     private Widget getDemoTopPanel(){
         FlowPanel fp = new FlowPanel();
-        fp.add(getLoadButton("REACT_111057", ""));
-        fp.add(getLoadButton("REACT_13", ""));
+        fp.add(getLoadButton("R-HSA-1181150", ""));
+        fp.add(getLoadButton("R-HSA-71291", ""));
         fp.add(new InlineLabel(" "));
-        fp.add(getLoadButton("REACT_6288", ""));
+        fp.add(getLoadButton("R-HSA-162909", ""));
         fp.add(new InlineLabel(" "));
-        fp.add(getLoadButton("REACT_6844", ""));
-        fp.add(getLoadButton("REACT_169192", ""));
-        fp.add(getLoadButton("REACT_169440", ""));
+        fp.add(getLoadButton("R-HSA-170834", ""));
+        fp.add(getLoadButton("R-HSA-3642279", ""));
+        fp.add(getLoadButton("R-HSA-3645790", ""));
         fp.add(new InlineLabel(" "));
-        fp.add(getLoadButton("REACT_578", "Apoptosis"));
+        fp.add(getLoadButton("R-HSA-109581", "Apoptosis"));
         fp.add(new InlineLabel(" "));
-        fp.add(getLoadButton("REACT_268006", "Signaling by Ligand-Responsive EGFR Variants in Cancer"));
-        fp.add(getLoadButton("REACT_147727", "Constitutive Signaling by Aberrant PI3K in Cancer"));
+        fp.add(getLoadButton("R-HSA-5637815", "Signaling by Ligand-Responsive EGFR Variants in Cancer"));
+        fp.add(getLoadButton("R-HSA-2219530", "Constitutive Signaling by Aberrant PI3K in Cancer"));
         return fp;
     }
 
     private Widget getTestPanel() {
         FlowPanel fp = new FlowPanel();
-        fp.add(new Button("REACT_111057", new ClickHandler() {
+        fp.add(new Button("R-HSA-1181150", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_111057");
+                diagram.loadDiagram("R-HSA-1181150");
             }
         }));
         fp.add(new Button("Apoptosis", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_578");
+                diagram.loadDiagram("R-HSA-109581");
             }
         }));
-        fp.add(new Button("REACT_13", new ClickHandler() {
+        fp.add(new Button("R-HSA-71291", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_13");
+                diagram.loadDiagram("R-HSA-71291");
             }
         }));
         fp.add(new Button("Raf/Map", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_634");
+                diagram.loadDiagram("R-HSA-5673001");
             }
         }));
-        fp.add(new Button("REACT_268006", new ClickHandler() {
+        fp.add(new Button("R-HSA-5637815", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_268006");
+                diagram.loadDiagram("R-HSA-5637815");
             }
         }));
-        fp.add(new Button("REACT_147727", new ClickHandler() {
+        fp.add(new Button("R-HSA-2219530", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_147727");
+                diagram.loadDiagram("R-HSA-2219530");
             }
         }));
-        fp.add(new Button("REACT_121139", new ClickHandler() {
+        fp.add(new Button("R-HSA-1650814", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_121139");
+                diagram.loadDiagram("R-HSA-1650814");
             }
         }));
-        fp.add(new Button("REACT_6844", new ClickHandler() {
+        fp.add(new Button("R-HSA-170834", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_6844");
+                diagram.loadDiagram("R-HSA-170834");
             }
         }));
-        fp.add(new Button("REACT_24941", new ClickHandler() {
+        fp.add(new Button("R-HSA-400253", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_24941");
+                diagram.loadDiagram("R-HSA-400253");
             }
         }));
-        fp.add(new Button("REACT_7970", new ClickHandler() {
+        fp.add(new Button("R-HSA-157579", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_7970");
+                diagram.loadDiagram("R-HSA-157579");
             }
         }));
-        fp.add(new Button("REACT_118779", new ClickHandler() {
+        fp.add(new Button("R-HSA-1474244", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_118779");
+                diagram.loadDiagram("R-HSA-1474244");
             }
         }));
         fp.add(new InlineLabel("      "));
-        fp.add(new Button("REACT_6288", new ClickHandler() {
+        fp.add(new Button("R-HSA-162909", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_6288");
+                diagram.loadDiagram("R-HSA-162909");
             }
         }));
-        fp.add(new Button("REACT_355462", new ClickHandler() {
+        fp.add(new Button("R-HSA-5603041", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_355462");
+                diagram.loadDiagram("R-HSA-5603041");
             }
         }));
-        fp.add(new Button("REACT_169192", new ClickHandler() {
+        fp.add(new Button("R-HSA-3642279", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_169192");
+                diagram.loadDiagram("R-HSA-3642279");
             }
         }));
-        fp.add(new Button("REACT_169440", new ClickHandler() {
+        fp.add(new Button("R-HSA-3645790", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_169440");
+                diagram.loadDiagram("R-HSA-3645790");
             }
         }));
-        fp.add(new Button("REACT_1826", new ClickHandler() {
+        fp.add(new Button("R-HSA-73885", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_1826");
+                diagram.loadDiagram("R-HSA-73885");
             }
         }));
-        fp.add(new Button("REACT_115831", new ClickHandler() {
+        fp.add(new Button("R-HSA-1169408", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram("REACT_115831");
+                diagram.loadDiagram("R-HSA-1169408");
             }
         }));
         return fp;
@@ -266,46 +267,45 @@ public class WidgetTest implements EntryPoint {
 
     private Widget getDiseasePanel() {
         FlowPanel fp = new FlowPanel();
-        fp.add(getLoadButton("REACT_147727", "Constitutive Signaling by Aberrant PI3K in Cancer"));
-        fp.add(getLoadButton("REACT_147734", ""));
-        fp.add(getLoadButton("REACT_147759", ""));
-        fp.add(getLoadButton("REACT_147798", ""));
-        fp.add(getLoadButton("REACT_147857", ""));
-        fp.add(getLoadButton("REACT_147860", ""));
-        fp.add(getLoadButton("REACT_160102", ""));
-        fp.add(getLoadButton("REACT_160301", ""));
-        fp.add(getLoadButton("REACT_169107", ""));
-        fp.add(getLoadButton("REACT_169165", ""));
-        fp.add(getLoadButton("REACT_169312", ""));
-        fp.add(getLoadButton("REACT_263883", ""));
-        fp.add(getLoadButton("REACT_263933", ""));
-        fp.add(getLoadButton("REACT_264030", ""));
-        fp.add(getLoadButton("REACT_264356", ""));
-        fp.add(getLoadButton("REACT_264430", ""));
-        fp.add(getLoadButton("REACT_267741", ""));
-        fp.add(getLoadButton("REACT_267765", ""));
-        fp.add(getLoadButton("REACT_267905", ""));
-        fp.add(getLoadButton("REACT_268006", "Signaling by Ligand-Responsive EGFR Variants in Cancer"));
-        fp.add(getLoadButton("REACT_268113", ""));
-        fp.add(getLoadButton("REACT_268132", ""));
-        fp.add(getLoadButton("REACT_268413", ""));
-        fp.add(getLoadButton("REACT_268458", ""));
-        fp.add(getLoadButton("REACT_268619", ""));
-        fp.add(getLoadButton("REACT_268645", ""));
-        fp.add(getLoadButton("REACT_268761", ""));
-        fp.add(getLoadButton("REACT_268813", ""));
-        fp.add(getLoadButton("REACT_268849", ""));
-        fp.add(getLoadButton("REACT_355030", ""));
-        fp.add(getLoadButton("REACT_355033", ""));
-        fp.add(getLoadButton("REACT_355059", ""));
-        fp.add(getLoadButton("REACT_355196", ""));
-        fp.add(getLoadButton("REACT_355210", ""));
-        fp.add(getLoadButton("REACT_355226", ""));
-        fp.add(getLoadButton("REACT_355281", ""));
-        fp.add(getLoadButton("REACT_355533", ""));
-        fp.add(getLoadButton("REACT_355549", ""));
-        fp.add(getLoadButton("REACT_6288", ""));
-        fp.add(getLoadButton("REACT_75925", ""));
+        fp.add(getLoadButton("R-HSA-2219530", "Constitutive Signaling by Aberrant PI3K in Cancer"));
+        fp.add(getLoadButton("R-HSA-2206296", ""));
+        fp.add(getLoadButton("R-HSA-2206292", ""));
+        fp.add(getLoadButton("R-HSA-2206308", ""));
+        fp.add(getLoadButton("R-HSA-2206302", ""));
+        fp.add(getLoadButton("R-HSA-2206291", ""));
+        fp.add(getLoadButton("R-HSA-2474795", ""));
+        fp.add(getLoadButton("R-HSA-2644602", ""));
+        fp.add(getLoadButton("R-HSA-3311021", ""));
+        fp.add(getLoadButton("R-HSA-3315487", ""));
+        fp.add(getLoadButton("R-HSA-3371599", ""));
+        fp.add(getLoadButton("R-HSA-5362768", ""));
+        fp.add(getLoadButton("R-HSA-5340573", ""));
+        fp.add(getLoadButton("R-HSA-5467340", ""));
+        fp.add(getLoadButton("R-HSA-5545619", ""));
+        fp.add(getLoadButton("R-HSA-3785653", ""));
+        fp.add(getLoadButton("R-HSA-3656237", ""));
+        fp.add(getLoadButton("R-HSA-4724289", ""));
+        fp.add(getLoadButton("R-HSA-4793954", ""));
+        fp.add(getLoadButton("R-HSA-5637815", "Signaling by Ligand-Responsive EGFR Variants in Cancer"));
+        fp.add(getLoadButton("R-HSA-3595177", ""));
+        fp.add(getLoadButton("R-HSA-4551295", ""));
+        fp.add(getLoadButton("R-HSA-5578996", ""));
+        fp.add(getLoadButton("R-HSA-4570571", ""));
+        fp.add(getLoadButton("R-HSA-4687000", ""));
+        fp.add(getLoadButton("R-HSA-5633231", ""));
+        fp.add(getLoadButton("R-HSA-5579009", ""));
+        fp.add(getLoadButton("R-HSA-4793950", ""));
+        fp.add(getLoadButton("R-HSA-4549356", ""));
+        fp.add(getLoadButton("R-HSA-5657560", ""));
+        fp.add(getLoadButton("R-HSA-5655302", ""));
+        fp.add(getLoadButton("R-HSA-5603027", ""));
+        fp.add(getLoadButton("R-HSA-5602498", ""));
+        fp.add(getLoadButton("R-HSA-5603029", ""));
+        fp.add(getLoadButton("R-HSA-5602566", ""));
+        fp.add(getLoadButton("R-HSA-5655253", ""));
+        fp.add(getLoadButton("R-HSA-5602410", ""));
+        fp.add(getLoadButton("R-HSA-162909", ""));
+        fp.add(getLoadButton("R-HSA-977225", ""));
 
         return fp;
     }
@@ -315,13 +315,13 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("R_111057", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                REACT_111057_tour();
+                R_HSA_1181150_tour();
             }
         }));
         fp.add(new Button("R_13", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                REACT_13_tour();
+                R_HSA_71921_tour();
             }
         }));
         fp.add(new Button("A Test 1", new ClickHandler() {
@@ -399,7 +399,7 @@ public class WidgetTest implements EntryPoint {
         return fp;
     }
 
-    private void REACT_111057_tour(){
+    private void R_HSA_1181150_tour(){
         diagram.selectItem(1181156L);
 
         (new Timer() {
@@ -438,7 +438,7 @@ public class WidgetTest implements EntryPoint {
         }).schedule(20000);
     }
 
-    private void REACT_13_tour(){
+    private void R_HSA_71921_tour(){
         diagram.selectItem(209772L);
 
         (new Timer() {
