@@ -1,0 +1,243 @@
+.legendPanel{
+    background-color: rgba(240, 240, 240, 0.9);
+    border: 1px solid lightgray;
+    border-radius: 15px;
+    position: absolute;
+
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+}
+
+.analysisControl{
+    border-radius: 5px;
+    bottom: 10px;
+    height: 28px;
+}
+
+@sprite .close {
+    gwt-image:'closeNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: right;
+    margin: 2px 8px;
+}
+
+@sprite .close:hover {
+    gwt-image:'closeHovered';
+}
+
+@sprite .close:active:hover {
+    margin: 3px 7px;
+    gwt-image: 'closeClicked';
+}
+
+@sprite .forward {
+    gwt-image:'forwardNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: left;
+    margin: 2px;
+}
+
+@sprite .forward:hover {
+    gwt-image:'forwardHovered';
+}
+
+@sprite .forward:disabled, .forward:disabled:hover, .forward:disabled:active {
+    gwt-image:'forwardDisabled';
+    cursor: auto;
+}
+
+@sprite .forward:enabled:active:hover {
+    margin-left: 3px;
+    margin-right: 1px;
+    gwt-image: 'forwardClicked';
+}
+
+@sprite .help {
+    gwt-image:'helpNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: left;
+    margin: 2px;
+}
+
+@sprite .help:hover {
+    gwt-image:'helpHovered';
+}
+
+@sprite .help:disabled, .help:disabled:hover, .help:disabled:active {
+    gwt-image:'helpDisabled';
+    cursor: auto;
+}
+
+@sprite .help:enabled:active:hover {
+    margin-left: 3px;
+    margin-right: 1px;
+    gwt-image: 'helpClicked';
+}
+
+@sprite .play {
+    gwt-image:'playNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: left;
+    margin: 2px;
+}
+
+@sprite .play:hover {
+    gwt-image:'playHovered';
+}
+
+@sprite .play:enabled:active:hover {
+    margin-left: 3px;
+    margin-right: 1px;
+    gwt-image: 'playClicked';
+}
+
+@sprite .pause {
+    gwt-image:'pauseNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: left;
+    margin: 2px;
+}
+
+@sprite .pause:hover {
+    gwt-image:'pauseHovered';
+}
+
+@sprite .pause:enabled:active:hover {
+    margin-left: 3px;
+    margin-right: 1px;
+    gwt-image: 'pauseClicked';
+}
+
+@sprite .rewind {
+    gwt-image:'rewindNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: left;
+    margin: 2px;
+}
+
+@sprite .rewind:hover {
+    gwt-image:'rewindHovered';
+}
+
+@sprite .rewind:disabled, .rewind:disabled:hover, .rewind:disabled:active  {
+    gwt-image:'rewindDisabled';
+    cursor: auto;
+}
+
+@sprite .rewind:enabled:active:hover {
+    margin-left: 3px;
+    margin-right: 1px;
+    gwt-image: 'rewindClicked';
+}
+
+.speed {
+    border: 0 none;
+    color: transparent;
+    float: left;
+    margin: 2px;
+    height: 24px;
+    width: 24px;
+}
+
+.enrichmentLegend {
+    bottom: 30%;
+    right: 10px;
+    width: 50px;
+    /*centers in the middle*/
+    height: 250px;
+    margin-top: -125px; /* height and margin-top are related, please change both if needed */
+    top: 50%;
+}
+
+.enrichmentControl {
+    /*centers in the middle*/
+    width: 220px;
+    margin-left:-110px; /* width and margin-left are related, please change both if needed */
+    left:50%;
+}
+
+.enrichmentControl span {
+    margin: 6px 0 0 20px;
+    float: left;
+    font-size: 12px;
+}
+
+.expressionLegend {
+    bottom: 30%;
+    right: 10px;
+    width: 50px;
+    /*centers in the middle*/
+    height: 280px;
+    margin-top: -125px; /* height and margin-top are related, please change both if needed */
+    top: 50%;
+    overflow: visible !important;
+}
+
+.expressionLegendHelp {
+    overflow: hidden;
+    background-color: rgba(252, 252, 252, 0.8);
+    border: 0 solid lightgray;
+    border-radius: 15px;
+    height: 280px;
+    -webkit-transition: margin-left 0.5s, width 0.5s; /* Safari */
+    transition: margin-left 0.5s, width 0.5s;
+}
+
+.expressionLegendHelpHidden{
+    width: 0;
+    margin-left: 0;
+}
+
+.expressionLegendHelpVisible{
+    border: 1px solid lightgray;
+    width: 160px;
+    margin-left: -165px;
+}
+
+.expressionControl {
+    /*centers in the middle*/
+    width: 400px;
+    margin-left:-200px; /* width and margin-left are related, please change both if needed */
+    left:50%;
+}
+
+.expressionControl span {
+    margin: 5px 0 0 20px;
+    float: left;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    white-space: nowrap;
+    max-width: 225px;
+}
+
+.slide {
+    border: 0 none; /* solid lightgray;*/
+    color: transparent;
+    margin-top: 2px;
+    position: absolute;
+    left: 116px;
+    background-color: #E6E6E6;
+    border-radius: 5px;
+    outline: none;
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <inherits name='com.google.gwt.user.User'/>
+    <inherits name='com.google.gwt.json.JSON'/>
+    <inherits name="com.google.gwt.resources.Resources" />
+    <inherits name="com.google.web.bindery.autobean.AutoBean"/>
+    <inherits name="uk.ac.ebi.pwp.structures.quadtree.QuadTree2D"/>
+
+    <source path="client"/>
+    <source path="common"/>
+    <source path="controls"/>
+    <source path="data"/>
+    <source path="events"/>
+    <source path="handlers"/>
+    <source path="legends"/>
+    <source path="menu"/>
+    <source path="messages"/>
+    <source path="profiles"/>
+    <source path="renderers"/>
+    <source path="search"/>
+    <source path="thumbnail"/>
+    <source path="util"/>
+</module>

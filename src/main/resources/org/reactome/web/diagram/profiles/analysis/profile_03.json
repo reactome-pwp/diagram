@@ -1,0 +1,23 @@
+{
+  "name": "Jamaica",
+  "enrichment": {
+    "gradient": {
+      "min": "#FFFFCA",
+      "stop": null,
+      "max": "#FFFF50"
+    },
+    "text": "#000000"
+  },
+  "expression": {
+    "gradient": {
+      "min": "#D65C33",
+      "stop": "#FFFF4D",
+      "max": "#85AD33"
+    },
+    "legend": {
+      "median": "#000000",
+      "hover": "#FF0000"
+    },
+    "text": "#FFFFFF"
+  }
+}

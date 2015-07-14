@@ -1,0 +1,23 @@
+{
+  "name": "Copper Plus",
+  "enrichment": {
+    "gradient": {
+      "min": "#FFFFCA",
+      "stop": null,
+      "max": "#FFFF50"
+    },
+    "text": "#000000"
+  },
+  "expression": {
+    "gradient": {
+      "min": "#FFFF00",
+      "stop": "#56D7EE",
+      "max": "#0000FF"
+    },
+    "legend": {
+      "median": "#000000",
+      "hover": "#FF0000"
+    },
+    "text": "#FFFFFF"
+  }
+}

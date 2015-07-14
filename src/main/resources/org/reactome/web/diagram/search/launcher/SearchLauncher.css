@@ -1,0 +1,63 @@
+.launchPanel{
+    background-color: rgba(88, 195, 229, 0.8);
+    border: none;
+    border-radius: 16px;
+    height: 32px;
+    width: 32px;
+    overflow: hidden !important;
+
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+
+    -webkit-transition: width 0.3s;
+    -moz-transition: width 0.3s;
+    transition: width 0.3s;
+}
+
+
+.launchPanelExpanded{
+    width: 315px;
+}
+
+@sprite .launch {
+    float: left;
+    gwt-image:'launchNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+@sprite .launch:hover {
+    gwt-image:'launchHovered';
+}
+
+@sprite .launch:active:hover {
+    gwt-image: 'launchClicked';
+}
+
+.input {
+    border-radius: 5px;
+    float: left;
+    margin: 5px 0 0 4px;
+    height: 20px;
+    width: 260px;
+    border: none;
+    background-color: #23688b;
+    font-size: 14px;
+    opacity: 0.2;
+    color: #23688b;
+    padding-left: 5px;
+    outline: none;
+
+    transition: opacity .4s ease-in-out;
+    -moz-transition: opacity .4s ease-in-out;
+    -webkit-transition: opacity .4s ease-in-out;
+}
+
+.inputActive {
+    opacity: 0.8;
+    color: #FFFFFF;
+}

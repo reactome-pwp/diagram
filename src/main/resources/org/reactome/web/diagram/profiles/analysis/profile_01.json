@@ -1,0 +1,23 @@
+{
+  "name": "Standard",
+  "enrichment": {
+    "gradient": {
+      "min": "#F8DE36",
+      "stop": null,
+      "max": "#8F8A05"
+    },
+    "text": "#000000"
+  },
+  "expression": {
+    "gradient": {
+      "min": "#F4FA58",
+      "stop": null,
+      "max": "#2E64FE"
+    },
+    "legend": {
+      "median": "#000000",
+      "hover": "#FF0000"
+    },
+    "text": "#FFFFFF"
+  }
+}

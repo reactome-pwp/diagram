@@ -1,0 +1,363 @@
+package org.reactome.web.diagram.legends;
+
+import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.canvas.dom.client.CanvasGradient;
+import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.data.analysis.ExpressionSummary;
+import org.reactome.web.diagram.data.graph.model.Complex;
+import org.reactome.web.diagram.data.graph.model.DatabaseObject;
+import org.reactome.web.diagram.data.graph.model.EntitySet;
+import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.events.*;
+import org.reactome.web.diagram.handlers.*;
+import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
+import org.reactome.web.diagram.profiles.analysis.model.AnalysisProfile;
+import org.reactome.web.diagram.profiles.diagram.DiagramColours;
+import org.reactome.web.diagram.util.ExpressionUtil;
+import org.reactome.web.diagram.util.gradient.ThreeColorGradient;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+
+/**
+ * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ */
+public class ExpressionLegend extends LegendPanel implements ClickHandler, MouseOverHandler, MouseOutHandler,
+        AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, DiagramRequestedHandler,
+        ExpressionValueHoveredHandler, AnalysisProfileChangedHandler, ExpressionColumnChangedHandler,
+        DatabaseObjectSelectedHandler, DatabaseObjectHoveredHandler {
+
+    private Canvas gradient;
+    private Canvas flag;
+
+    private InlineLabel topLabel;
+    private InlineLabel bottomLabel;
+
+    private Double expHovered;
+    private DatabaseObject hovered;
+    private DatabaseObject selected;
+
+    private int column;
+    private double min;
+    private double max;
+
+    public ExpressionLegend(EventBus eventBus) {
+        super(eventBus);
+        this.gradient = createCanvas(30, 200);
+        this.flag = createCanvas(50, 210);
+
+        //Setting the legend style
+        addStyleName(RESOURCES.getCSS().expressionLegend());
+
+        fillGradient();
+
+        this.topLabel = new InlineLabel("");
+        this.topLabel.setSize("40px", "15px");
+        this.topLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        this.add(this.topLabel, 5, 5);
+
+        this.add(this.gradient, 10, 25);
+        this.add(this.flag, 0, 20);
+
+        this.bottomLabel = new InlineLabel("");
+        this.bottomLabel.setSize("40px", "15px");
+        this.bottomLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        this.add(this.bottomLabel, 5, 230);
+
+        this.addHelp();
+
+        initHandlers();
+
+        this.setVisible(false);
+    }
+
+    @Override
+    public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
+        switch (event.getType()) {
+            case EXPRESSION:
+                ExpressionSummary es = event.getExpressionSummary();
+                if (es != null) {
+                    this.min = es.getMin();
+                    this.max = es.getMax();
+                    this.topLabel.setText(NumberFormat.getFormat("#.##E0").format(max));
+                    this.bottomLabel.setText(NumberFormat.getFormat("#.##E0").format(min));
+                }
+                setVisible(true);
+                break;
+            default:
+                setVisible(false);
+        }
+    }
+
+    @Override
+    public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                fillGradient();
+                draw();
+            }
+        });
+    }
+
+    @Override
+    public void onAnalysisResultRequested(AnalysisResultRequestedEvent event) {
+        this.setVisible(false);
+    }
+
+    @Override
+    public void onAnalysisReset(AnalysisResetEvent event) {
+        this.setVisible(false);
+    }
+
+    @Override
+    public void onDatabaseObjectHovered(DatabaseObjectHoveredEvent event) {
+        List<DiagramObject> hoveredObjects = event.getHoveredObjects();
+        DiagramObject item = hoveredObjects!=null && !hoveredObjects.isEmpty()? hoveredObjects.get(0) : null;
+        this.hovered = item != null ? item.getDatabaseObject() : null;
+        draw();
+    }
+
+    @Override
+    public void onDatabaseObjectSelected(DatabaseObjectSelectedEvent event) {
+        this.selected = event.getDatabaseObject();
+        draw();
+    }
+
+    @Override
+    public void onDiagramRequested(DiagramRequestedEvent event) {
+        this.expHovered = null;
+        this.hovered = null;
+        this.selected = null;
+        draw();
+        setVisible(false);
+    }
+
+    @Override
+    public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
+        this.expHovered = null;
+        this.column = e.getColumn();
+        draw();
+    }
+
+    @Override
+    public void onExpressionValueHovered(ExpressionValueHoveredEvent event) {
+        this.expHovered = event.getExpressionValue();
+        draw();
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        this.draw();
+    }
+
+    private Canvas createCanvas(int width, int height) {
+        Canvas canvas = Canvas.createIfSupported();
+        canvas.setCoordinateSpaceWidth(width);
+        canvas.setCoordinateSpaceHeight(height);
+        canvas.setPixelSize(width, height);
+        return canvas;
+    }
+
+    private void draw(){
+        if (!this.isVisible()) return;
+
+        Context2d ctx = this.flag.getContext2d();
+        ctx.clearRect(0, 0, this.flag.getOffsetWidth(), this.flag.getOffsetHeight());
+
+        List<Double> hoveredValues = getExpressionValues(this.hovered, this.column);
+        if (!hoveredValues.isEmpty()) {
+            String colour = DiagramColours.get().PROFILE.getProperties().getHovering();
+            for (Double value : hoveredValues) {
+                double p = ThreeColorGradient.getPercentage(value, this.min, this.max);
+                drawLeftPin(ctx, p, colour, colour);
+            }
+            if(hoveredValues.size()>1) {
+                Double median = ExpressionUtil.median(hoveredValues);
+                double p = ThreeColorGradient.getPercentage(median, this.min, this.max);
+                colour = AnalysisColours.get().PROFILE.getExpression().getLegend().getMedian();
+                drawLeftPin(ctx, p, colour, colour);
+            }
+        }
+
+        if (this.expHovered != null) {
+            double p = ThreeColorGradient.getPercentage(this.expHovered, this.min, this.max);
+            String colour = AnalysisColours.get().PROFILE.getExpression().getLegend().getHover();
+            drawLeftPin(ctx, p, colour, colour);
+        }
+
+        List<Double> selectedValues = getExpressionValues(this.selected, this.column);
+        if (!selectedValues.isEmpty()) {
+            String colour = DiagramColours.get().PROFILE.getProperties().getSelection();
+            for (Double value : selectedValues) {
+                double p = ThreeColorGradient.getPercentage(value, this.min, this.max);
+                drawRightPin(ctx, p, colour, colour);
+            }
+            if(selectedValues.size()>1) {
+                Double median = ExpressionUtil.median(selectedValues);
+                double p = ThreeColorGradient.getPercentage(median, this.min, this.max);
+                colour = AnalysisColours.get().PROFILE.getExpression().getLegend().getMedian();
+                drawRightPin(ctx, p, colour, colour);
+            }
+        }
+    }
+
+    private void drawLeftPin(Context2d ctx, double p, String stroke, String fill) {
+        int y = (int) Math.round(200 * p) + 5;
+        ctx.setFillStyle(fill);
+        ctx.setStrokeStyle(stroke);
+        ctx.beginPath();
+        ctx.moveTo(5, y - 5);
+        ctx.lineTo(10, y);
+        ctx.lineTo(5, y + 5);
+        ctx.lineTo(5, y - 5);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.moveTo(10, y);
+        ctx.lineTo(40, y);
+        ctx.stroke();
+        ctx.closePath();
+    }
+
+    private void drawRightPin(Context2d ctx, double p, String stroke, String fill) {
+        int y = (int) Math.round(200 * p) + 5;
+        ctx.setFillStyle(fill);
+        ctx.setStrokeStyle(stroke);
+        ctx.beginPath();
+        ctx.moveTo(45, y - 5);
+        ctx.lineTo(40, y);
+        ctx.lineTo(45, y + 5);
+        ctx.lineTo(45, y - 5);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.moveTo(10, y);
+        ctx.lineTo(40, y);
+        ctx.stroke();
+        ctx.closePath();
+    }
+
+    private void fillGradient() {
+        AnalysisProfile profile = AnalysisColours.get().PROFILE;
+        Context2d ctx = this.gradient.getContext2d();
+        CanvasGradient grd = ctx.createLinearGradient(0, 0, 30, 200);
+
+        ThreeColorGradient gradient = new ThreeColorGradient(profile.getExpression().getGradient());
+        grd.addColorStop(0, gradient.getColor(0));
+        grd.addColorStop(0.5, gradient.getColor(0.5));
+        grd.addColorStop(1, gradient.getColor(1));
+
+        ctx.clearRect(0, 0, this.gradient.getCoordinateSpaceWidth(), this.gradient.getCoordinateSpaceHeight());
+        ctx.setFillStyle(grd);
+        ctx.beginPath();
+        ctx.fillRect(0, 0, 30, 200);
+        ctx.closePath();
+    }
+
+    private List<Double> getExpressionValues(DatabaseObject databaseObject, int column) {
+        List<Double> expression = new LinkedList<Double>();
+        if (databaseObject != null) {
+            if (databaseObject instanceof Complex) {
+                Complex complex = (Complex) databaseObject;
+                expression = new LinkedList<Double>(complex.getParticipantsExpression(column).values());
+            } else if (databaseObject instanceof EntitySet) {
+                EntitySet set = (EntitySet) databaseObject;
+                expression = new LinkedList<Double>(set.getParticipantsExpression(column).values());
+            } else {
+                List<Double> aux = databaseObject.getExpression();
+                if (aux != null && !aux.isEmpty()) {
+                    expression.add(aux.get(column));
+                }
+            }
+        }
+        Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
+        return expression;
+    }
+
+
+    private void initHandlers() {
+        this.eventBus.addHandler(DatabaseObjectHoveredEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(DatabaseObjectSelectedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
+        this.eventBus.addHandler(ExpressionValueHoveredEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
+        this.eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
+    }
+
+    /*########### HELP INFO ##############*/
+
+    private FlowPanel helpPanel;
+
+    private void addHelp(){
+        LegendPanelCSS css = RESOURCES.getCSS();
+        ControlButton helpBtn = new ControlButton("Show help", css.help(), this);
+        helpBtn.addMouseOverHandler(this);
+        helpBtn.addMouseOutHandler(this);
+        this.add(helpBtn, 12, 248);
+
+        this.helpPanel = new FlowPanel();
+        this.helpPanel.getElement().getStyle().setTextAlign(Style.TextAlign.CENTER);
+        HTMLPanel text = new HTMLPanel(RESOURCES.expressionLegendHelp().getText());
+        this.helpPanel.add(text);
+
+        Anchor close = new Anchor("Got it!");
+        close.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                hideHelp();
+            }
+        });
+        this.helpPanel.add(close);
+
+        this.showHelp();
+        this.add(this.helpPanel);
+    }
+
+    @Override
+    public void onClick(ClickEvent event) {
+        if(this.helpPanel.getOffsetWidth()>0){
+            this.hideHelp();
+        }else{
+            this.showHelp();
+        }
+    }
+
+    @Override
+    public void onMouseOver(MouseOverEvent event) {
+        this.showHelp();
+    }
+
+    @Override
+    public void onMouseOut(MouseOutEvent event) {
+        this.hideHelp();
+    }
+
+    private void showHelp(){
+        LegendPanelCSS css = RESOURCES.getCSS();
+        this.helpPanel.setStyleName(css.expressionLegendHelp());
+        this.helpPanel.addStyleName(css.expressionLegendHelpVisible());
+    }
+
+    private void hideHelp(){
+        LegendPanelCSS css = RESOURCES.getCSS();
+        this.helpPanel.setStyleName(css.expressionLegendHelp());
+        this.helpPanel.addStyleName(css.expressionLegendHelpHidden());
+    }
+}

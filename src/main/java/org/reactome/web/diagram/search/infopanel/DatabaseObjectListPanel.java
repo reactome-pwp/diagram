@@ -1,0 +1,48 @@
+package org.reactome.web.diagram.search.infopanel;
+
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import org.reactome.web.diagram.data.graph.model.DatabaseObject;
+
+import java.util.Collection;
+
+/**
+ * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ */
+public class DatabaseObjectListPanel extends FlowPanel {
+
+    public DatabaseObjectListPanel(String title, Collection<? extends DatabaseObject> objects, EventBus eventBus) {
+        InfoPanel.SuggestionPanelCSS css = InfoPanel.OBJECT_INFO_RESOURCES.getCSS();
+
+        this.setStyleName(css.databaseObjectListPanel());
+
+        Label titleLabel = new Label(title);
+        titleLabel.setStyleName(css.databaseObjectListTitle());
+        this.add(titleLabel);
+
+        FlowPanel listPanel = new FlowPanel();
+
+        listPanel.setStyleName(css.databaseObjectList());
+        for (DatabaseObject object : objects) {
+            FlowPanel listItem = new FlowPanel();
+            listItem.setStyleName(css.listItem());
+
+            Image icon = new Image(object.getImageResource());
+            listItem.add(icon);
+
+            Anchor listItemLink = new Anchor(object.getDisplayName());
+            listItemLink.setStyleName(css.listItemLink());
+            listItemLink.setTitle(object.getDisplayName());
+            listItemLink.addClickHandler(InfoActionsHelper.getLinkClickHandler(object, eventBus, this));
+            listItemLink.addMouseOverHandler(InfoActionsHelper.getLinkMouseOver(object, eventBus, this));
+            listItemLink.addMouseOutHandler(InfoActionsHelper.getLinkMouseOut(eventBus, this));
+            listItem.add(listItemLink);
+
+            listPanel.add(listItem);
+        }
+        this.add(listPanel);
+    }
+}
