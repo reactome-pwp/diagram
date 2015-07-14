@@ -1,0 +1,60 @@
+@sprite .fitall {
+    background-color: rgba(88, 195, 229, 0.8) ;
+    border: none;
+    border-radius: 16px;
+    height: 32px;
+    width: 32px;
+    margin-left: 20px;
+    float: left;
+
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+
+    position: relative;
+    gwt-image: 'fitallNormal';
+    outline: none;
+    border: 0;
+    cursor: pointer;
+}
+
+@sprite .fitall:hover {
+    gwt-image: 'fitallHovered';
+}
+
+@sprite .fitall:active:hover {
+    gwt-image: 'fitallClicked';
+}
+
+@sprite .fireworks {
+    background-color: rgba(88, 195, 229, 0.8) ;
+    border: none;
+    border-radius: 16px;
+    height: 32px;
+    width: 32px;
+    margin-left: 20px;
+    float: left;
+
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+
+    position: relative;
+    gwt-image: 'fireworksNormal';
+    outline: none;
+    border: 0;
+    cursor: pointer;
+}
+
+@sprite .fireworks:hover {
+    gwt-image: 'fireworksHovered';
+}
+
+@sprite .fireworks:disabled, .fireworks:disabled:hover, .fireworks:disabled:active {
+    gwt-image: 'fireworksDisabled';
+    cursor: auto;
+}
+
+@sprite .fireworks:enabled:active:hover {
+    gwt-image: 'fireworksClicked';
+}

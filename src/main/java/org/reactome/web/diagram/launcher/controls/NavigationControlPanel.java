@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.controls;
+package org.reactome.web.diagram.launcher.controls;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -19,21 +19,19 @@ import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class ControlPanel extends AbsolutePanel implements ClickHandler,
+public class NavigationControlPanel extends AbsolutePanel implements ClickHandler,
         DiagramRequestedHandler, LayoutLoadedHandler, DiagramLoadedHandler {
 
     protected EventBus eventBus;
 
     private ControlButton zoomIn;
     private ControlButton zoomOut;
-    private ControlButton fitAll;
     private ControlButton up;
     private ControlButton right;
     private ControlButton down;
     private ControlButton left;
-    private ControlButton fireworks;
 
-    public ControlPanel(EventBus eventBus) {
+    public NavigationControlPanel(EventBus eventBus) {
         this.eventBus = eventBus;
         this.initHandlers();
 
@@ -48,9 +46,6 @@ public class ControlPanel extends AbsolutePanel implements ClickHandler,
         this.zoomOut = new ControlButton("Zoom out", css.zoomOut(), this);
         this.add(this.zoomOut);
 
-        this.fitAll = new ControlButton("Show all", css.fitall(), this);
-        this.add(this.fitAll);
-
         this.up = new ControlButton("Move up", css.up(), this);
         this.add(this.up);
         this.right = new ControlButton("Move right", css.right(), this);
@@ -59,9 +54,6 @@ public class ControlPanel extends AbsolutePanel implements ClickHandler,
         this.add(this.down);
         this.left = new ControlButton("Move left", css.left(), this);
         this.add(this.left);
-
-        this.fireworks = new ControlButton("Show pathway overview", css.open(), this);
-        this.add(this.fireworks);
 
         this.setVisible(false);
     }
@@ -74,8 +66,6 @@ public class ControlPanel extends AbsolutePanel implements ClickHandler,
             action = ControlAction.ZOOM_IN;
         } else if (btn.equals(this.zoomOut)) {
             action = ControlAction.ZOOM_OUT;
-        } else if (btn.equals(this.fitAll)) {
-            action = ControlAction.FIT_ALL;
         } else if (btn.equals(this.up)) {
             action = ControlAction.UP;
         } else if (btn.equals(this.right)) {
@@ -84,8 +74,6 @@ public class ControlPanel extends AbsolutePanel implements ClickHandler,
             action = ControlAction.DOWN;
         } else if (btn.equals(this.left)) {
             action = ControlAction.LEFT;
-        } else if (btn.equals(this.fireworks)) {
-            action = ControlAction.FIREWORKS;
         }
         if (!action.equals(ControlAction.NONE)) {
             this.eventBus.fireEventFromSource(new ControlActionEvent(action), this);
@@ -236,21 +224,17 @@ public class ControlPanel extends AbsolutePanel implements ClickHandler,
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String CSS = "org/reactome/web/diagram/controls/ControlPanel.css";
+        String CSS = "org/reactome/web/diagram/launcher/controls/NavigationControlPanel.css";
 
         String controlPanel();
 
         String down();
-
-        String fitall();
 
         String left();
 
         String right();
 
         String up();
-
-        String open();
 
         String zoomIn();
 

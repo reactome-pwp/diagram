@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.search.launcher;
+package org.reactome.web.diagram.launcher.search;
 
 import com.google.gwt.event.shared.GwtEvent;
 import org.reactome.web.diagram.data.graph.model.DatabaseObject;

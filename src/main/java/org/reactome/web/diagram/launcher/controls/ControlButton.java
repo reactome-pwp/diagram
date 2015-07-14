@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.controls;
+package org.reactome.web.diagram.launcher.controls;
 
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;

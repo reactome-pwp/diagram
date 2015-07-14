@@ -1,6 +1,4 @@
 .searchPanel{
-    position: absolute;
-    top: 10px;
-    left: 100px;
-    width: 305px;
+    float: left;
+    max-width: 305px;
 }

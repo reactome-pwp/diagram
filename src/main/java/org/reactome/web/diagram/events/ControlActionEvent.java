@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.events;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.reactome.web.diagram.controls.ControlAction;
+import org.reactome.web.diagram.launcher.controls.ControlAction;
 import org.reactome.web.diagram.handlers.ControlActionHandler;
 
 /**

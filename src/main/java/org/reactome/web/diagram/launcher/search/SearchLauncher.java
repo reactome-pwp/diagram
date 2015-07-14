@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.search.launcher;
+package org.reactome.web.diagram.launcher.search;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.*;
@@ -11,7 +11,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.TextBox;
-import org.reactome.web.diagram.controls.ControlButton;
+import org.reactome.web.diagram.launcher.controls.ControlButton;
 import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.graph.model.DatabaseObject;
 import org.reactome.web.diagram.events.DiagramLoadedEvent;
@@ -39,12 +39,6 @@ import java.util.List;
 public class SearchLauncher extends AbsolutePanel implements BlurHandler, ClickHandler, FocusHandler,
         MouseOutHandler, MouseOverHandler, HasMouseOutHandlers, HasMouseOverHandlers,
         DiagramLoadedHandler, DiagramRequestedHandler, LayoutLoadedHandler, SearchBoxUpdatedHandler {
-
-    public static SearchLauncherResources RESOURCES;
-    static {
-        RESOURCES = GWT.create(SearchLauncherResources.class);
-        RESOURCES.getCSS().ensureInjected();
-    }
 
     @SuppressWarnings("FieldCanBeLocal")
     private static String OPENING_TEXT = "Search for any term ...";
@@ -213,6 +207,12 @@ public class SearchLauncher extends AbsolutePanel implements BlurHandler, ClickH
     }
 
 
+    public static SearchLauncherResources RESOURCES;
+    static {
+        RESOURCES = GWT.create(SearchLauncherResources.class);
+        RESOURCES.getCSS().ensureInjected();
+    }
+
     /**
      * A ClientBundle of resources used by this widget.
      */
@@ -244,7 +244,7 @@ public class SearchLauncher extends AbsolutePanel implements BlurHandler, ClickH
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String CSS = "org/reactome/web/diagram/search/launcher/SearchLauncher.css";
+        String CSS = "org/reactome/web/diagram/launcher/search/SearchLauncher.css";
 
         String launchPanel();
 

@@ -6,8 +6,11 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
-import org.reactome.web.diagram.controls.ControlPanel;
+import org.reactome.web.diagram.launcher.LauncherPanel;
+import org.reactome.web.diagram.launcher.controls.MainControlPanel;
+import org.reactome.web.diagram.launcher.controls.NavigationControlPanel;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
@@ -441,7 +444,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         //Thumbnail
         this.add(this.thumbnail);
         //Control panel
-        this.add(new ControlPanel(eventBus));
+        this.add(new NavigationControlPanel(eventBus));
 
         //Enrichment legend and control panels
         this.add(new EnrichmentControl(eventBus));
@@ -458,8 +461,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         //Main settings menu
         this.add(new SettingsMenuPanel(eventBus));
 
-        //Search panel
-        this.add(new SearchPanel(eventBus));
+        //Launcher panel
+        this.add(new LauncherPanel(eventBus));
     }
 
     private AdvancedContext2d createCanvas(int width, int height) {

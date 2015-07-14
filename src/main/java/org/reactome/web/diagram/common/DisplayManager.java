@@ -19,6 +19,8 @@ import java.util.List;
  */
 public class DisplayManager {
 
+    private final static double MAX_FACTOR = 1.25;
+
     private DiagramAnimationHandler handler;
 
     private DiagramAnimation diagramAnimation;
@@ -52,6 +54,7 @@ public class DisplayManager {
 
         //3- Calculate the factor
         double factor = ViewportUtils.getFactor(vpWidth, vpHeight, width, height);
+        factor =  factor > MAX_FACTOR ? MAX_FACTOR : factor;
 
         //3- Calculating proportions (and corrections for positioning)
         if(width > height){

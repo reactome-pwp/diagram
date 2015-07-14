@@ -1,0 +1,122 @@
+.controlPanel {
+    bottom: 10px;
+    right: 10px;
+
+    width: 60px;
+    height: 40px;
+}
+
+@sprite .down {
+    gwt-image: 'downNormal';
+    outline: none;
+    background-repeat: no-repeat;
+    border: 0;
+    cursor: pointer;
+    position: absolute;
+    left: 12px;
+    top: 24px;
+}
+
+@sprite .down:hover {
+    gwt-image: 'downHovered';
+}
+
+@sprite .down:active:hover {
+    gwt-image: 'downClicked';
+}
+
+@sprite .left {
+    gwt-image: 'leftNormal';
+    outline: none;
+    background-repeat: no-repeat;
+    border: 0;
+    cursor: pointer;
+    position: absolute;
+    left: 0;
+    top: 12px;
+}
+
+@sprite .left:hover {
+    gwt-image: 'leftHovered';
+}
+
+@sprite .left:active:hover {
+    /*margin: 3px 7px;*/
+    gwt-image: 'leftClicked';
+}
+
+@sprite .right {
+    gwt-image: 'rightNormal';
+    outline: none;
+    background-repeat: no-repeat;
+    border: 0;
+    cursor: pointer;
+    position: absolute;
+    left: 24px;
+    top: 12px;
+}
+
+@sprite .right:hover {
+    gwt-image: 'rightHovered';
+}
+
+@sprite .right:active:hover {
+    gwt-image: 'rightClicked';
+}
+
+@sprite .up {
+    gwt-image: 'upNormal';
+    outline: none;
+    background-repeat: no-repeat;
+    border: 0;
+    cursor: pointer;
+    position: absolute;
+    left: 12px;
+    top: 0;
+}
+
+@sprite .up:hover {
+    gwt-image: 'upHovered';
+}
+
+@sprite .up:active:hover {
+    gwt-image: 'upClicked';
+}
+
+@sprite .zoomIn {
+    gwt-image: 'zoomInNormal';
+    outline: none;
+    background-repeat: no-repeat;
+    border: 0;
+    cursor: pointer;
+    position: absolute;
+    left: 40px;
+    top: 0;
+}
+
+@sprite .zoomIn:hover {
+    gwt-image: 'zoomInHovered';
+}
+
+@sprite .zoomIn:active:hover {
+    gwt-image: 'zoomInClicked';
+}
+
+@sprite .zoomOut {
+    gwt-image: 'zoomOutNormal';
+    outline: none;
+    background-repeat: no-repeat;
+    border: 0;
+    cursor: pointer;
+    position: absolute;
+    left: 40px;
+    top: 24px;
+}
+
+@sprite .zoomOut:hover {
+    gwt-image: 'zoomOutHovered';
+}
+
+@sprite .zoomOut:active:hover {
+    gwt-image: 'zoomOutClicked';
+}

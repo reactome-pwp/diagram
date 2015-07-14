@@ -34,7 +34,7 @@ public class WidgetTest implements EntryPoint {
             public void onSuccess() {
                 DiagramFactory.CONSOLE_VERBOSE = true;
                 DiagramFactory.EVENT_BUS_VERBOSE = true;
-                DiagramFactory.SHOW_INFO = true;
+//                DiagramFactory.SHOW_INFO = true;
 
                 initialise();
 
