@@ -38,6 +38,12 @@
     gwt-image: 'launchClicked';
 }
 
+@sprite .launch:disabled, .launch:disabled:hover, .launch:disabled:active {
+    gwt-image: 'launchDisabled';
+    cursor: auto;
+    opacity: 1;
+}
+
 .input {
     border-radius: 5px;
     float: left;

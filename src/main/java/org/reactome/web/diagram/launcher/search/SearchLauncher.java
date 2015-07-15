@@ -67,7 +67,7 @@ public class SearchLauncher extends AbsolutePanel implements BlurHandler, ClickH
         this.add(input);
 
         this.initHandlers();
-        this.setVisible(false);
+        this.searchBtn.setEnabled(false);
     }
 
     public HandlerRegistration addSearchBoxArrowKeysHandler(SearchBoxArrowKeysHandler handler){
@@ -129,13 +129,12 @@ public class SearchLauncher extends AbsolutePanel implements BlurHandler, ClickH
     public void onDiagramRequested(DiagramRequestedEvent event) {
         this.input.setValue(""); // Clear searchbox value and fire the proper event
         this.collapsePanel();
-        this.setVisible(false);
         this.suggestionsProvider = null;
     }
 
     @Override
     public void onDiagramLoaded(DiagramLoadedEvent event) {
-        this.setVisible(true);
+        this.searchBtn.setEnabled(true);
         DiagramContent content = event.getContext().getContent();
         this.suggestionsProvider = new SuggestionsProviderImpl(content);
     }
@@ -164,7 +163,7 @@ public class SearchLauncher extends AbsolutePanel implements BlurHandler, ClickH
 
     @Override
     public void onLayoutLoaded(LayoutLoadedEvent event) {
-//        this.setVisible(true);
+        this.searchBtn.setEnabled(false);
     }
 
     @Override
