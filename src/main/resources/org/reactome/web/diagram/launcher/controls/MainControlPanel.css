@@ -1,10 +1,14 @@
+.mainControlPanel {
+    float: left;
+    margin-left: 10px;
+}
+
 @sprite .fitall {
     background-color: rgba(88, 195, 229, 0.8) ;
     border: none;
     border-radius: 16px;
     height: 32px;
     width: 32px;
-    margin-left: 20px;
     float: left;
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
@@ -32,7 +36,7 @@
     border-radius: 16px;
     height: 32px;
     width: 32px;
-    margin-left: 20px;
+    margin-left: 10px;
     float: left;
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */

@@ -1,17 +1,14 @@
 package org.reactome.web.diagram.launcher.search;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.TextBox;
-import org.reactome.web.diagram.launcher.controls.ControlButton;
 import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.graph.model.DatabaseObject;
 import org.reactome.web.diagram.events.DiagramLoadedEvent;
@@ -20,6 +17,7 @@ import org.reactome.web.diagram.events.LayoutLoadedEvent;
 import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
 import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
 import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
+import org.reactome.web.diagram.launcher.controls.ControlButton;
 import org.reactome.web.diagram.search.events.PanelCollapsedEvent;
 import org.reactome.web.diagram.search.events.PanelExpandedEvent;
 import org.reactome.web.diagram.search.handlers.PanelCollapsedHandler;
@@ -36,12 +34,11 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class SearchLauncher extends AbsolutePanel implements BlurHandler, ClickHandler, FocusHandler,
-        MouseOutHandler, MouseOverHandler, HasMouseOutHandlers, HasMouseOverHandlers,
+public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         DiagramLoadedHandler, DiagramRequestedHandler, LayoutLoadedHandler, SearchBoxUpdatedHandler {
 
     @SuppressWarnings("FieldCanBeLocal")
-    private static String OPENING_TEXT = "Search for any term ...";
+    private static String OPENING_TEXT = "Search for any diagram term ...";
 
     private EventBus eventBus;
     private SuggestionsProvider<DatabaseObject> suggestionsProvider;
@@ -50,7 +47,6 @@ public class SearchLauncher extends AbsolutePanel implements BlurHandler, ClickH
     private ControlButton searchBtn = null;
 
     private Boolean isExpanded = false;
-    private Boolean mustStayExpanded = false;
 
     public SearchLauncher(EventBus eventBus) {
         //Setting the search style
@@ -58,7 +54,7 @@ public class SearchLauncher extends AbsolutePanel implements BlurHandler, ClickH
 
         this.eventBus = eventBus;
 
-        this.searchBtn = new ControlButton("Search", RESOURCES.getCSS().launch(), this);
+        this.searchBtn = new ControlButton("Search in the diagram", RESOURCES.getCSS().launch(), this);
         this.add(searchBtn);
 
         this.input = new SearchBox();
@@ -87,34 +83,6 @@ public class SearchLauncher extends AbsolutePanel implements BlurHandler, ClickH
     }
 
     @Override
-    public HandlerRegistration addMouseOverHandler(MouseOverHandler handler) {
-        sinkEvents(Event.ONMOUSEOVER);
-        return addHandler(handler, MouseOverEvent.getType());
-    }
-
-    @Override
-    public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {
-        sinkEvents(Event.ONMOUSEOUT);
-        return addHandler(handler, MouseOutEvent.getType());
-    }
-
-    @Override
-    public void onBlur(BlurEvent event) {
-        TextBox textBox = (TextBox) event.getSource();
-        if(textBox.getValue().isEmpty()){
-            //This is used to avoid the expansion of the panel by the following onclick event
-            Timer delayTimer = new Timer() {
-                @Override
-                public void run() {
-                    collapsePanel();
-                }
-            };
-            delayTimer.schedule(100);
-        }
-    }
-
-
-    @Override
     public void onClick(ClickEvent event) {
         if(event.getSource().equals(this.searchBtn)){
             if(!isExpanded){
@@ -140,37 +108,16 @@ public class SearchLauncher extends AbsolutePanel implements BlurHandler, ClickH
     }
 
     @Override
-    public void onFocus(FocusEvent event) {
-        mustStayExpanded = true;
-    }
-
-    @Override
     public void onSearchUpdated(SearchBoxUpdatedEvent event) {
         if(suggestionsProvider!=null) {
-            String value = event.getValue();
-            mustStayExpanded = !value.isEmpty();
             List<DatabaseObject> suggestions = suggestionsProvider.getSuggestions(input.getText().trim());
             fireEvent(new SearchPerformedEvent(suggestions));
         }
     }
 
     @Override
-    public void onMouseOut(MouseOutEvent event) {
-        if(isExpanded && !mustStayExpanded) {
-            collapsePanel();
-        }
-    }
-
-    @Override
     public void onLayoutLoaded(LayoutLoadedEvent event) {
         this.searchBtn.setEnabled(false);
-    }
-
-    @Override
-    public void onMouseOver(MouseOverEvent event) {
-        if(!isExpanded) {
-            expandPanel();
-        }
     }
 
     public void setFocus(boolean focused){
@@ -181,7 +128,6 @@ public class SearchLauncher extends AbsolutePanel implements BlurHandler, ClickH
         removeStyleName(RESOURCES.getCSS().launchPanelExpanded());
         input.removeStyleName(RESOURCES.getCSS().inputActive());
         isExpanded = false;
-        mustStayExpanded = false;
         fireEvent(new PanelCollapsedEvent());
     }
 
@@ -194,11 +140,6 @@ public class SearchLauncher extends AbsolutePanel implements BlurHandler, ClickH
 
     private void initHandlers(){
         this.input.addSearchBoxUpdatedHandler(this);
-        this.input.addFocusHandler(this);
-        this.input.addBlurHandler(this);
-
-        addMouseOverHandler(this);
-        addMouseOutHandler(this);
 
         eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramLoadedEvent.TYPE, this);

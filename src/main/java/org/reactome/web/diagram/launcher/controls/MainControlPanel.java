@@ -1,7 +1,6 @@
 package org.reactome.web.diagram.launcher.controls;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -23,7 +22,7 @@ public class MainControlPanel extends FlowPanel implements ClickHandler {
     public MainControlPanel(EventBus eventBus) {
         this.eventBus = eventBus;
 
-        getElement().getStyle().setFloat(Style.Float.LEFT);
+        this.addStyleName(RESOURCES.getCSS().mainControlPanel());
         this.fitAll = new ControlButton("Show all", RESOURCES.getCSS().fitall(), this);
         this.fireworks = new ControlButton("Pathway overview", RESOURCES.getCSS().fireworks(), this);
 
@@ -92,6 +91,8 @@ public class MainControlPanel extends FlowPanel implements ClickHandler {
          * The path to the default CSS styles used by this resource.
          */
         String CSS = "org/reactome/web/diagram/launcher/controls/MainControlPanel.css";
+
+        String mainControlPanel();
 
         String fitall();
 
