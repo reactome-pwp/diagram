@@ -77,7 +77,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     public DiagramViewerImpl() {
         this.eventBus = new DiagramEventBus();
         this.canvas = new DiagramCanvas(this.eventBus);
-        this.contextMap = new LruCache<String, DiagramContext>(DIAGRAM_CONTEXT_CACHE_SIZE);
+        this.contextMap = new LruCache<>(DIAGRAM_CONTEXT_CACHE_SIZE);
         this.loaderManager = new LoaderManager(this.eventBus);
         AnalysisDataLoader.initialise(this.eventBus);
 
@@ -277,9 +277,10 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void resetSelection() {
-        this.halo = new HashSet<DiagramObject>();
+        this.halo = new HashSet<>();
         this.selected = null;
         this.forceDraw = true;
+        this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(null, false), this);
     }
 
     @Override
@@ -288,7 +289,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
             DatabaseObject item = this.context.getContent().getDatabaseObject(stableIdentifier);
             this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(item, true, false), this);
         } catch (Exception e) {
-            //Nothing here
+            this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(null, false), this);
         }
     }
 
@@ -298,7 +299,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
             DatabaseObject item = this.context.getContent().getDatabaseObject(dbIdentifier);
             this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(item, true, false), this);
         } catch (Exception e) {
-            //Nothing here
+            this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(null, false), this);
         }
     }
 
@@ -491,9 +492,9 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     public void onDatabaseObjectSelected(final DatabaseObjectSelectedEvent event) {
         final DatabaseObject item = event.getDatabaseObject();
         if (!Objects.equals(item, this.selected)) {
-            List<DiagramObject> selected = new LinkedList<DiagramObject>();
+            List<DiagramObject> selected = new LinkedList<>();
             if (item == null) {
-                this.halo = new HashSet<DiagramObject>();
+                this.halo = new HashSet<>();
                 this.selected = null;
             } else {
                 boolean fadeOut = true;

@@ -3,6 +3,7 @@ package org.reactome.web.diagram.data;
 import org.reactome.web.diagram.data.graph.model.DatabaseObject;
 import org.reactome.web.diagram.data.graph.model.Pathway;
 import org.reactome.web.diagram.data.graph.model.PhysicalEntity;
+import org.reactome.web.diagram.data.graph.model.Subpathway;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.util.MapSet;
 
@@ -23,10 +24,10 @@ public class DiagramContent {
     Boolean hideCompartmentInName;
 
     Map<Long, DiagramObject> diagramObjectMap;
-    Map<Long, DatabaseObject> dbId2DbObject;
-    Map<String, DatabaseObject> stId2DbObject;
+    Map<String, DatabaseObject> databaseObjectCache;
     MapSet<String, DatabaseObject> identifierMap;
     Set<Pathway> encapsulatedPathways;
+    Set<Subpathway> subpathways;
 
     Set<DiagramObject> diseaseComponents;
     Set<DiagramObject> lofNodes;
@@ -37,20 +38,20 @@ public class DiagramContent {
     double minY; double maxY;
 
     public DiagramContent() {
-        this.diagramObjectMap = new TreeMap<Long, DiagramObject>();
-        this.dbId2DbObject = new HashMap<Long, DatabaseObject>();
-        this.stId2DbObject = new HashMap<String, DatabaseObject>();
-        this.identifierMap = new MapSet<String, DatabaseObject>();
-        this.encapsulatedPathways = new HashSet<Pathway>();
+        this.diagramObjectMap = new TreeMap<>();
+        this.databaseObjectCache = new HashMap<>();
+        this.identifierMap = new MapSet<>();
+        this.encapsulatedPathways = new HashSet<>();
+        this.subpathways = new HashSet<>();
     }
 
     public void cache(DatabaseObject dbObject){
         this.graphLoaded = true;
         if(dbObject.getDbId()!=null) {
-            dbId2DbObject.put(dbObject.getDbId(), dbObject);
+            databaseObjectCache.put(dbObject.getDbId()+"", dbObject);
         }
         if(dbObject.getStId()!=null) {
-            stId2DbObject.put(dbObject.getStId(), dbObject);
+            databaseObjectCache.put(dbObject.getStId(), dbObject);
         }
 
         if(dbObject instanceof PhysicalEntity){
@@ -61,10 +62,14 @@ public class DiagramContent {
         }else if(dbObject instanceof Pathway){
             encapsulatedPathways.add((Pathway) dbObject);
         }
+
+        if (dbObject instanceof Subpathway){
+            this.subpathways.add((Subpathway) dbObject);
+        }
     }
 
     public boolean containsOnlyEncapsultedPathways(){
-        return (dbId2DbObject.values().size() == encapsulatedPathways.size());
+        return (getDatabaseObjects().size() == encapsulatedPathways.size());
     }
 
     public boolean containsEncapsultedPathways(){
@@ -107,10 +112,6 @@ public class DiagramContent {
         return hideCompartmentInName;
     }
 
-//    public Set<DiagramObject> getNormalComponents() {
-//        return normalComponents;
-//    }
-
     public Set<DiagramObject> getDiseaseComponents() {
         return diseaseComponents;
     }
@@ -120,11 +121,11 @@ public class DiagramContent {
     }
 
     public DatabaseObject getDatabaseObject(String stId){
-        return this.stId2DbObject.get(stId);
+        return this.databaseObjectCache.get(stId);
     }
 
     public DatabaseObject getDatabaseObject(Long dbId){
-        return this.dbId2DbObject.get(dbId);
+        return this.databaseObjectCache.get(dbId.toString());
     }
 
     public DiagramObject getDiagramObject(Long id){
@@ -132,7 +133,7 @@ public class DiagramContent {
     }
 
     public Collection<DatabaseObject> getDatabaseObjects(){
-        return this.dbId2DbObject.values();
+        return new HashSet<>(this.databaseObjectCache.values());
     }
 
     public Collection<DiagramObject> getDiagramObjects(){
@@ -141,6 +142,10 @@ public class DiagramContent {
 
     public MapSet<String, DatabaseObject> getIdentifierMap() {
         return identifierMap;
+    }
+
+    public Set<Subpathway> getSubpathways() {
+        return subpathways;
     }
 
     public double getMinX() {

@@ -5,16 +5,14 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public interface Graph {
+public interface SubpathwayRaw {
 
     Long getDbId();
 
     String getStId();
 
-    List<EntityNode> getNodes();
+    String getDisplayName();
 
-    List<EventNode> getEdges();
-
-    List<SubpathwayRaw> getSubpathways();
+    List<Long> getEvents();
 
 }

@@ -2,9 +2,7 @@ package org.reactome.web.diagram.client;
 
 import org.reactome.web.diagram.common.DisplayManager;
 import org.reactome.web.diagram.data.DiagramContent;
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
-import org.reactome.web.diagram.data.graph.model.PhysicalEntity;
-import org.reactome.web.diagram.data.graph.model.ReactionLikeEvent;
+import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.layout.Connector;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -29,12 +27,18 @@ class DiagramManager {
     }
 
     public Set<DiagramObject> getRelatedDiagramObjects(DatabaseObject item){
-        Set<DiagramObject> toDisplay = new HashSet<DiagramObject>();
+        Set<DiagramObject> toDisplay = new HashSet<>();
         if(item instanceof ReactionLikeEvent){
             toDisplay.addAll(getElementsToDisplay((ReactionLikeEvent) item));
         }else if(item instanceof PhysicalEntity) {
             PhysicalEntity pe = (PhysicalEntity) item;
             for (ReactionLikeEvent rle : pe.participatesIn()) {
+                toDisplay.addAll(getElementsToDisplay(rle));
+            }
+        }else if(item instanceof Subpathway){
+            Subpathway subpathway = (Subpathway) item;
+            //DO NOT CALL subpathway.getDiagramObjects here because we need also the participants :)
+            for (ReactionLikeEvent rle : subpathway.getContainedEvents()) {
                 toDisplay.addAll(getElementsToDisplay(rle));
             }
         }
@@ -47,8 +51,8 @@ class DiagramManager {
     }
 
     private Collection<DiagramObject> getElementsToDisplay(ReactionLikeEvent rle){
-        Set<DiagramObject> toDisplay = new HashSet<DiagramObject>(rle.getDiagramObjects());
-        Set<Long> target = new HashSet<Long>();
+        Set<DiagramObject> toDisplay = new HashSet<>(rle.getDiagramObjects());
+        Set<Long> target = new HashSet<>();
         for (DiagramObject diagramObject : toDisplay) {
             target.add(diagramObject.getId());
         }
@@ -63,7 +67,7 @@ class DiagramManager {
 
     private Collection<DiagramObject> getDiagramObjectsParticipatingInReaction(Collection<PhysicalEntity> entities,
                                                                                Set<Long> target){
-        Set<DiagramObject> rtn = new HashSet<DiagramObject>();
+        Set<DiagramObject> rtn = new HashSet<>();
         for (PhysicalEntity entity : entities) {
             for (DiagramObject object : entity.getDiagramObjects()) {
                 if(object instanceof Node){

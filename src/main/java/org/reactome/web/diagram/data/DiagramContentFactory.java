@@ -1,12 +1,10 @@
 package org.reactome.web.diagram.data;
 
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
-import org.reactome.web.diagram.data.graph.model.Pathway;
-import org.reactome.web.diagram.data.graph.model.PhysicalEntity;
-import org.reactome.web.diagram.data.graph.model.ReactionLikeEvent;
+import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.graph.raw.EntityNode;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
 import org.reactome.web.diagram.data.graph.raw.Graph;
+import org.reactome.web.diagram.data.graph.raw.SubpathwayRaw;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 
@@ -57,7 +55,7 @@ public abstract class DiagramContentFactory {
     }
 
     private static Set<DiagramObject> getDiagramObjectSet(Map<Long, DiagramObject> map, Set<Long> list){
-        Set<DiagramObject> rtn = new HashSet<DiagramObject>();
+        Set<DiagramObject> rtn = new HashSet<>();
         if(list!=null) {
             for (Long id : list) {
                 DiagramObject diagramObject = map.get(id);
@@ -135,10 +133,17 @@ public abstract class DiagramContentFactory {
             List<ReactionLikeEvent> following = getDatabaseObjects(edge.getFollowing());
             event.setFollowingEvents(following);
         }
+
+        for (SubpathwayRaw subpathway : graph.getSubpathways()) {
+            Subpathway sp = DatabaseObjectFactory.getOrCreateDatabaseObject(subpathway);
+            for (Long event : subpathway.getEvents()) {
+                sp.addContainedEvent((ReactionLikeEvent) content.getDatabaseObject(event));
+            }
+        }
     }
 
     private static List<DiagramObject> getDiagramObjects(List<Long> ids){
-        List<DiagramObject> rtn = new ArrayList<DiagramObject>();
+        List<DiagramObject> rtn = new ArrayList<>();
         if(ids!=null){
             for (Long id : ids) {
                 rtn.add(DatabaseObjectFactory.content.getDiagramObject(id));
@@ -148,7 +153,7 @@ public abstract class DiagramContentFactory {
     }
 
     private static  <T extends DatabaseObject> List<T> getDatabaseObjects(List<Long> dbIds){
-        List<T> rtn = new ArrayList<T>();
+        List<T> rtn = new ArrayList<>();
         if(dbIds!=null) {
             for (Long dbId : dbIds) {
                 //noinspection unchecked

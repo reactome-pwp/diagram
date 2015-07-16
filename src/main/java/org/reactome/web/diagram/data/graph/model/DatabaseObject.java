@@ -4,6 +4,7 @@ import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.resources.client.ImageResource;
 import org.reactome.web.diagram.data.graph.model.factory.SchemaClass;
 import org.reactome.web.diagram.data.graph.raw.GraphNode;
+import org.reactome.web.diagram.data.graph.raw.SubpathwayRaw;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 
 import java.util.LinkedList;
@@ -19,10 +20,9 @@ public abstract class DatabaseObject implements Comparable<DatabaseObject> {
     private String displayName;
     private String searchDisplay;
 
-    List<PhysicalEntity> parents = new LinkedList<PhysicalEntity>();
+    List<PhysicalEntity> parents = new LinkedList<>();
 
     private List<DiagramObject> diagramObjects;
-
 
     protected List<Double> expression;
 
@@ -30,7 +30,14 @@ public abstract class DatabaseObject implements Comparable<DatabaseObject> {
         this.dbId = node.getDbId();
         this.stId = node.getStId();
         this.displayName = node.getDisplayName();
-        this.diagramObjects = new LinkedList<DiagramObject>();
+        this.diagramObjects = new LinkedList<>();
+    }
+
+    public DatabaseObject(SubpathwayRaw subpathway) {
+        this.dbId = subpathway.getDbId();
+        this.stId = subpathway.getStId();
+        this.displayName = subpathway.getDisplayName();
+        this.diagramObjects = new LinkedList<>();
     }
 
     public boolean addDiagramObject(DiagramObject diagramObject) {
@@ -50,14 +57,14 @@ public abstract class DatabaseObject implements Comparable<DatabaseObject> {
     }
 
     public List<DiagramObject> getDiagramObjects() {
-        return new LinkedList<DiagramObject>(diagramObjects);
+        return new LinkedList<>(diagramObjects);
     }
 
     public List<Double> getExpression() {
         return expression;
     }
 
-    public Double getExpression(int column){
+    public Double getExpression(int column) {
         return expression.get(column);
     }
 
@@ -68,13 +75,13 @@ public abstract class DatabaseObject implements Comparable<DatabaseObject> {
     public void setSearchDisplay(String[] searchTerms) {
         this.searchDisplay = this.displayName;
 
-        if(searchTerms==null || searchTerms.length==0) return;
+        if (searchTerms == null || searchTerms.length == 0) return;
 
         StringBuilder sb = new StringBuilder("(");
         for (String term : searchTerms) {
             sb.append(term).append("|");
         }
-        sb.delete(sb.length()-1, sb.length()).append(")");
+        sb.delete(sb.length() - 1, sb.length()).append(")");
         String term = sb.toString();
         /**
          * (term1|term2)    : term is between "(" and ")" because we are creating a group, so this group can
@@ -88,15 +95,15 @@ public abstract class DatabaseObject implements Comparable<DatabaseObject> {
         this.searchDisplay = regExp.replace(this.searchDisplay, "<u><strong>$1</strong></u>");
     }
 
-    public void clearSearchDisplayValue(){
+    public void clearSearchDisplayValue() {
         this.searchDisplay = null;
     }
 
-    public SchemaClass getSchemaClass(){
+    public SchemaClass getSchemaClass() {
         return SchemaClass.getSchemaClass(getClass().getSimpleName());
     }
 
-    public String getClassName(){
+    public String getClassName() {
         return getSchemaClass().name;
     }
 
@@ -105,7 +112,7 @@ public abstract class DatabaseObject implements Comparable<DatabaseObject> {
     @Override
     public int compareTo(DatabaseObject o) {
         int cmp = getDisplayName().compareTo(o.getDisplayName());
-        if(cmp==0){
+        if (cmp == 0) {
             cmp = getDbId().compareTo(o.getDbId());
         }
         return cmp;
