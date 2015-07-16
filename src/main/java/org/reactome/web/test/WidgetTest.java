@@ -123,6 +123,8 @@ public class WidgetTest implements EntryPoint {
             }
         }));
 
+        fp.add(getSelectionButton("R-HSA-111465", ""));
+
         return fp;
     }
 
@@ -142,6 +144,7 @@ public class WidgetTest implements EntryPoint {
         FlowPanel fp = new FlowPanel();
         fp.add(getLoadButton("R-HSA-1181150", ""));
         fp.add(getLoadButton("R-HSA-71291", ""));
+        fp.add(getLoadButton("R-HSA-75153", ""));
         fp.add(new InlineLabel(" "));
         fp.add(getLoadButton("R-HSA-162909", ""));
         fp.add(new InlineLabel(" "));

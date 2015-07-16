@@ -8,7 +8,7 @@ import org.reactome.web.diagram.handlers.DatabaseObjectSelectedHandler;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class DatabaseObjectSelectedEvent extends GwtEvent<DatabaseObjectSelectedHandler> {
-    public static Type<DatabaseObjectSelectedHandler> TYPE = new Type<DatabaseObjectSelectedHandler>();
+    public static Type<DatabaseObjectSelectedHandler> TYPE = new Type<>();
 
     private DatabaseObject databaseObject;
     private boolean zoom;
