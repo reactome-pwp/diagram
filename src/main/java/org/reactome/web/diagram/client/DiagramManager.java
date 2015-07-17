@@ -22,20 +22,22 @@ class DiagramManager {
         this.displayManager = displayManager;
     }
 
-    public void fitDiagram(DiagramContent c, boolean animation){
+    public void fitDiagram(DiagramContent c, boolean animation) {
         displayManager.display(c.getMinX(), c.getMinY(), c.getMaxX(), c.getMaxY(), animation);
     }
 
-    public Set<DiagramObject> getRelatedDiagramObjects(DatabaseObject item){
+    public Set<DiagramObject> getRelatedDiagramObjects(DatabaseObject item) {
         Set<DiagramObject> toDisplay = new HashSet<>();
-        if(item instanceof ReactionLikeEvent){
+        if (item instanceof ReactionLikeEvent) {
             toDisplay.addAll(getElementsToDisplay((ReactionLikeEvent) item));
-        }else if(item instanceof PhysicalEntity) {
+        } else if (item instanceof PhysicalEntity) {
             PhysicalEntity pe = (PhysicalEntity) item;
             for (ReactionLikeEvent rle : pe.participatesIn()) {
                 toDisplay.addAll(getElementsToDisplay(rle));
             }
-        }else if(item instanceof Subpathway){
+        } else if (item instanceof Pathway) {
+            toDisplay.addAll(item.getDiagramObjects());
+        } else if (item instanceof Subpathway) {
             Subpathway subpathway = (Subpathway) item;
             //DO NOT CALL subpathway.getDiagramObjects here because we need also the participants :)
             for (ReactionLikeEvent rle : subpathway.getContainedEvents()) {
@@ -45,12 +47,12 @@ class DiagramManager {
         return toDisplay;
     }
 
-    public void displayDiagramObjects(DatabaseObject item){
+    public void displayDiagramObjects(DatabaseObject item) {
         Set<DiagramObject> toDisplay = getRelatedDiagramObjects(item);
         this.displayManager.display(toDisplay, true);
     }
 
-    private Collection<DiagramObject> getElementsToDisplay(ReactionLikeEvent rle){
+    private Collection<DiagramObject> getElementsToDisplay(ReactionLikeEvent rle) {
         Set<DiagramObject> toDisplay = new HashSet<>(rle.getDiagramObjects());
         Set<Long> target = new HashSet<>();
         for (DiagramObject diagramObject : toDisplay) {
@@ -66,14 +68,14 @@ class DiagramManager {
     }
 
     private Collection<DiagramObject> getDiagramObjectsParticipatingInReaction(Collection<PhysicalEntity> entities,
-                                                                               Set<Long> target){
+                                                                               Set<Long> target) {
         Set<DiagramObject> rtn = new HashSet<>();
         for (PhysicalEntity entity : entities) {
             for (DiagramObject object : entity.getDiagramObjects()) {
-                if(object instanceof Node){
+                if (object instanceof Node) {
                     Node node = (Node) object;
                     for (Connector connector : node.getConnectors()) {
-                        if(target.contains(connector.getEdgeId())){
+                        if (target.contains(connector.getEdgeId())) {
                             rtn.add(node);
                         }
                     }
