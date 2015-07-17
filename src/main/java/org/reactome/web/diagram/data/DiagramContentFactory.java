@@ -134,10 +134,12 @@ public abstract class DiagramContentFactory {
             event.setFollowingEvents(following);
         }
 
-        for (SubpathwayRaw subpathway : graph.getSubpathways()) {
-            Subpathway sp = DatabaseObjectFactory.getOrCreateDatabaseObject(subpathway);
-            for (Long event : subpathway.getEvents()) {
-                sp.addContainedEvent((ReactionLikeEvent) content.getDatabaseObject(event));
+        if(graph.getSubpathways()!=null) {
+            for (SubpathwayRaw subpathway : graph.getSubpathways()) {
+                Subpathway sp = DatabaseObjectFactory.getOrCreateDatabaseObject(subpathway);
+                for (Long event : subpathway.getEvents()) {
+                    sp.addContainedEvent((ReactionLikeEvent) content.getDatabaseObject(event));
+                }
             }
         }
     }

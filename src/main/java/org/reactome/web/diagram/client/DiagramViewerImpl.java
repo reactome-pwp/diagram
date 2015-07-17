@@ -18,6 +18,7 @@ import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.graph.model.DatabaseObject;
 import org.reactome.web.diagram.data.graph.model.Event;
+import org.reactome.web.diagram.data.graph.model.Pathway;
 import org.reactome.web.diagram.data.graph.model.PhysicalEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
@@ -65,13 +66,12 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     private DatabaseObject hovered = null;
     private DatabaseObject selected = null;
-    private Set<DiagramObject> halo = new HashSet<DiagramObject>();
+    private Set<DiagramObject> halo = new HashSet<>();
 
     private boolean diagramMoved = false;
     private boolean forceDraw = false;
     private Double fingerDistance;
 
-    //TODO: Would it be a good idea to couple next two properties into one object?
     private AnalysisStatus analysisStatus;
 
     public DiagramViewerImpl() {
@@ -278,18 +278,20 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void resetSelection() {
         this.halo = new HashSet<>();
-        this.selected = null;
-        this.forceDraw = true;
-        this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(null, false), this);
+        if(this.selected!=null) {
+            this.selected = null;
+            this.forceDraw = true;
+            this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(null, false), this);
+        }
     }
 
     @Override
     public void selectItem(String stableIdentifier) {
         try {
             DatabaseObject item = this.context.getContent().getDatabaseObject(stableIdentifier);
-            this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(item, true, false), this);
+            this.setSelection(item, true, false);
         } catch (Exception e) {
-            this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(null, false), this);
+            this.resetSelection();
         }
     }
 
@@ -297,9 +299,9 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     public void selectItem(Long dbIdentifier) {
         try {
             DatabaseObject item = this.context.getContent().getDatabaseObject(dbIdentifier);
-            this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(item, true, false), this);
+            this.setSelection(item, true, false);
         } catch (Exception e) {
-            this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(null, false), this);
+            this.resetSelection();
         }
     }
 
@@ -347,14 +349,18 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         if (!this.diagramMoved) {
             DiagramObject item = this.getHovered(this.mouseCurrent);
             DatabaseObject toSel = item != null ? item.getDatabaseObject() : null;
-            this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(toSel, false), this);
+            this.setSelection(toSel, false, true);
         }
         this.diagramMoved = false;
     }
 
     @Override
     public void onDoubleClick(DoubleClickEvent event) {
-
+        DiagramObject item = this.getHovered(this.mouseCurrent);
+        DatabaseObject toOpen = item != null ? item.getDatabaseObject() : null;
+        if(toOpen instanceof Pathway) {
+            this.load(toOpen.getDbId().toString());
+        }
     }
 
     @Override
@@ -418,7 +424,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
             //Do NOT use this.mouseCurrent in the next line
             DiagramObject item = this.getHovered(this.mouseDown);
             DatabaseObject toSel = item != null ? item.getDatabaseObject() : null;
-            this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(toSel, false), this);
+            this.setSelection(toSel, false, true);
         }
         this.mouseDown = null;
         this.diagramMoved = false;
@@ -666,6 +672,12 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         if (this.context.getContent().isGraphLoaded()) {
             this.loadAnalysis(this.analysisStatus); //IMPORTANT: This needs to be done once context is been set up above
             this.eventBus.fireEventFromSource(new DiagramLoadedEvent(context), this);
+        }
+    }
+
+    private void setSelection(DatabaseObject toSelect, boolean zoom, boolean fireExternally){
+        if(!Objects.equals(this.selected, toSelect)) {
+            this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(toSelect, zoom, fireExternally), this);
         }
     }
 
