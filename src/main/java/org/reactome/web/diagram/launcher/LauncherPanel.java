@@ -5,19 +5,13 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
-import org.reactome.web.diagram.events.DiagramLoadedEvent;
-import org.reactome.web.diagram.events.DiagramRequestedEvent;
-import org.reactome.web.diagram.events.LayoutLoadedEvent;
-import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
-import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
-import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
 import org.reactome.web.diagram.launcher.controls.MainControlPanel;
 import org.reactome.web.diagram.search.SearchPanel;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class LauncherPanel extends FlowPanel implements DiagramLoadedHandler, DiagramRequestedHandler, LayoutLoadedHandler {
+public class LauncherPanel extends FlowPanel {
 
     public LauncherPanel(EventBus eventBus) {
         this.setStyleName(RESOURCES.getCSS().launcherPanel());
@@ -27,25 +21,6 @@ public class LauncherPanel extends FlowPanel implements DiagramLoadedHandler, Di
         //Main Control panel
         this.add(new MainControlPanel(eventBus));
 
-        this.setVisible(false);
-
-        eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
-        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
-        eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
-    }
-
-    @Override
-    public void onDiagramLoaded(DiagramLoadedEvent event) {
-        this.setVisible(true);
-    }
-
-    @Override
-    public void onDiagramRequested(DiagramRequestedEvent event) {
-        this.setVisible(false);
-    }
-
-    @Override
-    public void onLayoutLoaded(LayoutLoadedEvent event) {
         this.setVisible(true);
     }
 
