@@ -48,12 +48,12 @@ public class NavigationControlPanel extends AbsolutePanel implements ClickHandle
 
         this.up = new ControlButton("Move up", css.up(), this);
         this.add(this.up);
+        this.left = new ControlButton("Move left", css.left(), this);
+        this.add(this.left);
         this.right = new ControlButton("Move right", css.right(), this);
         this.add(this.right);
         this.down = new ControlButton("Move down", css.down(), this);
         this.add(this.down);
-        this.left = new ControlButton("Move left", css.left(), this);
-        this.add(this.left);
 
         this.setVisible(false);
     }

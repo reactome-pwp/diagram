@@ -1,20 +1,24 @@
 .controlPanel {
-    bottom: 10px;
-    right: 10px;
-
-    width: 60px;
-    height: 40px;
+    bottom: 4px;
+    right: 4px;
+    width: 62px;
+    height: 46px;
 }
 
 @sprite .down {
     gwt-image: 'downNormal';
     outline: none;
     background-repeat: no-repeat;
-    border: 0;
+    border: none;
+    border-radius: 12px;
     cursor: pointer;
     position: absolute;
     left: 12px;
     top: 24px;
+
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 }
 
 @sprite .down:hover {
@@ -29,11 +33,16 @@
     gwt-image: 'leftNormal';
     outline: none;
     background-repeat: no-repeat;
-    border: 0;
+    border: none;
+    border-radius: 12px;
     cursor: pointer;
     position: absolute;
     left: 0;
     top: 12px;
+
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 }
 
 @sprite .left:hover {
@@ -49,11 +58,16 @@
     gwt-image: 'rightNormal';
     outline: none;
     background-repeat: no-repeat;
-    border: 0;
+    border: none;
+    border-radius: 12px;
     cursor: pointer;
     position: absolute;
     left: 24px;
     top: 12px;
+
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 }
 
 @sprite .right:hover {
@@ -68,11 +82,16 @@
     gwt-image: 'upNormal';
     outline: none;
     background-repeat: no-repeat;
-    border: 0;
+    border: none;
+    border-radius: 12px;
     cursor: pointer;
     position: absolute;
     left: 12px;
     top: 0;
+
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 }
 
 @sprite .up:hover {
@@ -87,11 +106,16 @@
     gwt-image: 'zoomInNormal';
     outline: none;
     background-repeat: no-repeat;
-    border: 0;
+    border: none;
+    border-radius: 12px;
     cursor: pointer;
     position: absolute;
     left: 40px;
     top: 0;
+
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 }
 
 @sprite .zoomIn:hover {
@@ -106,11 +130,16 @@
     gwt-image: 'zoomOutNormal';
     outline: none;
     background-repeat: no-repeat;
-    border: 0;
+    border: none;
+    border-radius: 12px;
     cursor: pointer;
     position: absolute;
     left: 40px;
     top: 24px;
+
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 }
 
 @sprite .zoomOut:hover {
