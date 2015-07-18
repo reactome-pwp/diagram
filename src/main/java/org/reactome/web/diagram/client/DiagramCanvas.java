@@ -5,12 +5,9 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
-import org.reactome.web.diagram.launcher.LauncherPanel;
-import org.reactome.web.diagram.launcher.controls.MainControlPanel;
-import org.reactome.web.diagram.launcher.controls.NavigationControlPanel;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
@@ -22,6 +19,9 @@ import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
 import org.reactome.web.diagram.events.ExpressionValueHoveredEvent;
 import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
+import org.reactome.web.diagram.key.DiagramKey;
+import org.reactome.web.diagram.launcher.LauncherPanel;
+import org.reactome.web.diagram.launcher.controls.NavigationControlPanel;
 import org.reactome.web.diagram.legends.EnrichmentControl;
 import org.reactome.web.diagram.legends.ExpressionControl;
 import org.reactome.web.diagram.legends.ExpressionLegend;
@@ -39,7 +39,6 @@ import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.helper.ItemsDistribution;
 import org.reactome.web.diagram.renderers.helper.RenderType;
-import org.reactome.web.diagram.search.SearchPanel;
 import org.reactome.web.diagram.thumbnail.DiagramThumbnail;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 import org.reactome.web.diagram.util.MapSet;
@@ -463,6 +462,16 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         //Launcher panel
         this.add(new LauncherPanel(eventBus));
+
+        //TODO: Under test! Move to a better place :/
+        final DiagramKey diagramKey = new DiagramKey(eventBus);
+        this.add(diagramKey);
+        (new Timer() {
+            @Override
+            public void run() {
+                diagramKey.setVisible(true);
+            }
+        }).schedule(1000);
     }
 
     private AdvancedContext2d createCanvas(int width, int height) {

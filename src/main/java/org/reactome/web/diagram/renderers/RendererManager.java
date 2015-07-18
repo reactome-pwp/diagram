@@ -23,10 +23,10 @@ public class RendererManager implements DiagramZoomHandler, DiagramLoadedHandler
 
     private EventBus eventBus;
 
-    private Map<String, Renderer> s000 = new HashMap<String, Renderer>();
-    private Map<String, Renderer> s050 = new HashMap<String, Renderer>();
-    private Map<String, Renderer> s100 = new HashMap<String, Renderer>();
-//    private Map<String, Renderer> s200 = new HashMap<String, Renderer>();
+    private Map<String, Renderer> s000 = new HashMap<>();
+    private Map<String, Renderer> s050 = new HashMap<>();
+    private Map<String, Renderer> s100 = new HashMap<>();
+//    private Map<String, Renderer> s200 = new HashMap<>();
 
     private Map<String, Renderer> current = s100;
     private ConnectorRenderer connectorRenderer = new ConnectorRenderer100();
@@ -66,6 +66,10 @@ public class RendererManager implements DiagramZoomHandler, DiagramLoadedHandler
         return this.current.get(renderableClass);
     }
 
+    public Renderer getDiagramKeyRenderer(DiagramObject item){
+        if (item == null) return null;
+        return this.s100.get(item.getRenderableClass());
+    }
 
     public ConnectorRenderer getConnectorRenderer() {
         return connectorRenderer;
