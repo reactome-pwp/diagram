@@ -127,6 +127,20 @@
       }
     }
   ],
+  "notes" : [{
+    "displayName": "Reaction",
+    "renderableClass": "Note",
+    "position": {
+      "x": 0,
+      "y": 0
+    },
+    "prop": {
+      "x": 100,
+      "y": 345,
+      "width": 60,
+      "height": 30
+    }
+  }],
   "edges": [
     {
       "displayName": "Transition/Process",

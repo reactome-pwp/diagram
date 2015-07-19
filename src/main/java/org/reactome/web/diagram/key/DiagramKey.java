@@ -107,7 +107,17 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
                 Console.error(edge.getRenderableClass());
             }
         }
-
+        for (Note note : diagram.getNotes()) {
+            Renderer renderer = RendererManager.get().getDiagramKeyRenderer(note);
+            if (renderer != null){
+                renderer.setTextProperties(items, ColourProfileType.NORMAL);
+                items.setFont(RendererProperties.getFont(10));
+                renderer.drawText(items, note, factor, offset);
+                Console.info(note.getDisplayName() + " drawn!");
+            } else {
+                Console.error(note.getRenderableClass());
+            }
+        }
         selection.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getSelection());
         highlight(this.selection, this.selected);
     }
