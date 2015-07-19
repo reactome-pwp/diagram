@@ -35,7 +35,6 @@ public abstract class RendererProperties {
         DASHED_LINE_PATTERN = new double[]{5.0d * factor, 5.0d * factor};
         EDGE_TYPE_WIDGET_WIDTH = 12 * factor;
         ROUND_RECT_ARC_WIDTH = 6 * factor;
-        ROUND_RECT_ARC_WIDTH = 6 * factor;
         COMPLEX_RECT_ARC_WIDTH = 6 * factor;
         RNA_LOOP_WIDTH = 16 * factor;
         GENE_SYMBOL_PAD = 4 * factor;

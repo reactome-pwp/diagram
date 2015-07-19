@@ -15,6 +15,7 @@ import org.reactome.web.diagram.events.LayoutLoadedEvent;
 import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
 import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
 import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
+import org.reactome.web.diagram.launcher.LauncherButton;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -24,12 +25,12 @@ public class NavigationControlPanel extends AbsolutePanel implements ClickHandle
 
     protected EventBus eventBus;
 
-    private ControlButton zoomIn;
-    private ControlButton zoomOut;
-    private ControlButton up;
-    private ControlButton right;
-    private ControlButton down;
-    private ControlButton left;
+    private LauncherButton zoomIn;
+    private LauncherButton zoomOut;
+    private LauncherButton up;
+    private LauncherButton right;
+    private LauncherButton down;
+    private LauncherButton left;
 
     public NavigationControlPanel(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -41,18 +42,18 @@ public class NavigationControlPanel extends AbsolutePanel implements ClickHandle
 
         ControlPanelCSS css = RESOURCES.getCSS();
 
-        this.zoomIn = new ControlButton("Zoom in", css.zoomIn(), this);
+        this.zoomIn = new LauncherButton("Zoom in", css.zoomIn(), this);
         this.add(this.zoomIn);
-        this.zoomOut = new ControlButton("Zoom out", css.zoomOut(), this);
+        this.zoomOut = new LauncherButton("Zoom out", css.zoomOut(), this);
         this.add(this.zoomOut);
 
-        this.up = new ControlButton("Move up", css.up(), this);
+        this.up = new LauncherButton("Move up", css.up(), this);
         this.add(this.up);
-        this.left = new ControlButton("Move left", css.left(), this);
+        this.left = new LauncherButton("Move left", css.left(), this);
         this.add(this.left);
-        this.right = new ControlButton("Move right", css.right(), this);
+        this.right = new LauncherButton("Move right", css.right(), this);
         this.add(this.right);
-        this.down = new ControlButton("Move down", css.down(), this);
+        this.down = new LauncherButton("Move down", css.down(), this);
         this.add(this.down);
 
         this.setVisible(false);
@@ -61,7 +62,7 @@ public class NavigationControlPanel extends AbsolutePanel implements ClickHandle
     @Override
     public void onClick(ClickEvent event) {
         ControlAction action = ControlAction.NONE;
-        ControlButton btn = (ControlButton) event.getSource();
+        LauncherButton btn = (LauncherButton) event.getSource();
         if (btn.equals(this.zoomIn)) {
             action = ControlAction.ZOOM_IN;
         } else if (btn.equals(this.zoomOut)) {

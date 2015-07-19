@@ -17,7 +17,7 @@ import org.reactome.web.diagram.events.LayoutLoadedEvent;
 import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
 import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
 import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
-import org.reactome.web.diagram.launcher.controls.ControlButton;
+import org.reactome.web.diagram.launcher.LauncherButton;
 import org.reactome.web.diagram.search.events.PanelCollapsedEvent;
 import org.reactome.web.diagram.search.events.PanelExpandedEvent;
 import org.reactome.web.diagram.search.handlers.PanelCollapsedHandler;
@@ -44,7 +44,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     private SuggestionsProvider<DatabaseObject> suggestionsProvider;
 
     private SearchBox input = null;
-    private ControlButton searchBtn = null;
+    private LauncherButton searchBtn = null;
 
     private Boolean isExpanded = false;
 
@@ -54,7 +54,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
         this.eventBus = eventBus;
 
-        this.searchBtn = new ControlButton("Search in the diagram", RESOURCES.getCSS().launch(), this);
+        this.searchBtn = new LauncherButton("Search in the diagram", RESOURCES.getCSS().launch(), this);
         this.add(searchBtn);
 
         this.input = new SearchBox();

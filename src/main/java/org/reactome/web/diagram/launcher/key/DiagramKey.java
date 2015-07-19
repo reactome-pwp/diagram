@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.key;
+package org.reactome.web.diagram.launcher.key;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
@@ -113,7 +113,6 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
                 renderer.setTextProperties(items, ColourProfileType.NORMAL);
                 items.setFont(RendererProperties.getFont(10));
                 renderer.drawText(items, note, factor, offset);
-                Console.info(note.getDisplayName() + " drawn!");
             } else {
                 Console.error(note.getRenderableClass());
             }
@@ -136,7 +135,15 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
             if (node.getRenderableClass().equals(renderableClass)) {
                 Renderer renderer = RendererManager.get().getDiagramKeyRenderer(node);
                 if (renderer != null) {
+                    //Now time for tricks in order to maintain the code optimised for the general rendering ;)
+                    double complex = RendererProperties.COMPLEX_RECT_ARC_WIDTH;
+                    double set = RendererProperties.ROUND_RECT_ARC_WIDTH;
+                    RendererProperties.COMPLEX_RECT_ARC_WIDTH  = 6;
+                    RendererProperties.ROUND_RECT_ARC_WIDTH = 6;
                     renderer.highlight(ctx, node, factor, offset);
+                    RendererProperties.COMPLEX_RECT_ARC_WIDTH  = complex;
+                    RendererProperties.ROUND_RECT_ARC_WIDTH = set;
+                    //End of the tricks xDD
                     return;
                 }
             }
@@ -273,7 +280,7 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String CSS = "org/reactome/web/diagram/key/DiagramKey.css";
+        String CSS = "org/reactome/web/diagram/launcher/key/DiagramKey.css";
 
         String diagramKeyPanel();
 
