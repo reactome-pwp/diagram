@@ -131,12 +131,12 @@
     "displayName": "Reaction",
     "renderableClass": "Note",
     "position": {
-      "x": 100,
-      "y": 345
+      "x": 130,
+      "y": 360
     },
     "prop": {
-      "x": 100,
-      "y": 345,
+      "x": 130,
+      "y": 360,
       "width": 60,
       "height": 30
     }
