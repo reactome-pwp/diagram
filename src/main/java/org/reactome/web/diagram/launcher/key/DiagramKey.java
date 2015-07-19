@@ -44,11 +44,11 @@ import java.util.List;
 public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHandler, DatabaseObjectSelectedHandler,
         DiagramRequestedHandler, DiagramProfileChangedHandler, ClickHandler {
 
-    private EventBus eventBus;
+    private static final Double FACTOR = 0.9;
+    private static final Coordinate OFFSET = CoordinateFactory.get(0, 0);
 
+    private EventBus eventBus;
     private Diagram diagram;
-    private Double factor = 0.9;
-    private Coordinate offset = CoordinateFactory.get(0, 0);
 
     private DiagramObject selected;
 
@@ -82,15 +82,19 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
     private void draw() {
         if (!isVisible()) return;
 
+        //Now time for tricks in order to maintain the code optimised for the general rendering ;)
+        double factor = RendererProperties.getFactor();
+        RendererProperties.setFactor(FACTOR);
+
         this.clearDiagramKey();
         for (Node node : diagram.getNodes()) {
             Renderer renderer = RendererManager.get().getDiagramKeyRenderer(node);
             if (renderer != null) {
                 renderer.setColourProperties(items, ColourProfileType.NORMAL);
-                renderer.draw(items, node, factor, offset);
+                renderer.draw(items, node, FACTOR, OFFSET);
                 renderer.setTextProperties(items, ColourProfileType.NORMAL);
                 items.setFont(RendererProperties.getFont(10));
-                renderer.drawText(items, node, factor, offset);
+                renderer.drawText(items, node, FACTOR, OFFSET);
             } else {
                 Console.error(node.getRenderableClass());
             }
@@ -99,10 +103,9 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
             Renderer renderer = RendererManager.get().getDiagramKeyRenderer(edge);
             if (renderer != null){
                 renderer.setColourProperties(items, ColourProfileType.NORMAL);
-                renderer.draw(items, edge, factor, offset);
+                renderer.draw(items, edge, FACTOR, OFFSET);
                 renderer.setTextProperties(items, ColourProfileType.NORMAL);
-                items.setFont(RendererProperties.getFont(10));
-                renderer.drawText(items, edge, factor, offset);
+                renderer.drawText(items, edge, FACTOR, OFFSET);
             } else {
                 Console.error(edge.getRenderableClass());
             }
@@ -111,12 +114,15 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
             Renderer renderer = RendererManager.get().getDiagramKeyRenderer(note);
             if (renderer != null){
                 renderer.setTextProperties(items, ColourProfileType.NORMAL);
-                items.setFont(RendererProperties.getFont(10));
-                renderer.drawText(items, note, factor, offset);
+                renderer.drawText(items, note, FACTOR, OFFSET);
             } else {
                 Console.error(note.getRenderableClass());
             }
         }
+
+        RendererProperties.setFactor(factor);
+        //End of the tricks xDD
+
         selection.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getSelection());
         highlight(this.selection, this.selected);
     }
@@ -130,20 +136,17 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
 
     private void highlight(AdvancedContext2d ctx, DiagramObject diagramObject) {
         if (diagramObject == null) return;
+
+        //Now time for tricks in order to maintain the code optimised for the general rendering ;)
+        double factor = RendererProperties.getFactor();
+        RendererProperties.setFactor(FACTOR);
+
         String renderableClass = diagramObject.getRenderableClass();
         for (Node node : diagram.getNodes()) {
             if (node.getRenderableClass().equals(renderableClass)) {
                 Renderer renderer = RendererManager.get().getDiagramKeyRenderer(node);
                 if (renderer != null) {
-                    //Now time for tricks in order to maintain the code optimised for the general rendering ;)
-                    double complex = RendererProperties.COMPLEX_RECT_ARC_WIDTH;
-                    double set = RendererProperties.ROUND_RECT_ARC_WIDTH;
-                    RendererProperties.COMPLEX_RECT_ARC_WIDTH  = 6;
-                    RendererProperties.ROUND_RECT_ARC_WIDTH = 6;
-                    renderer.highlight(ctx, node, factor, offset);
-                    RendererProperties.COMPLEX_RECT_ARC_WIDTH  = complex;
-                    RendererProperties.ROUND_RECT_ARC_WIDTH = set;
-                    //End of the tricks xDD
+                    renderer.highlight(ctx, node, FACTOR, OFFSET);
                     return;
                 }
             }
@@ -154,12 +157,15 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
                 if (renderer != null) {
                     ctx.save();
                     ctx.setLineWidth(ctx.getLineWidth()/1.5);
-                    renderer.draw(ctx, edge, factor, offset);
+                    renderer.draw(ctx, edge, FACTOR, OFFSET);
                     ctx.restore();
                     return;
                 }
             }
         }
+
+        RendererProperties.setFactor(factor);
+        //End of the tricks xDD
     }
 
     private void initHandlers() {
@@ -176,7 +182,7 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
 
     @Override
     public void onDatabaseObjectHovered(DatabaseObjectHoveredEvent event) {
-        hover.setLineWidth(factor * 9);
+        hover.setLineWidth(FACTOR * 9);
         hover.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getHighlight());
         cleanCanvas(hover);
         DiagramObject diagramObject = getDiagramObject(event.getDatabaseObject());
@@ -186,7 +192,7 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
 
     @Override
     public void onDatabaseObjectSelected(DatabaseObjectSelectedEvent event) {
-        selection.setLineWidth(factor * 3);
+        selection.setLineWidth(FACTOR * 3);
         selection.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getSelection());
         cleanCanvas(selection);
         this.selected = getDiagramObject(event.getDatabaseObject());
