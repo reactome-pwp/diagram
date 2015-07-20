@@ -60,7 +60,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     @Override
     public void onDatabaseObjectHovered(DatabaseObjectHoveredEvent event) {
         //TODO
-        this.hovered = !event.getHoveredObjects().isEmpty() ? event.getHoveredObjects().get(0) : null;
+        this.hovered = event.getHoveredObject();
         if (this.hovered == null) {
             showTooltipExecute(); //this will quickly hide the tooltip ;)
         } else {
