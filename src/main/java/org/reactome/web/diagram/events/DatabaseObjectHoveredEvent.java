@@ -12,16 +12,24 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class DatabaseObjectHoveredEvent extends GwtEvent<DatabaseObjectHoveredHandler> {
-    public static Type<DatabaseObjectHoveredHandler> TYPE = new Type<DatabaseObjectHoveredHandler>();
+    public static Type<DatabaseObjectHoveredHandler> TYPE = new Type<>();
 
     private DatabaseObject databaseObject;
+    private DiagramObject hoveredObject;
 
     public DatabaseObjectHoveredEvent(){
         this.databaseObject = null;
+        this.hoveredObject = null;
     }
 
     public DatabaseObjectHoveredEvent(DatabaseObject databaseObject) {
         this.databaseObject = databaseObject;
+        this.hoveredObject = null; //undefined!
+    }
+
+    public DatabaseObjectHoveredEvent(DatabaseObject databaseObject, DiagramObject diagramObject) {
+        this.databaseObject = databaseObject;
+        this.hoveredObject = diagramObject;
     }
 
     @Override
@@ -40,6 +48,10 @@ public class DatabaseObjectHoveredEvent extends GwtEvent<DatabaseObjectHoveredHa
 
     public List<DiagramObject> getHoveredObjects() {
         return databaseObject != null ? databaseObject.getDiagramObjects() : new LinkedList<DiagramObject>();
+    }
+
+    public DiagramObject getHoveredObject() {
+        return hoveredObject;
     }
 
     @Override

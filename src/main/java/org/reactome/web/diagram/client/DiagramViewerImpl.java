@@ -132,9 +132,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         if (force || !mouseCurrent.equals(mousePrevious)) {
             if (this.context != null) {
                 DiagramObject item = this.getHovered(mouseCurrent);
-                DatabaseObject hovered = item != null && item.getIsFadeOut() == null ? item.getDatabaseObject() : null;
-                this.canvas.setCursor(hovered == null ? Style.Cursor.DEFAULT : Style.Cursor.POINTER);
-                this.highlight(hovered, true);
+                this.canvas.setCursor(item == null ? Style.Cursor.DEFAULT : Style.Cursor.POINTER);
+                this.highlight(item);
                 this.mousePrevious = this.mouseCurrent;
             }
         }
@@ -215,7 +214,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     public void highlightItem(String stableIdentifier) {
         try {
             DatabaseObject item = this.context.getContent().getDatabaseObject(stableIdentifier);
-            highlight(item, false);
+            highlight(item);
         } catch (Exception e) {/*Nothing here*/}
     }
 
@@ -223,16 +222,22 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     public void highlightItem(Long dbIdentifier) {
         try {
             DatabaseObject item = this.context.getContent().getDatabaseObject(dbIdentifier);
-            highlight(item, false);
+            highlight(item);
         } catch (Exception e) {/*Nothing here*/}
     }
 
-    private void highlight(DatabaseObject databaseObject, boolean notify) {
+    private void highlight(DiagramObject item) {
+        DatabaseObject hovered = item != null && item.getIsFadeOut() == null ? item.getDatabaseObject() : null;
+        DatabaseObjectHoveredEvent event = new DatabaseObjectHoveredEvent(hovered, item);
+        this.eventBus.fireEventFromSource(event, this);
+        fireEvent(event); //needs outside notification
+    }
+
+    private void highlight(DatabaseObject databaseObject) {
         if (Objects.equals(this.hovered, databaseObject)) return;
         this.hovered = databaseObject;
         DatabaseObjectHoveredEvent event = new DatabaseObjectHoveredEvent(databaseObject);
         this.eventBus.fireEventFromSource(event, this);
-        if (notify) fireEvent(event);
     }
 
     @Override
