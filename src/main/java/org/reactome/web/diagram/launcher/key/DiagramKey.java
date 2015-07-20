@@ -65,9 +65,9 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
         this.add(new InlineLabel("Diagram key"), 20, 5);
         this.add(new ControlButton("Close", RESOURCES.getCSS().close(), this));
 
-        this.hover = this.createCanvas(250, 360);
-        this.items = this.createCanvas(250, 360);
-        this.selection = this.createCanvas(250, 360);
+        this.hover = this.createCanvas(225, 360);
+        this.items = this.createCanvas(225, 360);
+        this.selection = this.createCanvas(225, 360);
 
         this.add(new Image(RESOURCES.diagramKey()), 30, 380);
         this.setVisible(false);
