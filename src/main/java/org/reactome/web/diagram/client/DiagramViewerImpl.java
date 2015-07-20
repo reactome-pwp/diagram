@@ -228,6 +228,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     private void highlight(DiagramObject item) {
         DatabaseObject hovered = item != null && item.getIsFadeOut() == null ? item.getDatabaseObject() : null;
+        if(Objects.equals(this.hovered, hovered)) return;
+        this.hovered = hovered;
         DatabaseObjectHoveredEvent event = new DatabaseObjectHoveredEvent(hovered, item);
         this.eventBus.fireEventFromSource(event, this);
         fireEvent(event); //needs outside notification
