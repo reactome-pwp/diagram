@@ -18,6 +18,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
         DatabaseObjectHoveredHandler, DiagramZoomHandler, DiagramPanningHandler {
 
     private static final int DELAY = 500;
+    private static final double ZOOM_THRESHOLD = 1.2;
 
     private EventBus eventBus;
     private DiagramContext context;
@@ -122,17 +123,17 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
         } else {
             Coordinate offset = context.getDiagramStatus().getOffset();
             if (hovered instanceof Node) {
-                if (factor > 1.0) {
+                if (factor > ZOOM_THRESHOLD) {
                     tooltip.hide();
                     return;
                 }
                 Node node = (Node) hovered;
                 NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
-                tooltip.setPositionAndShow(this, prop.getX(), prop.getY(), prop.getHeight());
+                tooltip.setPositionAndShow(this, prop.getX(), prop.getY(), prop.getHeight() + 8.0 * factor);
             } else if (hovered instanceof Edge) {
                 Edge edge = (Edge) hovered;
                 Shape shape = ShapeFactory.transform(edge.getReactionShape(), factor, offset);
-                tooltip.setPositionAndShow(this, shape.getA().getX(), shape.getA().getY(), shape.getB().getY() - shape.getA().getY());
+                tooltip.setPositionAndShow(this, shape.getA().getX(), shape.getA().getY(), (shape.getB().getY() - shape.getA().getY()) + 8.0 * factor);
             } else {
                 tooltip.hide(); //just in case :)
             }

@@ -7,7 +7,9 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -40,13 +42,18 @@ public class Tooltip extends PopupPanel {
         super.add(w);
     }
 
+    private Coordinate findOptimalPosition(double offsetX, double offsetY, double distance){
+        Coordinate optPosition = CoordinateFactory.get(offsetX,offsetY + distance );
 
-    public void setPositionAndShow(TooltipContainer container, double offsetX, double offsetY, double height) {
+        return optPosition;
+    }
 
+    public void setPositionAndShow(TooltipContainer container, double offsetX, double offsetY, double distance) {
         container.getElement().appendChild(this.getElement());
 
         this.setVisible(true);
-        this.setPosition((int) offsetX, (int) (offsetY + height));
+        Coordinate optPosition = this.findOptimalPosition(offsetX, offsetY, distance);
+        this.setPosition(optPosition.getX().intValue(), optPosition.getY().intValue());
     }
 
     public void setPreventShowing(boolean preventShowing) {
