@@ -34,7 +34,7 @@ import java.util.Set;
  */
 public class AnalysisDataLoader implements AnalysisLoaderHandler {
     private static AnalysisDataLoader analysisDataLoader;
-    private final static String PREFIX = "http://www.reactome.org/AnalysisService/token/";
+    private final static String PREFIX = "/AnalysisService/token/";
 
     private EventBus eventBus;
 
