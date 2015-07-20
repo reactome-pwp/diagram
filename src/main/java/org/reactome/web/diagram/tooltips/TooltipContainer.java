@@ -60,13 +60,13 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
 
     @Override
     public void onDatabaseObjectHovered(DatabaseObjectHoveredEvent event) {
+        if (this.hoveredTimer.isRunning()) {
+            this.hoveredTimer.cancel();
+        }
         this.hovered = event.getHoveredObject();
         if (this.hovered == null) {
             showTooltipExecute(); //this will quickly hide the tooltip ;)
         } else {
-            if (this.hoveredTimer.isRunning()) {
-                this.hoveredTimer.cancel();
-            }
             this.hoveredTimer.schedule(DELAY);
         }
     }

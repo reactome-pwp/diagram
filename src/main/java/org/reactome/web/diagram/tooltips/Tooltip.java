@@ -17,8 +17,6 @@ import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 public class Tooltip extends PopupPanel {
     private static Tooltip tooltip;
 
-    private boolean preventShowing = false;
-
     private Tooltip() {
         this.setStyleName(RESOURCES.getCSS().popup());
     }
@@ -56,19 +54,14 @@ public class Tooltip extends PopupPanel {
         this.setPosition(optPosition.getX().intValue(), optPosition.getY().intValue());
     }
 
-    public void setPreventShowing(boolean preventShowing) {
-        this.preventShowing = preventShowing;
-        if (preventShowing && isVisible()) this.hide();
-    }
-
     private void setPosition(int left, int top) {
         Element elem = getElement();
         elem.getStyle().setPropertyPx("left", left);
         elem.getStyle().setPropertyPx("top", top);
     }
 
-    public static Resources RESOURCES;
 
+    public static Resources RESOURCES;
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
