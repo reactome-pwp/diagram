@@ -6,11 +6,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
-import org.reactome.web.diagram.launcher.LauncherPanel;
-import org.reactome.web.diagram.launcher.controls.MainControlPanel;
-import org.reactome.web.diagram.launcher.controls.NavigationControlPanel;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
@@ -22,10 +18,12 @@ import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
 import org.reactome.web.diagram.events.ExpressionValueHoveredEvent;
 import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
+import org.reactome.web.diagram.launcher.LeftTopLauncherPanel;
+import org.reactome.web.diagram.launcher.RightTopLauncherPanel;
+import org.reactome.web.diagram.launcher.controls.NavigationControlPanel;
 import org.reactome.web.diagram.legends.EnrichmentControl;
 import org.reactome.web.diagram.legends.ExpressionControl;
 import org.reactome.web.diagram.legends.ExpressionLegend;
-import org.reactome.web.diagram.menu.SettingsMenuPanel;
 import org.reactome.web.diagram.messages.AnalysisMessage;
 import org.reactome.web.diagram.messages.LoadingMessage;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
@@ -39,7 +37,6 @@ import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.helper.ItemsDistribution;
 import org.reactome.web.diagram.renderers.helper.RenderType;
-import org.reactome.web.diagram.search.SearchPanel;
 import org.reactome.web.diagram.thumbnail.DiagramThumbnail;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 import org.reactome.web.diagram.util.MapSet;
@@ -81,7 +78,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
     private TooltipContainer tooltipContainer;
     private DiagramThumbnail thumbnail;
-    private List<Canvas> canvases = new LinkedList<Canvas>();
+    private List<Canvas> canvases = new LinkedList<>();
 
     private int column = 0;
     private Double hoveredExpression = null;
@@ -208,7 +205,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
      * pointer is using the renderer isHovered method.
      */
     public Collection<Long> getHovered(Collection<DiagramObject> target, Coordinate model) {
-        List<Long> rtn = new LinkedList<Long>();
+        List<Long> rtn = new LinkedList<>();
         for (DiagramObject item : target) {
             Renderer renderer = rendererManager.getRenderer(item);
             if (renderer != null) {
@@ -458,11 +455,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             this.add(new DiagramInfo(eventBus));
         }
 
-        //Main settings menu
-        this.add(new SettingsMenuPanel(eventBus));
-
-        //Launcher panel
-        this.add(new LauncherPanel(eventBus));
+        //Launcher panels
+        this.add(new LeftTopLauncherPanel(eventBus));
+        this.add(new RightTopLauncherPanel(eventBus));
     }
 
     private AdvancedContext2d createCanvas(int width, int height) {
@@ -489,35 +484,24 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
     private AdvancedContext2d getContext2d(String renderableClass) {
         AdvancedContext2d rtn = null;
-        if (renderableClass.equals("Note")) {
-            rtn = this.notes;
-        } else if (renderableClass.equals("Compartment")) {
-            rtn = this.compartments;
-        } else if (renderableClass.equals("Protein")) {
-            rtn = this.entities;
-        } else if (renderableClass.equals("Chemical")) {
-            rtn = this.entities;
-        } else if (renderableClass.equals("Reaction")) {
-            rtn = this.reactions;
-        } else if (renderableClass.equals("Complex")) {
-            rtn = this.entities;
-        } else if (renderableClass.equals("Entity")) {
-            rtn = this.entities;
-        } else if (renderableClass.equals("EntitySet")) {
-            rtn = this.entities;
-        } else if (renderableClass.equals("ProcessNode")) {
-            rtn = this.entities;
-        } else if (renderableClass.equals("FlowLine")) {
-            rtn = this.entities;
-        } else if (renderableClass.equals("Interaction")) {
-            rtn = this.entities;
-        } else if (renderableClass.equals("RNA")) {
-            rtn = this.entities;
-        } else if (renderableClass.equals("Gene")) {
-            rtn = this.entities;
-        } else if (renderableClass.equals("EntitySetAndMemberLink") ||
-                renderableClass.equals("EntitySetAndEntitySetLink")) {
-            rtn = this.links;
+        switch (renderableClass) {
+            case "Note":            rtn = this.notes;               break;
+            case "Compartment":     rtn = this.compartments;        break;
+            case "Protein":         rtn = this.entities;            break;
+            case "Chemical":        rtn = this.entities;            break;
+            case "Reaction":        rtn = this.reactions;           break;
+            case "Complex":         rtn = this.entities;            break;
+            case "Entity":          rtn = this.entities;            break;
+            case "EntitySet":       rtn = this.entities;            break;
+            case "ProcessNode":     rtn = this.entities;            break;
+            case "FlowLine":        rtn = this.entities;            break;
+            case "Interaction":     rtn = this.entities;            break;
+            case "RNA":             rtn = this.entities;            break;
+            case "Gene":            rtn = this.entities;            break;
+            case "EntitySetAndMemberLink":
+            case "EntitySetAndEntitySetLink":
+                rtn = this.links;
+                break;
         }
         return rtn;
     }

@@ -1,0 +1,217 @@
+{
+  "dbId": 1,
+  "stableId": "R-KEY-1",
+  "displayName": "Diagram key",
+  "nodes": [
+    {
+      "displayName": "Small molecule",
+      "renderableClass": "Chemical",
+      "position": {
+        "x": 125,
+        "y": 25
+      },
+      "prop": {
+        "x": 75,
+        "y": 0,
+        "width": 100,
+        "height": 50
+      }
+    },
+    {
+      "displayName": "Protein",
+      "renderableClass": "Protein",
+      "position": {
+        "x": 125,
+        "y": 70
+      },
+      "prop": {
+        "x": 75,
+        "y": 50,
+        "width": 100,
+        "height": 40
+      }
+    },
+    {
+      "displayName": "Complex(es)",
+      "renderableClass": "Complex",
+      "position": {
+        "x": 125,
+        "y": 117
+      },
+      "prop": {
+        "x": 75,
+        "y": 97,
+        "width": 100,
+        "height": 40
+      }
+    },
+    {
+      "displayName": "Set(s)",
+      "renderableClass": "EntitySet",
+      "position": {
+        "x": 125,
+        "y": 164
+      },
+      "prop": {
+        "x": 75,
+        "y": 144,
+        "width": 100,
+        "height": 40
+      }
+    },
+    {
+      "displayName": "Genome encoded entity",
+      "renderableClass": "Entity",
+      "position": {
+        "x": 125,
+        "y": 200
+      },
+      "prop": {
+        "x": 75,
+        "y": 191,
+        "width": 100,
+        "height": 41
+      }
+    },
+    {
+      "displayName": "Encapsulated Pathway",
+      "renderableClass": "ProcessNode",
+      "position": {
+        "x": 125,
+        "y": 250
+      },
+      "prop": {
+        "x": 75,
+        "y": 240,
+        "width": 100,
+        "height": 50
+      }
+    },{
+      "displayName": "Input",
+      "renderableClass": "Protein",
+      "position": {
+        "x": 40,
+        "y": 320
+      },
+      "prop": {
+        "x": 10,
+        "y": 305,
+        "width": 60,
+        "height": 30
+      }
+    },{
+      "displayName": "Input",
+      "renderableClass": "Entity",
+      "position": {
+        "x": 40,
+        "y": 360
+      },
+      "prop": {
+        "x": 10,
+        "y": 345,
+        "width": 60,
+        "height": 30
+      }
+    },{
+      "displayName": "Output",
+      "renderableClass": "Complex",
+      "position": {
+        "x": 205,
+        "y": 340
+      },
+      "prop": {
+        "x": 175,
+        "y": 325,
+        "width": 60,
+        "height": 30
+      }
+    }
+  ],
+  "notes" : [{
+    "displayName": "Reaction",
+    "renderableClass": "Note",
+    "position": {
+      "x": 130,
+      "y": 360
+    },
+    "prop": {
+      "x": 130,
+      "y": 360,
+      "width": 60,
+      "height": 30
+    }
+  }],
+  "edges": [
+    {
+      "displayName": "Transition/Process",
+      "renderableClass": "Reaction",
+      "segments": [
+        {
+          "from": {
+            "x": 70,
+            "y": 320
+          },
+          "to": {
+            "x": 100,
+            "y": 340
+          }
+        },{
+          "from": {
+            "x": 70,
+            "y": 355
+          },
+          "to": {
+            "x": 100,
+            "y": 340
+          }
+        },{
+          "from": {
+            "x": 100,
+            "y": 340
+          },
+          "to": {
+            "x": 120,
+            "y": 340
+          }
+        },
+        {
+          "from": {
+            "x": 130,
+            "y": 340
+          },
+          "to": {
+            "x": 175,
+            "y": 340
+          }
+        }
+      ],
+      "reactionShape": {
+        "a": {
+          "x": 120,
+          "y": 335
+        },
+        "b": {
+          "x": 130,
+          "y": 345
+        },
+        "type": "BOX",
+        "empty": true
+      },
+      "endShape" : {
+        "a" : {
+          "x" : 170,
+          "y" : 335
+        },
+        "b" : {
+          "x" : 175,
+          "y" : 340
+        },
+        "c" : {
+          "x" : 170,
+          "y" : 345
+        },
+        "type" : "ARROW"
+      }
+    }
+  ]
+}

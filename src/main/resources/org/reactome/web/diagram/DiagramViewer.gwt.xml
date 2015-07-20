@@ -13,7 +13,6 @@
     <source path="handlers"/>
     <source path="launcher"/>
     <source path="legends"/>
-    <source path="menu"/>
     <source path="messages"/>
     <source path="profiles"/>
     <source path="renderers"/>

@@ -8,6 +8,7 @@ import com.google.gwt.i18n.client.NumberFormat;
  */
 public abstract class RendererProperties {
     private static NumberFormat myFormatter = NumberFormat.getFormat(".##");
+    private static double FACTOR;
 
     static {
         setFactor(1.0);
@@ -30,11 +31,11 @@ public abstract class RendererProperties {
     public static double NODE_TEXT_PADDING;
     public static double NODE_LINE_WIDTH;
 
-    public static void setFactor(double factor){
+    public static void setFactor(double factor) {
+        FACTOR = factor;
         ARROW_LENGTH = 8 * factor;
         DASHED_LINE_PATTERN = new double[]{5.0d * factor, 5.0d * factor};
         EDGE_TYPE_WIDGET_WIDTH = 12 * factor;
-        ROUND_RECT_ARC_WIDTH = 6 * factor;
         ROUND_RECT_ARC_WIDTH = 6 * factor;
         COMPLEX_RECT_ARC_WIDTH = 6 * factor;
         RNA_LOOP_WIDTH = 16 * factor;
@@ -44,11 +45,15 @@ public abstract class RendererProperties {
         PROCESS_NODE_INSET_WIDTH = 10 * factor;
         NODE_TEXT_PADDING = 10 * factor;
         WIDGET_FONT_SIZE = 9 * factor;
-        if(WIDGET_FONT_SIZE>MAX_WIDGET_FONT_SIZE) {
+        if (WIDGET_FONT_SIZE > MAX_WIDGET_FONT_SIZE) {
             WIDGET_FONT_SIZE = MAX_WIDGET_FONT_SIZE;
         }
         NOTE_FONT_SIZE = 10 * factor;
         NODE_LINE_WIDTH = 2 * factor;
+    }
+
+    public static double getFactor() {
+        return FACTOR;
     }
 
     public static String getFont(double fontSize) {

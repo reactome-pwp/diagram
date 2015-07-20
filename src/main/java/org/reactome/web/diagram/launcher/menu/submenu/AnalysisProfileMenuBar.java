@@ -1,28 +1,27 @@
-package org.reactome.web.diagram.menu.submenu;
+package org.reactome.web.diagram.launcher.menu.submenu;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.MenuItem;
-import org.reactome.web.diagram.profiles.diagram.DiagramColours;
-import org.reactome.web.diagram.profiles.diagram.model.DiagramProfile;
-
+import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
+import org.reactome.web.diagram.profiles.analysis.model.AnalysisProfile;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class DiagramProfileMenuBar extends SubMenuBar{
+public class AnalysisProfileMenuBar extends SubMenuBar{
 
-    public interface DiagramProfileColourChangedHandler {
-        void onDiagramProfileColourChanged(DiagramProfile profile);
+    public interface AnalysisProfileColourChangedHandler {
+        void onAnalysisProfileColourChanged(AnalysisProfile profile);
     }
 
-    public DiagramProfileMenuBar(final DiagramProfileColourChangedHandler handler) {
+    public AnalysisProfileMenuBar(final AnalysisProfileColourChangedHandler handler) {
         super(true);
         setAnimationEnabled(true);
 
-        String selected = DiagramColours.get().getSelectedProfileName();
-        for (final String name : DiagramColours.ProfileType.getProfiles()) {
+        String selected = AnalysisColours.get().getSelectedProfileName();
+        for (final String name : AnalysisColours.ProfileType.getProfiles()) {
             final MenuItem item = new MenuItem(new SafeHtmlBuilder().appendEscaped(name).toSafeHtml());
 
             if(name.equals(selected)){
@@ -40,8 +39,8 @@ public class DiagramProfileMenuBar extends SubMenuBar{
                         }
                         flagItemAsSelected(item);
 
-                        DiagramProfile p = DiagramColours.ProfileType.getByName(name).getDiagramProfile();
-                        handler.onDiagramProfileColourChanged(p);
+                        AnalysisProfile p = AnalysisColours.ProfileType.getByName(name).getAnalysisProfile();
+                        handler.onAnalysisProfileColourChanged(p);
                     }
                 }
             });

@@ -1,0 +1,53 @@
+.diagramKeyPanel {
+    background-color: white;
+    position: absolute !important;
+    right: 0;
+    top: 40px;
+
+    -webkit-transition: max-height 0.3s;
+    -moz-transition: max-height 0.3s;
+    -ms-transition: max-height 0.3s;
+    -o-transition: max-height 0.3s;
+    transition: max-height 0.3s;
+
+    height: 0;
+    max-height: 0;
+
+    opacity: 0.90;
+}
+
+.diagramKeyPanel span {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.diagramKeyPanelExpanded {
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+
+    border: 2px solid rgba(88, 195, 229, 0.8);
+    border-radius: 16px;
+    width: 200px;
+    height: 542px;
+    max-height: 542px;
+}
+
+@sprite .close {
+    gwt-image:'closeNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: right;
+    margin: 2px 5px;
+}
+
+@sprite .close:hover {
+    gwt-image:'closeHovered';
+}
+
+@sprite .close:active:hover {
+    margin: 3px 7px;
+    gwt-image: 'closeClicked';
+}

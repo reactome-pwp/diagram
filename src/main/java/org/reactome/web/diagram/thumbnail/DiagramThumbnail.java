@@ -48,7 +48,7 @@ public class DiagramThumbnail extends AbsolutePanel implements DatabaseObjectSel
     private Canvas highlight;
     private Canvas selection;
     private Canvas frame;
-    private List<Canvas> canvases = new LinkedList<Canvas>();
+    private List<Canvas> canvases = new LinkedList<>();
 
     private EventBus eventBus;
 
