@@ -18,5 +18,6 @@
     <source path="renderers"/>
     <source path="search"/>
     <source path="thumbnail"/>
+    <source path="tooltips"/>
     <source path="util"/>
 </module>

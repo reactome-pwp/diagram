@@ -40,7 +40,7 @@ import org.reactome.web.diagram.renderers.helper.RenderType;
 import org.reactome.web.diagram.thumbnail.DiagramThumbnail;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 import org.reactome.web.diagram.util.MapSet;
-import org.reactome.web.diagram.util.TooltipContainer;
+import org.reactome.web.diagram.tooltips.TooltipContainer;
 import org.reactome.web.diagram.util.actions.UserActionsHandlers;
 import org.reactome.web.diagram.util.actions.UserActionsInstaller;
 
@@ -477,7 +477,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     }
 
     private TooltipContainer createToolTipContainer(int width, int height) {
-        TooltipContainer tooltipContainer = new TooltipContainer(width, height);
+        TooltipContainer tooltipContainer = new TooltipContainer(this.eventBus, width, height);
         this.add(tooltipContainer, 0, 0);
         return tooltipContainer;
     }
