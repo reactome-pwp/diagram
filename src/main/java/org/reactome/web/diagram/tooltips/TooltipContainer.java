@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
+import org.reactome.web.diagram.data.layout.impl.ShapeFactory;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 
@@ -15,6 +16,8 @@ import org.reactome.web.diagram.handlers.*;
  */
 public class TooltipContainer extends AbsolutePanel implements DiagramRequestedHandler, DiagramLoadedHandler,
         DatabaseObjectHoveredHandler, DiagramZoomHandler, DiagramPanningHandler {
+
+    private static final int DELAY = 500;
 
     private EventBus eventBus;
     private DiagramContext context;
@@ -39,9 +42,9 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     }
 
     private void initHandlers() {
-//        this.eventBus.addHandler(DatabaseObjectHoveredEvent.TYPE, this);
+        this.eventBus.addHandler(DatabaseObjectHoveredEvent.TYPE, this);
         this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
-//        this.eventBus.addHandler(DiagramPanningEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramPanningEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramZoomEvent.TYPE, this);
     }
@@ -56,14 +59,15 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
 
     @Override
     public void onDatabaseObjectHovered(DatabaseObjectHoveredEvent event) {
+        //TODO
         this.hovered = !event.getHoveredObjects().isEmpty() ? event.getHoveredObjects().get(0) : null;
-        if(this.hovered == null) {
+        if (this.hovered == null) {
             showTooltipExecute(); //this will quickly hide the tooltip ;)
-        }else{
-            if(this.hoveredTimer.isRunning()){
+        } else {
+            if (this.hoveredTimer.isRunning()) {
                 this.hoveredTimer.cancel();
             }
-            this.hoveredTimer.schedule(500);
+            this.hoveredTimer.schedule(DELAY);
         }
     }
 
@@ -76,7 +80,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     public void onDiagramPanningEvent(DiagramPanningEvent event) {
 //        showTooltip();
         Tooltip tooltip = Tooltip.getTooltip(hovered);
-        if(tooltip.isVisible()) {
+        if (tooltip.isVisible()) {
             tooltip.hide();
         }
     }
@@ -101,7 +105,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
         this.height = height;
     }
 
-    private void showTooltip(){
+    private void showTooltip() {
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
@@ -110,21 +114,23 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
         });
     }
 
-    private void showTooltipExecute(){
+    private void showTooltipExecute() {
         double factor = context.getDiagramStatus().getFactor();
         Tooltip tooltip = Tooltip.getTooltip(hovered);
-        if(hovered==null || factor > 1.0) {
+        if (hovered == null) {
             tooltip.hide();
-        }else{
+        } else {
             Coordinate offset = context.getDiagramStatus().getOffset();
-            if(hovered instanceof Node){
+            if (hovered instanceof Node) {
+                if (factor > 1.0) return;
                 Node node = (Node) hovered;
                 NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
                 tooltip.setPositionAndShow(this, prop.getX(), prop.getY(), prop.getHeight());
-            }else if(hovered instanceof Edge){
+            } else if (hovered instanceof Edge) {
                 Edge edge = (Edge) hovered;
-                //TODO
-            }else {
+                Shape shape = ShapeFactory.transform(edge.getReactionShape(), factor, offset);
+                tooltip.setPositionAndShow(this, shape.getA().getX(), shape.getA().getY(), shape.getB().getY() - shape.getA().getY());
+            } else {
                 tooltip.hide(); //just in case :)
             }
         }
