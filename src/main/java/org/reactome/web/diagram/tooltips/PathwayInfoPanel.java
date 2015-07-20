@@ -7,6 +7,7 @@ import org.reactome.web.diagram.data.layout.DiagramObject;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@Deprecated
 class PathwayInfoPanel extends Composite {
 
     PathwayInfoPanel(DiagramObject pathway) {

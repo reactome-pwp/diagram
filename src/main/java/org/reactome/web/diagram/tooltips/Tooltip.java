@@ -1,16 +1,13 @@
 package org.reactome.web.diagram.tooltips;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.CanvasElement;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.util.DiagramStyleFactory;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -20,14 +17,20 @@ public class Tooltip extends PopupPanel {
 
     private boolean preventShowing = false;
 
-    public static Tooltip getTooltip(){
-        if(tooltip==null){
+    private Tooltip() {
+        this.setStyleName(RESOURCES.getCSS().popup());
+    }
+
+    public static Tooltip getTooltip(DiagramObject item) {
+        if (tooltip == null) {
             tooltip = new Tooltip();
         }
+        tooltip.clear();
+        tooltip.add(new InlineLabel(item != null ? item.getDisplayName() : ""));
         return tooltip;
     }
 
-    public void hide(){
+    public void hide() {
         setVisible(false);
     }
 
@@ -35,61 +38,30 @@ public class Tooltip extends PopupPanel {
     public void add(Widget w) {
         this.clear();
         super.add(w);
-        this.setStyleName(RESOURCES.getCSS().popup());
     }
 
-    public void show(final TooltipContainer container, final DiagramObject diagramObject) {
-        if(preventShowing) return; //If the node is not visible, preventShowing has to be set to false previously
 
-        this.add(new PathwayInfoPanel(diagramObject));
-        container.add(this, -1000, -1000); //Adding it where is not visible
+    public void setPositionAndShow(TooltipContainer container, double offsetX, double offsetY, double height) {
+
         container.getElement().appendChild(this.getElement());
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
 
-                setPositionAndShow(container, diagramObject.getPosition().getX().intValue(), diagramObject.getPosition().getY().intValue(), 1.0);
-            }
-        });
-    }
-
-    public void setPositionAndShow(TooltipContainer container, int offsetX, int offsetY, double nodeSize) {
         this.setVisible(true);
-        int left; int top; int size = (int) Math.ceil(nodeSize) + 4;
-        if(offsetX < container.getWidth()/2) {
-            left = offsetX - 12;
-            if((offsetY - size) < 50){
-                top = offsetY + size;
-                this.addStyleName(RESOURCES.getCSS().popupTopLeft());
-            }else{
-                top = offsetY - getOffsetHeight() - size;
-                this.addStyleName(RESOURCES.getCSS().popupBottomLeft());
-            }
-        }else{
-            left = offsetX - getOffsetWidth() + 12;
-            if((offsetY - size) < 50){
-                top = offsetY + size;
-                this.addStyleName(RESOURCES.getCSS().popupTopRight());
-            }else{
-                top = offsetY - getOffsetHeight() - size;
-                this.addStyleName(RESOURCES.getCSS().popupBottomRight());
-            }
-        }
-        this.setPosition(left, top);
+        this.setPosition((int) offsetX, (int) (offsetY + height));
     }
 
     public void setPreventShowing(boolean preventShowing) {
         this.preventShowing = preventShowing;
-        if(preventShowing && isVisible()) this.hide();
+        if (preventShowing && isVisible()) this.hide();
     }
 
-    private void setPosition(int left, int top){
+    private void setPosition(int left, int top) {
         Element elem = getElement();
         elem.getStyle().setPropertyPx("left", left);
         elem.getStyle().setPropertyPx("top", top);
     }
 
     public static Resources RESOURCES;
+
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
