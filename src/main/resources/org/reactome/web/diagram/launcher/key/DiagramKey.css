@@ -2,7 +2,7 @@
     background-color: white;
     position: absolute !important;
     right: 0;
-    top: 50px;
+    top: 40px;
 
     -webkit-transition: max-height 0.3s;
     -moz-transition: max-height 0.3s;
@@ -13,7 +13,7 @@
     height: 0;
     max-height: 0;
 
-    opacity: 0.95;
+    opacity: 0.90;
 }
 
 .diagramKeyPanel span {
@@ -28,9 +28,9 @@
 
     border: 2px solid rgba(88, 195, 229, 0.8);
     border-radius: 16px;
-    width: 225px;
-    height: 575px;
-    max-height: 575px;
+    width: 200px;
+    height: 542px;
+    max-height: 542px;
 }
 
 @sprite .close {

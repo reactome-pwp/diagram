@@ -44,7 +44,7 @@ import java.util.List;
 public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHandler, DatabaseObjectSelectedHandler,
         DiagramRequestedHandler, DiagramProfileChangedHandler, ClickHandler {
 
-    private static final Double FACTOR = 0.9;
+    private static final Double FACTOR = 0.82;
     private static final Coordinate OFFSET = CoordinateFactory.get(0, 0);
 
     private EventBus eventBus;
@@ -65,11 +65,11 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
         this.add(new InlineLabel("Diagram key"), 20, 5);
         this.add(new ControlButton("Close", RESOURCES.getCSS().close(), this));
 
-        this.hover = this.createCanvas(225, 360);
-        this.items = this.createCanvas(225, 360);
-        this.selection = this.createCanvas(225, 360);
+        this.hover = this.createCanvas(200, 315);
+        this.items = this.createCanvas(200, 315);
+        this.selection = this.createCanvas(200, 315);
 
-        this.add(new Image(RESOURCES.diagramKey()), 30, 380);
+        this.add(new Image(RESOURCES.diagramKey()), 0, 345);
         this.setVisible(false);
 
         try {
@@ -93,7 +93,7 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
                 renderer.setColourProperties(items, ColourProfileType.NORMAL);
                 renderer.draw(items, node, FACTOR, OFFSET);
                 renderer.setTextProperties(items, ColourProfileType.NORMAL);
-                items.setFont(RendererProperties.getFont(10));
+                items.setFont(RendererProperties.getFont(11));
                 renderer.drawText(items, node, FACTOR, OFFSET);
             } else {
                 Console.error(node.getRenderableClass());
