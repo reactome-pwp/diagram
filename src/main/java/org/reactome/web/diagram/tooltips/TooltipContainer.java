@@ -15,7 +15,8 @@ import org.reactome.web.diagram.handlers.*;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class TooltipContainer extends AbsolutePanel implements DiagramRequestedHandler, DiagramLoadedHandler,
-        DatabaseObjectHoveredHandler, DiagramZoomHandler, DiagramPanningHandler {
+        DatabaseObjectHoveredHandler, DatabaseObjectSelectedHandler,
+        DiagramZoomHandler, DiagramPanningHandler {
 
     private static final int DELAY = 500;
     private static final double ZOOM_THRESHOLD = 1.2;
@@ -44,6 +45,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
 
     private void initHandlers() {
         this.eventBus.addHandler(DatabaseObjectHoveredEvent.TYPE, this);
+        this.eventBus.addHandler(DatabaseObjectSelectedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramPanningEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
@@ -72,13 +74,23 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     }
 
     @Override
+    public void onDatabaseObjectSelected(DatabaseObjectSelectedEvent event) {
+        Tooltip tooltip = Tooltip.getTooltip(hovered);
+        if (tooltip.isVisible()) {
+            if (this.hovered != null && !this.hovered.getDatabaseObject().equals(event.getDatabaseObject())) {
+                this.hovered = null;
+                tooltip.hide();
+            }
+        }
+    }
+
+    @Override
     public void onDiagramLoaded(DiagramLoadedEvent event) {
         this.context = event.getContext();
     }
 
     @Override
     public void onDiagramPanningEvent(DiagramPanningEvent event) {
-//        showTooltip();
         Tooltip tooltip = Tooltip.getTooltip(hovered);
         if (tooltip.isVisible()) {
             tooltip.hide();
@@ -115,12 +127,12 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     }
 
     private void showTooltipExecute() {
-        double factor = context.getDiagramStatus().getFactor();
         Tooltip tooltip = Tooltip.getTooltip(hovered);
-        if (hovered == null) {
+        if (hovered == null || context == null) {
             tooltip.hide();
         } else {
             Coordinate offset = context.getDiagramStatus().getOffset();
+            double factor = context.getDiagramStatus().getFactor();
             if (hovered instanceof Node) {
                 if (factor > ZOOM_THRESHOLD) {
                     tooltip.hide();
