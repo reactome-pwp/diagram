@@ -147,6 +147,7 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
                 Renderer renderer = RendererManager.get().getDiagramKeyRenderer(node);
                 if (renderer != null) {
                     renderer.highlight(ctx, node, FACTOR, OFFSET);
+                    break;
                 }
             }
         }
@@ -158,6 +159,7 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
                     ctx.setLineWidth(ctx.getLineWidth()/1.5);
                     renderer.draw(ctx, edge, FACTOR, OFFSET);
                     ctx.restore();
+                    break;
                 }
             }
         }
