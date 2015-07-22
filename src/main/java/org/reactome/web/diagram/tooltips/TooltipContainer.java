@@ -144,7 +144,23 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
             } else if (hovered instanceof Edge) {
                 Edge edge = (Edge) hovered;
                 Shape shape = ShapeFactory.transform(edge.getReactionShape(), factor, offset);
-                tooltip.setPositionAndShow(this, shape.getA().getX(), shape.getA().getY(), (shape.getB().getY() - shape.getA().getY()) + 8.0 * factor);
+                String type = shape.getType();
+                if (type.equals("BOX")) {
+                    tooltip.setPositionAndShow(
+                            this,
+                            shape.getA().getX(),
+                            shape.getA().getY(),
+                            (shape.getB().getY() - shape.getA().getY()) + 8.0 * factor
+                    );
+                }else if(type.equals("CIRCLE") || type.equals("DOUBLE_CIRCLE")){
+                    tooltip.setPositionAndShow(
+                            this,
+                            shape.getC().getX() - shape.getR(),
+                            shape.getC().getY(),
+                            shape.getR() + 8.0 * factor
+                    );
+                }
+
             } else {
                 tooltip.hide(); //just in case :)
             }
