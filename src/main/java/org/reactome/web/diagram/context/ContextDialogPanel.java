@@ -73,6 +73,10 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
         }
     }
 
+    public void restore(){
+        if(this.pinned) this.show();
+    }
+
 
     public static Resources RESOURCES;
     static {

@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.data;
 
+import org.reactome.web.diagram.context.ContextDialogPanel;
 import org.reactome.web.diagram.data.analysis.*;
 import org.reactome.web.diagram.data.graph.model.DatabaseObject;
 import org.reactome.web.diagram.data.graph.model.Pathway;
@@ -11,9 +12,7 @@ import org.reactome.web.diagram.util.MapSet;
 import uk.ac.ebi.pwp.structures.quadtree.model.Box;
 import uk.ac.ebi.pwp.structures.quadtree.model.QuadTree2D;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -27,6 +26,8 @@ public class DiagramContext {
     private DiagramStatus diagramStatus;
     private QuadTree2D<DiagramObject> quadTree;
     private AnalysisStatus analysisStatus;
+
+    private Map<DatabaseObject, ContextDialogPanel> dialogMap = new HashMap<>();
 
     public DiagramContext(DiagramContent content) {
         this.content = content;
@@ -122,6 +123,27 @@ public class DiagramContext {
             return ColourProfileType.NORMAL;
         } else {
             return ColourProfileType.FADE_OUT;
+        }
+    }
+
+    public void hideDialogs(){
+        for (ContextDialogPanel dialogPanel : dialogMap.values()) {
+            dialogPanel.hide();
+        }
+    }
+
+    public void restoreDialogs(){
+        for (ContextDialogPanel dialogPanel : dialogMap.values()) {
+            dialogPanel.restore();
+        }
+    }
+
+    public void showDialog(DiagramObject item){
+        if(item==null) return;
+        if(!dialogMap.containsKey(item.getDatabaseObject())) {
+            dialogMap.put(item.getDatabaseObject(), new ContextDialogPanel(item));
+        }else{
+            dialogMap.get(item.getDatabaseObject()).show();
         }
     }
 
