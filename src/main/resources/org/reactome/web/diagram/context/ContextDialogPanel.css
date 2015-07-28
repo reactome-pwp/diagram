@@ -18,7 +18,7 @@
 }
 
 .header:hover{
-    cursor: pointer !important;
+    cursor: move !important;
 }
 
 .header:active:hover{

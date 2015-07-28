@@ -111,7 +111,8 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
 
     @CssResource.ImportedWithPrefix("diagram-ContextPopupPanel")
     public interface ResourceCSS extends CssResource {
-        String CSS = "org/reactome/web/diagram/context/ContextPopupPanel.css";
+
+        String CSS = "org/reactome/web/diagram/context/ContextDialogPanel.css";
 
         String popup();
 
