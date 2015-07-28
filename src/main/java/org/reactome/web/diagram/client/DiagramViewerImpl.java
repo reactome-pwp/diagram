@@ -3,6 +3,7 @@ package org.reactome.web.diagram.client;
 import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.*;
@@ -11,6 +12,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import org.reactome.web.diagram.common.DiagramAnimationHandler;
 import org.reactome.web.diagram.common.DisplayManager;
+import org.reactome.web.diagram.context.ContextDialogPanel;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DatabaseObjectFactory;
 import org.reactome.web.diagram.data.DiagramContext;
@@ -353,6 +355,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onClick(ClickEvent event) {
+        event.preventDefault(); event.stopPropagation();
         if (!this.diagramMoved) {
             DiagramObject item = this.getHovered(this.mouseCurrent);
             DatabaseObject toSel = item != null ? item.getDatabaseObject() : null;
@@ -370,12 +373,27 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         }
     }
 
+    Map<DatabaseObject, ContextDialogPanel> popupMap = new HashMap<>();
+
     @Override
     public void onMouseDown(MouseDownEvent event) {
+        event.stopPropagation(); event.preventDefault();
         this.diagramMoved = false;
-        event.stopPropagation();
-        event.preventDefault();
-        setMouseDownPosition(event.getRelativeElement(), event);
+        int button = event.getNativeEvent().getButton();
+        switch (button) {
+            case NativeEvent.BUTTON_RIGHT:
+                DiagramObject item = this.getHovered(this.mouseCurrent);
+                if (item != null) {
+                    if(!popupMap.containsKey(item.getDatabaseObject())) {
+                        popupMap.put(item.getDatabaseObject(), new ContextDialogPanel(item));
+                    }else{
+                        popupMap.get(item.getDatabaseObject()).show();
+                    }
+                }
+                break;
+            default:
+                setMouseDownPosition(event.getRelativeElement(), event);
+        }
     }
 
     @Override
@@ -399,6 +417,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onMouseUp(MouseUpEvent event) {
+        event.stopPropagation(); event.preventDefault();
         this.canvas.setCursor(hovered == null ? Style.Cursor.DEFAULT : Style.Cursor.POINTER);
         this.mouseDown = null;
     }

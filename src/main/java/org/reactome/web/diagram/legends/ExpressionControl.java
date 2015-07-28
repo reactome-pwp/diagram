@@ -7,6 +7,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.InlineLabel;
+import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.analysis.ExpressionSummary;
 import org.reactome.web.diagram.events.*;
@@ -37,12 +38,12 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
     private int currentCol = 0;
     private Timer timer;
 
-    private ControlButton rewindBtn;
-    private ControlButton playBtn;
-    private ControlButton pauseBtn;
-    private ControlButton forwardBtn;
+    private PwpButton rewindBtn;
+    private PwpButton playBtn;
+    private PwpButton pauseBtn;
+    private PwpButton forwardBtn;
     private SpeedButton speedBtn;
-    private ControlButton closeBtn;
+    private PwpButton closeBtn;
     private Slider slider;
 
     public ExpressionControl(EventBus eventBus) {
@@ -53,17 +54,17 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
         addStyleName(css.analysisControl());
         addStyleName(css.expressionControl());
 
-        this.rewindBtn = new ControlButton("Show previous", css.rewind(), this);
+        this.rewindBtn = new PwpButton("Show previous", css.rewind(), this);
         this.add(this.rewindBtn);
 
-        this.playBtn = new ControlButton("Play", css.play(), this);
+        this.playBtn = new PwpButton("Play", css.play(), this);
         this.add(this.playBtn);
 
-        this.pauseBtn = new ControlButton("Pause", css.pause(), this);
+        this.pauseBtn = new PwpButton("Pause", css.pause(), this);
         this.pauseBtn.setVisible(false);
         this.add(this.pauseBtn);
 
-        this.forwardBtn = new ControlButton("Show next", css.forward(), this);
+        this.forwardBtn = new PwpButton("Show next", css.forward(), this);
         this.add(this.forwardBtn);
 
         this.speedBtn = new SpeedButton(RESOURCES);
@@ -81,7 +82,7 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
         this.message = new InlineLabel();
         this.add(this.message);
 
-        this.closeBtn = new ControlButton("Close", css.close(), this);
+        this.closeBtn = new PwpButton("Close", css.close(), this);
         this.add(this.closeBtn);
 
         this.initHandlers();
@@ -91,21 +92,21 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
 
     @Override
     public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
-        if(!event.isReset() && event.getType().equals(AnalysisType.EXPRESSION)) {
+        if (!event.isReset() && event.getType().equals(AnalysisType.EXPRESSION)) {
             this.currentCol = 0;
             this.eventBus.fireEventFromSource(new ExpressionColumnChangedEvent(this.currentCol), this);
             this.expressionSummary = event.getExpressionSummary();
             this.setName();
             this.setVisible(true);
-        }else{
+        } else {
             this.setVisible(false);
         }
     }
 
     @Override
     public void onAnalysisReset(AnalysisResetEvent event) {
-        if(this.isVisible()) {
-            if(this.timer.isRunning()) pause();
+        if (this.isVisible()) {
+            if (this.timer.isRunning()) pause();
             this.message.setText("");
             this.expressionSummary = null;
             this.setVisible(false);
@@ -116,15 +117,15 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
     public void onClick(ClickEvent event) {
         Object source = event.getSource();
 
-        if(source.equals(this.closeBtn))
+        if (source.equals(this.closeBtn))
             eventBus.fireEventFromSource(new AnalysisResetEvent(), this);
-        else if(source.equals(this.rewindBtn))
+        else if (source.equals(this.rewindBtn))
             this.moveBackward();
-        else if(source.equals(this.playBtn))
+        else if (source.equals(this.playBtn))
             this.play();
-        else if(source.equals(this.pauseBtn))
+        else if (source.equals(this.pauseBtn))
             this.pause();
-        else if(source.equals(this.forwardBtn))
+        else if (source.equals(this.forwardBtn))
             this.moveForward();
     }
 
@@ -138,7 +139,7 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
     @Override
     public void onValueChange(ValueChangeEvent<Boolean> event) {
         SpeedButton source = (SpeedButton) event.getSource();
-        if(source.equals(this.speedBtn)){
+        if (source.equals(this.speedBtn)) {
             this.slider.setVisible(source.isDown());
         }
     }
@@ -146,7 +147,7 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
     @Override
     public void onSliderValueChanged(SliderValueChangedEvent event) {
         this.speed = (int) ((MAX_SPEED - MIN_SPEED) * event.getPercentage()) + MIN_SPEED;
-        if(this.timer.isRunning()) {
+        if (this.timer.isRunning()) {
             this.timer.cancel();
             this.timer.scheduleRepeating(this.speed);
         }
@@ -161,27 +162,27 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
         };
     }
 
-    private void moveBackward(){
-        if(this.currentCol == 0){
+    private void moveBackward() {
+        if (this.currentCol == 0) {
             this.currentCol = this.expressionSummary.getColumnNames().size() - 1;
-        }else{
+        } else {
             this.currentCol -= 1;
         }
         this.setName();
         this.eventBus.fireEventFromSource(new ExpressionColumnChangedEvent(this.currentCol), this);
     }
 
-    private void moveForward(){
-        if(this.currentCol == this.expressionSummary.getColumnNames().size() - 1){
+    private void moveForward() {
+        if (this.currentCol == this.expressionSummary.getColumnNames().size() - 1) {
             this.currentCol = 0;
-        }else{
+        } else {
             this.currentCol += 1;
         }
         this.setName();
         this.eventBus.fireEventFromSource(new ExpressionColumnChangedEvent(this.currentCol), this);
     }
 
-    private void pause(){
+    private void pause() {
         this.rewindBtn.setEnabled(true);
         this.forwardBtn.setEnabled(true);
         this.speedBtn.setDown(false);
@@ -191,12 +192,12 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
         this.pauseBtn.setVisible(false);
         this.playBtn.setVisible(true);
 
-        if(this.timer.isRunning()) {
+        if (this.timer.isRunning()) {
             this.timer.cancel();
         }
     }
 
-    private void play(){
+    private void play() {
         this.rewindBtn.setEnabled(false);
         this.forwardBtn.setEnabled(false);
         this.speedBtn.enable();
@@ -208,7 +209,7 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
         this.timer.scheduleRepeating(this.speed);
     }
 
-    private void setName(){
+    private void setName() {
         List<String> cols = this.expressionSummary.getColumnNames();
         String pos = (this.currentCol + 1) + "/" + cols.size();
         String name = cols.get(this.currentCol);

@@ -4,6 +4,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.InlineLabel;
+import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.events.AnalysisResetEvent;
 import org.reactome.web.diagram.events.AnalysisResultLoadedEvent;
 import org.reactome.web.diagram.events.AnalysisResultRequestedEvent;
@@ -22,7 +23,7 @@ public class EnrichmentControl extends LegendPanel implements ClickHandler,
         DiagramRequestedHandler {
 
     private InlineLabel message;
-    private ControlButton closeBtn;
+    private PwpButton closeBtn;
 
     public EnrichmentControl(final EventBus eventBus) {
         super(eventBus);
@@ -35,7 +36,7 @@ public class EnrichmentControl extends LegendPanel implements ClickHandler,
         this.message = new InlineLabel();
         this.add(this.message);
 
-        this.closeBtn = new ControlButton("Close", css.close(), this);
+        this.closeBtn = new PwpButton("Close", css.close(), this);
         this.add(this.closeBtn);
 
         this.initHandlers();

@@ -1,19 +1,17 @@
 package org.reactome.web.diagram.launcher.menu;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 import org.reactome.web.diagram.events.AnalysisProfileChangedEvent;
 import org.reactome.web.diagram.events.DiagramProfileChangedEvent;
-import org.reactome.web.diagram.launcher.LauncherButton;
 import org.reactome.web.diagram.launcher.menu.submenu.AnalysisProfileMenuBar;
 import org.reactome.web.diagram.launcher.menu.submenu.DiagramProfileMenuBar;
 import org.reactome.web.diagram.profiles.analysis.model.AnalysisProfile;
@@ -52,7 +50,7 @@ public class SettingsMenuPanel extends AbsolutePanel implements DiagramProfileMe
     }
 
 
-    public void showRelativeTo(LauncherButton btn){
+    public void showRelativeTo(Button btn){
         System.out.println("going");
         this.popupPanel.showRelativeTo(btn);
         System.out.println("gone");

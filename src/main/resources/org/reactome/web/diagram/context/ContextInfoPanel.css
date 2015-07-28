@@ -1,0 +1,40 @@
+.outerPanel {
+    float: left;
+}
+
+.buttonsPanel {
+    float: left;
+    width: 65px;
+}
+
+.buttonsPanel button {
+    color: white;
+    /*border-top: solid 1px white;*/
+    /*border-left: solid 2px white;*/
+    /*border-bottom: solid 1px white;*/
+    border-radius: 10px 0 0 10px;
+    background: none rgb(88, 195, 229);
+    font-size: x-small;
+    outline: none;
+    width: 65px;
+    height: 50px;
+}
+
+.buttonsPanel button:hover {
+    background: none rgb(30, 148, 208);
+}
+
+.buttonSelected {
+    background: none rgb(6, 107, 158) !important;
+}
+
+.container {
+    float: left;
+    width: 250px;
+    height: 150px;
+    overflow: hidden;
+}
+
+.contentPanel {
+
+}

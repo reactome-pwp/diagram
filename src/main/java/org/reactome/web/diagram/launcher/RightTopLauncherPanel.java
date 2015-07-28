@@ -8,6 +8,7 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
+import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.launcher.key.DiagramKey;
 import org.reactome.web.diagram.launcher.menu.SettingsMenuPanel;
 
@@ -19,8 +20,8 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
     private DiagramKey diagramKey;
     private SettingsMenuPanel settings;
 
-    private LauncherButton diagramKeyBtn;
-    private LauncherButton settingBtn;
+    private PwpButton diagramKeyBtn;
+    private PwpButton settingBtn;
 
 
     public RightTopLauncherPanel(EventBus eventBus) {
@@ -31,10 +32,10 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
 
         this.settings = new SettingsMenuPanel(eventBus);
 
-        this.diagramKeyBtn = new LauncherButton("Diagram key", RESOURCES.getCSS().key(), this);
+        this.diagramKeyBtn = new PwpButton("Diagram key", RESOURCES.getCSS().key(), this);
         this.add(this.diagramKeyBtn);
 
-        this.settingBtn = new LauncherButton("Settings", RESOURCES.getCSS().settings(), this);
+        this.settingBtn = new PwpButton("Settings", RESOURCES.getCSS().settings(), this);
         this.add(this.settingBtn);
 
         this.setVisible(true);
@@ -42,7 +43,7 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
 
     @Override
     public void onClick(ClickEvent event) {
-        LauncherButton btn = (LauncherButton) event.getSource();
+        PwpButton btn = (PwpButton) event.getSource();
         if(btn.equals(this.diagramKeyBtn)){
             this.diagramKey.setVisible(true);
         }else if(btn.equals(this.settingBtn)){

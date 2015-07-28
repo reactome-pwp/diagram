@@ -8,6 +8,7 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.events.ControlActionEvent;
 import org.reactome.web.diagram.events.DiagramLoadedEvent;
 import org.reactome.web.diagram.events.DiagramRequestedEvent;
@@ -15,7 +16,6 @@ import org.reactome.web.diagram.events.LayoutLoadedEvent;
 import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
 import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
 import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
-import org.reactome.web.diagram.launcher.LauncherButton;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -25,12 +25,12 @@ public class NavigationControlPanel extends AbsolutePanel implements ClickHandle
 
     protected EventBus eventBus;
 
-    private LauncherButton zoomIn;
-    private LauncherButton zoomOut;
-    private LauncherButton up;
-    private LauncherButton right;
-    private LauncherButton down;
-    private LauncherButton left;
+    private PwpButton zoomIn;
+    private PwpButton zoomOut;
+    private PwpButton up;
+    private PwpButton right;
+    private PwpButton down;
+    private PwpButton left;
 
     public NavigationControlPanel(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -42,18 +42,18 @@ public class NavigationControlPanel extends AbsolutePanel implements ClickHandle
 
         ControlPanelCSS css = RESOURCES.getCSS();
 
-        this.zoomIn = new LauncherButton("Zoom in", css.zoomIn(), this);
+        this.zoomIn = new PwpButton("Zoom in", css.zoomIn(), this);
         this.add(this.zoomIn);
-        this.zoomOut = new LauncherButton("Zoom out", css.zoomOut(), this);
+        this.zoomOut = new PwpButton("Zoom out", css.zoomOut(), this);
         this.add(this.zoomOut);
 
-        this.up = new LauncherButton("Move up", css.up(), this);
+        this.up = new PwpButton("Move up", css.up(), this);
         this.add(this.up);
-        this.left = new LauncherButton("Move left", css.left(), this);
+        this.left = new PwpButton("Move left", css.left(), this);
         this.add(this.left);
-        this.right = new LauncherButton("Move right", css.right(), this);
+        this.right = new PwpButton("Move right", css.right(), this);
         this.add(this.right);
-        this.down = new LauncherButton("Move down", css.down(), this);
+        this.down = new PwpButton("Move down", css.down(), this);
         this.add(this.down);
 
         this.setVisible(false);
@@ -62,7 +62,7 @@ public class NavigationControlPanel extends AbsolutePanel implements ClickHandle
     @Override
     public void onClick(ClickEvent event) {
         ControlAction action = ControlAction.NONE;
-        LauncherButton btn = (LauncherButton) event.getSource();
+        PwpButton btn = (PwpButton) event.getSource();
         if (btn.equals(this.zoomIn)) {
             action = ControlAction.ZOOM_IN;
         } else if (btn.equals(this.zoomOut)) {

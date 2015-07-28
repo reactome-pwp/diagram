@@ -8,6 +8,7 @@
 
     <source path="client"/>
     <source path="common"/>
+    <source path="context"/>
     <source path="data"/>
     <source path="events"/>
     <source path="handlers"/>

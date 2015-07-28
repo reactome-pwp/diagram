@@ -4,6 +4,8 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ContextMenuEvent;
+import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.RequiresResize;
@@ -462,6 +464,14 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
     private AdvancedContext2d createCanvas(int width, int height) {
         Canvas canvas = Canvas.createIfSupported();
+        //We need to avoid the default context menu for the canvases
+        canvas.addDomHandler(new ContextMenuHandler() {
+            @Override
+            public void onContextMenu(ContextMenuEvent event) {
+                event.preventDefault(); event.stopPropagation();
+            }
+        }, ContextMenuEvent.getType());
+        //Not used in this implementation but useful to apply styles from the outside
         canvas.getElement().addClassName("pwp-DiagramCanvas");
         this.setCanvasProperties(canvas, width, height);
         this.add(canvas, 0, 0);

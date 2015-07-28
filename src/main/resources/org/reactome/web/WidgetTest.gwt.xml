@@ -17,6 +17,6 @@
   <!--<set-property name="compiler.useSourceMaps" value="true" />-->
 
   <!-- Specify the paths for translatable code                    -->
-  <source path='fireworks'/>
+  <source path='diagram'/>
   <source path='test'/>
 </module>

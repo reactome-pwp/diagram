@@ -1,0 +1,91 @@
+.popup {
+    background: -webkit-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* Standard syntax */
+    opacity: 0.95;
+    color: white;
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+    padding: 2px;
+    border-radius: 15px;
+    border: solid 2px rgb(7, 133, 171);
+}
+
+.header {
+    margin: 0 0 2px 4px;
+}
+
+.header:hover{
+    cursor: pointer !important;
+}
+
+.header:active:hover{
+    cursor: move !important;
+}
+
+.header button {
+    float: right;
+}
+
+.headerText {
+    float: left;
+    color: rgb(0, 90, 117);
+    font-weight: bolder;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    width: 265px;
+}
+
+
+@sprite .pin {
+    float: right;
+    gwt-image: 'pinNormal';
+    outline: none;
+    background-repeat: no-repeat;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 30px;
+}
+
+@sprite .pin:hover {
+    gwt-image: 'pinHovered';
+}
+
+@sprite .pinActive, .pin:active:hover {
+    gwt-image: 'pinClicked' !important;
+    outline: none;
+    background-repeat: no-repeat;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 30px;
+}
+
+@sprite .close {
+    gwt-image: 'closeNormal';
+    outline: none;
+    background-repeat: no-repeat;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    margin-right: 5px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+@sprite .close:hover {
+    gwt-image: 'closeHovered';
+}
+
+@sprite .close:active:hover {
+    gwt-image: 'closeClicked';
+}

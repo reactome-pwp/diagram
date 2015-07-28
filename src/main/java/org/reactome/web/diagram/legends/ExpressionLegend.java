@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.analysis.ExpressionSummary;
 import org.reactome.web.diagram.data.graph.model.Complex;
 import org.reactome.web.diagram.data.graph.model.DatabaseObject;
@@ -307,7 +308,7 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
 
     private void addHelp(){
         LegendPanelCSS css = RESOURCES.getCSS();
-        ControlButton helpBtn = new ControlButton("Show help", css.help(), this);
+        PwpButton helpBtn = new PwpButton("Show help", css.help(), this);
         helpBtn.addMouseOverHandler(this);
         helpBtn.addMouseOutHandler(this);
         this.add(helpBtn, 12, 248);

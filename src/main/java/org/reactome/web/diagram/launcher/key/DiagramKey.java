@@ -12,7 +12,10 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
+import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.graph.model.DatabaseObject;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.factory.DiagramObjectException;
@@ -26,7 +29,6 @@ import org.reactome.web.diagram.handlers.DatabaseObjectHoveredHandler;
 import org.reactome.web.diagram.handlers.DatabaseObjectSelectedHandler;
 import org.reactome.web.diagram.handlers.DiagramProfileChangedHandler;
 import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
-import org.reactome.web.diagram.legends.ControlButton;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.Renderer;
 import org.reactome.web.diagram.renderers.RendererManager;
@@ -63,7 +65,7 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
         this.initHandlers();
 
         this.add(new InlineLabel("Diagram key"), 20, 5);
-        this.add(new ControlButton("Close", RESOURCES.getCSS().close(), this));
+        this.add(new PwpButton("Close", RESOURCES.getCSS().close(), this));
 
         this.hover = this.createCanvas(200, 315);
         this.items = this.createCanvas(200, 315);

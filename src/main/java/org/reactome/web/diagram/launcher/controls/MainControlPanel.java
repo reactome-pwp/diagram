@@ -8,8 +8,8 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
+import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.events.ControlActionEvent;
-import org.reactome.web.diagram.launcher.LauncherButton;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -17,15 +17,15 @@ import org.reactome.web.diagram.launcher.LauncherButton;
 public class MainControlPanel extends FlowPanel implements ClickHandler {
 
     private EventBus eventBus;
-    private LauncherButton fitAll;
-    private LauncherButton fireworks;
+    private PwpButton fitAll;
+    private PwpButton fireworks;
 
     public MainControlPanel(EventBus eventBus) {
         this.eventBus = eventBus;
 
         this.addStyleName(RESOURCES.getCSS().mainControlPanel());
-        this.fitAll = new LauncherButton("Show all", RESOURCES.getCSS().fitall(), this);
-        this.fireworks = new LauncherButton("Pathway overview", RESOURCES.getCSS().fireworks(), this);
+        this.fitAll = new PwpButton("Show all", RESOURCES.getCSS().fitall(), this);
+        this.fireworks = new PwpButton("Pathway overview", RESOURCES.getCSS().fireworks(), this);
 
         this.add(this.fitAll);
         this.add(this.fireworks);
@@ -33,7 +33,7 @@ public class MainControlPanel extends FlowPanel implements ClickHandler {
 
     @Override
     public void onClick(ClickEvent event) {
-        LauncherButton btn = (LauncherButton) event.getSource();
+        PwpButton btn = (PwpButton) event.getSource();
         if(btn.equals(this.fitAll)) {
             this.eventBus.fireEventFromSource(new ControlActionEvent(ControlAction.FIT_ALL), this);
         }else if(btn.equals(this.fireworks)){
