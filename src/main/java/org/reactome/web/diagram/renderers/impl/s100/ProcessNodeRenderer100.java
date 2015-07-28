@@ -1,6 +1,6 @@
 package org.reactome.web.diagram.renderers.impl.s100;
 
-import org.reactome.web.diagram.data.graph.model.Pathway;
+import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -62,7 +62,7 @@ public class ProcessNodeRenderer100 extends ProcessNodeAbstractRenderer {
         ctx.stroke();
         ctx.restore();
 
-        Pathway pathway = node.getDatabaseObject();
+        GraphPathway pathway = node.getGraphObject();
         ctx.beginPath();
         ctx.fillRect(
                 prop.getX(),

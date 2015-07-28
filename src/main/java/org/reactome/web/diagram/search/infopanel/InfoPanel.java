@@ -5,9 +5,9 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.*;
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
-import org.reactome.web.diagram.data.graph.model.PhysicalEntity;
-import org.reactome.web.diagram.data.graph.model.ReactionLikeEvent;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.graph.model.GraphReactionLikeEvent;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class InfoPanel extends Composite {
 
-    DatabaseObject databaseObject;
+    GraphObject graphObject;
     EventBus eventBus;
     FlowPanel content;
 
@@ -29,9 +29,9 @@ public class InfoPanel extends Composite {
         OBJECT_INFO_RESOURCES.getCSS().ensureInjected();
     }
 
-    public InfoPanel(EventBus eventBus, DatabaseObject databaseObject) {
+    public InfoPanel(EventBus eventBus, GraphObject graphObject) {
         this.eventBus = eventBus;
-        this.databaseObject = databaseObject;
+        this.graphObject = graphObject;
         this.content = new FlowPanel();
 
         SuggestionPanelCSS css = OBJECT_INFO_RESOURCES.getCSS();
@@ -40,29 +40,29 @@ public class InfoPanel extends Composite {
         FlowPanel header = new FlowPanel();
         header.setStyleName(css.infoHeader());
 //        header.add(new Image(databaseObject.getImageResource()));
-        header.add(new InlineLabel(databaseObject.getDisplayName()));
+        header.add(new InlineLabel(graphObject.getDisplayName()));
         this.add(header);
 
-        this.add(new Label("Type: " + databaseObject.getClassName()));
-        if(databaseObject instanceof PhysicalEntity){
-            PhysicalEntity pe = (PhysicalEntity) databaseObject;
+        this.add(new Label("Type: " + graphObject.getClassName()));
+        if(graphObject instanceof GraphPhysicalEntity){
+            GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
             String mainId =  pe.getIdentifier();
             if(mainId!=null) {
                 this.add(new Label("Identifier: " + pe.getIdentifier()));
             }
         }
 
-        Collection<ReactionLikeEvent> participatesIn = new HashSet<ReactionLikeEvent>();
-        if(!databaseObject.getDiagramObjects().isEmpty()){
+        Collection<GraphReactionLikeEvent> participatesIn = new HashSet<>();
+        if(!graphObject.getDiagramObjects().isEmpty()){
             String title = "Directly in the diagram:";
-            this.add(new DatabaseObjectListPanel(title, Collections.singletonList(databaseObject), eventBus));
+            this.add(new DatabaseObjectListPanel(title, Collections.singletonList(graphObject), eventBus));
 
-            if(databaseObject instanceof PhysicalEntity) {
-                participatesIn = ((PhysicalEntity) databaseObject).participatesIn();
-            }else if(databaseObject instanceof ReactionLikeEvent){
+            if(graphObject instanceof GraphPhysicalEntity) {
+                participatesIn = ((GraphPhysicalEntity) graphObject).participatesIn();
+            }else if(graphObject instanceof GraphReactionLikeEvent){
                 //TODO encapsulate it into a method in ReactionLikeEvent
-                Collection<PhysicalEntity> rleParticipants = new HashSet<PhysicalEntity>();
-                ReactionLikeEvent rle = (ReactionLikeEvent) databaseObject;
+                Collection<GraphPhysicalEntity> rleParticipants = new HashSet<>();
+                GraphReactionLikeEvent rle = (GraphReactionLikeEvent) graphObject;
                 rleParticipants.addAll(rle.getInputs());
                 rleParticipants.addAll(rle.getOutputs());
                 rleParticipants.addAll(rle.getCatalysts());
@@ -78,15 +78,15 @@ public class InfoPanel extends Composite {
 
         }
 
-        if(databaseObject instanceof PhysicalEntity) {
-            PhysicalEntity pe = (PhysicalEntity) databaseObject;
-            Set<PhysicalEntity> parentLocations = pe.getParentLocations();
+        if(graphObject instanceof GraphPhysicalEntity) {
+            GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+            Set<GraphPhysicalEntity> parentLocations = pe.getParentLocations();
             if (!parentLocations.isEmpty()) {
                 int size = parentLocations.size();
                 String title = "Part of " + size + " structure" + (size>1?"s:":":");
                 this.add(new DatabaseObjectListPanel(title, parentLocations, eventBus));
 
-                for (PhysicalEntity aa : parentLocations) {
+                for (GraphPhysicalEntity aa : parentLocations) {
                     participatesIn.addAll(aa.participatesIn());
                 }
             }

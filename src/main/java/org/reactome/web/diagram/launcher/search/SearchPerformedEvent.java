@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.launcher.search;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 
 import java.util.List;
 
@@ -9,11 +9,11 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class SearchPerformedEvent extends GwtEvent<SearchPerformedHandler> {
-    public static Type<SearchPerformedHandler> TYPE = new Type<SearchPerformedHandler>();
+    public static Type<SearchPerformedHandler> TYPE = new Type<>();
 
-    private List<DatabaseObject> suggestions;
+    private List<GraphObject> suggestions;
 
-    public SearchPerformedEvent(List<DatabaseObject> suggestions) {
+    public SearchPerformedEvent(List<GraphObject> suggestions) {
         this.suggestions = suggestions;
     }
 
@@ -27,7 +27,7 @@ public class SearchPerformedEvent extends GwtEvent<SearchPerformedHandler> {
         handler.onSearchPerformed(this);
     }
 
-    public List<DatabaseObject> getSuggestions() {
+    public List<GraphObject> getSuggestions() {
         return suggestions;
     }
 }

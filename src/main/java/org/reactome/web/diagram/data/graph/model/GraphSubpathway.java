@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.data.graph.model;
 
 import com.google.gwt.resources.client.ImageResource;
-import org.reactome.web.diagram.data.graph.model.images.DatabaseObjectImages;
+import org.reactome.web.diagram.data.graph.model.images.GraphObjectImages;
 import org.reactome.web.diagram.data.graph.raw.SubpathwayRaw;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 
@@ -13,22 +13,22 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class Subpathway extends DatabaseObject {
+public class GraphSubpathway extends GraphObject {
 
-    private Set<ReactionLikeEvent> containedEvents = new HashSet<>();
+    private Set<GraphReactionLikeEvent> containedEvents = new HashSet<>();
 
-    public Subpathway(SubpathwayRaw subpathway) {
+    public GraphSubpathway(SubpathwayRaw subpathway) {
         super(subpathway);
     }
 
-    public void addContainedEvent(ReactionLikeEvent rle){
+    public void addContainedEvent(GraphReactionLikeEvent rle){
         this.containedEvents.add(rle);
     }
 
     @Override
     public List<DiagramObject> getDiagramObjects() {
         List<DiagramObject> rtn = new LinkedList<>();
-        for (ReactionLikeEvent event : containedEvents) {
+        for (GraphReactionLikeEvent event : containedEvents) {
             rtn.addAll(event.getDiagramObjects());
         }
         return rtn;
@@ -36,10 +36,10 @@ public class Subpathway extends DatabaseObject {
 
     @Override
     public ImageResource getImageResource() {
-        return DatabaseObjectImages.INSTANCE.pathway();
+        return GraphObjectImages.INSTANCE.pathway();
     }
 
-    public Set<ReactionLikeEvent> getContainedEvents() {
+    public Set<GraphReactionLikeEvent> getContainedEvents() {
         return containedEvents;
     }
 }

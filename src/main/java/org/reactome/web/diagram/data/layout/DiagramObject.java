@@ -1,6 +1,6 @@
 package org.reactome.web.diagram.data.layout;
 
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import uk.ac.ebi.pwp.structures.quadtree.interfaces.QuadTreeBox;
 
 /**
@@ -28,9 +28,9 @@ public interface DiagramObject extends QuadTreeBox {
 
     Boolean getIsFadeOut();
 
-    <T extends DatabaseObject> T getDatabaseObject();
+    <T extends GraphObject> T getGraphObject();
 
-    void setDatabaseObject(DatabaseObject obj);
+    void setGraphObject(GraphObject obj);
 
     void setSchemaClass(String schemaClass);
 

@@ -14,26 +14,26 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public abstract class DatabaseObject implements Comparable<DatabaseObject> {
+public abstract class GraphObject implements Comparable<GraphObject> {
     private Long dbId;
     private String stId;
     private String displayName;
     private String searchDisplay;
 
-    List<PhysicalEntity> parents = new LinkedList<>();
+    List<GraphPhysicalEntity> parents = new LinkedList<>();
 
     private List<DiagramObject> diagramObjects;
 
     protected List<Double> expression;
 
-    public DatabaseObject(GraphNode node) {
+    public GraphObject(GraphNode node) {
         this.dbId = node.getDbId();
         this.stId = node.getStId();
         this.displayName = node.getDisplayName();
         this.diagramObjects = new LinkedList<>();
     }
 
-    public DatabaseObject(SubpathwayRaw subpathway) {
+    public GraphObject(SubpathwayRaw subpathway) {
         this.dbId = subpathway.getDbId();
         this.stId = subpathway.getStId();
         this.displayName = subpathway.getDisplayName();
@@ -110,7 +110,7 @@ public abstract class DatabaseObject implements Comparable<DatabaseObject> {
     public abstract ImageResource getImageResource();
 
     @Override
-    public int compareTo(DatabaseObject o) {
+    public int compareTo(GraphObject o) {
         int cmp = getDisplayName().compareTo(o.getDisplayName());
         if (cmp == 0) {
             cmp = getDbId().compareTo(o.getDbId());
@@ -123,7 +123,7 @@ public abstract class DatabaseObject implements Comparable<DatabaseObject> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        DatabaseObject that = (DatabaseObject) o;
+        GraphObject that = (GraphObject) o;
 
         return !(dbId != null ? !dbId.equals(that.dbId) : that.dbId != null);
 

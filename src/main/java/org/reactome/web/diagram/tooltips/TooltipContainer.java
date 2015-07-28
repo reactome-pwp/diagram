@@ -15,7 +15,7 @@ import org.reactome.web.diagram.handlers.*;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class TooltipContainer extends AbsolutePanel implements DiagramRequestedHandler, DiagramLoadedHandler,
-        DatabaseObjectHoveredHandler, DatabaseObjectSelectedHandler,
+        GraphObjectHoveredHandler, GraphObjectSelectedHandler,
         DiagramZoomHandler, DiagramPanningHandler {
 
     private static final int DELAY = 500;
@@ -44,8 +44,8 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     }
 
     private void initHandlers() {
-        this.eventBus.addHandler(DatabaseObjectHoveredEvent.TYPE, this);
-        this.eventBus.addHandler(DatabaseObjectSelectedEvent.TYPE, this);
+        this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
+        this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramPanningEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
@@ -61,7 +61,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     }
 
     @Override
-    public void onDatabaseObjectHovered(DatabaseObjectHoveredEvent event) {
+    public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
         if (this.hoveredTimer.isRunning()) {
             this.hoveredTimer.cancel();
         }
@@ -74,10 +74,10 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     }
 
     @Override
-    public void onDatabaseObjectSelected(DatabaseObjectSelectedEvent event) {
+    public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
         Tooltip tooltip = Tooltip.getTooltip(hovered);
         if (tooltip.isVisible()) {
-            if (this.hovered != null && !this.hovered.getDatabaseObject().equals(event.getDatabaseObject())) {
+            if (this.hovered != null && !this.hovered.getGraphObject().equals(event.getGraphObject())) {
                 this.hovered = null;
                 tooltip.hide();
             }

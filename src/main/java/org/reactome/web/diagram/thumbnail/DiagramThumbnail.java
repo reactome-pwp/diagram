@@ -8,7 +8,7 @@ import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.reactome.web.diagram.data.DiagramContent;
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.Compartment;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class DiagramThumbnail extends AbsolutePanel implements DatabaseObjectSelectedHandler, DatabaseObjectHoveredHandler,
+public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelectedHandler, GraphObjectHoveredHandler,
         DiagramRenderedHandler, DiagramZoomHandler, DiagramPanningHandler, ViewportResizedHandler, DiagramRequestedHandler,
         MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler,
         DiagramProfileChangedHandler {
@@ -67,8 +67,8 @@ public class DiagramThumbnail extends AbsolutePanel implements DatabaseObjectSel
     }
 
     private void initHandlers() {
-        this.eventBus.addHandler(DatabaseObjectSelectedEvent.TYPE, this);
-        this.eventBus.addHandler(DatabaseObjectHoveredEvent.TYPE, this);
+        this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
+        this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
         this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRenderedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
@@ -85,20 +85,20 @@ public class DiagramThumbnail extends AbsolutePanel implements DatabaseObjectSel
     }
 
     @Override
-    public void onDatabaseObjectSelected(DatabaseObjectSelectedEvent event) {
+    public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
         this.cleanCanvas(this.selection);
-        DatabaseObject databaseObject = event.getDatabaseObject();
-        if(databaseObject!=null) {
-            for (DiagramObject selected : databaseObject.getDiagramObjects()) {
+        GraphObject graphObject = event.getGraphObject();
+        if(graphObject !=null) {
+            for (DiagramObject selected : graphObject.getDiagramObjects()) {
                 this.select(selected);
             }
         }
     }
 
     @Override
-    public void onDatabaseObjectHovered(DatabaseObjectHoveredEvent event) {
+    public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
         this.cleanCanvas(this.highlight);
-        DatabaseObject hovered = event.getDatabaseObject();
+        GraphObject hovered = event.getGraphObject();
         List<DiagramObject> toHover = hovered!=null?hovered.getDiagramObjects():new LinkedList<DiagramObject>();
         for (DiagramObject item : toHover) {
             this.highlight(item);

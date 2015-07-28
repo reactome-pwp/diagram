@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.thumbnail.render;
 
-import org.reactome.web.diagram.data.graph.model.PhysicalEntity;
-import org.reactome.web.diagram.data.graph.model.ReactionLikeEvent;
+import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.graph.model.GraphReactionLikeEvent;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
@@ -22,7 +22,7 @@ public class ReactionThumbnailRenderer extends AbstractThumbnailRenderer {
     public void highlight(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         try {
             Edge edge = (Edge) item;
-            ReactionLikeEvent rle = edge.getDatabaseObject();
+            GraphReactionLikeEvent rle = edge.getGraphObject();
             if (rle == null) return; //It can only happen if the graph hasn't been loaded yet, so no hovering until then :(
             drawSegments(ctx, getSegments(item, rle.getInputs()), factor, offset);
             drawSegments(ctx, getSegments(item, rle.getOutputs()), factor, offset);
@@ -37,9 +37,9 @@ public class ReactionThumbnailRenderer extends AbstractThumbnailRenderer {
         draw(ctx, item, factor, offset);
     }
 
-    private List<Segment> getSegments(DiagramObject item, List<PhysicalEntity> physicalEntities) {
-        List<Segment> rtn = new LinkedList<Segment>();
-        for (PhysicalEntity pe : physicalEntities) {
+    private List<Segment> getSegments(DiagramObject item, List<GraphPhysicalEntity> physicalEntities) {
+        List<Segment> rtn = new LinkedList<>();
+        for (GraphPhysicalEntity pe : physicalEntities) {
             for (DiagramObject obj : pe.getDiagramObjects()) {
                 Node node = (Node) obj;
 

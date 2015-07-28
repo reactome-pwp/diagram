@@ -11,9 +11,9 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.analysis.ExpressionSummary;
-import org.reactome.web.diagram.data.graph.model.Complex;
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
-import org.reactome.web.diagram.data.graph.model.EntitySet;
+import org.reactome.web.diagram.data.graph.model.GraphComplex;
+import org.reactome.web.diagram.data.graph.model.GraphEntitySet;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
@@ -34,7 +34,7 @@ import java.util.List;
 public class ExpressionLegend extends LegendPanel implements ClickHandler, MouseOverHandler, MouseOutHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, DiagramRequestedHandler,
         ExpressionValueHoveredHandler, AnalysisProfileChangedHandler, ExpressionColumnChangedHandler,
-        DatabaseObjectSelectedHandler, DatabaseObjectHoveredHandler {
+        GraphObjectSelectedHandler, GraphObjectHoveredHandler {
 
     private Canvas gradient;
     private Canvas flag;
@@ -43,8 +43,8 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
     private InlineLabel bottomLabel;
 
     private Double expHovered;
-    private DatabaseObject hovered;
-    private DatabaseObject selected;
+    private GraphObject hovered;
+    private GraphObject selected;
 
     private int column;
     private double min;
@@ -120,16 +120,16 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
     }
 
     @Override
-    public void onDatabaseObjectHovered(DatabaseObjectHoveredEvent event) {
+    public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
         List<DiagramObject> hoveredObjects = event.getHoveredObjects();
         DiagramObject item = hoveredObjects!=null && !hoveredObjects.isEmpty()? hoveredObjects.get(0) : null;
-        this.hovered = item != null ? item.getDatabaseObject() : null;
+        this.hovered = item != null ? item.getGraphObject() : null;
         draw();
     }
 
     @Override
-    public void onDatabaseObjectSelected(DatabaseObjectSelectedEvent event) {
-        this.selected = event.getDatabaseObject();
+    public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
+        this.selected = event.getGraphObject();
         draw();
     }
 
@@ -269,17 +269,17 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
         ctx.closePath();
     }
 
-    private List<Double> getExpressionValues(DatabaseObject databaseObject, int column) {
-        List<Double> expression = new LinkedList<Double>();
-        if (databaseObject != null) {
-            if (databaseObject instanceof Complex) {
-                Complex complex = (Complex) databaseObject;
-                expression = new LinkedList<Double>(complex.getParticipantsExpression(column).values());
-            } else if (databaseObject instanceof EntitySet) {
-                EntitySet set = (EntitySet) databaseObject;
-                expression = new LinkedList<Double>(set.getParticipantsExpression(column).values());
+    private List<Double> getExpressionValues(GraphObject graphObject, int column) {
+        List<Double> expression = new LinkedList<>();
+        if (graphObject != null) {
+            if (graphObject instanceof GraphComplex) {
+                GraphComplex complex = (GraphComplex) graphObject;
+                expression = new LinkedList<>(complex.getParticipantsExpression(column).values());
+            } else if (graphObject instanceof GraphEntitySet) {
+                GraphEntitySet set = (GraphEntitySet) graphObject;
+                expression = new LinkedList<>(set.getParticipantsExpression(column).values());
             } else {
-                List<Double> aux = databaseObject.getExpression();
+                List<Double> aux = graphObject.getExpression();
                 if (aux != null && !aux.isEmpty()) {
                     expression.add(aux.get(column));
                 }
@@ -291,9 +291,9 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
 
 
     private void initHandlers() {
-        this.eventBus.addHandler(DatabaseObjectHoveredEvent.TYPE, this);
+        this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
-        this.eventBus.addHandler(DatabaseObjectSelectedEvent.TYPE, this);
+        this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);

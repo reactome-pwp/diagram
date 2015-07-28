@@ -2,9 +2,9 @@ package org.reactome.web.diagram.data;
 
 import org.reactome.web.diagram.context.ContextDialogPanel;
 import org.reactome.web.diagram.data.analysis.*;
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
-import org.reactome.web.diagram.data.graph.model.Pathway;
-import org.reactome.web.diagram.data.graph.model.PhysicalEntity;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.graph.model.GraphPathway;
+import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
@@ -27,12 +27,12 @@ public class DiagramContext {
     private QuadTree2D<DiagramObject> quadTree;
     private AnalysisStatus analysisStatus;
 
-    private Map<DatabaseObject, ContextDialogPanel> dialogMap = new HashMap<>();
+    private Map<GraphObject, ContextDialogPanel> dialogMap = new HashMap<>();
 
     public DiagramContext(DiagramContent content) {
         this.content = content;
 
-        this.quadTree = new QuadTree2D<DiagramObject>(
+        this.quadTree = new QuadTree2D<>(
                 content.minX,
                 content.minY,
                 content.maxX,
@@ -50,27 +50,27 @@ public class DiagramContext {
 
     public void clearAnalysisOverlay(){
         this.analysisStatus = null;
-        for (DatabaseObject databaseObject : this.content.getDatabaseObjects()) {
-            if(databaseObject instanceof PhysicalEntity) {
-                ((PhysicalEntity) databaseObject).resetHit();
-            }else if(databaseObject instanceof Pathway){
-                ((Pathway) databaseObject).resetHit();
+        for (GraphObject graphObject : this.content.getDatabaseObjects()) {
+            if(graphObject instanceof GraphPhysicalEntity) {
+                ((GraphPhysicalEntity) graphObject).resetHit();
+            }else if(graphObject instanceof GraphPathway){
+                ((GraphPathway) graphObject).resetHit();
             }
         }
     }
 
     public void setAnalysisOverlay(AnalysisStatus analysisStatus,PathwayIdentifiers pathwayIdentifiers, List<PathwaySummary> pathwaySummaries){
         this.analysisStatus = analysisStatus;
-        MapSet<String, DatabaseObject> map = this.content.getIdentifierMap();
+        MapSet<String, GraphObject> map = this.content.getIdentifierMap();
         if(pathwayIdentifiers!=null) {
             for (PathwayIdentifier identifier : pathwayIdentifiers.getIdentifiers()) {
                 for (IdentifierMap identifierMap : identifier.getMapsTo()) {
                     for (String id : identifierMap.getIds()) {
-                        Set<DatabaseObject> elements = map.getElements(id);
+                        Set<GraphObject> elements = map.getElements(id);
                         if (elements == null) continue;
-                        for (DatabaseObject databaseObject : elements) {
-                            if(databaseObject instanceof PhysicalEntity) {
-                                PhysicalEntity pe = (PhysicalEntity) databaseObject;
+                        for (GraphObject graphObject : elements) {
+                            if(graphObject instanceof GraphPhysicalEntity) {
+                                GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
                                 pe.setIsHit(identifier.getIdentifier(), identifier.getExp());
                             }
                         }
@@ -83,7 +83,7 @@ public class DiagramContext {
                 EntityStatistics statistics = pathwaySummary.getEntities();
                 if (statistics.getFound() > 0) {
                     //In this case process nodes DO NOT HAVE an identifier, but DO NOT use null here! use empty string
-                    Pathway pathway = (Pathway) this.content.getDatabaseObject(pathwaySummary.getDbId());
+                    GraphPathway pathway = (GraphPathway) this.content.getDatabaseObject(pathwaySummary.getDbId());
                     Double percentage = statistics.getFound() / statistics.getTotal().doubleValue();
                     if(percentage<ANALYSIS_MIN_PERCENTAGE) percentage = ANALYSIS_MIN_PERCENTAGE;
                     pathway.setIsHit(percentage, pathwaySummary.getEntities().getExp());
@@ -140,10 +140,10 @@ public class DiagramContext {
 
     public void showDialog(DiagramObject item){
         if(item==null) return;
-        if(!dialogMap.containsKey(item.getDatabaseObject())) {
-            dialogMap.put(item.getDatabaseObject(), new ContextDialogPanel(item));
+        if(!dialogMap.containsKey(item.getGraphObject())) {
+            dialogMap.put(item.getGraphObject(), new ContextDialogPanel(item));
         }else{
-            dialogMap.get(item.getDatabaseObject()).show();
+            dialogMap.get(item.getGraphObject()).show();
         }
     }
 

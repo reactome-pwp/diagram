@@ -78,24 +78,24 @@ public abstract class DiagramContentFactory {
         }
 
         for (EntityNode node : graph.getNodes()) {
-            DatabaseObject obj = content.getDatabaseObject(node.getDbId());
-            if(obj instanceof PhysicalEntity) {
-                PhysicalEntity pe = (PhysicalEntity) obj;
+            GraphObject obj = content.getDatabaseObject(node.getDbId());
+            if(obj instanceof GraphPhysicalEntity) {
+                GraphPhysicalEntity pe = (GraphPhysicalEntity) obj;
                 for (DiagramObject diagramObject : getDiagramObjects(node.getDiagramIds())) {
                     pe.addDiagramObject(diagramObject);
-                    diagramObject.setDatabaseObject(pe);
+                    diagramObject.setGraphObject(pe);
                 }
 
-                List<PhysicalEntity> parents = getDatabaseObjects(node.getParents());
+                List<GraphPhysicalEntity> parents = getDatabaseObjects(node.getParents());
                 pe.addParent(parents);
 
-                List<PhysicalEntity> children = getDatabaseObjects(node.getChildren());
+                List<GraphPhysicalEntity> children = getDatabaseObjects(node.getChildren());
                 pe.addChildren(children);
-            }else if(obj instanceof Pathway){
-                Pathway pathway = (Pathway) obj;
+            }else if(obj instanceof GraphPathway){
+                GraphPathway pathway = (GraphPathway) obj;
                 for (DiagramObject diagramObject : getDiagramObjects(node.getDiagramIds())) {
                     pathway.addDiagramObject(diagramObject);
-                    diagramObject.setDatabaseObject(pathway);
+                    diagramObject.setGraphObject(pathway);
                 }
 
                 //TODO: Need to keep parents and/or children?
@@ -103,42 +103,42 @@ public abstract class DiagramContentFactory {
         }
 
         for (EventNode edge : graph.getEdges()) {
-            ReactionLikeEvent event = (ReactionLikeEvent) content.getDatabaseObject(edge.getDbId());
+            GraphReactionLikeEvent event = (GraphReactionLikeEvent) content.getDatabaseObject(edge.getDbId());
 
             DiagramObject diagramObject = DatabaseObjectFactory.content.getDiagramObject(edge.getDiagramId());
             event.addDiagramObject(diagramObject);
-            diagramObject.setDatabaseObject(event);
+            diagramObject.setGraphObject(event);
 
-            List<PhysicalEntity> inputs = getDatabaseObjects(edge.getInputs());
+            List<GraphPhysicalEntity> inputs = getDatabaseObjects(edge.getInputs());
             event.setInputs(inputs);
 
-            List<PhysicalEntity> outputs = getDatabaseObjects(edge.getOutputs());
+            List<GraphPhysicalEntity> outputs = getDatabaseObjects(edge.getOutputs());
             event.setOutputs(outputs);
 
-            List<PhysicalEntity> catalysts = getDatabaseObjects(edge.getCatalysts());
+            List<GraphPhysicalEntity> catalysts = getDatabaseObjects(edge.getCatalysts());
             event.setCatalysts(catalysts);
 
-            List<PhysicalEntity> activators = getDatabaseObjects(edge.getActivators());
+            List<GraphPhysicalEntity> activators = getDatabaseObjects(edge.getActivators());
             event.setActivators(activators);
 
-            List<PhysicalEntity> inhibitors = getDatabaseObjects(edge.getInhibitors());
+            List<GraphPhysicalEntity> inhibitors = getDatabaseObjects(edge.getInhibitors());
             event.setInhibitors(inhibitors);
 
-            List<PhysicalEntity> requirements = getDatabaseObjects(edge.getRequirements());
+            List<GraphPhysicalEntity> requirements = getDatabaseObjects(edge.getRequirements());
             event.setRequirements(requirements);
 
-            List<ReactionLikeEvent> preceding = getDatabaseObjects(edge.getPreceding());
+            List<GraphReactionLikeEvent> preceding = getDatabaseObjects(edge.getPreceding());
             event.setPrecedingEvents(preceding);
 
-            List<ReactionLikeEvent> following = getDatabaseObjects(edge.getFollowing());
+            List<GraphReactionLikeEvent> following = getDatabaseObjects(edge.getFollowing());
             event.setFollowingEvents(following);
         }
 
         if(graph.getSubpathways()!=null) {
             for (SubpathwayRaw subpathway : graph.getSubpathways()) {
-                Subpathway sp = DatabaseObjectFactory.getOrCreateDatabaseObject(subpathway);
+                GraphSubpathway sp = DatabaseObjectFactory.getOrCreateDatabaseObject(subpathway);
                 for (Long event : subpathway.getEvents()) {
-                    sp.addContainedEvent((ReactionLikeEvent) content.getDatabaseObject(event));
+                    sp.addContainedEvent((GraphReactionLikeEvent) content.getDatabaseObject(event));
                 }
             }
         }
@@ -154,7 +154,7 @@ public abstract class DiagramContentFactory {
         return rtn;
     }
 
-    private static  <T extends DatabaseObject> List<T> getDatabaseObjects(List<Long> dbIds){
+    private static  <T extends GraphObject> List<T> getDatabaseObjects(List<Long> dbIds){
         List<T> rtn = new ArrayList<>();
         if(dbIds!=null) {
             for (Long dbId : dbIds) {

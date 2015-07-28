@@ -1,19 +1,19 @@
 package org.reactome.web.diagram.search.events;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.search.handlers.SuggestionSelectedHandler;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class SuggestionSelectedEvent extends GwtEvent<SuggestionSelectedHandler> {
-    public static Type<SuggestionSelectedHandler> TYPE = new Type<SuggestionSelectedHandler>();
+    public static Type<SuggestionSelectedHandler> TYPE = new Type<>();
 
-    private DatabaseObject databaseObject;
+    private GraphObject graphObject;
 
-    public SuggestionSelectedEvent(DatabaseObject databaseObject) {
-        this.databaseObject = databaseObject;
+    public SuggestionSelectedEvent(GraphObject graphObject) {
+        this.graphObject = graphObject;
     }
 
     @Override
@@ -26,14 +26,14 @@ public class SuggestionSelectedEvent extends GwtEvent<SuggestionSelectedHandler>
         handler.onSuggestionSelected(this);
     }
 
-    public DatabaseObject getDatabaseObject() {
-        return databaseObject;
+    public GraphObject getGraphObject() {
+        return graphObject;
     }
 
     @Override
     public String toString() {
         return "SuggestionSelectedEvent{" +
-                ", selected=" + databaseObject +
+                ", selected=" + graphObject +
                 '}';
     }
 }

@@ -17,10 +17,10 @@ import org.reactome.web.diagram.data.DatabaseObjectFactory;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
-import org.reactome.web.diagram.data.graph.model.Event;
-import org.reactome.web.diagram.data.graph.model.Pathway;
-import org.reactome.web.diagram.data.graph.model.PhysicalEntity;
+import org.reactome.web.diagram.data.graph.model.GraphEvent;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.graph.model.GraphPathway;
+import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
@@ -43,7 +43,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         LayoutLoadedHandler, GraphLoadedHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
-        DatabaseObjectHoveredHandler, DatabaseObjectSelectedHandler, DiagramLoadedHandler {
+        GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler {
 
     private static final double ZOOM_FACTOR = 0.025;
     private static final double ZOOM_DELTA = 0.25;
@@ -65,8 +65,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     private int viewportWidth = 0;
     private int viewportHeight = 0;
 
-    private DatabaseObject hovered = null;
-    private DatabaseObject selected = null;
+    private GraphObject hovered = null;
+    private GraphObject selected = null;
     private Set<DiagramObject> halo = new HashSet<>();
 
     private boolean diagramMoved = false;
@@ -106,8 +106,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
 
-        this.eventBus.addHandler(DatabaseObjectSelectedEvent.TYPE, this);
-        this.eventBus.addHandler(DatabaseObjectHoveredEvent.TYPE, this);
+        this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
+        this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
 
         this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
         this.eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
@@ -167,13 +167,13 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     @Override
-    public HandlerRegistration addDatabaseObjectSelectedHandler(DatabaseObjectSelectedHandler handler) {
-        return this.addHandler(handler, DatabaseObjectSelectedEvent.TYPE);
+    public HandlerRegistration addDatabaseObjectSelectedHandler(GraphObjectSelectedHandler handler) {
+        return this.addHandler(handler, GraphObjectSelectedEvent.TYPE);
     }
 
     @Override
-    public HandlerRegistration addDatabaseObjectHoveredHandler(DatabaseObjectHoveredHandler handler) {
-        return this.addHandler(handler, DatabaseObjectHoveredEvent.TYPE);
+    public HandlerRegistration addDatabaseObjectHoveredHandler(GraphObjectHoveredHandler handler) {
+        return this.addHandler(handler, GraphObjectHoveredEvent.TYPE);
     }
 
     @Override
@@ -214,7 +214,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void highlightItem(String stableIdentifier) {
         try {
-            DatabaseObject item = this.context.getContent().getDatabaseObject(stableIdentifier);
+            GraphObject item = this.context.getContent().getDatabaseObject(stableIdentifier);
             highlight(item);
         } catch (Exception e) {/*Nothing here*/}
     }
@@ -222,24 +222,24 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void highlightItem(Long dbIdentifier) {
         try {
-            DatabaseObject item = this.context.getContent().getDatabaseObject(dbIdentifier);
+            GraphObject item = this.context.getContent().getDatabaseObject(dbIdentifier);
             highlight(item);
         } catch (Exception e) {/*Nothing here*/}
     }
 
     private void highlight(DiagramObject item) {
-        DatabaseObject hovered = item != null && item.getIsFadeOut() == null ? item.getDatabaseObject() : null;
+        GraphObject hovered = item != null && item.getIsFadeOut() == null ? item.getGraphObject() : null;
         if(Objects.equals(this.hovered, hovered)) return;
         this.hovered = hovered;
-        DatabaseObjectHoveredEvent event = new DatabaseObjectHoveredEvent(hovered, item);
+        GraphObjectHoveredEvent event = new GraphObjectHoveredEvent(hovered, item);
         this.eventBus.fireEventFromSource(event, this);
         fireEvent(event); //needs outside notification
     }
 
-    private void highlight(DatabaseObject databaseObject) {
-        if (Objects.equals(this.hovered, databaseObject)) return;
-        this.hovered = databaseObject;
-        DatabaseObjectHoveredEvent event = new DatabaseObjectHoveredEvent(databaseObject);
+    private void highlight(GraphObject graphObject) {
+        if (Objects.equals(this.hovered, graphObject)) return;
+        this.hovered = graphObject;
+        GraphObjectHoveredEvent event = new GraphObjectHoveredEvent(graphObject);
         this.eventBus.fireEventFromSource(event, this);
     }
 
@@ -280,7 +280,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     public void resetHighlight() {
         if (this.hovered != null) {
             this.hovered = null;
-            this.eventBus.fireEventFromSource(new DatabaseObjectHoveredEvent(), this);
+            this.eventBus.fireEventFromSource(new GraphObjectHoveredEvent(), this);
         }
     }
 
@@ -290,7 +290,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         if(this.selected!=null) {
             this.selected = null;
             this.forceDraw = true;
-            this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(null, false), this);
+            this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(null, false), this);
         }
     }
 
@@ -303,7 +303,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void selectItem(String stableIdentifier) {
         try {
-            DatabaseObject item = this.context.getContent().getDatabaseObject(stableIdentifier);
+            GraphObject item = this.context.getContent().getDatabaseObject(stableIdentifier);
             this.setSelection(item, true, false);
         } catch (Exception e) {
             this.resetSelection();
@@ -313,7 +313,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void selectItem(Long dbIdentifier) {
         try {
-            DatabaseObject item = this.context.getContent().getDatabaseObject(dbIdentifier);
+            GraphObject item = this.context.getContent().getDatabaseObject(dbIdentifier);
             this.setSelection(item, true, false);
         } catch (Exception e) {
             this.resetSelection();
@@ -364,7 +364,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         event.preventDefault(); event.stopPropagation();
         if (!this.diagramMoved) {
             DiagramObject item = this.getHovered(this.mouseCurrent);
-            DatabaseObject toSel = item != null ? item.getDatabaseObject() : null;
+            GraphObject toSel = item != null ? item.getGraphObject() : null;
             this.setSelection(toSel, false, true);
         }
         this.diagramMoved = false;
@@ -373,8 +373,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void onDoubleClick(DoubleClickEvent event) {
         DiagramObject item = this.getHovered(this.mouseCurrent);
-        DatabaseObject toOpen = item != null ? item.getDatabaseObject() : null;
-        if(toOpen instanceof Pathway) {
+        GraphObject toOpen = item != null ? item.getGraphObject() : null;
+        if(toOpen instanceof GraphPathway) {
             this.load(toOpen.getDbId().toString());
         }
     }
@@ -447,7 +447,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         if (!this.diagramMoved) {
             //Do NOT use this.mouseCurrent in the next line
             DiagramObject item = this.getHovered(this.mouseDown);
-            DatabaseObject toSel = item != null ? item.getDatabaseObject() : null;
+            GraphObject toSel = item != null ? item.getGraphObject() : null;
             this.setSelection(toSel, false, true);
         }
         this.mouseDown = null;
@@ -519,8 +519,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     @Override
-    public void onDatabaseObjectSelected(final DatabaseObjectSelectedEvent event) {
-        final DatabaseObject item = event.getDatabaseObject();
+    public void onGraphObjectSelected(final GraphObjectSelectedEvent event) {
+        final GraphObject item = event.getGraphObject();
         if (!Objects.equals(item, this.selected)) {
             List<DiagramObject> selected = new LinkedList<>();
             if (item == null) {
@@ -550,7 +550,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     @Override
-    public void onDatabaseObjectHovered(DatabaseObjectHoveredEvent event) {
+    public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
         if (context != null) {
             //this.hovered = event.getHoveredObjects(); Don't do it here. Hovering can now fired from the outside
             canvas.highlight(event.getHoveredObjects(), this.context);
@@ -650,7 +650,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
             //TODO: The graph has to be pruned in the server side
             if (item == null) continue;
 
-            if (item.getDatabaseObject() instanceof PhysicalEntity || item.getDatabaseObject() instanceof Event) {
+            if (item.getGraphObject() instanceof GraphPhysicalEntity || item.getGraphObject() instanceof GraphEvent) {
                 this.notifyHoveredExpression(item, model);
                 return item;
             }
@@ -700,9 +700,9 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.context.restoreDialogs();
     }
 
-    private void setSelection(DatabaseObject toSelect, boolean zoom, boolean fireExternally){
+    private void setSelection(GraphObject toSelect, boolean zoom, boolean fireExternally){
         if(!Objects.equals(this.selected, toSelect)) {
-            this.eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(toSelect, zoom, fireExternally), this);
+            this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(toSelect, zoom, fireExternally), this);
         }
     }
 

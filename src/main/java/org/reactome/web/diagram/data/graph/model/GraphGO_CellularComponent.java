@@ -9,19 +9,19 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class GO_CellularComponent extends DatabaseObject {
+public class GraphGO_CellularComponent extends GraphObject {
 
-    private List<DatabaseObject> containedElements = new ArrayList<DatabaseObject>();
+    private List<GraphObject> containedElements = new ArrayList<>();
 
-    public GO_CellularComponent(EntityNode node) {
+    public GraphGO_CellularComponent(EntityNode node) {
         super(node);
     }
 
-    public boolean addContainedElement(DatabaseObject databaseObject){
-        return this.containedElements.add(databaseObject);
+    public boolean addContainedElement(GraphObject graphObject){
+        return this.containedElements.add(graphObject);
     }
 
-    public List<DatabaseObject> getContainedElements() {
+    public List<GraphObject> getContainedElements() {
         return containedElements;
     }
 

@@ -1,20 +1,20 @@
 package org.reactome.web.diagram.data.graph.model;
 
 import com.google.gwt.resources.client.ImageResource;
-import org.reactome.web.diagram.data.graph.model.images.DatabaseObjectImages;
+import org.reactome.web.diagram.data.graph.model.images.GraphObjectImages;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class Reaction extends ReactionLikeEvent {
+public class GraphFailedReaction extends GraphReactionLikeEvent {
 
-    public Reaction(EventNode node) {
+    public GraphFailedReaction(EventNode node) {
         super(node);
     }
 
     @Override
     public ImageResource getImageResource() {
-        return DatabaseObjectImages.INSTANCE.reaction();
+        return GraphObjectImages.INSTANCE.failedReaction();
     }
 }

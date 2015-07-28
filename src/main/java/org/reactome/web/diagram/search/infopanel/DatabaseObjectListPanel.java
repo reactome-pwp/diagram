@@ -5,7 +5,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 
 import java.util.Collection;
 
@@ -14,7 +14,7 @@ import java.util.Collection;
  */
 public class DatabaseObjectListPanel extends FlowPanel {
 
-    public DatabaseObjectListPanel(String title, Collection<? extends DatabaseObject> objects, EventBus eventBus) {
+    public DatabaseObjectListPanel(String title, Collection<? extends GraphObject> objects, EventBus eventBus) {
         InfoPanel.SuggestionPanelCSS css = InfoPanel.OBJECT_INFO_RESOURCES.getCSS();
 
         this.setStyleName(css.databaseObjectListPanel());
@@ -26,7 +26,7 @@ public class DatabaseObjectListPanel extends FlowPanel {
         FlowPanel listPanel = new FlowPanel();
 
         listPanel.setStyleName(css.databaseObjectList());
-        for (DatabaseObject object : objects) {
+        for (GraphObject object : objects) {
             FlowPanel listItem = new FlowPanel();
             listItem.setStyleName(css.listItem());
 

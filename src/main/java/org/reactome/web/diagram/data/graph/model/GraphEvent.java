@@ -6,14 +6,14 @@ import org.reactome.web.diagram.data.graph.raw.EventNode;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public abstract class Event extends DatabaseObject {
+public abstract class GraphEvent extends GraphObject {
 
-    public Event(EventNode node) {
+    public GraphEvent(EventNode node) {
         super(node);
     }
 
     //Needed when an Event is created from a Encapsulated Pathway in a diagram
-    public Event(EntityNode node) {
+    public GraphEvent(EntityNode node) {
         super(node);
     }
 

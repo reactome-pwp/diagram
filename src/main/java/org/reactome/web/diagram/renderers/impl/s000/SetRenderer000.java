@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.renderers.impl.s000;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import org.reactome.web.diagram.data.graph.model.EntitySet;
+import org.reactome.web.diagram.data.graph.model.GraphEntitySet;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -42,10 +42,10 @@ public class SetRenderer000 extends SetAbstractRenderer {
 
     @Override
     public Double getExpressionHovered(DiagramObject item, Coordinate pos, int t) {
-        EntitySet set = item.getDatabaseObject();
+        GraphEntitySet set = item.getGraphObject();
         NodeProperties prop = ((Node) item).getProp();
 
-        List<Double> expression = new LinkedList<Double>(set.getParticipantsExpression(t).values());
+        List<Double> expression = new LinkedList<>(set.getParticipantsExpression(t).values());
         if(expression.isEmpty()) return null;
 
         Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
@@ -60,7 +60,7 @@ public class SetRenderer000 extends SetAbstractRenderer {
 
     @Override
     public void drawEnrichment(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, Double factor, Coordinate offset){
-        EntitySet set = item.getDatabaseObject();
+        GraphEntitySet set = item.getGraphObject();
         double percentage = set.getHitParticipants().size() / (double) set.getParticipants().size();
 
         Node node = (Node) item;
@@ -89,10 +89,10 @@ public class SetRenderer000 extends SetAbstractRenderer {
 
     @Override
     public void drawExpression(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset){
-        EntitySet set = item.getDatabaseObject();
+        GraphEntitySet set = item.getGraphObject();
         double percentage = set.getHitParticipants().size() / (double) set.getParticipants().size();
 
-        List<Double> expression = new LinkedList<Double>(set.getParticipantsExpression(t).values());
+        List<Double> expression = new LinkedList<>(set.getParticipantsExpression(t).values());
         Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
         double value = ExpressionUtil.median(expression);
 

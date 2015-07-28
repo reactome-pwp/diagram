@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.data.graph.model;
 
 import com.google.gwt.resources.client.ImageResource;
-import org.reactome.web.diagram.data.graph.model.images.DatabaseObjectImages;
+import org.reactome.web.diagram.data.graph.model.images.GraphObjectImages;
 import org.reactome.web.diagram.data.graph.raw.EntityNode;
 
 import java.util.List;
@@ -9,11 +9,11 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class Pathway extends Event {
+public class GraphPathway extends GraphEvent {
 
     private Double percentage;
 
-    public Pathway(EntityNode node) {
+    public GraphPathway(EntityNode node) {
         super(node);
     }
 
@@ -37,6 +37,6 @@ public class Pathway extends Event {
 
     @Override
     public ImageResource getImageResource() {
-        return DatabaseObjectImages.INSTANCE.pathway();
+        return GraphObjectImages.INSTANCE.pathway();
     }
 }

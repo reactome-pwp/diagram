@@ -79,8 +79,8 @@ public abstract class NodeAbstractRenderer extends AbstractRenderer {
 
     @Override
     public Double getExpressionHovered(DiagramObject item, Coordinate pos, int t) {
-        if(item .getDatabaseObject()!=null) {
-            List<Double> expression = item.getDatabaseObject().getExpression();
+        if(item.getGraphObject()!=null) {
+            List<Double> expression = item.getGraphObject().getExpression();
             if (expression != null){
                 return expression.get(t);
             }

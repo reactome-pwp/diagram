@@ -7,9 +7,9 @@ import com.google.gwt.resources.client.ImageResource;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public interface DatabaseObjectImages extends ClientBundle {
+public interface GraphObjectImages extends ClientBundle {
 
-    DatabaseObjectImages INSTANCE = GWT.create(DatabaseObjectImages.class);
+    GraphObjectImages INSTANCE = GWT.create(GraphObjectImages.class);
 
     @Source("BlackBoxEvent.png")
     ImageResource blackBoxEvent();

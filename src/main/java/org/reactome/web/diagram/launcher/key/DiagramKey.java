@@ -16,19 +16,19 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.common.PwpButton;
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.factory.DiagramObjectException;
 import org.reactome.web.diagram.data.layout.factory.DiagramObjectsFactory;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
-import org.reactome.web.diagram.events.DatabaseObjectHoveredEvent;
-import org.reactome.web.diagram.events.DatabaseObjectSelectedEvent;
 import org.reactome.web.diagram.events.DiagramProfileChangedEvent;
 import org.reactome.web.diagram.events.DiagramRequestedEvent;
-import org.reactome.web.diagram.handlers.DatabaseObjectHoveredHandler;
-import org.reactome.web.diagram.handlers.DatabaseObjectSelectedHandler;
+import org.reactome.web.diagram.events.GraphObjectHoveredEvent;
+import org.reactome.web.diagram.events.GraphObjectSelectedEvent;
 import org.reactome.web.diagram.handlers.DiagramProfileChangedHandler;
 import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
+import org.reactome.web.diagram.handlers.GraphObjectHoveredHandler;
+import org.reactome.web.diagram.handlers.GraphObjectSelectedHandler;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.Renderer;
 import org.reactome.web.diagram.renderers.RendererManager;
@@ -43,7 +43,7 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHandler, DatabaseObjectSelectedHandler,
+public class DiagramKey extends AbsolutePanel implements GraphObjectHoveredHandler, GraphObjectSelectedHandler,
         DiagramRequestedHandler, DiagramProfileChangedHandler, ClickHandler {
 
     private static final Double FACTOR = 0.82;
@@ -129,9 +129,9 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
         highlight(this.selection, this.selected);
     }
 
-    private DiagramObject getDiagramObject(DatabaseObject databaseObject) {
-        if (databaseObject != null) {
-            return databaseObject.getDiagramObjects().get(0);
+    private DiagramObject getDiagramObject(GraphObject graphObject) {
+        if (graphObject != null) {
+            return graphObject.getDiagramObjects().get(0);
         }
         return null;
     }
@@ -171,8 +171,8 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
     }
 
     private void initHandlers() {
-        this.eventBus.addHandler(DatabaseObjectSelectedEvent.TYPE, this);
-        this.eventBus.addHandler(DatabaseObjectHoveredEvent.TYPE, this);
+        this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
+        this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
         this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
     }
@@ -183,21 +183,21 @@ public class DiagramKey extends AbsolutePanel implements DatabaseObjectHoveredHa
     }
 
     @Override
-    public void onDatabaseObjectHovered(DatabaseObjectHoveredEvent event) {
+    public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
         hover.setLineWidth(FACTOR * 9);
         hover.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getHighlight());
         cleanCanvas(hover);
-        DiagramObject diagramObject = getDiagramObject(event.getDatabaseObject());
+        DiagramObject diagramObject = getDiagramObject(event.getGraphObject());
         highlight(hover, diagramObject);
     }
 
 
     @Override
-    public void onDatabaseObjectSelected(DatabaseObjectSelectedEvent event) {
+    public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
         selection.setLineWidth(FACTOR * 3);
         selection.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getSelection());
         cleanCanvas(selection);
-        this.selected = getDiagramObject(event.getDatabaseObject());
+        this.selected = getDiagramObject(event.getGraphObject());
         highlight(selection, this.selected);
     }
 

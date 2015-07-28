@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.search.provider;
 
 import org.reactome.web.diagram.data.DiagramContent;
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class SuggestionsProviderImpl implements SuggestionsProvider<DatabaseObject> {
+public class SuggestionsProviderImpl implements SuggestionsProvider<GraphObject> {
 
     private DiagramContent content;
 
@@ -19,15 +19,15 @@ public class SuggestionsProviderImpl implements SuggestionsProvider<DatabaseObje
     }
 
     @Override
-    public List<DatabaseObject> getSuggestions(String input) {
-        List<DatabaseObject> rtn = new ArrayList<DatabaseObject>();
+    public List<GraphObject> getSuggestions(String input) {
+        List<GraphObject> rtn = new ArrayList<>();
         if (content == null || input == null || input.isEmpty()) return rtn;
 
         String[] inputs = input.split("  *");
         if(inputs.length==0) return rtn;
 
         String term = inputs[0].toLowerCase();
-        for (DatabaseObject obj : content.getDatabaseObjects()) {
+        for (GraphObject obj : content.getDatabaseObjects()) {
             obj.clearSearchDisplayValue(); //clears the result of previous searches
             if (obj.getDisplayName().toLowerCase().contains(term)) {
                 rtn.add(obj);
@@ -38,8 +38,8 @@ public class SuggestionsProviderImpl implements SuggestionsProvider<DatabaseObje
         if (inputs.length > 1) {
             for (int i = 1; i < inputs.length; i++) {
                 term = inputs[i].toLowerCase();
-                List<DatabaseObject> aux = new ArrayList<DatabaseObject>();
-                for (DatabaseObject obj : rtn) {
+                List<GraphObject> aux = new ArrayList<>();
+                for (GraphObject obj : rtn) {
                     if (obj.getDisplayName().toLowerCase().contains(term)) {
                         aux.add(obj);
                     }
@@ -49,7 +49,7 @@ public class SuggestionsProviderImpl implements SuggestionsProvider<DatabaseObje
         }
 
         Collections.sort(rtn);
-        for (DatabaseObject object : rtn) {
+        for (GraphObject object : rtn) {
             object.setSearchDisplay(inputs);
         }
         return rtn;

@@ -1,9 +1,9 @@
 package org.reactome.web.diagram.data;
 
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
-import org.reactome.web.diagram.data.graph.model.Pathway;
-import org.reactome.web.diagram.data.graph.model.PhysicalEntity;
-import org.reactome.web.diagram.data.graph.model.Subpathway;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.graph.model.GraphPathway;
+import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.graph.model.GraphSubpathway;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.util.MapSet;
 
@@ -24,10 +24,10 @@ public class DiagramContent {
     Boolean hideCompartmentInName;
 
     Map<Long, DiagramObject> diagramObjectMap;
-    Map<String, DatabaseObject> databaseObjectCache;
-    MapSet<String, DatabaseObject> identifierMap;
-    Set<Pathway> encapsulatedPathways;
-    Set<Subpathway> subpathways;
+    Map<String, GraphObject> graphObjectCache;
+    MapSet<String, GraphObject> identifierMap;
+    Set<GraphPathway> encapsulatedPathways;
+    Set<GraphSubpathway> subpathways;
 
     Set<DiagramObject> diseaseComponents;
     Set<DiagramObject> lofNodes;
@@ -39,32 +39,32 @@ public class DiagramContent {
 
     public DiagramContent() {
         this.diagramObjectMap = new TreeMap<>();
-        this.databaseObjectCache = new HashMap<>();
+        this.graphObjectCache = new HashMap<>();
         this.identifierMap = new MapSet<>();
         this.encapsulatedPathways = new HashSet<>();
         this.subpathways = new HashSet<>();
     }
 
-    public void cache(DatabaseObject dbObject){
+    public void cache(GraphObject dbObject){
         this.graphLoaded = true;
         if(dbObject.getDbId()!=null) {
-            databaseObjectCache.put(dbObject.getDbId()+"", dbObject);
+            graphObjectCache.put(dbObject.getDbId() + "", dbObject);
         }
         if(dbObject.getStId()!=null) {
-            databaseObjectCache.put(dbObject.getStId(), dbObject);
+            graphObjectCache.put(dbObject.getStId(), dbObject);
         }
 
-        if(dbObject instanceof PhysicalEntity){
-            PhysicalEntity pe = (PhysicalEntity) dbObject;
+        if(dbObject instanceof GraphPhysicalEntity){
+            GraphPhysicalEntity pe = (GraphPhysicalEntity) dbObject;
             if(pe.getIdentifier()!=null) {
                 identifierMap.add(pe.getIdentifier(), dbObject);
             }
-        }else if(dbObject instanceof Pathway){
-            encapsulatedPathways.add((Pathway) dbObject);
+        }else if(dbObject instanceof GraphPathway){
+            encapsulatedPathways.add((GraphPathway) dbObject);
         }
 
-        if (dbObject instanceof Subpathway){
-            this.subpathways.add((Subpathway) dbObject);
+        if (dbObject instanceof GraphSubpathway){
+            this.subpathways.add((GraphSubpathway) dbObject);
         }
     }
 
@@ -92,7 +92,7 @@ public class DiagramContent {
         return displayName;
     }
 
-    public Set<Pathway> getEncapsulatedPathways() {
+    public Set<GraphPathway> getEncapsulatedPathways() {
         return encapsulatedPathways;
     }
 
@@ -120,31 +120,31 @@ public class DiagramContent {
         return lofNodes;
     }
 
-    public DatabaseObject getDatabaseObject(String stId){
-        return this.databaseObjectCache.get(stId);
+    public GraphObject getDatabaseObject(String stId){
+        return this.graphObjectCache.get(stId);
     }
 
-    public DatabaseObject getDatabaseObject(Long dbId){
-        return this.databaseObjectCache.get(dbId.toString());
+    public GraphObject getDatabaseObject(Long dbId){
+        return this.graphObjectCache.get(dbId.toString());
     }
 
     public DiagramObject getDiagramObject(Long id){
         return this.diagramObjectMap.get(id);
     }
 
-    public Collection<DatabaseObject> getDatabaseObjects(){
-        return new HashSet<>(this.databaseObjectCache.values());
+    public Collection<GraphObject> getDatabaseObjects(){
+        return new HashSet<>(this.graphObjectCache.values());
     }
 
     public Collection<DiagramObject> getDiagramObjects(){
         return this.diagramObjectMap.values();
     }
 
-    public MapSet<String, DatabaseObject> getIdentifierMap() {
+    public MapSet<String, GraphObject> getIdentifierMap() {
         return identifierMap;
     }
 
-    public Set<Subpathway> getSubpathways() {
+    public Set<GraphSubpathway> getSubpathways() {
         return subpathways;
     }
 

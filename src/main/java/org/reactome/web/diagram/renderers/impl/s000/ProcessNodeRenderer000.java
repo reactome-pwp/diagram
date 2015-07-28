@@ -1,6 +1,6 @@
 package org.reactome.web.diagram.renderers.impl.s000;
 
-import org.reactome.web.diagram.data.graph.model.Pathway;
+import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -48,13 +48,13 @@ public class ProcessNodeRenderer000 extends ProcessNodeAbstractRenderer {
         if(!isVisible(item)) return;
 
         Node node = (Node) item;
-        Pathway pathway = node.getDatabaseObject();
+        GraphPathway graphPathway = node.getGraphObject();
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
         double x = prop.getX() + RendererProperties.PROCESS_NODE_INSET_WIDTH;
         double y = prop.getY() + RendererProperties.PROCESS_NODE_INSET_WIDTH;
         double w = prop.getWidth() - RendererProperties.PROCESS_NODE_INSET_WIDTH * 2;
         double h = prop.getHeight() - RendererProperties.PROCESS_NODE_INSET_WIDTH * 2;
-        double l = w * pathway.getPercentage();
+        double l = w * graphPathway.getPercentage();
 
         ctx.save();
         setColourProperties(ctx, ColourProfileType.NORMAL);
@@ -75,7 +75,7 @@ public class ProcessNodeRenderer000 extends ProcessNodeAbstractRenderer {
         ctx.lineTo(x, y);
         ctx.lineTo(x, y + h);
         ctx.lineTo(x + l, y + h);
-        if(pathway.getPercentage()>0.99){
+        if(graphPathway.getPercentage()>0.99){
             ctx.closePath();
         }
         ctx.stroke();

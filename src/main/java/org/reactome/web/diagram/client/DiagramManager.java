@@ -26,33 +26,33 @@ class DiagramManager {
         displayManager.display(c.getMinX(), c.getMinY(), c.getMaxX(), c.getMaxY(), animation);
     }
 
-    public Set<DiagramObject> getRelatedDiagramObjects(DatabaseObject item) {
+    public Set<DiagramObject> getRelatedDiagramObjects(GraphObject item) {
         Set<DiagramObject> toDisplay = new HashSet<>();
-        if (item instanceof ReactionLikeEvent) {
-            toDisplay.addAll(getElementsToDisplay((ReactionLikeEvent) item));
-        } else if (item instanceof PhysicalEntity) {
-            PhysicalEntity pe = (PhysicalEntity) item;
-            for (ReactionLikeEvent rle : pe.participatesIn()) {
+        if (item instanceof GraphReactionLikeEvent) {
+            toDisplay.addAll(getElementsToDisplay((GraphReactionLikeEvent) item));
+        } else if (item instanceof GraphPhysicalEntity) {
+            GraphPhysicalEntity pe = (GraphPhysicalEntity) item;
+            for (GraphReactionLikeEvent rle : pe.participatesIn()) {
                 toDisplay.addAll(getElementsToDisplay(rle));
             }
-        } else if (item instanceof Pathway) {
+        } else if (item instanceof GraphPathway) {
             toDisplay.addAll(item.getDiagramObjects());
-        } else if (item instanceof Subpathway) {
-            Subpathway subpathway = (Subpathway) item;
+        } else if (item instanceof GraphSubpathway) {
+            GraphSubpathway subpathway = (GraphSubpathway) item;
             //DO NOT CALL subpathway.getDiagramObjects here because we need also the participants :)
-            for (ReactionLikeEvent rle : subpathway.getContainedEvents()) {
+            for (GraphReactionLikeEvent rle : subpathway.getContainedEvents()) {
                 toDisplay.addAll(getElementsToDisplay(rle));
             }
         }
         return toDisplay;
     }
 
-    public void displayDiagramObjects(DatabaseObject item) {
+    public void displayDiagramObjects(GraphObject item) {
         Set<DiagramObject> toDisplay = getRelatedDiagramObjects(item);
         this.displayManager.display(toDisplay, true);
     }
 
-    private Collection<DiagramObject> getElementsToDisplay(ReactionLikeEvent rle) {
+    private Collection<DiagramObject> getElementsToDisplay(GraphReactionLikeEvent rle) {
         Set<DiagramObject> toDisplay = new HashSet<>(rle.getDiagramObjects());
         Set<Long> target = new HashSet<>();
         for (DiagramObject diagramObject : toDisplay) {
@@ -67,10 +67,10 @@ class DiagramManager {
         return toDisplay;
     }
 
-    private Collection<DiagramObject> getDiagramObjectsParticipatingInReaction(Collection<PhysicalEntity> entities,
+    private Collection<DiagramObject> getDiagramObjectsParticipatingInReaction(Collection<GraphPhysicalEntity> entities,
                                                                                Set<Long> target) {
         Set<DiagramObject> rtn = new HashSet<>();
-        for (PhysicalEntity entity : entities) {
+        for (GraphPhysicalEntity entity : entities) {
             for (DiagramObject object : entity.getDiagramObjects()) {
                 if (object instanceof Node) {
                     Node node = (Node) object;

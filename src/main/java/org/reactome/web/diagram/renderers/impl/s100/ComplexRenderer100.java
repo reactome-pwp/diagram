@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.renderers.impl.s100;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import org.reactome.web.diagram.data.graph.model.Complex;
+import org.reactome.web.diagram.data.graph.model.GraphComplex;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -26,11 +26,11 @@ import java.util.Map;
 public class ComplexRenderer100 extends ComplexAbstractRenderer {
     @Override
     public Double getExpressionHovered(DiagramObject item, Coordinate pos, int t) {
-        Complex complex = item.getDatabaseObject();
+        GraphComplex complex = item.getGraphObject();
         NodeProperties prop = ((Node) item).getProp();
 
         Map<String, Double> participants = complex.getParticipantsExpression(t);
-        List<Double> expression = new LinkedList<Double>(participants.values());
+        List<Double> expression = new LinkedList<>(participants.values());
         if(expression.isEmpty()) return null;
 
         Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
@@ -46,7 +46,7 @@ public class ComplexRenderer100 extends ComplexAbstractRenderer {
 
     @Override
     public void drawEnrichment(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, Double factor, Coordinate offset) {
-        Complex complex = item.getDatabaseObject();
+        GraphComplex complex = item.getGraphObject();
         double percentage = complex.getHitParticipants().size() / (double) complex.getParticipants().size();
 
         Node node = (Node) item;
@@ -78,7 +78,7 @@ public class ComplexRenderer100 extends ComplexAbstractRenderer {
 
     @Override
     public void drawExpression(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset) {
-        Complex complex = item.getDatabaseObject();
+        GraphComplex complex = item.getGraphObject();
         Node node = (Node) item;
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
 
@@ -91,7 +91,7 @@ public class ComplexRenderer100 extends ComplexAbstractRenderer {
         ctx.restore();
 
         Map<String, Double> participants = complex.getParticipantsExpression(t);
-        List<Double> expression = new LinkedList<Double>(participants.values());
+        List<Double> expression = new LinkedList<>(participants.values());
         Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
         Double delta = prop.getWidth() / complex.getParticipants().size();
         double x = prop.getX();

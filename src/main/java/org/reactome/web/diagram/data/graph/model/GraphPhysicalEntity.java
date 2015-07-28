@@ -7,48 +7,48 @@ import java.util.*;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public abstract class PhysicalEntity extends DatabaseObject {
+public abstract class GraphPhysicalEntity extends GraphObject {
 
     protected String identifier;
     protected String sampleIdentifier;
-    protected List<PhysicalEntity> children = new ArrayList<PhysicalEntity>();
+    protected List<GraphPhysicalEntity> children = new ArrayList<>();
             
-    private List<ReactionLikeEvent> isInputIn = new ArrayList<ReactionLikeEvent>();
-    private List<ReactionLikeEvent> isOutputIn = new ArrayList<ReactionLikeEvent>();
-    private List<ReactionLikeEvent> isCatalystIn = new ArrayList<ReactionLikeEvent>();
-    private List<ReactionLikeEvent> isActivatorIn = new ArrayList<ReactionLikeEvent>();
-    private List<ReactionLikeEvent> isInhibitorIn = new ArrayList<ReactionLikeEvent>();
+    private List<GraphReactionLikeEvent> isInputIn = new ArrayList<>();
+    private List<GraphReactionLikeEvent> isOutputIn = new ArrayList<>();
+    private List<GraphReactionLikeEvent> isCatalystIn = new ArrayList<>();
+    private List<GraphReactionLikeEvent> isActivatorIn = new ArrayList<>();
+    private List<GraphReactionLikeEvent> isInhibitorIn = new ArrayList<>();
 
-    public PhysicalEntity(EntityNode node) {
+    public GraphPhysicalEntity(EntityNode node) {
         super(node);
         this.identifier = node.getIdentifier();
     }
 
-    public boolean addParent(List<PhysicalEntity> parents){
+    public boolean addParent(List<GraphPhysicalEntity> parents){
         return this.parents.addAll(parents);
     }
 
-    public boolean addChildren(List<PhysicalEntity> children){
+    public boolean addChildren(List<GraphPhysicalEntity> children){
         return this.children.addAll(children);
     }
 
-    public boolean addInputIn(ReactionLikeEvent rle){
+    public boolean addInputIn(GraphReactionLikeEvent rle){
         return isInputIn.add(rle);
     }
 
-    public boolean addOutputIn(ReactionLikeEvent rle){
+    public boolean addOutputIn(GraphReactionLikeEvent rle){
         return isOutputIn.add(rle);
     }
 
-    public boolean addCatalystIn(ReactionLikeEvent rle){
+    public boolean addCatalystIn(GraphReactionLikeEvent rle){
         return isCatalystIn.add(rle);
     }
 
-    public boolean addActivatorIn(ReactionLikeEvent rle){
+    public boolean addActivatorIn(GraphReactionLikeEvent rle){
         return isActivatorIn.add(rle);
     }
 
-    public boolean addInhibitorIn(ReactionLikeEvent rle){
+    public boolean addInhibitorIn(GraphReactionLikeEvent rle){
         return isInhibitorIn.add(rle);
     }
 
@@ -72,13 +72,13 @@ public abstract class PhysicalEntity extends DatabaseObject {
     }
 
     public Set<String> getParticipants(){
-        Set<String> rtn = new HashSet<String>();
+        Set<String> rtn = new HashSet<>();
         rtn.add(identifier);
         return rtn;
     }
 
     public Map<String, Double> getParticipantsExpression(int column){
-        Map<String, Double> rtn = new HashMap<String, Double>();
+        Map<String, Double> rtn = new HashMap<>();
         if(this.isHit()) {
             rtn.put(sampleIdentifier, this.getExpression(column));
         }
@@ -86,47 +86,47 @@ public abstract class PhysicalEntity extends DatabaseObject {
     }
 
     public Set<String> getHitParticipants(){
-        Set<String> rtn = new HashSet<String>();
+        Set<String> rtn = new HashSet<>();
         if(this.isHit()) {
             rtn.add(sampleIdentifier);
         }
         return rtn;
     }
 
-    public Set<PhysicalEntity> getParentLocations() {
-        Set<PhysicalEntity> rtn = new HashSet<PhysicalEntity>();
-        for (PhysicalEntity parent : parents) {
+    public Set<GraphPhysicalEntity> getParentLocations() {
+        Set<GraphPhysicalEntity> rtn = new HashSet<>();
+        for (GraphPhysicalEntity parent : parents) {
             rtn.addAll(parent.getParentDiagramIds());
         }
         return rtn;
     }
 
-    private Set<PhysicalEntity> getParentDiagramIds(){
-        Set<PhysicalEntity> rtn = new HashSet<PhysicalEntity>();
+    private Set<GraphPhysicalEntity> getParentDiagramIds(){
+        Set<GraphPhysicalEntity> rtn = new HashSet<>();
         if(!getDiagramObjects().isEmpty()){
             rtn.add(this);
         }
-        for (PhysicalEntity parent : parents) {
+        for (GraphPhysicalEntity parent : parents) {
             rtn.addAll(parent.getParentDiagramIds());
         }
         return rtn;
     }
 
-    public Set<ReactionLikeEvent> participatesIn(){
-        Set<ReactionLikeEvent> rtn = new HashSet<ReactionLikeEvent>();
-        for (ReactionLikeEvent rle : isInputIn) {
+    public Set<GraphReactionLikeEvent> participatesIn(){
+        Set<GraphReactionLikeEvent> rtn = new HashSet<>();
+        for (GraphReactionLikeEvent rle : isInputIn) {
             rtn.add(rle);
         }
-        for (ReactionLikeEvent rle : isOutputIn) {
+        for (GraphReactionLikeEvent rle : isOutputIn) {
             rtn.add(rle);
         }
-        for (ReactionLikeEvent rle : isCatalystIn) {
+        for (GraphReactionLikeEvent rle : isCatalystIn) {
             rtn.add(rle);
         }
-        for (ReactionLikeEvent rle : isActivatorIn) {
+        for (GraphReactionLikeEvent rle : isActivatorIn) {
             rtn.add(rle);
         }
-        for (ReactionLikeEvent rle : isInhibitorIn) {
+        for (GraphReactionLikeEvent rle : isInhibitorIn) {
             rtn .add(rle);
         }
         return rtn;

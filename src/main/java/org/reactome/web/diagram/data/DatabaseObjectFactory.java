@@ -4,7 +4,10 @@ import com.google.gwt.core.client.GWT;
 import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.graph.model.factory.ModelFactoryException;
 import org.reactome.web.diagram.data.graph.model.factory.SchemaClass;
-import org.reactome.web.diagram.data.graph.raw.*;
+import org.reactome.web.diagram.data.graph.raw.EntityNode;
+import org.reactome.web.diagram.data.graph.raw.EventNode;
+import org.reactome.web.diagram.data.graph.raw.GraphNode;
+import org.reactome.web.diagram.data.graph.raw.SubpathwayRaw;
 
 /**
  * This factory is created and kept for every diagram in its context. This is meant to keep previous loaded
@@ -16,37 +19,37 @@ public abstract class DatabaseObjectFactory {
     //LayoutLoader is in charge of update the content when a new
     public static DiagramContent content;
 
-    public static DatabaseObject getOrCreateDatabaseObject(GraphNode node){
+    public static GraphObject getOrCreateDatabaseObject(GraphNode node){
         if(node ==null || node.getDbId()==null){
             throw new RuntimeException("It is not possible to create a DatabaseObject for " + node);
         }
 
-        DatabaseObject dbObject = content.getDatabaseObject(node.getDbId());
+        GraphObject dbObject = content.getDatabaseObject(node.getDbId());
         if (dbObject != null) return dbObject;
 
         String auxSchemaClass = node.getSchemaClass();
         SchemaClass schemaClass = SchemaClass.getSchemaClass(auxSchemaClass);
 
         switch (schemaClass){
-            case CANDIDATE_SET:                     dbObject = new CandidateSet((EntityNode) node);                    break;
-            case COMPLEX:                           dbObject = new Complex((EntityNode) node);                         break;
-            case DEFINED_SET:                       dbObject = new DefinedSet((EntityNode) node);                      break;
-            case ENTITY_SET:                        dbObject = new EntitySet((EntityNode) node);                       break;
-            case ENTITY_WITH_ACCESSIONED_SEQUENCE:  dbObject = new EntityWithAccessionedSequence((EntityNode) node);   break;
-            case GENOME_ENCODED_ENTITY:             dbObject = new GenomeEncodedEntity((EntityNode) node);             break;
-            case OPEN_SET:                          dbObject = new OpenSet((EntityNode) node);                         break;
-            case OTHER_ENTITY:                      dbObject = new OtherEntity((EntityNode) node);                     break;
-            case PATHWAY:                           dbObject = new Pathway((EntityNode) node);                          break;
-            case POLYMER:                           dbObject = new Polymer((EntityNode) node);                         break;
-            case SIMPLE_ENTITY:                     dbObject = new SimpleEntity((EntityNode) node);                    break;
-            case BLACK_BOX_EVENT:                   dbObject = new BlackBoxEvent((EventNode) node);                    break;
-            case DEPOLYMERISATION:                  dbObject = new Depolymerisation((EventNode) node);                 break;
-            case FAILED_REACTION:                   dbObject = new FailedReaction((EventNode) node);                   break;
-            case POLYMERISATION:                    dbObject = new Polymerisation((EventNode) node);                   break;
-            case REACTION:                          dbObject = new Reaction((EventNode) node);                         break;
-            case GO_CELLULAR_COMPONENT:             dbObject = new GO_CellularComponent((EntityNode) node);            break;
-            case COMPARTMENT:                       dbObject = new Compartment((EntityNode) node);                     break;
-            case ENTITY_COMPARTMENT:                dbObject = new EntityCompartment((EntityNode) node);               break;
+            case CANDIDATE_SET:                     dbObject = new GraphCandidateSet((EntityNode) node);                    break;
+            case COMPLEX:                           dbObject = new GraphComplex((EntityNode) node);                         break;
+            case DEFINED_SET:                       dbObject = new GraphDefinedSet((EntityNode) node);                      break;
+            case ENTITY_SET:                        dbObject = new GraphEntitySet((EntityNode) node);                       break;
+            case ENTITY_WITH_ACCESSIONED_SEQUENCE:  dbObject = new GraphEntityWithAccessionedSequence((EntityNode) node);   break;
+            case GENOME_ENCODED_ENTITY:             dbObject = new GraphGenomeEncodedEntity((EntityNode) node);             break;
+            case OPEN_SET:                          dbObject = new GraphOpenSet((EntityNode) node);                         break;
+            case OTHER_ENTITY:                      dbObject = new GraphOtherEntityGraph((EntityNode) node);                break;
+            case PATHWAY:                           dbObject = new GraphPathway((EntityNode) node);                         break;
+            case POLYMER:                           dbObject = new GraphPolymer((EntityNode) node);                         break;
+            case SIMPLE_ENTITY:                     dbObject = new GraphSimpleEntityGraph((EntityNode) node);               break;
+            case BLACK_BOX_EVENT:                   dbObject = new GraphBlackBoxEventGraph((EventNode) node);               break;
+            case DEPOLYMERISATION:                  dbObject = new GraphDepolymerisation((EventNode) node);                 break;
+            case FAILED_REACTION:                   dbObject = new GraphFailedReaction((EventNode) node);                   break;
+            case POLYMERISATION:                    dbObject = new GraphPolymerisation((EventNode) node);                   break;
+            case REACTION:                          dbObject = new GraphReaction((EventNode) node);                         break;
+            case GO_CELLULAR_COMPONENT:             dbObject = new GraphGO_CellularComponent((EntityNode) node);            break;
+            case COMPARTMENT:                       dbObject = new GraphCompartment((EntityNode) node);                     break;
+            case ENTITY_COMPARTMENT:                dbObject = new GraphEntityCompartment((EntityNode) node);               break;
             default:
                 String msg = "It is not possible to create a DatabaseObject. " + node;
                 GWT.log(msg);
@@ -57,19 +60,19 @@ public abstract class DatabaseObjectFactory {
         return dbObject;
     }
 
-    public static Subpathway getOrCreateDatabaseObject(SubpathwayRaw subpathway){
+    public static GraphSubpathway getOrCreateDatabaseObject(SubpathwayRaw subpathway){
         if(subpathway ==null || subpathway.getDbId()==null){
             throw new RuntimeException("It is not possible to create a DatabaseObject for " + subpathway);
         }
 
-        Subpathway rtn = (Subpathway) content.getDatabaseObject(subpathway.getDbId());
+        GraphSubpathway rtn = (GraphSubpathway) content.getDatabaseObject(subpathway.getDbId());
         if (rtn != null) return rtn;
 
-        rtn = new Subpathway(subpathway);
+        rtn = new GraphSubpathway(subpathway);
         for (Long id : subpathway.getEvents()) {
-            DatabaseObject databaseObject = content.getDatabaseObject(id);
-            if(databaseObject!=null && databaseObject instanceof ReactionLikeEvent){
-                rtn.addContainedEvent((ReactionLikeEvent) databaseObject);
+            GraphObject graphObject = content.getDatabaseObject(id);
+            if(graphObject !=null && graphObject instanceof GraphReactionLikeEvent){
+                rtn.addContainedEvent((GraphReactionLikeEvent) graphObject);
             }
         }
 

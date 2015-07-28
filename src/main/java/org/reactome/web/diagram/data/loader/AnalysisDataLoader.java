@@ -7,7 +7,7 @@ import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.analysis.*;
 import org.reactome.web.diagram.data.analysis.factory.AnalysisModelException;
 import org.reactome.web.diagram.data.analysis.factory.AnalysisModelFactory;
-import org.reactome.web.diagram.data.graph.model.Pathway;
+import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.events.AnalysisResultErrorEvent;
 import org.reactome.web.diagram.events.AnalysisResultLoadedEvent;
 import org.reactome.web.diagram.events.AnalysisResultRequestedEvent;
@@ -249,11 +249,11 @@ public class AnalysisDataLoader implements AnalysisLoaderHandler {
         AnalysisLoaderHandler handler;
         Request request;
 
-        public PathwaySummariesLoader(AnalysisLoaderHandler handler, Set<Pathway> pathways, AnalysisStatus analysisStatus) {
+        public PathwaySummariesLoader(AnalysisLoaderHandler handler, Set<GraphPathway> graphPathways, AnalysisStatus analysisStatus) {
             this.handler = handler;
             String url = PREFIX + analysisStatus.getToken() + "/filter/pathways?resource=" + analysisStatus.getResource();
             StringBuilder postData = new StringBuilder();
-            for (Pathway pathway : pathways) {
+            for (GraphPathway pathway : graphPathways) {
                 postData.append(pathway.getDbId().toString()).append(",");
             }
             if (postData.length() > 0) postData.deleteCharAt(postData.length() - 1);

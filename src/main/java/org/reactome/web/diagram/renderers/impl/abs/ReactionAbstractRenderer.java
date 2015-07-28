@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.renderers.impl.abs;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import org.reactome.web.diagram.data.graph.model.ReactionLikeEvent;
+import org.reactome.web.diagram.data.graph.model.GraphReactionLikeEvent;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Edge;
@@ -77,7 +77,7 @@ public abstract class ReactionAbstractRenderer extends EdgeAbstractRenderer {
         if (!isVisible(item)) return;
         Edge edge = (Edge) item;
         try {
-            ReactionLikeEvent rle = edge.getDatabaseObject();
+            GraphReactionLikeEvent rle = edge.getGraphObject();
             //It can only happen if the graph hasn't been loaded yet, so no hovering until then :(
             if (rle == null) return;
             drawSegments(ctx, item, rle.getInputs(), factor, offset);

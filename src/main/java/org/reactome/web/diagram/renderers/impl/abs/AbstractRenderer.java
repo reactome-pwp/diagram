@@ -1,8 +1,8 @@
 package org.reactome.web.diagram.renderers.impl.abs;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
-import org.reactome.web.diagram.data.graph.model.PhysicalEntity;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.impl.SegmentFactory;
 import org.reactome.web.diagram.data.layout.impl.ShapeFactory;
@@ -33,8 +33,8 @@ public abstract class AbstractRenderer implements Renderer {
 
     @Override
     public void drawExpression(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset){
-        DatabaseObject databaseObject = item.getDatabaseObject();
-        List<Double> expression = databaseObject.getExpression();
+        GraphObject graphObject = item.getGraphObject();
+        List<Double> expression = graphObject.getExpression();
         double value = min;
         if(expression!=null) {
             value = expression.get(t);
@@ -86,11 +86,11 @@ public abstract class AbstractRenderer implements Renderer {
 
     public void drawSegments(AdvancedContext2d ctx,
                              DiagramObject item,
-                             List<PhysicalEntity> physicalEntities,
+                             List<GraphPhysicalEntity> physicalEntities,
                              Double factor,
                              Coordinate offset) {
         boolean stoichiometryVisible = RendererManager.get().getConnectorRenderer().stoichiometryVisible();
-        for(PhysicalEntity pe : physicalEntities) {
+        for(GraphPhysicalEntity pe : physicalEntities) {
             if(!isVisible(pe)) continue;
             for(DiagramObject obj : pe.getDiagramObjects()) {
                 Node node = (Node) obj;
@@ -110,7 +110,7 @@ public abstract class AbstractRenderer implements Renderer {
         }
     }
 
-    public boolean isVisible(PhysicalEntity pe) {
+    public boolean isVisible(GraphPhysicalEntity pe) {
         for (DiagramObject diagramObject : pe.getDiagramObjects()) {
             Renderer renderer = RendererManager.get().getRenderer(diagramObject);
             if (renderer == null || !renderer.isVisible(diagramObject)) {

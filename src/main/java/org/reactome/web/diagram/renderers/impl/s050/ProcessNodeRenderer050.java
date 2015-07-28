@@ -1,6 +1,6 @@
 package org.reactome.web.diagram.renderers.impl.s050;
 
-import org.reactome.web.diagram.data.graph.model.Pathway;
+import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -42,7 +42,7 @@ public class ProcessNodeRenderer050 extends ProcessNodeAbstractRenderer {
         if(!isVisible(item)) return;
 
         Node node = (Node) item;
-        Pathway pathway = node.getDatabaseObject();
+        GraphPathway pathway = node.getGraphObject();
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
         double x = prop.getX() + RendererProperties.PROCESS_NODE_INSET_WIDTH;
         double y = prop.getY() + RendererProperties.PROCESS_NODE_INSET_WIDTH;

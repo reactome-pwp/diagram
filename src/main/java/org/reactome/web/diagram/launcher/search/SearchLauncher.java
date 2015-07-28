@@ -11,7 +11,7 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.DiagramContent;
-import org.reactome.web.diagram.data.graph.model.DatabaseObject;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.events.DiagramLoadedEvent;
 import org.reactome.web.diagram.events.DiagramRequestedEvent;
 import org.reactome.web.diagram.events.LayoutLoadedEvent;
@@ -41,7 +41,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     private static String OPENING_TEXT = "Search for any diagram term ...";
 
     private EventBus eventBus;
-    private SuggestionsProvider<DatabaseObject> suggestionsProvider;
+    private SuggestionsProvider<GraphObject> suggestionsProvider;
 
     private SearchBox input = null;
     private PwpButton searchBtn = null;
@@ -110,7 +110,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     @Override
     public void onSearchUpdated(SearchBoxUpdatedEvent event) {
         if(suggestionsProvider!=null) {
-            List<DatabaseObject> suggestions = suggestionsProvider.getSuggestions(input.getText().trim());
+            List<GraphObject> suggestions = suggestionsProvider.getSuggestions(input.getText().trim());
             fireEvent(new SearchPerformedEvent(suggestions));
         }
     }

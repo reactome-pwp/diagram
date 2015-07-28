@@ -15,9 +15,9 @@ public interface DiagramViewer extends IsWidget, HasHandlers, RequiresResize {
 
     HandlerRegistration addCanvasNotSupportedEventHandler(CanvasNotSupportedHandler handler);
 
-    HandlerRegistration addDatabaseObjectSelectedHandler(DatabaseObjectSelectedHandler handler);
+    HandlerRegistration addDatabaseObjectSelectedHandler(GraphObjectSelectedHandler handler);
 
-    HandlerRegistration addDatabaseObjectHoveredHandler(DatabaseObjectHoveredHandler handler);
+    HandlerRegistration addDatabaseObjectHoveredHandler(GraphObjectHoveredHandler handler);
 
     HandlerRegistration addDiagramLoadedHandler(DiagramLoadedHandler handler);
 
