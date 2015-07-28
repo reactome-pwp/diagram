@@ -21,7 +21,7 @@ import java.util.Set;
 public class DiagramContext {
     static final double ANALYSIS_MIN_PERCENTAGE = 0.03;
     //The maximum number of elements for every QuadTree quadrant node
-    static final int NUMBER_OF_ELEMENTS = 20;
+    static final int NUMBER_OF_ELEMENTS = 25;
 
     private DiagramContent content;
     private DiagramStatus diagramStatus;
