@@ -369,7 +369,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             renderer.draw(this.fadeOut, item, factor, offset);
             if (item instanceof Node) {
                 Node node = (Node) item;
-                connectorRenderer.draw(this.reactions, this.reactionDecorators, node, factor, offset);
+                connectorRenderer.draw(this.fadeOut, this.fadeOut, node, factor, offset);
             }
         }
         renderer.setTextProperties(this.fadeOut, ColourProfileType.FADE_OUT);
