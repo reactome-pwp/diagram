@@ -136,6 +136,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         cleanCanvas(this.entitiesHighlight);
         cleanCanvas(this.reactionsHighlight);
         for (DiagramObject item : items) {
+            if(item.getIsFadeOut()!=null) continue;
             Renderer renderer = rendererManager.getRenderer(item);
             if (renderer == null) return;
             if (item instanceof Node) {
