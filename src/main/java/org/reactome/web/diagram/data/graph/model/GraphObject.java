@@ -100,7 +100,7 @@ public abstract class GraphObject implements Comparable<GraphObject> {
     }
 
     public SchemaClass getSchemaClass() {
-        return SchemaClass.getSchemaClass(getClass().getSimpleName());
+        return SchemaClass.getSchemaClass(getClass().getSimpleName().replace("Graph", ""));
     }
 
     public String getClassName() {
