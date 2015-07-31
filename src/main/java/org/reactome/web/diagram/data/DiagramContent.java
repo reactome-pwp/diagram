@@ -68,6 +68,13 @@ public class DiagramContent {
         }
     }
 
+    public void cache(List<? extends DiagramObject> diagramObjects){
+        if(diagramObjects==null) return;
+        for (DiagramObject diagramObject : diagramObjects) {
+            this.diagramObjectMap.put(diagramObject.getId(), diagramObject);
+        }
+    }
+
     public boolean containsOnlyEncapsultedPathways(){
         return (getDatabaseObjects().size() == encapsulatedPathways.size());
     }

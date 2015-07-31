@@ -28,11 +28,12 @@ public abstract class DiagramContentFactory {
         content.hideCompartmentInName = diagram.getHideCompartmentInName();
         content.isDisease = diagram.getIsDisease();
 
-        initialiseObjects(content.diagramObjectMap, diagram.getNodes());
-        initialiseObjects(content.diagramObjectMap, diagram.getNotes());
-        initialiseObjects(content.diagramObjectMap, diagram.getEdges());
-        initialiseObjects(content.diagramObjectMap, diagram.getLinks());
-        initialiseObjects(content.diagramObjectMap, diagram.getCompartments());
+        content.cache(diagram.getNodes());
+        content.cache(diagram.getNodes());
+        content.cache(diagram.getNotes());
+        content.cache(diagram.getEdges());
+        content.cache(diagram.getLinks());
+        content.cache(diagram.getCompartments());
 
         //Get normal, diseased components etc.
 //        content.normalComponents = getDiagramObjectSet(content.diagramObjectMap, diagram.getNormalComponents());
@@ -45,13 +46,6 @@ public abstract class DiagramContentFactory {
         content.maxY = diagram.getMaxY().doubleValue();
 
         return content;
-    }
-
-    private static void initialiseObjects(Map<Long, DiagramObject> map, Collection<? extends DiagramObject> objects){
-        if(objects==null) return;
-        for (DiagramObject object : objects) {
-            map.put(object.getId(), object);
-        }
     }
 
     private static Set<DiagramObject> getDiagramObjectSet(Map<Long, DiagramObject> map, Set<Long> list){
@@ -68,13 +62,13 @@ public abstract class DiagramContentFactory {
     }
 
     public static void fillGraphContent(DiagramContent content, Graph graph){
-        DatabaseObjectFactory.content = content;
+        GraphObjectFactory.content = content;
 
         for (EntityNode node : graph.getNodes()) {
-            DatabaseObjectFactory.getOrCreateDatabaseObject(node);
+            GraphObjectFactory.getOrCreateDatabaseObject(node);
         }
         for (EventNode edge : graph.getEdges()) {
-            DatabaseObjectFactory.getOrCreateDatabaseObject(edge);
+            GraphObjectFactory.getOrCreateDatabaseObject(edge);
         }
 
         for (EntityNode node : graph.getNodes()) {
@@ -105,9 +99,10 @@ public abstract class DiagramContentFactory {
         for (EventNode edge : graph.getEdges()) {
             GraphReactionLikeEvent event = (GraphReactionLikeEvent) content.getDatabaseObject(edge.getDbId());
 
-            DiagramObject diagramObject = DatabaseObjectFactory.content.getDiagramObject(edge.getDiagramId());
-            event.addDiagramObject(diagramObject);
-            diagramObject.setGraphObject(event);
+            for (DiagramObject diagramObject : getDiagramObjects(edge.getDiagramIds())) {
+                event.addDiagramObject(diagramObject);
+                diagramObject.setGraphObject(event);
+            }
 
             List<GraphPhysicalEntity> inputs = getDatabaseObjects(edge.getInputs());
             event.setInputs(inputs);
@@ -136,7 +131,7 @@ public abstract class DiagramContentFactory {
 
         if(graph.getSubpathways()!=null) {
             for (SubpathwayRaw subpathway : graph.getSubpathways()) {
-                GraphSubpathway sp = DatabaseObjectFactory.getOrCreateDatabaseObject(subpathway);
+                GraphSubpathway sp = GraphObjectFactory.getOrCreateDatabaseObject(subpathway);
                 for (Long event : subpathway.getEvents()) {
                     sp.addContainedEvent((GraphReactionLikeEvent) content.getDatabaseObject(event));
                 }
@@ -148,7 +143,7 @@ public abstract class DiagramContentFactory {
         List<DiagramObject> rtn = new ArrayList<>();
         if(ids!=null){
             for (Long id : ids) {
-                rtn.add(DatabaseObjectFactory.content.getDiagramObject(id));
+                rtn.add(GraphObjectFactory.content.getDiagramObject(id));
             }
         }
         return rtn;
@@ -159,7 +154,7 @@ public abstract class DiagramContentFactory {
         if(dbIds!=null) {
             for (Long dbId : dbIds) {
                 //noinspection unchecked
-                T t = (T) DatabaseObjectFactory.content.getDatabaseObject(dbId);
+                T t = (T) GraphObjectFactory.content.getDatabaseObject(dbId);
                 if(t!=null) {
                     rtn.add(t);
                 }

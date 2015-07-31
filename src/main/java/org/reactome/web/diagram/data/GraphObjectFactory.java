@@ -15,7 +15,7 @@ import org.reactome.web.diagram.data.graph.raw.SubpathwayRaw;
  *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public abstract class DatabaseObjectFactory {
+public abstract class GraphObjectFactory {
     //LayoutLoader is in charge of update the content when a new
     public static DiagramContent content;
 

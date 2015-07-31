@@ -47,8 +47,8 @@ public class WidgetTest implements EntryPoint {
     public void initialise() {
         SplitLayoutPanel slp = new SplitLayoutPanel(10);
         slp.addWest(getDemoLeftPanel(), 83);
-        slp.addNorth(getDemoTopPanel(), 25);
-//        slp.addNorth(getDiseasePanel(), 50);
+//        slp.addNorth(getDemoTopPanel(), 25);
+        slp.addNorth(getDiseasePanel(), 50);
         slp.add(diagram);
         RootLayoutPanel.get().add(slp);
     }
@@ -156,6 +156,8 @@ public class WidgetTest implements EntryPoint {
         fp.add(new InlineLabel(" "));
         fp.add(getLoadButton("R-HSA-5637815", "Signaling by Ligand-Responsive EGFR Variants in Cancer"));
         fp.add(getLoadButton("R-HSA-2219530", "Constitutive Signaling by Aberrant PI3K in Cancer"));
+//        fp.add(getLoadButton("R-HSA-5362768", ""));
+        fp.add(getLoadButton("R-HSA-5579009", ""));
         return fp;
     }
 

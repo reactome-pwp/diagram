@@ -40,9 +40,9 @@ import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.helper.ItemsDistribution;
 import org.reactome.web.diagram.renderers.helper.RenderType;
 import org.reactome.web.diagram.thumbnail.DiagramThumbnail;
+import org.reactome.web.diagram.tooltips.TooltipContainer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 import org.reactome.web.diagram.util.MapSet;
-import org.reactome.web.diagram.tooltips.TooltipContainer;
 import org.reactome.web.diagram.util.actions.UserActionsHandlers;
 import org.reactome.web.diagram.util.actions.UserActionsInstaller;
 
@@ -62,6 +62,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private AdvancedContext2d compartments;
     private AdvancedContext2d notes;
     private AdvancedContext2d links;
+
+    private AdvancedContext2d fadeOut;
 
     private AdvancedContext2d halo;
 
@@ -270,9 +272,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
             Set<DiagramObject> fadeOut = target.getElements(RenderType.FADE_OUT);
             if(fadeOut!=null) {
-                renderer.setColourProperties(ctx, ColourProfileType.FADE_OUT);
-                renderer.setTextProperties(text, ColourProfileType.FADE_OUT);
-                renderItems(renderer, ctx, fadeOut, factor, offset);
+                renderFadeoutItems(renderer, fadeOut, factor, offset);
             }
 
             if(analysisType.equals(AnalysisType.NONE)) {
@@ -332,9 +332,12 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         //Reactions to be drawn at the VERY END of it :)
         items = itemsDistribution.getAll("Reaction");
+        reactionRenderer.setColourProperties(this.fadeOut, ColourProfileType.FADE_OUT);
         if(!items.isEmpty()){ //No need to check for null here
             for (DiagramObject item : items) {
-                if (item.getIsDisease() != null) {
+                if(item.getIsFadeOut() != null) {
+                    reactionRenderer.draw(this.fadeOut, item, factor, offset);
+                } else if (item.getIsDisease() != null) {
                     reactions.save();
                     reactions.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
                     reactionRenderer.draw(reactions, item, factor, offset);
@@ -355,6 +358,23 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                 Node node = (Node) item;
                 connectorRenderer.draw(this.reactions, this.reactionDecorators, node, factor, offset);
             }
+        }
+    }
+
+    private void renderFadeoutItems(Renderer renderer, Set<DiagramObject> objects, double factor, Coordinate offset) {
+        ConnectorRenderer connectorRenderer = this.rendererManager.getConnectorRenderer();
+        renderer.setColourProperties(this.fadeOut, ColourProfileType.FADE_OUT);
+        for (DiagramObject item : objects) {
+            renderer.draw(this.fadeOut, item, factor, offset);
+            if (item instanceof Node) {
+                Node node = (Node) item;
+                connectorRenderer.draw(this.reactions, this.reactionDecorators, node, factor, offset);
+            }
+        }
+        renderer.setTextProperties(this.fadeOut, ColourProfileType.FADE_OUT);
+        this.fadeOut.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getText());
+        for (DiagramObject item : objects) {
+            renderer.drawText(this.fadeOut, item, factor, offset);
         }
     }
 
@@ -385,6 +405,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     }
 
     private void setCanvasesProperties(double factor){
+        this.fadeOut.setLineWidth(factor);
+        this.fadeOut.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
+
         this.links.setLineWidth(factor); //(RendererProperties.NODE_LINE_WIDTH);
         this.reactions.setLineWidth(factor);
         this.reactions.setLineWidth(factor); //(RendererProperties.NODE_LINE_WIDTH);
@@ -419,6 +442,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.notes = createCanvas(width, height);
         this.links = createCanvas(width, height);
 
+        this.fadeOut = createCanvas(width, height);
         this.halo = createCanvas(width, height);
 
         this.reactionsHighlight = createCanvas(width, height);

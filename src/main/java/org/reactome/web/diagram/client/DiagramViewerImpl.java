@@ -13,9 +13,9 @@ import com.google.gwt.user.client.ui.ResizeComposite;
 import org.reactome.web.diagram.common.DiagramAnimationHandler;
 import org.reactome.web.diagram.common.DisplayManager;
 import org.reactome.web.diagram.data.AnalysisStatus;
-import org.reactome.web.diagram.data.DatabaseObjectFactory;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
+import org.reactome.web.diagram.data.GraphObjectFactory;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
@@ -648,7 +648,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
             DiagramObject item = context.getContent().getDiagramObject(id);
 
             //TODO: The graph has to be pruned in the server side
-            if (item == null) continue;
+            if (item == null || item.getIsFadeOut()!=null) continue;
 
             if (item.getGraphObject() instanceof GraphPhysicalEntity || item.getGraphObject() instanceof GraphEvent) {
                 this.notifyHoveredExpression(item, model);
@@ -680,7 +680,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
             this.context.clearAnalysisOverlay();
             this.context = null;
         }
-        DatabaseObjectFactory.content = null;
+        GraphObjectFactory.content = null;
     }
 
     private void setContext(final DiagramContext context) {
@@ -688,7 +688,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
         this.context = context;
         contextMap.put(context.getContent().getStableId(), context);
-        DatabaseObjectFactory.content = context.getContent();
+        GraphObjectFactory.content = context.getContent();
 
         this.hovered = null;
 

@@ -23,6 +23,6 @@ public interface EventNode extends GraphNode {
 
     List<Long> getRequirements();
 
-    Long getDiagramId();
+    List<Long> getDiagramIds();
 
 }
