@@ -124,6 +124,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         double factor = status.getFactor();
         Coordinate offset = status.getOffset();
         for (DiagramObject item : items) {
+            if(item.getIsFadeOut()!=null) continue;
             Renderer renderer = RendererManager.get().getRenderer(item);
             if (renderer != null) {
                 renderer.highlight(this.halo, item, factor, offset);
@@ -152,6 +153,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         cleanCanvas(this.entitiesSelection);
         cleanCanvas(this.reactionsSelection);
         for (DiagramObject item : items) {
+            if(item.getIsFadeOut()!=null) continue;
             Renderer renderer = rendererManager.getRenderer(item);
             if (renderer == null) return;
             if (item instanceof Node) {
