@@ -28,7 +28,7 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
 
     public ContextDialogPanel(DiagramObject item) {
         super();
-        setAutoHideEnabled(false);
+        setAutoHideEnabled(true);
         setModal(false);
         setStyleName(RESOURCES.getCSS().popup());
 
@@ -37,13 +37,47 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
         FlowPanel fp = new FlowPanel();
         fp.add(this.pin = new PwpButton("Keeps the panel visible", RESOURCES.getCSS().pin(), this));
         fp.add(this.close = new PwpButton("Close", RESOURCES.getCSS().close(), this));
-        fp.add(new ContextInfoPanel());
+        fp.add(new ContextInfoPanel(item));
 
         setTitlePanel();
         setWidget(fp);
 
         center();
         show();
+    }
+
+    @Override
+    public void hide(boolean autoClosed) {
+        //The idea is to keep the panels open if the pin is pressed
+        if(autoClosed && !this.pinned) {
+            //noinspection ConstantConditions
+            super.hide(autoClosed);
+        //Or close them in any case when the hide is not automatically triggered ;)
+        }else if(!autoClosed){
+            //noinspection ConstantConditions
+            super.hide(autoClosed);
+        }
+    }
+
+    @Override
+    public void onClick(ClickEvent event) {
+        Button btn = (Button) event.getSource();
+        if(btn.equals(close)){
+            this.pinned = false;
+            hide();
+        }else if(btn.equals(pin)){
+            this.pinned = !this.pinned;
+        }
+        //Apply the right style here
+        if(this.pinned) {
+            pin.setStyleName(RESOURCES.getCSS().pinActive());
+        }else {
+            pin.setStyleName(RESOURCES.getCSS().pin());
+        }
+    }
+
+    public void restore(){
+        if(this.pinned) this.show();
     }
 
     private void setTitlePanel() {
@@ -53,28 +87,6 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
         SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(title.toString());
         getCaption().setHTML(safeHtml);
         getCaption().asWidget().setStyleName(RESOURCES.getCSS().header());
-    }
-
-    @Override
-    public void onClick(ClickEvent event) {
-        Button btn = (Button) event.getSource();
-        if(btn.equals(close)){
-            if(!this.pinned) {
-                this.hide();
-            }
-        }else if(btn.equals(pin)){
-            this.pinned = !this.pinned;
-            this.close.setEnabled(!this.pinned);
-            if(this.pinned) {
-                pin.setStyleName(RESOURCES.getCSS().pinActive());
-            }else {
-                pin.setStyleName(RESOURCES.getCSS().pin());
-            }
-        }
-    }
-
-    public void restore(){
-        if(this.pinned) this.show();
     }
 
 

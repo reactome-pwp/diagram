@@ -9,8 +9,10 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.context.dialogs.InteractorsDialogPanel;
 import org.reactome.web.diagram.context.dialogs.MoleculesDialogPanel;
 import org.reactome.web.diagram.context.dialogs.PathwaysDialogPanel;
+import org.reactome.web.diagram.data.layout.DiagramObject;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +29,7 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
 
     private DeckLayoutPanel container;
 
-    public ContextInfoPanel() {
+    public ContextInfoPanel(DiagramObject diagramObject) {
         FlowPanel buttonsPanel = new FlowPanel();
         buttonsPanel.setStyleName(RESOURCES.getCSS().buttonsPanel());
         buttonsPanel.add(this.molecules = getButton("Molecules", RESOURCES.molecules()));
@@ -37,9 +39,9 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
 
         this.container = new DeckLayoutPanel();
         this.container.setStyleName(RESOURCES.getCSS().container());
-        this.container.add(new MoleculesDialogPanel());
-        this.container.add(new PathwaysDialogPanel());
-        this.container.add(new PathwaysDialogPanel());
+        this.container.add(new MoleculesDialogPanel(diagramObject));
+        this.container.add(new PathwaysDialogPanel(diagramObject));
+        this.container.add(new InteractorsDialogPanel(diagramObject));
         this.container.showWidget(0);
         this.container.setAnimationVertical(true);
         this.container.setAnimationDuration(500);
