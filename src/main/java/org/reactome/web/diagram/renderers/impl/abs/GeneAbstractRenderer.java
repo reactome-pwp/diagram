@@ -21,6 +21,7 @@ public abstract class GeneAbstractRenderer extends NodeAbstractRenderer{
         if(!isVisible(item)) return;
         Node node = (Node) item;
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+        fillTextHolder(ctx, prop);
         shape(ctx, prop, node.getNeedDashedBorder());
         ctx.stroke();
     }
@@ -41,6 +42,21 @@ public abstract class GeneAbstractRenderer extends NodeAbstractRenderer{
         return true;
     }
 
+    public void fillTextHolder(AdvancedContext2d ctx, NodeProperties prop){
+        ctx.geneTextHolder(
+                prop.getX(),
+                prop.getY(),
+                prop.getWidth(),
+                prop.getHeight(),
+                RendererProperties.GENE_SYMBOL_WIDTH,
+                RendererProperties.ROUND_RECT_ARC_WIDTH
+        );
+        ctx.save();
+        ctx.setFillStyle(DiagramColours.get().PROFILE.getGene().getFill());
+        ctx.fill();
+        ctx.restore();
+    }
+
     @Override
     public void shape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed) {
         ctx.geneShape(
@@ -53,14 +69,6 @@ public abstract class GeneAbstractRenderer extends NodeAbstractRenderer{
                 RendererProperties.ARROW_LENGTH,
                 RendererProperties.ARROW_ANGLE
         );
-
-        //TODO: To be re-engineered
-//        Coordinate centre = node.getPosition().transform(factor, offset);
-//        ctx.save();
-//        ctx.setGlobalAlpha(0.1);
-//        ctx.roundedRectangle(prop.getX(), centre.getY(), prop.getWidth(), prop.getHeight() / 2, RendererProperties.ROUND_RECT_ARC_WIDTH);
-//        ctx.fill();
-//        ctx.restore();
     }
 
     @Override
