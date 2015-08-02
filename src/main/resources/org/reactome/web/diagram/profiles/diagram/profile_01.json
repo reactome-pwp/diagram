@@ -91,7 +91,7 @@
     "lighterText": "#000000"
   },
   "gene": {
-    "fill": "#000000",
+    "fill": "#F9F6F6",
     "fadeOutFill": "#CCCCCC",
     "lighterFill": "#CCCCCC",
     "stroke": "#000000",
