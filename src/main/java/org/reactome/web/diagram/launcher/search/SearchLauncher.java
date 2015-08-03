@@ -3,6 +3,7 @@ package org.reactome.web.diagram.launcher.search;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
@@ -24,10 +25,7 @@ import org.reactome.web.diagram.search.handlers.PanelCollapsedHandler;
 import org.reactome.web.diagram.search.handlers.PanelExpandedHandler;
 import org.reactome.web.diagram.search.provider.SuggestionsProvider;
 import org.reactome.web.diagram.search.provider.SuggestionsProviderImpl;
-import org.reactome.web.diagram.search.searchbox.SearchBox;
-import org.reactome.web.diagram.search.searchbox.SearchBoxArrowKeysHandler;
-import org.reactome.web.diagram.search.searchbox.SearchBoxUpdatedEvent;
-import org.reactome.web.diagram.search.searchbox.SearchBoxUpdatedHandler;
+import org.reactome.web.diagram.search.searchbox.*;
 
 import java.util.List;
 
@@ -35,7 +33,8 @@ import java.util.List;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class SearchLauncher extends AbsolutePanel implements ClickHandler,
-        DiagramLoadedHandler, DiagramRequestedHandler, LayoutLoadedHandler, SearchBoxUpdatedHandler {
+        DiagramLoadedHandler, DiagramRequestedHandler, LayoutLoadedHandler, SearchBoxUpdatedHandler,
+        SearchBoxArrowKeysHandler {
 
     @SuppressWarnings("FieldCanBeLocal")
     private static String OPENING_TEXT = "Search for any diagram term ...";
@@ -80,6 +79,14 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     public HandlerRegistration addSearchPerformedHandler(SearchPerformedHandler handler){
         return addHandler(handler, SearchPerformedEvent.TYPE);
+    }
+
+    @Override
+    public void onArrowKeysPressed(SearchBoxArrowKeysEvent event) {
+        if(event.getValue() == KeyCodes.KEY_ESCAPE) {
+            setFocus(false);
+            this.collapsePanel();
+        }
     }
 
     @Override
@@ -140,6 +147,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     private void initHandlers(){
         this.input.addSearchBoxUpdatedHandler(this);
+        this.input.addSearchBoxArrowKeysHandler(this);
 
         eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramLoadedEvent.TYPE, this);

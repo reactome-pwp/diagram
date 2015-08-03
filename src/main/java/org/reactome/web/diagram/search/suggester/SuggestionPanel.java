@@ -23,6 +23,7 @@ import org.reactome.web.diagram.search.handlers.SuggestionSelectedHandler;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
 import org.reactome.web.diagram.search.searchbox.SearchBoxArrowKeysEvent;
 import org.reactome.web.diagram.search.searchbox.SearchBoxArrowKeysHandler;
+import org.reactome.web.diagram.util.Console;
 
 import java.util.List;
 
@@ -110,6 +111,8 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
         dataProvider.addDataDisplay(this.suggestions);
         if (dataProvider.getList().isEmpty()) {
             fireEvent(new SuggestionSelectedEvent(null));
+        }else{
+            fireEvent(new SuggestionSelectedEvent(selectionModel.getSelectedObject()));
         }
     }
 
