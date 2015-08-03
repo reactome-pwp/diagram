@@ -11,10 +11,9 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.TextResource;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.*;
@@ -43,7 +42,7 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class DiagramKey extends AbsolutePanel implements GraphObjectHoveredHandler, GraphObjectSelectedHandler,
+public class DiagramKey extends DialogBox implements GraphObjectHoveredHandler, GraphObjectSelectedHandler,
         DiagramRequestedHandler, DiagramProfileChangedHandler, ClickHandler {
 
     private static final Double FACTOR = 0.82;
@@ -60,19 +59,24 @@ public class DiagramKey extends AbsolutePanel implements GraphObjectHoveredHandl
     private List<Canvas> canvases = new LinkedList<>();
 
     public DiagramKey(EventBus eventBus) {
-        this.setStyleName(RESOURCES.getCSS().diagramKeyPanel());
+        super(false, false);
         this.eventBus = eventBus;
         this.initHandlers();
 
-        this.add(new InlineLabel("Diagram key"), 20, 5);
-        this.add(new PwpButton("Close", RESOURCES.getCSS().close(), this));
+        setTitlePanel();
 
-        this.hover = this.createCanvas(200, 315);
-        this.items = this.createCanvas(200, 315);
-        this.selection = this.createCanvas(200, 315);
+        AbsolutePanel canvases = new AbsolutePanel();
+        canvases.setStyleName(RESOURCES.getCSS().diagramCanvases());
+        this.hover = this.createCanvas(canvases, 200, 315);
+        this.items = this.createCanvas(canvases, 200, 315);
+        this.selection = this.createCanvas(canvases, 200, 315);
 
-        this.add(new Image(RESOURCES.diagramKey()), 0, 345);
-        this.setVisible(false);
+        FlowPanel container = new FlowPanel();
+        container.add(new PwpButton("Close", RESOURCES.getCSS().close(), this));
+        container.add(canvases);
+        container.add(new Image(RESOURCES.diagramKey()));
+        setWidget(container);
+        setStyleName(RESOURCES.getCSS().diagramKeyPanel());
 
         try {
             diagram = DiagramObjectsFactory.getModelObject(Diagram.class, RESOURCES.diagramkeyJson().getText());
@@ -179,7 +183,12 @@ public class DiagramKey extends AbsolutePanel implements GraphObjectHoveredHandl
 
     @Override
     public void onClick(ClickEvent event) {
-        this.setVisible(false);
+        if(isShowing()){
+            hide();
+        }else {
+            center();
+            show();
+        }
     }
 
     @Override
@@ -218,18 +227,8 @@ public class DiagramKey extends AbsolutePanel implements GraphObjectHoveredHandl
 
     @Override
     public void setVisible(boolean visible) {
-        if (visible) {
-            addStyleName(RESOURCES.getCSS().diagramKeyPanelExpanded());
-            draw();
-            (new Timer() { //Timer is set due to a problem in firefox to render while css animation
-                @Override
-                public void run() {
-                    draw();
-                }
-            }).schedule(300);
-        } else {
-            removeStyleName(RESOURCES.getCSS().diagramKeyPanelExpanded());
-        }
+        super.setVisible(visible);
+        if(visible) draw();
     }
 
     private void cleanCanvas(Context2d ctx) {
@@ -242,14 +241,22 @@ public class DiagramKey extends AbsolutePanel implements GraphObjectHoveredHandl
         }
     }
 
-    private AdvancedContext2d createCanvas(int width, int height) {
+    private AdvancedContext2d createCanvas(AbsolutePanel container, int width, int height) {
         Canvas canvas = Canvas.createIfSupported();
         canvas.setCoordinateSpaceWidth(width);
         canvas.setCoordinateSpaceHeight(height);
         canvas.setPixelSize(width, height);
-        this.add(canvas, 0, 30);
+        container.add(canvas, 0, 10);
         this.canvases.add(canvas);
         return canvas.getContext2d().cast();
+    }
+
+    private void setTitlePanel() {
+        Label title = new Label("Diagram key");
+        title.setStyleName(RESOURCES.getCSS().headerText());
+        SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(title.toString());
+        getCaption().setHTML(safeHtml);
+        getCaption().asWidget().setStyleName(RESOURCES.getCSS().header());
     }
 
 
@@ -292,7 +299,11 @@ public class DiagramKey extends AbsolutePanel implements GraphObjectHoveredHandl
 
         String diagramKeyPanel();
 
-        String diagramKeyPanelExpanded();
+        String header();
+
+        String headerText();
+
+        String diagramCanvases();
 
         String close();
     }

@@ -23,13 +23,10 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
     private PwpButton diagramKeyBtn;
     private PwpButton settingBtn;
 
-
     public RightTopLauncherPanel(EventBus eventBus) {
         this.setStyleName(RESOURCES.getCSS().launcherPanel());
 
         this.diagramKey = new DiagramKey(eventBus);
-        this.add(diagramKey);
-
         this.settings = new SettingsMenuPanel(eventBus);
 
         this.diagramKeyBtn = new PwpButton("Diagram key", RESOURCES.getCSS().key(), this);
@@ -44,9 +41,13 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
     @Override
     public void onClick(ClickEvent event) {
         PwpButton btn = (PwpButton) event.getSource();
-        if(btn.equals(this.diagramKeyBtn)){
-            this.diagramKey.setVisible(true);
-        }else if(btn.equals(this.settingBtn)){
+        if (btn.equals(this.diagramKeyBtn)) {
+            if (this.diagramKey.isShowing()) {
+                this.diagramKey.hide();
+            } else {
+                this.diagramKey.showRelativeTo(this.diagramKeyBtn);
+            }
+        } else if (btn.equals(this.settingBtn)) {
             this.settings.showRelativeTo(btn);
         }
     }
