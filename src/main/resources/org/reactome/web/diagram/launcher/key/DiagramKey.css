@@ -1,5 +1,6 @@
 .diagramKeyPanel {
     background-color: white !important;
+    opacity: 0.85;
     border: 2px solid rgba(88, 195, 229, 0.8);
     border-radius: 16px;
 
