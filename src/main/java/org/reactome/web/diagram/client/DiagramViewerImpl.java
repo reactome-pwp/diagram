@@ -17,6 +17,7 @@ import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.GraphObjectFactory;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
+import org.reactome.web.diagram.data.analysis.ExpressionSummary;
 import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
@@ -387,7 +388,14 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         switch (button) {
             case NativeEvent.BUTTON_RIGHT:
 //                DiagramObject item = this.getHovered(this.mouseCurrent);
-//                this.context.showDialog(item);
+//                List<String> expColumns = new LinkedList<>();
+//                if(this.analysisStatus!=null){
+//                    ExpressionSummary expressionSummary = this.analysisStatus.getExpressionSummary();
+//                    if(expressionSummary!=null) {
+//                        expColumns = expressionSummary.getColumnNames();
+//                    }
+//                }
+//                this.context.showDialog(this.eventBus, item, expColumns);
                 break;
             default:
                 setMouseDownPosition(event.getRelativeElement(), event);

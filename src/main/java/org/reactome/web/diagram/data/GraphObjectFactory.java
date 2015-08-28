@@ -38,11 +38,11 @@ public abstract class GraphObjectFactory {
             case ENTITY_WITH_ACCESSIONED_SEQUENCE:  dbObject = new GraphEntityWithAccessionedSequence((EntityNode) node);   break;
             case GENOME_ENCODED_ENTITY:             dbObject = new GraphGenomeEncodedEntity((EntityNode) node);             break;
             case OPEN_SET:                          dbObject = new GraphOpenSet((EntityNode) node);                         break;
-            case OTHER_ENTITY:                      dbObject = new GraphOtherEntityGraph((EntityNode) node);                break;
+            case OTHER_ENTITY:                      dbObject = new GraphOtherEntity((EntityNode) node);                break;
             case PATHWAY:                           dbObject = new GraphPathway((EntityNode) node);                         break;
             case POLYMER:                           dbObject = new GraphPolymer((EntityNode) node);                         break;
-            case SIMPLE_ENTITY:                     dbObject = new GraphSimpleEntityGraph((EntityNode) node);               break;
-            case BLACK_BOX_EVENT:                   dbObject = new GraphBlackBoxEventGraph((EventNode) node);               break;
+            case SIMPLE_ENTITY:                     dbObject = new GraphSimpleEntity((EntityNode) node);               break;
+            case BLACK_BOX_EVENT:                   dbObject = new GraphBlackBoxEvent((EventNode) node);               break;
             case DEPOLYMERISATION:                  dbObject = new GraphDepolymerisation((EventNode) node);                 break;
             case FAILED_REACTION:                   dbObject = new GraphFailedReaction((EventNode) node);                   break;
             case POLYMERISATION:                    dbObject = new GraphPolymerisation((EventNode) node);                   break;

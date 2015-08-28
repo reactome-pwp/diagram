@@ -71,9 +71,9 @@ public abstract class GraphPhysicalEntity extends GraphObject {
         return identifier;
     }
 
-    public Set<String> getParticipants(){
-        Set<String> rtn = new HashSet<>();
-        rtn.add(identifier);
+    public Set<GraphPhysicalEntity> getParticipants(){
+        Set<GraphPhysicalEntity> rtn = new HashSet<>();
+        rtn.add(this);
         return rtn;
     }
 
@@ -85,10 +85,10 @@ public abstract class GraphPhysicalEntity extends GraphObject {
         return rtn;
     }
 
-    public Set<String> getHitParticipants(){
-        Set<String> rtn = new HashSet<>();
+    public Set<GraphPhysicalEntity> getHitParticipants(){
+        Set<GraphPhysicalEntity> rtn = new HashSet<>();
         if(this.isHit()) {
-            rtn.add(sampleIdentifier);
+            rtn.add(this);
         }
         return rtn;
     }
