@@ -47,8 +47,8 @@ public class WidgetTest implements EntryPoint {
     public void initialise() {
         SplitLayoutPanel slp = new SplitLayoutPanel(10);
         slp.addWest(getDemoLeftPanel(), 83);
-//        slp.addNorth(getDemoTopPanel(), 25);
-        slp.addNorth(getDiseasePanel(), 50);
+        slp.addNorth(getDemoTopPanel(), 25);
+//        slp.addNorth(getDiseasePanel(), 50);
         slp.add(diagram);
         RootLayoutPanel.get().add(slp);
     }
@@ -158,6 +158,10 @@ public class WidgetTest implements EntryPoint {
         fp.add(getLoadButton("R-HSA-2219530", "Constitutive Signaling by Aberrant PI3K in Cancer"));
 //        fp.add(getLoadButton("R-HSA-5362768", ""));
         fp.add(getLoadButton("R-HSA-5579009", ""));
+        fp.add(getLoadButton("R-HSA-975871", ""));
+        fp.add(getLoadButton("R-HSA-5210891", ""));
+        fp.add(getLoadButton("R-HSA-5467345", ""));
+        fp.add(getLoadButton("R-HSA-166658", ""));
         return fp;
     }
 
