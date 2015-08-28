@@ -34,7 +34,7 @@ public abstract class NoteAbstractRenderer extends AbstractRenderer {
         if(metrics.getWidth()<=prop.getWidth() - 2 * RendererProperties.NODE_TEXT_PADDING) {
             textRenderer.drawTextSingleLine(ctx, item.getDisplayName(), textPos);
         }else{
-            textRenderer.drawTextMultiLine(ctx, item, factor, offset);
+            textRenderer.drawTextMultiLine(ctx, item.getDisplayName(), prop);
         }
     }
 

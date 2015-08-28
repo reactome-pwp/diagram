@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.renderers.impl.abs;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.canvas.dom.client.TextMetrics;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -29,11 +30,18 @@ public abstract class GeneAbstractRenderer extends NodeAbstractRenderer{
     @Override
     public void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         if(isVisible(item) && item.getDisplayName() != null && !item.getDisplayName().isEmpty()) {
+            TextMetrics metrics = ctx.measureText(item.getDisplayName());
             Node node = (Node) item;
             NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
             Coordinate centre = CoordinateFactory.get(prop.getX() + prop.getWidth() / 2, prop.getY() + prop.getHeight() * 0.75);
             TextRenderer textRenderer = new TextRenderer(RendererProperties.WIDGET_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
-            textRenderer.drawTextSingleLine(ctx, item.getDisplayName(), centre);
+            if(metrics.getWidth()<=prop.getWidth() - 2 * RendererProperties.NODE_TEXT_PADDING) {
+                textRenderer.drawTextSingleLine(ctx, item.getDisplayName(), centre);
+            }else{
+                // Create a smaller placeholder as text is only displayed at the bottom end of the gene node
+                NodeProperties nodeProp = NodePropertiesFactory.get(prop.getX(), prop.getY() + prop.getHeight()/2 , prop.getWidth(), prop.getHeight()/2);
+                textRenderer.drawTextMultiLine(ctx, item.getDisplayName(), nodeProp);
+            }
         }
     }
 

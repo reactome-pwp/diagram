@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.TextMetrics;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.category.SegmentCategory;
 import org.reactome.web.diagram.data.layout.category.ShapeCategory;
+import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.RendererManager;
@@ -22,13 +23,14 @@ public abstract class NodeAbstractRenderer extends AbstractRenderer {
         TextMetrics metrics = ctx.measureText(item.getDisplayName());
 
         Node node = (Node) item;
-        Coordinate textPos = node.getPosition().transform(factor, offset);
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
         TextRenderer textRenderer = new TextRenderer(RendererProperties.WIDGET_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
+        double x = prop.getX() + prop.getWidth() / 2d;
+        double y = prop.getY() + prop.getHeight() / 2d;
         if(metrics.getWidth()<=prop.getWidth() - 2 * RendererProperties.NODE_TEXT_PADDING) {
-            textRenderer.drawTextSingleLine(ctx, item.getDisplayName(), textPos);
+            textRenderer.drawTextSingleLine(ctx, item.getDisplayName(), CoordinateFactory.get(x, y));
         }else{
-            textRenderer.drawTextMultiLine(ctx, item, factor, offset);
+            textRenderer.drawTextMultiLine(ctx, item.getDisplayName(), prop);
         }
     }
 

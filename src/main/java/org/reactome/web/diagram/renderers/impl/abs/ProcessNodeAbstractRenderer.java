@@ -6,12 +6,14 @@ import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.NodeProperties;
+import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.util.AdvancedContext2d;
+import org.reactome.web.diagram.util.Console;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -52,14 +54,15 @@ public abstract class ProcessNodeAbstractRenderer extends NodeAbstractRenderer {
         TextMetrics metrics = ctx.measureText(item.getDisplayName());
 
         Node node = (Node) item;
-        Coordinate textPos = node.getPosition().transform(factor, offset);
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
         double padding = RendererProperties.NODE_TEXT_PADDING * 3;
         TextRenderer textRenderer = new TextRenderer(RendererProperties.WIDGET_FONT_SIZE, padding);
-        if(metrics.getWidth() <= prop.getWidth() - 2 * padding ) {
-            textRenderer.drawTextSingleLine(ctx, item.getDisplayName(), textPos);
+        double x = prop.getX() + prop.getWidth() / 2d;
+        double y = prop.getY() + prop.getHeight() / 2d;
+        if(metrics.getWidth()<=prop.getWidth() - 2 * padding) {
+            textRenderer.drawTextSingleLine(ctx, item.getDisplayName(), CoordinateFactory.get(x, y));
         }else{
-            textRenderer.drawTextMultiLine(ctx, item, factor, offset);
+            textRenderer.drawTextMultiLine(ctx, item.getDisplayName(), prop);
         }
     }
 
