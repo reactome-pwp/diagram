@@ -57,6 +57,6 @@ public abstract class RendererProperties {
     }
 
     public static String getFont(double fontSize) {
-        return "bold " + myFormatter.format(fontSize) + "px Monospaced";
+        return "bold " + myFormatter.format(fontSize) + "px Arial";
     }
 }
