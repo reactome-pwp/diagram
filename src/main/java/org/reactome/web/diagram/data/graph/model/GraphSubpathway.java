@@ -13,25 +13,33 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class GraphSubpathway extends GraphObject {
+public class GraphSubpathway extends GraphEvent {
 
-    private Set<GraphReactionLikeEvent> containedEvents = new HashSet<>();
+    private Set<GraphEvent> containedEvents = new HashSet<>();
 
     public GraphSubpathway(SubpathwayRaw subpathway) {
         super(subpathway);
     }
 
-    public void addContainedEvent(GraphReactionLikeEvent rle){
-        this.containedEvents.add(rle);
+    public void addContainedEvent(GraphEvent event){
+        if(event!=null) this.containedEvents.add(event);
     }
 
     @Override
     public List<DiagramObject> getDiagramObjects() {
         List<DiagramObject> rtn = new LinkedList<>();
-        for (GraphReactionLikeEvent event : containedEvents) {
-            rtn.addAll(event.getDiagramObjects());
+        for (GraphObject event : containedEvents) {
+            if(event instanceof GraphSubpathway){
+                rtn.addAll(((GraphSubpathway) event).getSuperDiagramObjects());
+            }else {
+                rtn.addAll(event.getDiagramObjects());
+            }
         }
         return rtn;
+    }
+
+    private List<DiagramObject> getSuperDiagramObjects(){
+        return super.getDiagramObjects();
     }
 
     @Override
@@ -39,7 +47,7 @@ public class GraphSubpathway extends GraphObject {
         return GraphObjectImages.INSTANCE.pathway();
     }
 
-    public Set<GraphReactionLikeEvent> getContainedEvents() {
+    public Set<GraphEvent> getContainedEvents() {
         return containedEvents;
     }
 }

@@ -40,8 +40,11 @@ class DiagramManager {
         } else if (item instanceof GraphSubpathway) {
             GraphSubpathway subpathway = (GraphSubpathway) item;
             //DO NOT CALL subpathway.getDiagramObjects here because we need also the participants :)
-            for (GraphReactionLikeEvent rle : subpathway.getContainedEvents()) {
-                toDisplay.addAll(getElementsToDisplay(rle));
+            for (GraphObject obj : subpathway.getContainedEvents()) {
+                if(obj instanceof GraphReactionLikeEvent) {
+                    GraphReactionLikeEvent rle = (GraphReactionLikeEvent) obj;
+                    toDisplay.addAll(getElementsToDisplay(rle));
+                }
             }
         }
         return toDisplay;

@@ -133,7 +133,7 @@ public abstract class DiagramContentFactory {
             for (SubpathwayRaw subpathway : graph.getSubpathways()) {
                 GraphSubpathway sp = GraphObjectFactory.getOrCreateDatabaseObject(subpathway);
                 for (Long event : subpathway.getEvents()) {
-                    sp.addContainedEvent((GraphReactionLikeEvent) content.getDatabaseObject(event));
+                    sp.addContainedEvent((GraphEvent) content.getDatabaseObject(event));
                 }
             }
         }
