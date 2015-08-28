@@ -69,7 +69,10 @@ public class TextRenderer {
         }
     }
 
+    //**************************************************************//
     //*********** Methods used to split the long text  *************//
+    //**************************************************************//
+
     private static List<String> spitText(AdvancedContext2d ctx, String fullName, double availableWidth){
         List<String> rtn = new LinkedList<>();
 
