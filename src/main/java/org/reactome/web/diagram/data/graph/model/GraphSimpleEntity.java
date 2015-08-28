@@ -7,14 +7,14 @@ import org.reactome.web.diagram.data.graph.raw.EntityNode;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class GraphOtherEntityGraph extends GraphPhysicalEntity {
+public class GraphSimpleEntity extends GraphPhysicalEntity {
 
-    public GraphOtherEntityGraph(EntityNode node) {
+    public GraphSimpleEntity(EntityNode node) {
         super(node);
     }
 
     @Override
     public ImageResource getImageResource() {
-        return GraphObjectImages.INSTANCE.otherEntity();
+        return GraphObjectImages.INSTANCE.simpleEntity();
     }
 }

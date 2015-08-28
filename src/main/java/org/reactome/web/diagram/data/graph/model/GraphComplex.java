@@ -27,8 +27,8 @@ public class GraphComplex extends GraphPhysicalEntity {
     }
 
     @Override
-    public Set<String> getParticipants(){
-        Set<String> rtn = new HashSet<>();
+    public Set<GraphPhysicalEntity> getParticipants(){
+        Set<GraphPhysicalEntity> rtn = new HashSet<>();
         for (GraphPhysicalEntity child : children) {
             rtn.addAll(child.getParticipants());
         }
@@ -36,8 +36,8 @@ public class GraphComplex extends GraphPhysicalEntity {
     }
 
     @Override
-    public Set<String> getHitParticipants() {
-        Set<String> rtn = new HashSet<>();
+    public Set<GraphPhysicalEntity> getHitParticipants() {
+        Set<GraphPhysicalEntity> rtn = new HashSet<>();
         for (GraphPhysicalEntity child : children) {
             rtn.addAll(child.getHitParticipants());
         }

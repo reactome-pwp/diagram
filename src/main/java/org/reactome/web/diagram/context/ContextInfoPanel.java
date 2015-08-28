@@ -3,6 +3,7 @@ package org.reactome.web.diagram.context;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
@@ -29,7 +30,7 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
 
     private DeckLayoutPanel container;
 
-    public ContextInfoPanel(DiagramObject diagramObject) {
+    public ContextInfoPanel(EventBus eventBus, DiagramObject diagramObject, List<String> expColumns) {
         FlowPanel buttonsPanel = new FlowPanel();
         buttonsPanel.setStyleName(RESOURCES.getCSS().buttonsPanel());
         buttonsPanel.add(this.molecules = getButton("Molecules", RESOURCES.molecules()));
@@ -39,7 +40,7 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
 
         this.container = new DeckLayoutPanel();
         this.container.setStyleName(RESOURCES.getCSS().container());
-        this.container.add(new MoleculesDialogPanel(diagramObject));
+        this.container.add(new MoleculesDialogPanel(eventBus, diagramObject, expColumns));
         this.container.add(new PathwaysDialogPanel(diagramObject));
         this.container.add(new InteractorsDialogPanel(diagramObject));
         this.container.showWidget(0);

@@ -40,6 +40,7 @@ public class WidgetTest implements EntryPoint {
 
                 Console.info("");
                 diagram.loadDiagram("R-HSA-1181150");
+//                diagram.loadDiagram("R-HSA-5467345");
             }
         });
     }
@@ -47,8 +48,8 @@ public class WidgetTest implements EntryPoint {
     public void initialise() {
         SplitLayoutPanel slp = new SplitLayoutPanel(10);
         slp.addWest(getDemoLeftPanel(), 83);
-//        slp.addNorth(getDemoTopPanel(), 25);
-        slp.addNorth(getDiseasePanel(), 50);
+        slp.addNorth(getDemoTopPanel(), 25);
+//        slp.addNorth(getDiseasePanel(), 50);
         slp.add(diagram);
         RootLayoutPanel.get().add(slp);
     }
