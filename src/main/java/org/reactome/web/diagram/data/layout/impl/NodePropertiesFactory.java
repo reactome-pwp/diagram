@@ -19,6 +19,10 @@ public class NodePropertiesFactory implements NodeProperties {
         this.height = height;
     }
 
+    public static NodeProperties get(double x, double y, double width, double height){
+        return new NodePropertiesFactory(x, y, width, height);
+    }
+
     @Override
     public Double getX() {
         return x;
