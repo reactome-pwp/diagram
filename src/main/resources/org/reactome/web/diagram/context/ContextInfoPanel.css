@@ -1,5 +1,6 @@
 .outerPanel {
     float: left;
+    min-width: 330px; /* to avoid dynamic resizing of the popup */
 }
 
 .buttonsPanel {
