@@ -65,7 +65,7 @@ public abstract class GraphObjectFactory {
             throw new RuntimeException("It is not possible to create a DatabaseObject for " + subpathway);
         }
 
-        GraphSubpathway rtn = (GraphSubpathway) content.getDatabaseObject(subpathway.getDbId());
+        GraphSubpathway rtn =  content.getGraphSubpathway(subpathway.getDbId());
         if (rtn != null) return rtn;
 
         rtn = new GraphSubpathway(subpathway);

@@ -25,9 +25,9 @@ public class DiagramContent {
 
     Map<Long, DiagramObject> diagramObjectMap;
     Map<String, GraphObject> graphObjectCache;
+    Map<String, GraphSubpathway> subpathwaysCache;
     MapSet<String, GraphObject> identifierMap;
     Set<GraphPathway> encapsulatedPathways;
-    Set<GraphSubpathway> subpathways;
 
     Set<DiagramObject> diseaseComponents;
     Set<DiagramObject> lofNodes;
@@ -42,7 +42,7 @@ public class DiagramContent {
         this.graphObjectCache = new HashMap<>();
         this.identifierMap = new MapSet<>();
         this.encapsulatedPathways = new HashSet<>();
-        this.subpathways = new HashSet<>();
+        this.subpathwaysCache = new HashMap<>();
     }
 
     public void cache(GraphObject dbObject){
@@ -64,7 +64,9 @@ public class DiagramContent {
         }
 
         if (dbObject instanceof GraphSubpathway){
-            this.subpathways.add((GraphSubpathway) dbObject);
+            GraphSubpathway gsp = (GraphSubpathway) dbObject;
+            this.subpathwaysCache.put("" + gsp.getDbId(), gsp);
+            this.subpathwaysCache.put(gsp.getStId(), gsp);
         }
     }
 
@@ -135,6 +137,14 @@ public class DiagramContent {
         return this.graphObjectCache.get(dbId.toString());
     }
 
+    public GraphSubpathway getGraphSubpathway(String stId){
+        return this.subpathwaysCache.get(stId);
+    }
+
+    public GraphSubpathway getGraphSubpathway(Long dbId){
+        return this.subpathwaysCache.get(dbId.toString());
+    }
+
     public DiagramObject getDiagramObject(Long id){
         return this.diagramObjectMap.get(id);
     }
@@ -149,10 +159,6 @@ public class DiagramContent {
 
     public MapSet<String, GraphObject> getIdentifierMap() {
         return identifierMap;
-    }
-
-    public Set<GraphSubpathway> getSubpathways() {
-        return subpathways;
     }
 
     public double getMinX() {
