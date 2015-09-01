@@ -7,7 +7,7 @@ import org.reactome.web.diagram.data.graph.model.factory.SchemaClass;
 import org.reactome.web.diagram.data.graph.raw.EntityNode;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
 import org.reactome.web.diagram.data.graph.raw.GraphNode;
-import org.reactome.web.diagram.data.graph.raw.SubpathwayRaw;
+import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
 
 /**
  * This factory is created and kept for every diagram in its context. This is meant to keep previous loaded
@@ -60,7 +60,7 @@ public abstract class GraphObjectFactory {
         return dbObject;
     }
 
-    public static GraphSubpathway getOrCreateDatabaseObject(SubpathwayRaw subpathway){
+    public static GraphSubpathway getOrCreateDatabaseObject(SubpathwayNode subpathway){
         if(subpathway ==null || subpathway.getDbId()==null){
             throw new RuntimeException("It is not possible to create a DatabaseObject for " + subpathway);
         }

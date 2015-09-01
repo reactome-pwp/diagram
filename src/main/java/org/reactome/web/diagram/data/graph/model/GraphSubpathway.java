@@ -2,7 +2,7 @@ package org.reactome.web.diagram.data.graph.model;
 
 import com.google.gwt.resources.client.ImageResource;
 import org.reactome.web.diagram.data.graph.model.images.GraphObjectImages;
-import org.reactome.web.diagram.data.graph.raw.SubpathwayRaw;
+import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 
 import java.util.HashSet;
@@ -17,7 +17,7 @@ public class GraphSubpathway extends GraphEvent {
 
     private Set<GraphEvent> containedEvents = new HashSet<>();
 
-    public GraphSubpathway(SubpathwayRaw subpathway) {
+    public GraphSubpathway(SubpathwayNode subpathway) {
         super(subpathway);
     }
 

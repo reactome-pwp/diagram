@@ -4,7 +4,7 @@ import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.resources.client.ImageResource;
 import org.reactome.web.diagram.data.graph.model.factory.SchemaClass;
 import org.reactome.web.diagram.data.graph.raw.GraphNode;
-import org.reactome.web.diagram.data.graph.raw.SubpathwayRaw;
+import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 
 import java.util.LinkedList;
@@ -33,7 +33,7 @@ public abstract class GraphObject implements Comparable<GraphObject> {
         this.diagramObjects = new LinkedList<>();
     }
 
-    public GraphObject(SubpathwayRaw subpathway) {
+    public GraphObject(SubpathwayNode subpathway) {
         this.dbId = subpathway.getDbId();
         this.stId = subpathway.getStId();
         this.displayName = subpathway.getDisplayName();

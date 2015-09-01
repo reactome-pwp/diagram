@@ -4,7 +4,7 @@ import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.graph.raw.EntityNode;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
 import org.reactome.web.diagram.data.graph.raw.Graph;
-import org.reactome.web.diagram.data.graph.raw.SubpathwayRaw;
+import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 
@@ -130,7 +130,7 @@ public abstract class DiagramContentFactory {
         }
 
         if(graph.getSubpathways()!=null) {
-            for (SubpathwayRaw subpathway : graph.getSubpathways()) {
+            for (SubpathwayNode subpathway : graph.getSubpathways()) {
                 GraphSubpathway sp = GraphObjectFactory.getOrCreateDatabaseObject(subpathway);
                 for (Long event : subpathway.getEvents()) {
                     sp.addContainedEvent((GraphEvent) content.getDatabaseObject(event));

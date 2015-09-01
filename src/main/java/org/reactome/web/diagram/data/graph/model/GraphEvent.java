@@ -2,7 +2,7 @@ package org.reactome.web.diagram.data.graph.model;
 
 import org.reactome.web.diagram.data.graph.raw.EntityNode;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
-import org.reactome.web.diagram.data.graph.raw.SubpathwayRaw;
+import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -13,7 +13,7 @@ public abstract class GraphEvent extends GraphObject {
         super(node);
     }
 
-    public GraphEvent(SubpathwayRaw subpathway) {
+    public GraphEvent(SubpathwayNode subpathway) {
         super(subpathway);
     }
 
