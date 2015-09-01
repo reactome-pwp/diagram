@@ -5,7 +5,8 @@
 
 .buttonsPanel {
     float: left;
-    width: 65px;
+    /*width: 65px;*/
+    width: 19%;
 }
 
 .buttonsPanel button {
@@ -19,6 +20,7 @@
     outline: none;
     width: 65px;
     height: 50px;
+
 }
 
 .buttonsPanel button:hover {
@@ -31,7 +33,8 @@
 
 .container {
     float: left;
-    width: 250px;
+    /*width: 250px;*/
+    width: 78%;
     height: 150px;
     overflow: hidden;
     margin-left: 5px;

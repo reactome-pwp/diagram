@@ -13,13 +13,24 @@
 .sectionRow {
     display: inline-flex;
     padding-left: 5px;
+    flex-wrap: nowrap;
+    width: 98%;
+    justify-content: space-between;
 }
 
 .participant {
-    width: 50px;
+    /*width: 50px;*/
+    cursor: pointer;
+    flex-grow: 2;
+
+    max-width: 75%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .expressionValue {
     text-align: right;
     width: 40px;
+    flex-grow: 1;
 }

@@ -21,7 +21,7 @@ public class MoleculesDialogPanel extends Composite {
 
     private EventBus eventBus;
 
-    public MoleculesDialogPanel(EventBus eventBus, DiagramObject diagramObject, List<String> expColumns) {
+    public MoleculesDialogPanel(EventBus eventBus, DiagramObject diagramObject, final List<String> expColumns) {
         this.eventBus = eventBus;
         GraphObject graphObject = diagramObject.getGraphObject();
 
@@ -78,6 +78,7 @@ public class MoleculesDialogPanel extends Composite {
                     expLabel.setStyleName(RESOURCES.getCSS().expressionValue());
                     row.add(expLabel);
                 }
+
             }
 
             //There is a certain order in which we want the participating molecules to be listed
