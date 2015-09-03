@@ -87,7 +87,7 @@ public class MoleculesDialogPanel extends Composite {
             if (dnas.getWidgetCount() > 1) vp.add(dnas);
             if (others.getWidgetCount() > 1) vp.add(others);
 
-            initWidget(new ScrollPanel(vp));
+            initWidget(vp);
         } else {
             initWidget(new InlineLabel("???"));
         }
