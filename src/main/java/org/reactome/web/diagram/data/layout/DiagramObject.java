@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.data.layout;
 
 import org.reactome.web.diagram.data.graph.model.GraphObject;
-import uk.ac.ebi.pwp.structures.quadtree.interfaces.QuadTreeBox;
+import uk.ac.ebi.pwp.structures.quadtree.client.QuadTreeBox;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>

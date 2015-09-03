@@ -10,8 +10,8 @@ import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.util.MapSet;
-import uk.ac.ebi.pwp.structures.quadtree.model.Box;
-import uk.ac.ebi.pwp.structures.quadtree.model.QuadTree2D;
+import uk.ac.ebi.pwp.structures.quadtree.client.Box;
+import uk.ac.ebi.pwp.structures.quadtree.client.QuadTree;
 
 import java.util.*;
 
@@ -25,7 +25,7 @@ public class DiagramContext {
 
     private DiagramContent content;
     private DiagramStatus diagramStatus;
-    private QuadTree2D<DiagramObject> quadTree;
+    private QuadTree<DiagramObject> quadTree;
     private AnalysisStatus analysisStatus;
 
     private Map<GraphObject, ContextDialogPanel> dialogMap = new HashMap<>();
@@ -33,7 +33,7 @@ public class DiagramContext {
     public DiagramContext(DiagramContent content) {
         this.content = content;
 
-        this.quadTree = new QuadTree2D<>(
+        this.quadTree = new QuadTree<>(
                 content.minX,
                 content.minY,
                 content.maxX,
