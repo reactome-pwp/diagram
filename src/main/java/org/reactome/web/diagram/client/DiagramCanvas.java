@@ -125,7 +125,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         Coordinate offset = status.getOffset();
         for (DiagramObject item : items) {
             if(item.getIsFadeOut()!=null) continue;
-            Renderer renderer = RendererManager.get().getRenderer(item);
+            Renderer renderer = this.rendererManager.getRenderer(item);
             if (renderer != null) {
                 renderer.highlight(this.halo, item, factor, offset);
             }
@@ -166,7 +166,6 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
     public void setCursor(Style.Cursor cursor) {
         this.buffer.getCanvas().getStyle().setCursor(cursor);
-//        this.getTopCanvas().getElement().getStyle().setCursor(cursor);
     }
 
     @Override
@@ -299,10 +298,10 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                 if(noHitByAnalysisNormal!=null) {
                     renderItems(renderer, ctx, noHitByAnalysisNormal, factor, offset);
                 }
-                Set<DiagramObject> noHitByAnalysiDisease = target.getElements(RenderType.NOT_HIT_BY_ANALYSIS_DISEASE);
-                if(noHitByAnalysiDisease!=null) {
+                Set<DiagramObject> noHitByAnalysisDisease = target.getElements(RenderType.NOT_HIT_BY_ANALYSIS_DISEASE);
+                if(noHitByAnalysisDisease!=null) {
                     ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
-                    renderItems(renderer, ctx, noHitByAnalysiDisease, factor, offset);
+                    renderItems(renderer, ctx, noHitByAnalysisDisease, factor, offset);
                 }
                 Set<DiagramObject> enrichmentNormal = target.getElements(RenderType.HIT_BY_ENRICHMENT_NORMAL);
                 if(enrichmentNormal!=null) {

@@ -348,30 +348,14 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void onControlAction(ControlActionEvent event) {
         switch (event.getAction()) {
-            case FIT_ALL:
-                this.fitDiagram(true);
-                break;
-            case ZOOM_IN:
-                this.zoomDelta(ZOOM_DELTA);
-                break;
-            case ZOOM_OUT:
-                this.zoomDelta(-ZOOM_DELTA);
-                break;
-            case UP:
-                this.padding(0, 10);
-                break;
-            case RIGHT:
-                this.padding(-10, 0);
-                break;
-            case DOWN:
-                this.padding(0, -10);
-                break;
-            case LEFT:
-                this.padding(10, 0);
-                break;
-            case FIREWORKS:
-                this.overview();
-                break;
+            case FIT_ALL:       this.fitDiagram(true);          break;
+            case ZOOM_IN:       this.zoomDelta(ZOOM_DELTA);     break;
+            case ZOOM_OUT:      this.zoomDelta(-ZOOM_DELTA);    break;
+            case UP:            this.padding(0, 10);            break;
+            case RIGHT:         this.padding(-10, 0);           break;
+            case DOWN:          this.padding(0, -10);           break;
+            case LEFT:          this.padding(10, 0);            break;
+            case FIREWORKS:     this.overview();                break;
         }
     }
 
@@ -560,7 +544,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
                 if (!fadeOut) {
                     selected = item.getDiagramObjects();
                     this.selected = item;
-                    this.halo = this.diagramManager.getRelatedDiagramObjects(item);
+                    this.halo = item.getRelatedDiagramObjects();
                     this.halo.removeAll(item.getDiagramObjects());
                 }
             }
@@ -598,7 +582,6 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onDiagramLoaded(DiagramLoadedEvent event) {
-//        this.loadAnalysis(this.analysisStatus);
         fireEvent(event);
     }
 

@@ -82,7 +82,7 @@ public class AnalysisDataLoader implements AnalysisLoaderHandler {
     public void onResultSummaryLoaded(AnalysisSummary summary, ExpressionSummary expressionSummary, long time) {
         this.analysisSummary = summary;
         this.expressionSummary = expressionSummary;
-        if(diagramContent.containsOnlyEncapsultedPathways()){
+        if(diagramContent.containsOnlyEncapsulatedPathways()){
             this.identifiers = null;
             new PathwaySummariesLoader(this, this.diagramContent.getEncapsulatedPathways(), this.analysisStatus);
         }else{
@@ -113,7 +113,7 @@ public class AnalysisDataLoader implements AnalysisLoaderHandler {
     }
 
     private void loadPathwaySummaries(long time){
-        if(this.diagramContent.containsEncapsultedPathways()){
+        if(this.diagramContent.containsEncapsulatedPathways()){
             new PathwaySummariesLoader(this, this.diagramContent.getEncapsulatedPathways(), this.analysisStatus);
         }else {
             this.eventBus.fireEventFromSource(new AnalysisResultLoadedEvent(analysisSummary, expressionSummary, identifiers, null, time), this);

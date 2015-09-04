@@ -29,9 +29,9 @@ public class GraphSubpathway extends GraphEvent {
     public List<DiagramObject> getDiagramObjects() {
         List<DiagramObject> rtn = new LinkedList<>();
         for (GraphObject event : containedEvents) {
-            if(event instanceof GraphSubpathway){
+            if (event instanceof GraphSubpathway) {
                 rtn.addAll(((GraphSubpathway) event).getSuperDiagramObjects());
-            }else {
+            } else {
                 rtn.addAll(event.getDiagramObjects());
             }
         }
