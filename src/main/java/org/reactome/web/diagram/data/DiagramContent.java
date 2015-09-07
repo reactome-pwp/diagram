@@ -77,11 +77,11 @@ public class DiagramContent {
         }
     }
 
-    public boolean containsOnlyEncapsultedPathways(){
+    public boolean containsOnlyEncapsulatedPathways(){
         return (getDatabaseObjects().size() == encapsulatedPathways.size());
     }
 
-    public boolean containsEncapsultedPathways(){
+    public boolean containsEncapsulatedPathways(){
         return encapsulatedPathways.size() > 0;
     }
 
