@@ -8,6 +8,7 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.events.ControlActionEvent;
 
@@ -28,7 +29,9 @@ public class MainControlPanel extends FlowPanel implements ClickHandler {
         this.fireworks = new PwpButton("Pathway overview", RESOURCES.getCSS().fireworks(), this);
 
         this.add(this.fitAll);
-        this.add(this.fireworks);
+        if(DiagramFactory.SHOW_FIREWORKS_BTN) {
+            this.add(this.fireworks);
+        }
     }
 
     @Override
