@@ -18,7 +18,7 @@ public class InteractorsDialogPanel extends Composite {
         FlowPanel vp = new FlowPanel();
         Section s1 = new Section("Interactors", 70);
         ArrayList header = new ArrayList();
-        header.add("Name");
+//        header.add("Name");
         header.add("1h" );
         header.add("5h" );
         header.add("10h");
@@ -30,13 +30,13 @@ public class InteractorsDialogPanel extends Composite {
 
         ArrayList contents = new ArrayList();
 //        contents.add(new String[] {"Name", "1h", "5h", "10h", "15h", "25h", "30h", "35h", "48h"});
-        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.5453" });
-        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.5453" });
-        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.5453" });
-        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.5453" });
-        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.5453" });
-        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.5453" });
-        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.5453" });
+        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.54" });
+        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.54" });
+        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.54" });
+        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.54" });
+        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.54" });
+        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.53" });
+        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.54" });
 
         s1.setTableHeader(header);
         s1.setTableContents(contents);

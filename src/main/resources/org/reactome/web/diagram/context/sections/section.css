@@ -7,8 +7,7 @@
 }
 
 .headerTable {
-    width: 100%;
-    /*overflow: auto;*/
+    overflow: auto;
     padding: 0;
     margin: 0;
     table-layout: fixed;
@@ -19,31 +18,30 @@
 }
 
 .headerTable tbody tr:first-child td {
-    /*display: inline-block;*/
     font: bold 8px arial;
-    width: 50px; !important;
-
+    max-width: 50px !important; /*setting just the width does not work*/
+    min-width: 50px !important;
+    table-layout: fixed;
 }
 
-.scrollPane {
+.scrollPanel {
+    margin-left:53px;
 }
 
 .dataTable {
     overflow: auto;
-    width: 100%;
+    /*width: 100%;*/
     padding: 0;
     margin: 0;
 }
 
 .dataTable tbody tr {
-
     background-color: rgb(99, 155, 208);
-    /*position: relative;*/
-
 }
 
-.dataTable tbody tr:first-child td {
-    /*display: inline-block;*/
-    /*font: bold 8px arial;*/
+.dataTable tbody tr td {
+    font: bold 9px arial;
+    max-width: 50px !important; /*setting just the width does not work*/
+    min-width: 50px !important;
 
 }
