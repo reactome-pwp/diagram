@@ -2,6 +2,7 @@ package org.reactome.web.diagram.data.loader;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.*;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.analysis.*;
@@ -34,7 +35,7 @@ import java.util.Set;
  */
 public class AnalysisDataLoader implements AnalysisLoaderHandler {
     private static AnalysisDataLoader analysisDataLoader;
-    private final static String PREFIX = "/AnalysisService/token/";
+    private final static String PREFIX = DiagramFactory.SERVER_PREFIX + "/AnalysisService/token/";
 
     private EventBus eventBus;
 

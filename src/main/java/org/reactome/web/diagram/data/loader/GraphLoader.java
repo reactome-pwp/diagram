@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.data.loader;
 
 import com.google.gwt.http.client.*;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.graph.raw.factory.GraphFactory;
 import org.reactome.web.diagram.data.layout.factory.DiagramObjectException;
@@ -15,7 +16,7 @@ public class GraphLoader implements RequestCallback {
         void onGraphLoaderError(Throwable exception);
     }
 
-    private final static String PREFIX = "/download/current/diagram/";
+    private final static String PREFIX = DiagramFactory.SERVER_PREFIX + "/download/current/diagram/";
 
     private Handler handler;
     private Request request;

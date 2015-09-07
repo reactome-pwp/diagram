@@ -6,6 +6,9 @@ package org.reactome.web.diagram.client;
 public abstract class DiagramFactory {
     public static boolean CONSOLE_VERBOSE = false;
     public static boolean EVENT_BUS_VERBOSE = false;
+
+    public static String SERVER_PREFIX = "";
+
     public static boolean SHOW_INFO = false;
     public static boolean SHOW_FIREWORKS_BTN = true;
 
