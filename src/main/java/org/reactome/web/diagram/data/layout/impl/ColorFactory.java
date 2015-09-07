@@ -53,4 +53,28 @@ public class ColorFactory implements Color{
 
         return new ColorFactory(r, g, b);
     }
+
+    /***
+     * Returns a pastel colour by averaging the input with a random colour.
+     *
+     * based on this example:
+     * http://stackoverflow.com/questions/43044/algorithm-to-randomly-generate-an-aesthetically-pleasing-color-palette
+     * @param mix
+     * @return
+     */
+    public static Color getRandomColour(Color mix){
+
+        Integer r = (int) Math.floor(Math.random() * 256);
+        Integer g = (int) Math.floor(Math.random() * 256);
+        Integer b = (int) Math.floor(Math.random() * 256);
+
+        // mix the color
+        if (mix != null) {
+            r = (r + mix.getR()) / 2;
+            g = (g + mix.getG()) / 2;
+            b = (b + mix.getB()) / 2;
+        }
+
+        return new ColorFactory(r, g, b);
+    }
 }
