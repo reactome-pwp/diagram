@@ -1,104 +1,194 @@
 package org.reactome.web.diagram.context.dialogs;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
+import org.reactome.web.diagram.context.sections.Section;
+import org.reactome.web.diagram.data.analysis.ExpressionSummary;
 import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.util.Console;
+import org.reactome.web.diagram.events.AnalysisResetEvent;
+import org.reactome.web.diagram.events.AnalysisResultLoadedEvent;
+import org.reactome.web.diagram.handlers.AnalysisResetHandler;
+import org.reactome.web.diagram.handlers.AnalysisResultLoadedHandler;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class MoleculesDialogPanel extends Composite {
+public class MoleculesDialogPanel extends Composite implements AnalysisResultLoadedHandler, AnalysisResetHandler {
 
     private EventBus eventBus;
+    private GraphObject graphObject;
+    private List<String> expColumns;
+    private List<String> colNames = new LinkedList<>();
 
-    public MoleculesDialogPanel(EventBus eventBus, DiagramObject diagramObject, final List<String> expColumns) {
+    private List<List<String>> proteins = new LinkedList<>();
+    private List<List<String>> chemicals = new LinkedList<>();
+    private List<List<String>> dnas = new LinkedList<>();
+    private List<List<String>> others = new LinkedList<>();
+
+    private Section proteinsSection;
+    private Section chemicalsSection;
+    private Section dnasSection;
+    private Section othersSection;
+
+    public MoleculesDialogPanel(EventBus eventBus, DiagramObject diagramObject, List<String> expColumns) {
         this.eventBus = eventBus;
-        GraphObject graphObject = diagramObject.getGraphObject();
-
+        this.graphObject = diagramObject.getGraphObject();
+        this.expColumns = expColumns;
         if (graphObject instanceof GraphPhysicalEntity) {
-            GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
-            Set<GraphPhysicalEntity> participants = pe.getParticipants();
-            FlowPanel vp = new FlowPanel();
+            divideParticipants();
+            initialiseWidget();
+            populateTables();
+        }else{
+            initWidget(new InlineLabel("???")); //TODO: Implement this case
+        }
+        initHandlers();
+    }
 
-            FlowPanel proteins = new FlowPanel();
-            proteins.add(getSectionTitle("Proteins"));
-            FlowPanel chemicals = new FlowPanel();
-            chemicals.add(getSectionTitle("Chemical compounds"));
-            FlowPanel dnas = new FlowPanel();
-            dnas.add(getSectionTitle("DNA"));
-            FlowPanel others = new FlowPanel();
-            others.add(getSectionTitle("Others"));
+    private void divideParticipants(){
+        GraphPhysicalEntity pe = (GraphPhysicalEntity) this.graphObject;
+        Set<GraphPhysicalEntity> participants = pe.getParticipants();
 
-            for (final GraphPhysicalEntity participant : participants) {
-                FlowPanel table;
-                if (participant instanceof GraphSimpleEntity) {
-                    table = chemicals;
-                } else if (participant instanceof GraphEntityWithAccessionedSequence) {
-                    table = proteins;
-                } else if (participant instanceof GraphGenomeEncodedEntity) {
-                    table = dnas;
-                } else {
-                    table = others;
-                }
-                table.setStyleName(RESOURCES.getCSS().sectionTable());
+        proteins = new LinkedList<>();
+        chemicals = new LinkedList<>();
+        dnas = new LinkedList<>();
+        others = new LinkedList<>();
 
-                FlowPanel row = new FlowPanel();
-                row.setStyleName(RESOURCES.getCSS().sectionRow());
-                table.add(row);
-
-                Label label;
-                if (participant.getIdentifier() != null && !participant.getIdentifier().isEmpty()) {
-                    label = new Label(participant.getIdentifier());
-                    label.setTitle(participant.getDisplayName());
-                } else {
-                    label = new Label(participant.getDisplayName());
-                }
-                label.setStyleName(RESOURCES.getCSS().participant());
-                label.addClickHandler(new ClickHandler() {
-                    @Override
-                    public void onClick(ClickEvent event) {
-                        Console.info(participant.getDisplayName());
-                    }
-                });
-                row.add(label);
-
-                for (int col = 0; col < expColumns.size(); col++) {
-                    Double exp = (participant.getExpression() != null) ? participant.getExpression().get(col) : null;
-                    Label expLabel = new Label(exp != null ? "" + exp : "");
-                    expLabel.setStyleName(RESOURCES.getCSS().expressionValue());
-                    row.add(expLabel);
-                }
-
+        for (GraphPhysicalEntity participant : participants) {
+            List<List<String>> table;
+            if (participant instanceof GraphSimpleEntity) {
+                table = chemicals;
+            } else if (participant instanceof GraphEntityWithAccessionedSequence) {
+                table = proteins;
+            } else if (participant instanceof GraphGenomeEncodedEntity) {
+                table = dnas;
+            } else {
+                table = others;
             }
 
-            //There is a certain order in which we want the participating molecules to be listed
-            if (proteins.getWidgetCount() > 1) vp.add(proteins);
-            if (chemicals.getWidgetCount() > 1) vp.add(chemicals);
-            if (dnas.getWidgetCount() > 1) vp.add(dnas);
-            if (others.getWidgetCount() > 1) vp.add(others);
+            List<String> row = new LinkedList<>();
+            String participantName;
+            if (participant.getIdentifier() != null && !participant.getIdentifier().isEmpty()) {
+                participantName = participant.getIdentifier();
+            } else {
+                participantName = participant.getDisplayName();
+            }
+            row.add(participantName);
 
-            initWidget(vp);
-        } else {
-            initWidget(new InlineLabel("???"));
+            if(expColumns!=null && !expColumns.isEmpty()) {
+                for (int col = 0; col < expColumns.size(); col++) {
+                    Double exp = (participant.getExpression() != null) ? participant.getExpression().get(col) : null;
+                    String expression = exp != null ? "" + exp : "";
+                    row.add(expression);
+                }
+            }
+            table.add(row);
+        }
+
+        colNames.clear();
+        if(expColumns!=null && !expColumns.isEmpty()) {
+            for (int col = 0; col < expColumns.size(); col++) {
+                colNames.add(expColumns.get(col));
+            }
         }
     }
 
-    private Label getSectionTitle(String title) {
-        Label label = new Label(title);
-        label.setStyleName(RESOURCES.getCSS().sectionTitle());
-        return label;
+    private void initHandlers(){
+        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
     }
 
+    private void initialiseWidget(){
+        FlowPanel vp = new FlowPanel();
+        vp.setStyleName(RESOURCES.getCSS().container());
+        int optimalSize = getOptimalSize();
+        //There is a certain order in which we want the participating molecules to be listed
+        if (proteins.size() > 0){
+            proteinsSection = new Section(eventBus, "Proteins", optimalSize);
+            vp.add(proteinsSection);
+        }
+        if (chemicals.size() > 0) {
+            chemicalsSection = new Section(eventBus, "Chemical compounds", optimalSize);
+            vp.add(chemicalsSection);
+        }
+        if (dnas.size() > 0) {
+            dnasSection = new Section(eventBus, "DNA", optimalSize);
+            vp.add(dnasSection);
+        }
+        if (others.size() > 0){
+            othersSection = new Section(eventBus, "Others", optimalSize);
+            vp.add(othersSection);
+        }
+        initWidget(vp);
+    }
+
+    private int getOptimalSize(){
+        int size;
+        int requiredSections = 0;
+        if (proteins.size() > 0){   requiredSections++; }
+        if (chemicals.size() > 0) { requiredSections++; }
+        if (dnas.size() > 0) {      requiredSections++; }
+        if (others.size() > 0){     requiredSections++; }
+
+        switch(requiredSections){
+            case 1:
+                size = 115;
+                break;
+            case 2:
+                size = 50;
+                break;
+            default:
+                size = 40;
+                break;
+        }
+
+        return size;
+    }
+
+    public void populateTables(){
+        if (proteins.size() > 0){
+            proteinsSection.setTableContents(proteins);
+            proteinsSection.setTableHeader(colNames);
+        }
+        if (chemicals.size() > 0) {
+            chemicalsSection.setTableContents(chemicals);
+            chemicalsSection.setTableHeader(colNames);
+        }
+        if (dnas.size() > 0) {
+            dnasSection.setTableContents(dnas);
+            dnasSection.setTableHeader(colNames);
+        }
+        if (others.size() > 0){
+            othersSection.setTableContents(others);
+            othersSection.setTableHeader(colNames);
+        }
+    }
+
+    @Override
+    public void onAnalysisReset(AnalysisResetEvent event) {
+        expColumns = null;
+        divideParticipants();
+        populateTables();
+    }
+
+    @Override
+    public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
+        ExpressionSummary expressionSummary = event.getExpressionSummary();
+        if(expressionSummary!=null) {
+            expColumns = expressionSummary.getColumnNames();
+            divideParticipants();
+            populateTables();
+        }
+    }
 
     public static Resources RESOURCES;
 
@@ -117,14 +207,6 @@ public class MoleculesDialogPanel extends Composite {
 
         String CSS = "org/reactome/web/diagram/context/DialogPanelsCommon.css";
 
-        String sectionTitle();
-
-        String sectionTable();
-
-        String sectionRow();
-
-        String participant();
-
-        String expressionValue();
+        String container();
     }
 }

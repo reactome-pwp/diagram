@@ -42,7 +42,7 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
         this.container.setStyleName(RESOURCES.getCSS().container());
         this.container.add(new MoleculesDialogPanel(eventBus, diagramObject, expColumns));
         this.container.add(new PathwaysDialogPanel(diagramObject));
-        this.container.add(new InteractorsDialogPanel(diagramObject));
+        this.container.add(new InteractorsDialogPanel(eventBus, diagramObject));
         this.container.showWidget(0);
         this.container.setAnimationVertical(true);
         this.container.setAnimationDuration(500);
