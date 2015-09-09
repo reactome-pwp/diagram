@@ -28,6 +28,8 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     private EventBus eventBus;
     private GraphObject graphObject;
     private List<String> expColumns;
+    private Double min;
+    private Double max;
     private List<String> colNames = new LinkedList<>();
 
     private List<List<String>> proteins = new LinkedList<>();
@@ -158,6 +160,8 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         if (proteins.size() > 0){
             proteinsSection.setTableContents(proteins);
             proteinsSection.setTableHeader(colNames);
+            if(expColumns!=null && !expColumns.isEmpty())
+            proteinsSection.applyAnalysisColours(proteins, min, max);
         }
         if (chemicals.size() > 0) {
             chemicalsSection.setTableContents(chemicals);
@@ -176,6 +180,8 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     @Override
     public void onAnalysisReset(AnalysisResetEvent event) {
         expColumns = null;
+        min = null;
+        max = null;
         divideParticipants();
         populateTables();
     }
@@ -185,8 +191,11 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         ExpressionSummary expressionSummary = event.getExpressionSummary();
         if(expressionSummary!=null) {
             expColumns = expressionSummary.getColumnNames();
+            min = expressionSummary.getMin();
+            max = expressionSummary.getMax();
             divideParticipants();
             populateTables();
+
         }
     }
 

@@ -10,6 +10,8 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
+import org.springframework.util.NumberUtils;
 
 import java.util.List;
 
@@ -129,6 +131,25 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
             for(int c=0; c<row.size(); c++){
                 dataTable.setText(r, c, row.get(c));
                 dataTable.getFlexCellFormatter().setHorizontalAlignment(r, c, HasHorizontalAlignment.ALIGN_CENTER);
+                if(row.size()==1){
+                    dataTable.getFlexCellFormatter().addStyleName(r, c, RESOURCES.getCSS().largeCell());
+                }else{
+                    dataTable.getFlexCellFormatter().removeStyleName(r, c, RESOURCES.getCSS().largeCell());
+                }
+            }
+        }
+    }
+
+    public void applyAnalysisColours(List<List<String>> tableRows, Double min, Double max){
+        for(int r=0; r<tableRows.size(); r++){
+            List<String> row = tableRows.get(r);
+            for(int c=1; c<row.size(); c++){
+                String cell = row.get(c);
+                if(!cell.isEmpty() ){
+                    Double value = Double.parseDouble(row.get(c));
+                    String colour = AnalysisColours.get().expressionGradient.getColor(value, min, max);
+                    dataTable.getCellFormatter().getElement(r,c).getStyle().setBackgroundColor("#787878");
+                }
             }
         }
     }
@@ -170,6 +191,8 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
         String hightlightedRow();
 
         String hightlightedCol();
+
+        String largeCell();
 
         String dataScrollPanel();
     }

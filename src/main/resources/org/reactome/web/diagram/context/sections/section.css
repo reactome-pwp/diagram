@@ -1,7 +1,8 @@
 .sectionHeader {
     border-radius: 5px;
-    font-weight: bolder;
-    margin-top: 5px;
+    font-weight: bold;
+    font-size: small;
+    margin-top: 2px;
     padding-left: 5px;
     background-color: rgb(0, 90, 117);
 }
@@ -14,18 +15,19 @@
 }
 
 .headerTable tbody tr:first-child {
-    background-color: rgb(0, 90, 117);
+    background-color: rgb(7, 133, 171);
 }
 
 .headerTable tbody tr:first-child td {
     font: bold 8px arial;
-    max-width: 50px !important; /*setting just the width does not work*/
-    min-width: 50px !important;
+    min-width: 50px !important; /*setting just the width does not work*/
     table-layout: fixed;
+    cursor: pointer;
 }
 
-.scrollPanel {
+.headerScrollPanel {
     margin-left:53px;
+    margin-top: 0;
 }
 
 .dataTable {
@@ -36,12 +38,36 @@
 }
 
 .dataTable tbody tr {
-    background-color: rgb(99, 155, 208);
+    background-color: rgb(7, 133, 171);
+    /*background-color: rgb(0, 96, 136);*/
 }
 
 .dataTable tbody tr td {
     font: bold 9px arial;
-    max-width: 50px !important; /*setting just the width does not work*/
-    min-width: 50px !important;
+    min-width: 50px; /*setting just the width does not work*/
+    cursor: pointer;
 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    -webkit-transition: background-color 2s; /* Chrome, Safari, Opera */
+    transition: background-color 2s;
+
+}
+
+.hightlightedRow{
+    background-color: gold !important;
+}
+
+.hightlightedCol{
+    background-color: blue !important;
+}
+
+.largeCell{
+    min-width: 252px !important;
+}
+
+.dataScrollPanel {
+    margin-bottom: 3px;
 }
