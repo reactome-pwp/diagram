@@ -29,11 +29,11 @@ public abstract class DiagramContentFactory {
         content.isDisease = diagram.getIsDisease();
 
         content.cache(diagram.getNodes());
-        content.cache(diagram.getNodes());
         content.cache(diagram.getNotes());
         content.cache(diagram.getEdges());
         content.cache(diagram.getLinks());
         content.cache(diagram.getCompartments());
+        content.cache(diagram.getShadows());
 
         //Get normal, diseased components etc.
 //        content.normalComponents = getDiagramObjectSet(content.diagramObjectMap, diagram.getNormalComponents());

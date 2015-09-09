@@ -28,6 +28,7 @@ public abstract class DiagramObjectsFactory {
         AutoBean<Node> node();
         AutoBean<Note> note();
         AutoBean<Compartment> compartment();
+        AutoBean<Shadow> shadow();
 
         AutoBean<ReactionPart> reactionPart();
         AutoBean<Shape> shape();

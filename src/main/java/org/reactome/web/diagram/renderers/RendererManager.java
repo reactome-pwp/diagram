@@ -91,6 +91,7 @@ public class RendererManager implements DiagramZoomHandler, DiagramLoadedHandler
         s000.put("Interaction", new InteractionRenderer000());
         s000.put("RNA", new RNARenderer000());
         s000.put("Gene", new GeneRenderer000());
+        s000.put("Shadow", new ShadowRenderer000());
         aux = new LinkRenderer000();
         s000.put("EntitySetAndMemberLink", aux);
         s000.put("EntitySetAndEntitySetLink", aux);
@@ -108,6 +109,7 @@ public class RendererManager implements DiagramZoomHandler, DiagramLoadedHandler
         s050.put("Interaction", new InteractionRenderer050());
         s050.put("RNA", new RNARenderer050());
         s050.put("Gene", new GeneRenderer050());
+        s050.put("Shadow", new ShadowRenderer050());
         aux = new LinkRenderer050();
         s050.put("EntitySetAndMemberLink", aux);
         s050.put("EntitySetAndEntitySetLink", aux);
@@ -125,6 +127,7 @@ public class RendererManager implements DiagramZoomHandler, DiagramLoadedHandler
         s100.put("Interaction", new InteractionRenderer100());
         s100.put("RNA", new RNARenderer100());
         s100.put("Gene", new GeneRenderer100());
+        s100.put("Shadow", new ShadowRenderer100());
         aux = new LinkRenderer100();
         s100.put("EntitySetAndMemberLink", aux);
         s100.put("EntitySetAndEntitySetLink", aux);
@@ -141,6 +144,7 @@ public class RendererManager implements DiagramZoomHandler, DiagramLoadedHandler
 //        s200.put("FlowLine", new FlowlineRenderer200());
 //        s200.put("RNA", new RNARenderer200());
 //        s200.put("Gene", new GeneRenderer200());
+//        s200.put("Shadow", new ShadowRenderer200());
 //        aux = new LinkRenderer200();
 //        s200.put("EntitySetAndMemberLink", aux);
 //        s200.put("EntitySetAndEntitySetLink", aux);

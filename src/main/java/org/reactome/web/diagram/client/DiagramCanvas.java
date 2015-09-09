@@ -13,10 +13,7 @@ import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
-import org.reactome.web.diagram.data.layout.Coordinate;
-import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.data.layout.Edge;
-import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
 import org.reactome.web.diagram.events.ExpressionValueHoveredEvent;
 import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
@@ -60,6 +57,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private EventBus eventBus;
 
     private AdvancedContext2d compartments;
+    private AdvancedContext2d shadows;
     private AdvancedContext2d notes;
     private AdvancedContext2d links;
 
@@ -355,7 +353,11 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         ConnectorRenderer connectorRenderer = this.rendererManager.getConnectorRenderer();
         for (DiagramObject item : objects) {
             renderer.draw(ctx, item, factor, offset);
-            renderer.drawText(this.text, item, factor, offset);
+            if(item instanceof Shadow){
+                renderer.drawText(this.shadows, item, factor, offset);
+            }else{
+                renderer.drawText(this.text, item, factor, offset);
+            }
             if (item instanceof Node) {
                 Node node = (Node) item;
                 connectorRenderer.draw(this.reactions, this.reactionDecorators, node, factor, offset);
@@ -441,6 +443,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         int height = this.getOffsetHeight();
 
         this.compartments = createCanvas(width, height);
+        this.shadows = createCanvas(width, height);
         this.notes = createCanvas(width, height);
         this.links = createCanvas(width, height);
 
@@ -534,6 +537,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             case "Interaction":     rtn = this.entities;            break;
             case "RNA":             rtn = this.entities;            break;
             case "Gene":            rtn = this.entities;            break;
+            case "Shadow":          rtn = this.shadows;            break;
             case "EntitySetAndMemberLink":
             case "EntitySetAndEntitySetLink":
                 rtn = this.links;

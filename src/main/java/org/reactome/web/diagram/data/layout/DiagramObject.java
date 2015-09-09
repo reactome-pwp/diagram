@@ -12,8 +12,6 @@ public interface DiagramObject extends QuadTreeBox {
 
     Long getReactomeId();
 
-    String getStableId();
-
     String getDisplayName();
 
     String getSchemaClass();
@@ -23,8 +21,6 @@ public interface DiagramObject extends QuadTreeBox {
     Coordinate getPosition();
 
     Boolean getIsDisease();
-
-//    Boolean getIsOverlaid();
 
     Boolean getIsFadeOut();
 
