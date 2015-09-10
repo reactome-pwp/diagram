@@ -2,7 +2,7 @@ package org.reactome.web.diagram.data;
 
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
-import uk.ac.ebi.pwp.structures.quadtree.model.Box;
+import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>

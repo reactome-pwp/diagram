@@ -17,7 +17,6 @@ import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.GraphObjectFactory;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
-import org.reactome.web.diagram.data.analysis.ExpressionSummary;
 import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
@@ -33,7 +32,7 @@ import org.reactome.web.diagram.util.DiagramEventBus;
 import org.reactome.web.diagram.util.LruCache;
 import org.reactome.web.diagram.util.ViewportUtils;
 import org.reactome.web.diagram.util.actions.UserActionsHandlers;
-import uk.ac.ebi.pwp.structures.quadtree.model.Box;
+import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.*;
 
@@ -230,7 +229,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     private void highlight(DiagramObject item) {
         GraphObject hovered = item != null && item.getIsFadeOut() == null ? item.getGraphObject() : null;
-        if(Objects.equals(this.hovered, hovered)) return;
+        if (Objects.equals(this.hovered, hovered)) return;
         this.hovered = hovered;
         GraphObjectHoveredEvent event = new GraphObjectHoveredEvent(hovered, item);
         this.eventBus.fireEventFromSource(event, this);
@@ -288,15 +287,15 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void resetSelection() {
         this.halo = new HashSet<>();
-        if(this.selected!=null) {
+        if (this.selected != null) {
             this.selected = null;
             this.forceDraw = true;
             this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(null, false), this);
         }
     }
 
-    public void resetDialogs(){
-        if(this.context!=null){
+    public void resetDialogs() {
+        if (this.context != null) {
             this.context.hideDialogs();
         }
     }
@@ -328,8 +327,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     private void loadAnalysis(AnalysisStatus analysisStatus) {
-        if (analysisStatus == null){
-            if(this.analysisStatus!=null) {
+        if (analysisStatus == null) {
+            if (this.analysisStatus != null) {
                 this.eventBus.fireEventFromSource(new AnalysisResetEvent(false), this);
             }
         } else if (!analysisStatus.equals(this.context.getAnalysisStatus())) {
@@ -362,7 +361,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onClick(ClickEvent event) {
-        event.preventDefault(); event.stopPropagation();
+        event.preventDefault();
+        event.stopPropagation();
         if (!this.diagramMoved) {
             DiagramObject item = this.getHovered(this.mouseCurrent);
             GraphObject toSel = item != null ? item.getGraphObject() : null;
@@ -375,27 +375,28 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     public void onDoubleClick(DoubleClickEvent event) {
         DiagramObject item = this.getHovered(this.mouseCurrent);
         GraphObject toOpen = item != null ? item.getGraphObject() : null;
-        if(toOpen instanceof GraphPathway) {
+        if (toOpen instanceof GraphPathway) {
             this.load(toOpen.getDbId().toString());
         }
     }
 
     @Override
     public void onMouseDown(MouseDownEvent event) {
-        event.stopPropagation(); event.preventDefault();
+        event.stopPropagation();
+        event.preventDefault();
         this.diagramMoved = false;
         int button = event.getNativeEvent().getButton();
         switch (button) {
             case NativeEvent.BUTTON_RIGHT:
-                DiagramObject item = this.getHovered(this.mouseCurrent);
-                List<String> expColumns = new LinkedList<>();
-                if(this.analysisStatus!=null){
-                    ExpressionSummary expressionSummary = this.analysisStatus.getExpressionSummary();
-                    if(expressionSummary!=null) {
-                        expColumns = expressionSummary.getColumnNames();
-                    }
-                }
-                this.context.showDialog(this.eventBus, item, expColumns);
+//                DiagramObject item = this.getHovered(this.mouseCurrent);
+//                List<String> expColumns = new LinkedList<>();
+//                if(this.analysisStatus!=null){
+//                    ExpressionSummary expressionSummary = this.analysisStatus.getExpressionSummary();
+//                    if(expressionSummary!=null) {
+//                        expColumns = expressionSummary.getColumnNames();
+//                    }
+//                }
+//                this.context.showDialog(this.eventBus, item, expColumns);
                 break;
             default:
                 setMouseDownPosition(event.getRelativeElement(), event);
@@ -423,7 +424,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onMouseUp(MouseUpEvent event) {
-        event.stopPropagation(); event.preventDefault();
+        event.stopPropagation();
+        event.preventDefault();
         this.canvas.setCursor(hovered == null ? Style.Cursor.DEFAULT : Style.Cursor.POINTER);
         this.mouseDown = null;
     }
@@ -542,7 +544,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
                 if (!fadeOut) {
                     selected = item.getDiagramObjects();
                     this.selected = item;
-                    this.halo = this.diagramManager.getRelatedDiagramObjects(item);
+                    this.halo = item.getRelatedDiagramObjects();
                     this.halo.removeAll(item.getDiagramObjects());
                 }
             }
@@ -580,7 +582,6 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onDiagramLoaded(DiagramLoadedEvent event) {
-//        this.loadAnalysis(this.analysisStatus);
         fireEvent(event);
     }
 
@@ -656,7 +657,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
             DiagramObject item = context.getContent().getDiagramObject(id);
 
             //TODO: The graph has to be pruned in the server side
-            if (item == null || item.getIsFadeOut()!=null) continue;
+            if (item == null || item.getIsFadeOut() != null) continue;
 
             if (item.getGraphObject() instanceof GraphPhysicalEntity || item.getGraphObject() instanceof GraphEvent) {
                 this.notifyHoveredExpression(item, model);
@@ -682,7 +683,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     private void resetContext() {
         this.canvas.clear();
         this.canvas.clearThumbnail();
-        if(this.context!=null) {
+        if (this.context != null) {
             //this.resetAnalysis(); !IMPORTANT! Do not use this method here
             //Once a context is due to be replaced, the analysis overlay has to be cleaned up
             this.context.clearAnalysisOverlay();
@@ -708,8 +709,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.context.restoreDialogs();
     }
 
-    private void setSelection(GraphObject toSelect, boolean zoom, boolean fireExternally){
-        if(!Objects.equals(this.selected, toSelect)) {
+    private void setSelection(GraphObject toSelect, boolean zoom, boolean fireExternally) {
+        if (!Objects.equals(this.selected, toSelect)) {
             this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(toSelect, zoom, fireExternally), this);
         }
     }

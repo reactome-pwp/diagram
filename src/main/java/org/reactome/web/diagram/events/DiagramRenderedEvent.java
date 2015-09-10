@@ -3,7 +3,7 @@ package org.reactome.web.diagram.events;
 import com.google.gwt.event.shared.GwtEvent;
 import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.handlers.DiagramRenderedHandler;
-import uk.ac.ebi.pwp.structures.quadtree.model.Box;
+import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>

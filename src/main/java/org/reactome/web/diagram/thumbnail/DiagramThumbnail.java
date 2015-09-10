@@ -18,7 +18,7 @@ import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.thumbnail.render.ThumbnailRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
-import uk.ac.ebi.pwp.structures.quadtree.model.Box;
+import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.LinkedList;
 import java.util.List;

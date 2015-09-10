@@ -4,7 +4,7 @@ import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.graph.raw.EntityNode;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
 import org.reactome.web.diagram.data.graph.raw.Graph;
-import org.reactome.web.diagram.data.graph.raw.SubpathwayRaw;
+import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 
@@ -29,11 +29,11 @@ public abstract class DiagramContentFactory {
         content.isDisease = diagram.getIsDisease();
 
         content.cache(diagram.getNodes());
-        content.cache(diagram.getNodes());
         content.cache(diagram.getNotes());
         content.cache(diagram.getEdges());
         content.cache(diagram.getLinks());
         content.cache(diagram.getCompartments());
+        content.cache(diagram.getShadows());
 
         //Get normal, diseased components etc.
 //        content.normalComponents = getDiagramObjectSet(content.diagramObjectMap, diagram.getNormalComponents());
@@ -130,10 +130,10 @@ public abstract class DiagramContentFactory {
         }
 
         if(graph.getSubpathways()!=null) {
-            for (SubpathwayRaw subpathway : graph.getSubpathways()) {
+            for (SubpathwayNode subpathway : graph.getSubpathways()) {
                 GraphSubpathway sp = GraphObjectFactory.getOrCreateDatabaseObject(subpathway);
                 for (Long event : subpathway.getEvents()) {
-                    sp.addContainedEvent((GraphReactionLikeEvent) content.getDatabaseObject(event));
+                    sp.addContainedEvent((GraphEvent) content.getDatabaseObject(event));
                 }
             }
         }

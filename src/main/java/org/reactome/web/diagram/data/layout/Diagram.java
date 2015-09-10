@@ -71,6 +71,11 @@ public interface Diagram {
     List<Compartment> getCompartments();
 
     /**
+     * The list of contained shadows
+     */
+    List<Shadow> getShadows();
+
+    /**
      * Related pathway DB_ID
      */
     Long getDbId();

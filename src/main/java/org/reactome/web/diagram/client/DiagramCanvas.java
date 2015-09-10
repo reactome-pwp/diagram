@@ -60,6 +60,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private EventBus eventBus;
 
     private AdvancedContext2d compartments;
+    private AdvancedContext2d shadows;
     private AdvancedContext2d notes;
     private AdvancedContext2d links;
 
@@ -124,7 +125,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         double factor = status.getFactor();
         Coordinate offset = status.getOffset();
         for (DiagramObject item : items) {
-            Renderer renderer = RendererManager.get().getRenderer(item);
+            if(item.getIsFadeOut()!=null) continue;
+            Renderer renderer = this.rendererManager.getRenderer(item);
             if (renderer != null) {
                 renderer.highlight(this.halo, item, factor, offset);
             }
@@ -136,6 +138,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         cleanCanvas(this.entitiesHighlight);
         cleanCanvas(this.reactionsHighlight);
         for (DiagramObject item : items) {
+            if(item.getIsFadeOut()!=null) continue;
             Renderer renderer = rendererManager.getRenderer(item);
             if (renderer == null) return;
             if (item instanceof Node) {
@@ -151,6 +154,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         cleanCanvas(this.entitiesSelection);
         cleanCanvas(this.reactionsSelection);
         for (DiagramObject item : items) {
+            if(item.getIsFadeOut()!=null) continue;
             Renderer renderer = rendererManager.getRenderer(item);
             if (renderer == null) return;
             if (item instanceof Node) {
@@ -163,7 +167,6 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
     public void setCursor(Style.Cursor cursor) {
         this.buffer.getCanvas().getStyle().setCursor(cursor);
-//        this.getTopCanvas().getElement().getStyle().setCursor(cursor);
     }
 
     @Override
@@ -296,10 +299,10 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                 if(noHitByAnalysisNormal!=null) {
                     renderItems(renderer, ctx, noHitByAnalysisNormal, factor, offset);
                 }
-                Set<DiagramObject> noHitByAnalysiDisease = target.getElements(RenderType.NOT_HIT_BY_ANALYSIS_DISEASE);
-                if(noHitByAnalysiDisease!=null) {
+                Set<DiagramObject> noHitByAnalysisDisease = target.getElements(RenderType.NOT_HIT_BY_ANALYSIS_DISEASE);
+                if(noHitByAnalysisDisease!=null) {
                     ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
-                    renderItems(renderer, ctx, noHitByAnalysiDisease, factor, offset);
+                    renderItems(renderer, ctx, noHitByAnalysisDisease, factor, offset);
                 }
                 Set<DiagramObject> enrichmentNormal = target.getElements(RenderType.HIT_BY_ENRICHMENT_NORMAL);
                 if(enrichmentNormal!=null) {
@@ -368,7 +371,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             renderer.draw(this.fadeOut, item, factor, offset);
             if (item instanceof Node) {
                 Node node = (Node) item;
-                connectorRenderer.draw(this.reactions, this.reactionDecorators, node, factor, offset);
+                connectorRenderer.draw(this.fadeOut, this.fadeOut, node, factor, offset);
             }
         }
         renderer.setTextProperties(this.fadeOut, ColourProfileType.FADE_OUT);
@@ -439,6 +442,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         int height = this.getOffsetHeight();
 
         this.compartments = createCanvas(width, height);
+        this.shadows = createCanvas(width, height);
         this.notes = createCanvas(width, height);
         this.links = createCanvas(width, height);
 
@@ -532,6 +536,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             case "Interaction":     rtn = this.entities;            break;
             case "RNA":             rtn = this.entities;            break;
             case "Gene":            rtn = this.entities;            break;
+            case "Shadow":          rtn = this.shadows;            break;
             case "EntitySetAndMemberLink":
             case "EntitySetAndEntitySetLink":
                 rtn = this.links;

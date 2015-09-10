@@ -108,7 +108,7 @@ public class AdvancedContext2d extends Context2d {
         quadraticCurveTo(x, bottom, x, bottom - arcWidth);
         lineTo(x, y + arcWidth);
         quadraticCurveTo(x, y, x + arcWidth, y);
-        closePath();
+//        closePath();
     }
 
     /**
@@ -401,6 +401,27 @@ public class AdvancedContext2d extends Context2d {
         stroke();
     }
 
+    public final void geneTextHolder(double x,
+                                     double y,
+                                     double width,
+                                     double height,
+                                     double symbolWidth,
+                                     double arcWidth){
+        double y1 = y + symbolWidth / 2;
+        double right = x + width;
+        double bottom = y + height;
+
+        // Draw the horizontal line
+        beginPath();
+        moveTo(x, y1);
+        lineTo(right, y1);
+        lineTo(right, bottom - arcWidth);
+        quadraticCurveTo(right, bottom, right - arcWidth, bottom);
+        lineTo(x + arcWidth, bottom);
+        quadraticCurveTo(x, bottom, x, bottom - arcWidth);
+        closePath();
+    }
+
     public final void geneShape(
             double x,
             double y,
@@ -411,18 +432,17 @@ public class AdvancedContext2d extends Context2d {
             double arrowLength,
             double arrowAngle) {
         // Draw the horizontal line
-        double x1 = x;
         double y1 = y + symbolWidth / 2;
         double x2 = x + width;
         double y2 = y + symbolWidth / 2;
 
         // Draw the horizontal line
         beginPath();
-        moveTo(x1, y1);
+        moveTo(x, y1);
         lineTo(x2, y2);
 
         // Draw the vertical line
-        x1 = x2 - symbolPad;
+        double x1 = x2 - symbolPad;
         x2 = x1;
         y2 = (int) (y1 - symbolWidth / 2.0) + 2; // Need an extra 2 pixel. Not sure why!
         // Looks nice with one pixel offset

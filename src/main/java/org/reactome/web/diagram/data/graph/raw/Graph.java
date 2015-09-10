@@ -15,6 +15,6 @@ public interface Graph {
 
     List<EventNode> getEdges();
 
-    List<SubpathwayRaw> getSubpathways();
+    List<SubpathwayNode> getSubpathways();
 
 }

@@ -59,6 +59,10 @@ public class SearchBox extends TextBox implements KeyUpHandler, KeyDownHandler {
                 event.stopPropagation(); event.preventDefault();
                 fireEvent(new SearchBoxArrowKeysEvent(keyCode));
                 break;
+            case KeyCodes.KEY_ESCAPE:
+                event.stopPropagation(); event.preventDefault();
+                fireEvent(new SearchBoxArrowKeysEvent(keyCode));
+                break;
         }
     }
 

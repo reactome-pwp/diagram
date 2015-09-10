@@ -4,11 +4,12 @@ import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.resources.client.ImageResource;
 import org.reactome.web.diagram.data.graph.model.factory.SchemaClass;
 import org.reactome.web.diagram.data.graph.raw.GraphNode;
-import org.reactome.web.diagram.data.graph.raw.SubpathwayRaw;
+import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
+import org.reactome.web.diagram.data.layout.Connector;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.layout.Node;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -33,7 +34,7 @@ public abstract class GraphObject implements Comparable<GraphObject> {
         this.diagramObjects = new LinkedList<>();
     }
 
-    public GraphObject(SubpathwayRaw subpathway) {
+    public GraphObject(SubpathwayNode subpathway) {
         this.dbId = subpathway.getDbId();
         this.stId = subpathway.getStId();
         this.displayName = subpathway.getDisplayName();
@@ -100,7 +101,7 @@ public abstract class GraphObject implements Comparable<GraphObject> {
     }
 
     public SchemaClass getSchemaClass() {
-        return SchemaClass.getSchemaClass(getClass().getSimpleName());
+        return SchemaClass.getSchemaClass(getClass().getSimpleName().replace("Graph", ""));
     }
 
     public String getClassName() {
@@ -108,6 +109,64 @@ public abstract class GraphObject implements Comparable<GraphObject> {
     }
 
     public abstract ImageResource getImageResource();
+
+    public Set<DiagramObject> getRelatedDiagramObjects() {
+        Set<DiagramObject> toDisplay = new HashSet<>();
+        if (this instanceof GraphReactionLikeEvent) {
+            toDisplay.addAll(getElementsToDisplay((GraphReactionLikeEvent) this));
+        } else if (this instanceof GraphPhysicalEntity) {
+            GraphPhysicalEntity pe = (GraphPhysicalEntity) this;
+            for (GraphReactionLikeEvent rle : pe.participatesIn()) {
+                toDisplay.addAll(getElementsToDisplay(rle));
+            }
+        } else if (this instanceof GraphPathway) {
+            toDisplay.addAll(this.getDiagramObjects());
+        } else if (this instanceof GraphSubpathway) {
+            GraphSubpathway subpathway = (GraphSubpathway) this;
+            //DO NOT CALL subpathway.getDiagramObjects here because we need also the participants :)
+            for (GraphObject obj : subpathway.getContainedEvents()) {
+                if(obj instanceof GraphReactionLikeEvent) {
+                    GraphReactionLikeEvent rle = (GraphReactionLikeEvent) obj;
+                    toDisplay.addAll(getElementsToDisplay(rle));
+                }
+            }
+        }
+        return toDisplay;
+    }
+
+    private Collection<DiagramObject> getElementsToDisplay(GraphReactionLikeEvent rle) {
+        Set<DiagramObject> toDisplay = new HashSet<>(rle.getDiagramObjects());
+        Set<Long> target = new HashSet<>();
+        for (DiagramObject diagramObject : toDisplay) {
+            target.add(diagramObject.getId());
+        }
+        toDisplay.addAll(getDiagramObjectsParticipatingInReaction(rle.getInputs(), target));
+        toDisplay.addAll(getDiagramObjectsParticipatingInReaction(rle.getOutputs(), target));
+        toDisplay.addAll(getDiagramObjectsParticipatingInReaction(rle.getCatalysts(), target));
+        toDisplay.addAll(getDiagramObjectsParticipatingInReaction(rle.getActivators(), target));
+        toDisplay.addAll(getDiagramObjectsParticipatingInReaction(rle.getInhibitors(), target));
+        toDisplay.addAll(getDiagramObjectsParticipatingInReaction(rle.getRequirements(), target));
+        return toDisplay;
+    }
+
+    private Collection<DiagramObject> getDiagramObjectsParticipatingInReaction(Collection<GraphPhysicalEntity> entities,
+                                                                                      Set<Long> target) {
+        Set<DiagramObject> rtn = new HashSet<>();
+        for (GraphPhysicalEntity entity : entities) {
+            for (DiagramObject object : entity.getDiagramObjects()) {
+                if (object instanceof Node) {
+                    Node node = (Node) object;
+                    for (Connector connector : node.getConnectors()) {
+                        if (target.contains(connector.getEdgeId())) {
+                            rtn.add(node);
+                        }
+                    }
+                }
+            }
+        }
+        return rtn;
+    }
+
 
     @Override
     public int compareTo(GraphObject o) {

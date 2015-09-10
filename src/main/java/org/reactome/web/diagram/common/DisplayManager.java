@@ -7,7 +7,7 @@ import org.reactome.web.diagram.data.layout.NodeCommon;
 import org.reactome.web.diagram.data.layout.NodeProperties;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.util.ViewportUtils;
-import uk.ac.ebi.pwp.structures.quadtree.model.Box;
+import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.Collection;
 import java.util.Collections;

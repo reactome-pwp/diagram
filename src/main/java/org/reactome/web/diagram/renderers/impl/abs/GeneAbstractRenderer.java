@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.renderers.impl.abs;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.canvas.dom.client.TextMetrics;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -21,6 +22,7 @@ public abstract class GeneAbstractRenderer extends NodeAbstractRenderer{
         if(!isVisible(item)) return;
         Node node = (Node) item;
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+        fillTextHolder(ctx, prop);
         shape(ctx, prop, node.getNeedDashedBorder());
         ctx.stroke();
     }
@@ -28,17 +30,39 @@ public abstract class GeneAbstractRenderer extends NodeAbstractRenderer{
     @Override
     public void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         if(isVisible(item) && item.getDisplayName() != null && !item.getDisplayName().isEmpty()) {
+            TextMetrics metrics = ctx.measureText(item.getDisplayName());
             Node node = (Node) item;
             NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
             Coordinate centre = CoordinateFactory.get(prop.getX() + prop.getWidth() / 2, prop.getY() + prop.getHeight() * 0.75);
             TextRenderer textRenderer = new TextRenderer(RendererProperties.WIDGET_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
-            textRenderer.drawTextSingleLine(ctx, item.getDisplayName(), centre);
+            if(metrics.getWidth()<=prop.getWidth() - 2 * RendererProperties.NODE_TEXT_PADDING) {
+                textRenderer.drawTextSingleLine(ctx, item.getDisplayName(), centre);
+            }else{
+                // Create a smaller placeholder as text is only displayed at the bottom end of the gene node
+                NodeProperties nodeProp = NodePropertiesFactory.get(prop.getX(), prop.getY() + prop.getHeight()/2 , prop.getWidth(), prop.getHeight()/2);
+                textRenderer.drawTextMultiLine(ctx, item.getDisplayName(), nodeProp);
+            }
         }
     }
 
         @Override
     public boolean isVisible(DiagramObject item) {
         return true;
+    }
+
+    public void fillTextHolder(AdvancedContext2d ctx, NodeProperties prop){
+        ctx.geneTextHolder(
+                prop.getX(),
+                prop.getY(),
+                prop.getWidth(),
+                prop.getHeight(),
+                RendererProperties.GENE_SYMBOL_WIDTH,
+                RendererProperties.ROUND_RECT_ARC_WIDTH
+        );
+        ctx.save();
+        ctx.setFillStyle(DiagramColours.get().PROFILE.getGene().getFill());
+        ctx.fill();
+        ctx.restore();
     }
 
     @Override
@@ -53,14 +77,6 @@ public abstract class GeneAbstractRenderer extends NodeAbstractRenderer{
                 RendererProperties.ARROW_LENGTH,
                 RendererProperties.ARROW_ANGLE
         );
-
-        //TODO: To be re-engineered
-//        Coordinate centre = node.getPosition().transform(factor, offset);
-//        ctx.save();
-//        ctx.setGlobalAlpha(0.1);
-//        ctx.roundedRectangle(prop.getX(), centre.getY(), prop.getWidth(), prop.getHeight() / 2, RendererProperties.ROUND_RECT_ARC_WIDTH);
-//        ctx.fill();
-//        ctx.restore();
     }
 
     @Override

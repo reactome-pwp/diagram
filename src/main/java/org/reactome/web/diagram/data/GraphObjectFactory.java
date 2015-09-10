@@ -7,7 +7,7 @@ import org.reactome.web.diagram.data.graph.model.factory.SchemaClass;
 import org.reactome.web.diagram.data.graph.raw.EntityNode;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
 import org.reactome.web.diagram.data.graph.raw.GraphNode;
-import org.reactome.web.diagram.data.graph.raw.SubpathwayRaw;
+import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
 
 /**
  * This factory is created and kept for every diagram in its context. This is meant to keep previous loaded
@@ -38,11 +38,11 @@ public abstract class GraphObjectFactory {
             case ENTITY_WITH_ACCESSIONED_SEQUENCE:  dbObject = new GraphEntityWithAccessionedSequence((EntityNode) node);   break;
             case GENOME_ENCODED_ENTITY:             dbObject = new GraphGenomeEncodedEntity((EntityNode) node);             break;
             case OPEN_SET:                          dbObject = new GraphOpenSet((EntityNode) node);                         break;
-            case OTHER_ENTITY:                      dbObject = new GraphOtherEntity((EntityNode) node);                break;
+            case OTHER_ENTITY:                      dbObject = new GraphOtherEntity((EntityNode) node);                     break;
             case PATHWAY:                           dbObject = new GraphPathway((EntityNode) node);                         break;
             case POLYMER:                           dbObject = new GraphPolymer((EntityNode) node);                         break;
-            case SIMPLE_ENTITY:                     dbObject = new GraphSimpleEntity((EntityNode) node);               break;
-            case BLACK_BOX_EVENT:                   dbObject = new GraphBlackBoxEvent((EventNode) node);               break;
+            case SIMPLE_ENTITY:                     dbObject = new GraphSimpleEntity((EntityNode) node);                    break;
+            case BLACK_BOX_EVENT:                   dbObject = new GraphBlackBoxEvent((EventNode) node);                    break;
             case DEPOLYMERISATION:                  dbObject = new GraphDepolymerisation((EventNode) node);                 break;
             case FAILED_REACTION:                   dbObject = new GraphFailedReaction((EventNode) node);                   break;
             case POLYMERISATION:                    dbObject = new GraphPolymerisation((EventNode) node);                   break;
@@ -60,19 +60,19 @@ public abstract class GraphObjectFactory {
         return dbObject;
     }
 
-    public static GraphSubpathway getOrCreateDatabaseObject(SubpathwayRaw subpathway){
+    public static GraphSubpathway getOrCreateDatabaseObject(SubpathwayNode subpathway){
         if(subpathway ==null || subpathway.getDbId()==null){
             throw new RuntimeException("It is not possible to create a DatabaseObject for " + subpathway);
         }
 
-        GraphSubpathway rtn = (GraphSubpathway) content.getDatabaseObject(subpathway.getDbId());
+        GraphSubpathway rtn =  content.getGraphSubpathway(subpathway.getDbId());
         if (rtn != null) return rtn;
 
         rtn = new GraphSubpathway(subpathway);
         for (Long id : subpathway.getEvents()) {
             GraphObject graphObject = content.getDatabaseObject(id);
-            if(graphObject !=null && graphObject instanceof GraphReactionLikeEvent){
-                rtn.addContainedEvent((GraphReactionLikeEvent) graphObject);
+            if(graphObject !=null && graphObject instanceof GraphEvent){
+                rtn.addContainedEvent((GraphEvent) graphObject);
             }
         }
 

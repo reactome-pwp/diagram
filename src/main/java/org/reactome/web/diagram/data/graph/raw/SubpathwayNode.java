@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public interface SubpathwayRaw {
+public interface SubpathwayNode {
 
     Long getDbId();
 

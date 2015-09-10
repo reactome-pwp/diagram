@@ -7,10 +7,6 @@ import java.util.List;
  */
 public interface Node extends NodeCommon {
 
-    Boolean getIsChanged();
-
-    Boolean getHideComponents();
-
     List<NodeAttachment> getNodeAttachments();
 
     List<Connector> getConnectors();
