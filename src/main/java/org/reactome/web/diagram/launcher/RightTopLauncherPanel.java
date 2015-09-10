@@ -9,6 +9,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.events.DiagramExportRequestedEvent;
 import org.reactome.web.diagram.launcher.key.DiagramKey;
 import org.reactome.web.diagram.launcher.menu.SettingsMenuPanel;
 
@@ -17,17 +18,23 @@ import org.reactome.web.diagram.launcher.menu.SettingsMenuPanel;
  */
 public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
 
+    private EventBus eventBus;
     private DiagramKey diagramKey;
     private SettingsMenuPanel settings;
 
+    private PwpButton captureBtn;
     private PwpButton diagramKeyBtn;
     private PwpButton settingBtn;
 
     public RightTopLauncherPanel(EventBus eventBus) {
         this.setStyleName(RESOURCES.getCSS().launcherPanel());
 
+        this.eventBus = eventBus;
         this.diagramKey = new DiagramKey(eventBus);
         this.settings = new SettingsMenuPanel(eventBus);
+
+        this.captureBtn = new PwpButton("Diagram export", RESOURCES.getCSS().camera(), this);
+        this.add(this.captureBtn);
 
         this.diagramKeyBtn = new PwpButton("Diagram key", RESOURCES.getCSS().key(), this);
         this.add(this.diagramKeyBtn);
@@ -41,7 +48,9 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
     @Override
     public void onClick(ClickEvent event) {
         PwpButton btn = (PwpButton) event.getSource();
-        if (btn.equals(this.diagramKeyBtn)) {
+        if(btn.equals(this.captureBtn)){
+            this.eventBus.fireEventFromSource(new DiagramExportRequestedEvent(), this);
+        }else if (btn.equals(this.diagramKeyBtn)) {
             if (this.diagramKey.isShowing()) {
                 this.diagramKey.hide();
             } else {
@@ -63,6 +72,19 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
 
+
+        @Source("key/images/camera_clicked.png")
+        ImageResource cameraClicked();
+
+        @Source("key/images/camera_disabled.png")
+        ImageResource cameraDisabled();
+
+        @Source("key/images/camera_hovered.png")
+        ImageResource cameraHovered();
+
+        @Source("key/images/camera_normal.png")
+        ImageResource cameraNormal();
+        
         @Source("key/images/key_clicked.png")
         ImageResource keyClicked();
 
@@ -93,6 +115,8 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
         String CSS = "org/reactome/web/diagram/launcher/RightTopLauncherPanel.css";
 
         String launcherPanel();
+
+        String camera();
 
         String key();
 
