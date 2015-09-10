@@ -21,8 +21,12 @@
 .headerTable tbody tr:first-child td {
     font: bold 8px arial;
     min-width: 50px !important; /*setting just the width does not work*/
+    max-width: 50px;
     table-layout: fixed;
     cursor: pointer;
+
+    -webkit-transition: background-color 1s; /* Chrome, Safari, Opera */
+    transition: background-color 1s;
 }
 
 .headerScrollPanel {
@@ -44,6 +48,7 @@
 
 .dataTable tbody tr td {
     font: bold 9px arial;
+    max-width: 50px;
     min-width: 50px; /*setting just the width does not work*/
     cursor: pointer;
 
@@ -51,17 +56,23 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 
-    -webkit-transition: background-color 2s; /* Chrome, Safari, Opera */
-    transition: background-color 2s;
+    -webkit-transition: background-color 1s; /* Chrome, Safari, Opera */
+    transition: background-color 1s;
 
 }
 
-.hightlightedRow{
+.hightlightedRow {
     background-color: gold !important;
 }
 
-.hightlightedCol{
+.hightlightedCol {
     background-color: blue !important;
+}
+
+.selectedExpressionColumn{
+    /*background-color: blue !important;*/
+    border-right: 1px dashed white;
+    border-left: 1px dashed white;
 }
 
 .largeCell{

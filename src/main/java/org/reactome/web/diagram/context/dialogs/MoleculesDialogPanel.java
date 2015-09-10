@@ -11,10 +11,14 @@ import org.reactome.web.diagram.context.sections.Section;
 import org.reactome.web.diagram.data.analysis.ExpressionSummary;
 import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.events.AnalysisProfileChangedEvent;
 import org.reactome.web.diagram.events.AnalysisResetEvent;
 import org.reactome.web.diagram.events.AnalysisResultLoadedEvent;
+import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
+import org.reactome.web.diagram.handlers.AnalysisProfileChangedHandler;
 import org.reactome.web.diagram.handlers.AnalysisResetHandler;
 import org.reactome.web.diagram.handlers.AnalysisResultLoadedHandler;
+import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,10 +27,13 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class MoleculesDialogPanel extends Composite implements AnalysisResultLoadedHandler, AnalysisResetHandler {
+public class MoleculesDialogPanel extends Composite implements AnalysisResultLoadedHandler, AnalysisResetHandler,
+        ExpressionColumnChangedHandler, AnalysisProfileChangedHandler {
 
     private EventBus eventBus;
+    private DiagramObject diagramObject;
     private GraphObject graphObject;
+
     private List<String> expColumns;
     private Double min;
     private Double max;
@@ -44,6 +51,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
 
     public MoleculesDialogPanel(EventBus eventBus, DiagramObject diagramObject, List<String> expColumns) {
         this.eventBus = eventBus;
+        this.diagramObject = diagramObject;
         this.graphObject = diagramObject.getGraphObject();
         this.expColumns = expColumns;
         if (graphObject instanceof GraphPhysicalEntity) {
@@ -107,6 +115,8 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     private void initHandlers(){
         this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
+        this.eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
     }
 
     private void initialiseWidget(){
@@ -115,19 +125,19 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         int optimalSize = getOptimalSize();
         //There is a certain order in which we want the participating molecules to be listed
         if (proteins.size() > 0){
-            proteinsSection = new Section(eventBus, "Proteins", optimalSize);
+            proteinsSection = new Section("Proteins", optimalSize);
             vp.add(proteinsSection);
         }
         if (chemicals.size() > 0) {
-            chemicalsSection = new Section(eventBus, "Chemical compounds", optimalSize);
+            chemicalsSection = new Section("Chemical compounds", optimalSize);
             vp.add(chemicalsSection);
         }
         if (dnas.size() > 0) {
-            dnasSection = new Section(eventBus, "DNA", optimalSize);
+            dnasSection = new Section("DNA", optimalSize);
             vp.add(dnasSection);
         }
         if (others.size() > 0){
-            othersSection = new Section(eventBus, "Others", optimalSize);
+            othersSection = new Section("Others", optimalSize);
             vp.add(othersSection);
         }
         initWidget(vp);
@@ -160,8 +170,10 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         if (proteins.size() > 0){
             proteinsSection.setTableContents(proteins);
             proteinsSection.setTableHeader(colNames);
-            if(expColumns!=null && !expColumns.isEmpty())
-            proteinsSection.applyAnalysisColours(proteins, min, max);
+            if(expColumns!=null && !expColumns.isEmpty()) {
+//                proteinsSection.applyAnalysisColours(proteins, min, max);
+//                proteinsSection.selectExpressionCol(0);
+            }
         }
         if (chemicals.size() > 0) {
             chemicalsSection.setTableContents(chemicals);
@@ -198,6 +210,17 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
 
         }
     }
+
+    @Override
+    public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
+        ///TODO Implement it
+    }
+
+    @Override
+    public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
+        proteinsSection.selectExpressionCol(e.getColumn());
+    }
+
 
     public static Resources RESOURCES;
 

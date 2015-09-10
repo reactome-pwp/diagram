@@ -19,8 +19,6 @@ import java.util.List;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class Section extends Composite implements ClickHandler, ScrollHandler {
-    private EventBus eventBus;
-
     private Label sectionTitle;
 
     private FlexTable headerTable;
@@ -29,9 +27,7 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
     private ScrollPanel headerScrollPanel;
     private ScrollPanel dataScrollPanel;
 
-    public Section(EventBus eventBus, String title, Integer height){
-        this.eventBus = eventBus;
-
+    public Section(String title, Integer height){
         FlowPanel sectionHeader = new FlowPanel();
         sectionHeader.setStyleName(RESOURCES.getCSS().sectionHeader());
         sectionTitle = new Label(title);
@@ -66,42 +62,17 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
         initWidget(vp);
     }
 
-    private void hightlightRow(FlexTable table, int row){
-        for(int r=0; r<table.getRowCount(); r++){
-            if(r==row){
-                table.getRowFormatter().addStyleName(r, RESOURCES.getCSS().hightlightedRow());
-            }else{
-                table.getRowFormatter().removeStyleName(r, RESOURCES.getCSS().hightlightedRow());
-            }
-        }
-    }
-
-    private void hightlightCol(FlexTable table, int col){
-        for(int r=0; r<table.getRowCount(); r++) {
-            for(int c=0; c<table.getCellCount(r); c++){
-                if(c==col){
-                    table.getFlexCellFormatter().addStyleName(r, c, RESOURCES.getCSS().hightlightedCol());
-                }else{
-                    table.getFlexCellFormatter().removeStyleName(r, c, RESOURCES.getCSS().hightlightedCol());
-                }
-            }
-        }
-    }
-
-
     @Override
     public void onClick(ClickEvent event) {
         FlexTable table = (FlexTable) event.getSource();
         //gets the index of the cell and row the user clicked on
-        int cellIndex = table.getCellForEvent(event).getCellIndex();
+//        int cellIndex = table.getCellForEvent(event).getCellIndex();
         int rowIndex = table.getCellForEvent(event).getRowIndex();
         if(table.equals(dataTable)){
-//            System.out.println("r:" + rowIndex + " c:" + cellIndex + " -> " + table.getFlexCellFormatter().getElement(rowIndex, cellIndex).getInnerHTML());
-            hightlightRow(dataTable, rowIndex);
+            hightlightRow(dataTable, rowIndex, RESOURCES.getCSS().hightlightedRow());
         }else if(table.equals(headerTable)){
-//            System.out.println("r:" + rowIndex + " c:" + cellIndex + " -> " + table.getFlexCellFormatter().getElement(rowIndex, cellIndex).getInnerHTML());
-            hightlightCol(headerTable, cellIndex);
-            hightlightCol(dataTable, cellIndex+1);
+//            hightlightCol(headerTable, cellIndex, RESOURCES.getCSS().hightlightedCol());
+//            hightlightCol(dataTable, cellIndex+1, RESOURCES.getCSS().hightlightedCol());
         }
     }
 
@@ -148,7 +119,7 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
                 if(!cell.isEmpty() ){
                     Double value = Double.parseDouble(row.get(c));
                     String colour = AnalysisColours.get().expressionGradient.getColor(value, min, max);
-                    dataTable.getCellFormatter().getElement(r,c).getStyle().setBackgroundColor("#787878");
+                    dataTable.getCellFormatter().getElement(r,c).getStyle().setBackgroundColor(colour);
                 }
             }
         }
@@ -161,6 +132,36 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
     public void setTitle(String title){
         this.sectionTitle.setText(title);
 
+    }
+
+    public void selectExpressionCol(int col){
+        hightlightCol(headerTable, col, RESOURCES.getCSS().hightlightedCol());
+        hightlightCol(dataTable, col + 1, RESOURCES.getCSS().selectedExpressionColumn());
+    }
+
+    private void hightlightRow(FlexTable table, int row, String style){
+        if(table==null) return;
+        for(int r=0; r<table.getRowCount(); r++){
+            if(r==row){
+                table.getRowFormatter().addStyleName(r, style);
+            }else{
+                table.getRowFormatter().removeStyleName(r, style);
+            }
+        }
+    }
+
+    private void hightlightCol(FlexTable table, int col, String style){
+        if(table==null) return;
+        for(int r=0; r<table.getRowCount(); r++) {
+            for(int c=0; c<table.getCellCount(r); c++){
+                if(c==col){
+                    table.getFlexCellFormatter().addStyleName(r, c, style);
+
+                }else{
+                    table.getFlexCellFormatter().removeStyleName(r, c, style);
+                }
+            }
+        }
     }
 
     public static Resources RESOURCES;
@@ -191,6 +192,8 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
         String hightlightedRow();
 
         String hightlightedCol();
+
+        String selectedExpressionColumn();
 
         String largeCell();
 

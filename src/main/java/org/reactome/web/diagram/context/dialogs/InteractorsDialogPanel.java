@@ -17,7 +17,7 @@ public class InteractorsDialogPanel extends Composite {
     public InteractorsDialogPanel(EventBus eventBus, DiagramObject diagramObject) {
 //        initWidget(new InlineLabel("Interactors dialog content"));
         FlowPanel vp = new FlowPanel();
-        Section s1 = new Section(eventBus, "Interactors", 35);
+        Section s1 = new Section("Interactors", 35);
         ArrayList header = new ArrayList();
 //        header.add("Name");
         header.add("1h" );
@@ -58,7 +58,7 @@ public class InteractorsDialogPanel extends Composite {
         s1.setTableHeader(header);
         s1.setTableContents(contents);
 
-        Section s2 = new Section(eventBus, "More Interactors", 35);
+        Section s2 = new Section("More Interactors", 35);
         s2.setTableHeader(header);
         s2.setTableContents(contents);
         vp.add(s1);
