@@ -20,8 +20,8 @@
 
 .headerTable tbody tr:first-child td {
     font: bold 8px arial;
-    min-width: 50px !important; /*setting just the width does not work*/
-    max-width: 50px;
+    min-width: 70px !important; /*setting just the width does not work*/
+    max-width: 70px;
     table-layout: fixed;
     cursor: pointer;
 
@@ -48,8 +48,8 @@
 
 .dataTable tbody tr td {
     font: bold 9px arial;
-    max-width: 50px;
-    min-width: 50px; /*setting just the width does not work*/
+    max-width: 70px;
+    min-width: 70px; /*setting just the width does not work*/
     cursor: pointer;
 
     overflow: hidden;

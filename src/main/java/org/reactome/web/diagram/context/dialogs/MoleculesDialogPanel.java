@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.context.dialogs;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
@@ -171,7 +172,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
             proteinsSection.setTableContents(proteins);
             proteinsSection.setTableHeader(colNames);
             if(expColumns!=null && !expColumns.isEmpty()) {
-//                proteinsSection.applyAnalysisColours(proteins, min, max);
+                proteinsSection.applyAnalysisColours(proteins, min, max);
 //                proteinsSection.selectExpressionCol(0);
             }
         }
@@ -213,12 +214,17 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
 
     @Override
     public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
-        ///TODO Implement it
+        proteinsSection.applyAnalysisColours(proteins, min, max);
     }
 
     @Override
-    public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
-        proteinsSection.selectExpressionCol(e.getColumn());
+    public void onExpressionColumnChanged(final ExpressionColumnChangedEvent e) {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                proteinsSection.selectExpressionCol(e.getColumn());
+            }
+        });
     }
 
 

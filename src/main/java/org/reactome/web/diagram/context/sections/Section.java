@@ -6,12 +6,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
-import org.springframework.util.NumberUtils;
 
 import java.util.List;
 
@@ -89,7 +87,7 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
     public void setTableHeader(List<String> headerTitles){
         headerTable.removeAllRows();
         for(int c=0; c<headerTitles.size(); c++) {
-            headerTable.setText(0, c, headerTitles.get(c));
+            headerTable.setWidget(0, c, new Label(headerTitles.get(c)));
             headerTable.getFlexCellFormatter().setHorizontalAlignment(0, c, HasHorizontalAlignment.ALIGN_CENTER);
 
         }
@@ -100,7 +98,7 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
         for(int r=0; r<tableRows.size(); r++){
             List<String> row = tableRows.get(r);
             for(int c=0; c<row.size(); c++){
-                dataTable.setText(r, c, row.get(c));
+                dataTable.setWidget(r, c, new Label(row.get(c)));
                 dataTable.getFlexCellFormatter().setHorizontalAlignment(r, c, HasHorizontalAlignment.ALIGN_CENTER);
                 if(row.size()==1){
                     dataTable.getFlexCellFormatter().addStyleName(r, c, RESOURCES.getCSS().largeCell());
@@ -135,6 +133,7 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
     }
 
     public void selectExpressionCol(int col){
+        ensureVisible(headerScrollPanel, headerTable, 0, col);
         hightlightCol(headerTable, col, RESOURCES.getCSS().hightlightedCol());
         hightlightCol(dataTable, col + 1, RESOURCES.getCSS().selectedExpressionColumn());
     }
@@ -156,10 +155,20 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
             for(int c=0; c<table.getCellCount(r); c++){
                 if(c==col){
                     table.getFlexCellFormatter().addStyleName(r, c, style);
-
                 }else{
                     table.getFlexCellFormatter().removeStyleName(r, c, style);
                 }
+            }
+        }
+    }
+
+    private void ensureVisible(ScrollPanel scrollPanel, FlexTable table, int row, int col){
+        if(scrollPanel!=null && table!=null) {
+            Widget w = table.getWidget(row, col);
+            if(w!=null) {
+                scrollPanel.ensureVisible(w);
+            }else{
+                System.out.println("Widget null!");
             }
         }
     }
