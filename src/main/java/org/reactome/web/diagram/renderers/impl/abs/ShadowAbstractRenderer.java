@@ -2,23 +2,22 @@ package org.reactome.web.diagram.renderers.impl.abs;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.TextMetrics;
-import org.reactome.web.diagram.data.layout.*;
+import org.reactome.web.diagram.data.layout.Coordinate;
+import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.layout.NodeProperties;
+import org.reactome.web.diagram.data.layout.Shadow;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
-import java.util.List;
-
 /**
  * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
  */
-public class ShadowAbstractRenderer extends AbstractRenderer {
-    @Override
-    public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
-        Shadow shadow = (Shadow) item;
+public abstract class ShadowAbstractRenderer extends AbstractRenderer {
 
+    public void shape(AdvancedContext2d ctx, Shadow shadow, Double factor, Coordinate offset) {
         Coordinate initial = shadow.getPoints().get(0).transform(factor, offset);
         ctx.beginPath();
         ctx.moveTo(initial.getX(), initial.getY());
@@ -27,9 +26,6 @@ public class ShadowAbstractRenderer extends AbstractRenderer {
             ctx.lineTo(aux.getX(), aux.getY());
         }
         ctx.closePath();
-        ctx.setFillStyle(shadow.getColour());
-        ctx.setGlobalAlpha(0.2);
-        ctx.fill();
     }
 
     @Override
@@ -38,12 +34,8 @@ public class ShadowAbstractRenderer extends AbstractRenderer {
             return;
         }
 
-        TextMetrics metrics = ctx.measureText(item.getDisplayName());
         Shadow shadow = (Shadow) item;
-        ctx.setGlobalAlpha(1);
-        ctx.setFillStyle(shadow.getColour());
         ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE * 5));
-
         ctx.setTextAlign(Context2d.TextAlign.CENTER);
         ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
 
@@ -60,6 +52,8 @@ public class ShadowAbstractRenderer extends AbstractRenderer {
         TextRenderer textRenderer = new TextRenderer(RendererProperties.WIDGET_FONT_SIZE * 5, padding);
         double x = prop.getX() + prop.getWidth() / 2d;
         double y = prop.getY() + prop.getHeight() / 2d;
+
+        TextMetrics metrics = ctx.measureText(item.getDisplayName());
         if (metrics.getWidth() <= prop.getWidth() - 0.5 * padding) {
             textRenderer.drawTextSingleLine(ctx, item.getDisplayName(), CoordinateFactory.get(x, y));
         } else {
