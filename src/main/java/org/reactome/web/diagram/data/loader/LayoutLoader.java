@@ -32,7 +32,7 @@ public class LayoutLoader implements RequestCallback {
     }
 
     void load(String stId){
-        String url = PREFIX + stId + ".json";
+        String url = PREFIX + stId + ".json?v=" + LoaderManager.version;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             this.request = requestBuilder.sendRequest(null, this);

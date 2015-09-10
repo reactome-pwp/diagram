@@ -32,7 +32,7 @@ public class GraphLoader implements RequestCallback {
     }
 
     public void load(String stId){
-        String url = PREFIX + stId + ".graph.json";
+        String url = PREFIX + stId + ".graph.json?v=" + LoaderManager.version;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             this.request = requestBuilder.sendRequest(null, this);

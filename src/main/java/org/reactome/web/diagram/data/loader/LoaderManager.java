@@ -19,6 +19,9 @@ import org.reactome.web.diagram.util.Console;
  */
 public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler {
 
+    //Every time the diagram widget is loaded will retrieve new data from the sever
+    public static String version = "" + System.currentTimeMillis(); //UNIQUE per session
+
     private EventBus eventBus;
 
     private LayoutLoader layoutLoader;
