@@ -8,6 +8,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.analysis.ExpressionSummary;
@@ -322,12 +323,18 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
         close.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                Cookies.setCookie("pwp-diagram-expression-legend", "false");
                 hideHelp();
             }
         });
         this.helpPanel.add(close);
 
-        this.showHelp();
+        String showLegend = Cookies.getCookie("pwp-diagram-expression-legend");
+        if(showLegend==null || showLegend.isEmpty() || showLegend.toLowerCase().equals("true")){
+            this.showHelp();
+        }else{
+            this.hideHelp();
+        }
         this.add(this.helpPanel);
     }
 
