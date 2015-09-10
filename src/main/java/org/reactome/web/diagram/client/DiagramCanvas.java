@@ -13,7 +13,10 @@ import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
-import org.reactome.web.diagram.data.layout.*;
+import org.reactome.web.diagram.data.layout.Coordinate;
+import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.layout.Edge;
+import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
 import org.reactome.web.diagram.events.ExpressionValueHoveredEvent;
 import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
@@ -353,11 +356,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         ConnectorRenderer connectorRenderer = this.rendererManager.getConnectorRenderer();
         for (DiagramObject item : objects) {
             renderer.draw(ctx, item, factor, offset);
-            if(item instanceof Shadow){
-                renderer.drawText(this.shadows, item, factor, offset);
-            }else{
-                renderer.drawText(this.text, item, factor, offset);
-            }
+            renderer.drawText(this.text, item, factor, offset);
             if (item instanceof Node) {
                 Node node = (Node) item;
                 connectorRenderer.draw(this.reactions, this.reactionDecorators, node, factor, offset);
