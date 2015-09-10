@@ -7,6 +7,8 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import org.reactome.web.diagram.data.AnalysisStatus;
@@ -204,6 +206,34 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
     private void cleanCanvas(Context2d ctx) {
         ctx.clearRect(0, 0, ctx.getCanvas().getWidth(), ctx.getCanvas().getHeight());
+    }
+
+    public void exportImage() {
+        final Context2d ctx = this.canvases.get(this.canvases.size() - 1).getContext2d();
+        //This is silly but gives some visual feedback of the picture taking :D
+        (new Timer() {
+            double alpha = 1.0;
+
+            @Override
+            public void run() {
+                cleanCanvas(ctx);
+                if (alpha > 0) {
+                    ctx.save();
+                    ctx.setGlobalAlpha(alpha);
+                    ctx.setFillStyle("#FFFFFF");
+                    ctx.fillRect(0, 0, ctx.getCanvas().getWidth(), ctx.getCanvas().getHeight());
+                    ctx.restore();
+                    alpha -= 0.1;
+                } else {
+                    this.cancel();
+                    for (int i = 0; i < canvases.size() - 1; i++) {
+                        ctx.drawImage(canvases.get(i).getCanvasElement(),0,0);
+                    }
+                    Window.open(ctx.getCanvas().toDataUrl("image/png"), "_blank", "screenshot");
+                    cleanCanvas(ctx);
+                }
+            }
+        }).scheduleRepeating(20);
     }
 
     /**
