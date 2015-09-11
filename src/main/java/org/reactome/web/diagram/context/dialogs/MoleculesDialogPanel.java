@@ -65,6 +65,43 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         initHandlers();
     }
 
+    @Override
+    public void onAnalysisReset(AnalysisResetEvent event) {
+        expColumns = null;
+        min = null;
+        max = null;
+        divideParticipants();
+        populateTables();
+    }
+
+    @Override
+    public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
+        ExpressionSummary expressionSummary = event.getExpressionSummary();
+        if(expressionSummary!=null) {
+            expColumns = expressionSummary.getColumnNames();
+            min = expressionSummary.getMin();
+            max = expressionSummary.getMax();
+            divideParticipants();
+            populateTables();
+
+        }
+    }
+
+    @Override
+    public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
+        proteinsSection.applyAnalysisColours(proteins, min, max);
+    }
+
+    @Override
+    public void onExpressionColumnChanged(final ExpressionColumnChangedEvent e) {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                proteinsSection.selectExpressionCol(e.getColumn());
+            }
+        });
+    }
+
     private void divideParticipants(){
         GraphPhysicalEntity pe = (GraphPhysicalEntity) this.graphObject;
         Set<GraphPhysicalEntity> participants = pe.getParticipants();
@@ -172,8 +209,12 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
             proteinsSection.setTableContents(proteins);
             proteinsSection.setTableHeader(colNames);
             if(expColumns!=null && !expColumns.isEmpty()) {
-                proteinsSection.applyAnalysisColours(proteins, min, max);
-//                proteinsSection.selectExpressionCol(0);
+                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        proteinsSection.applyAnalysisColours(proteins, min, max);
+                    }
+                });
             }
         }
         if (chemicals.size() > 0) {
@@ -188,43 +229,6 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
             othersSection.setTableContents(others);
             othersSection.setTableHeader(colNames);
         }
-    }
-
-    @Override
-    public void onAnalysisReset(AnalysisResetEvent event) {
-        expColumns = null;
-        min = null;
-        max = null;
-        divideParticipants();
-        populateTables();
-    }
-
-    @Override
-    public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
-        ExpressionSummary expressionSummary = event.getExpressionSummary();
-        if(expressionSummary!=null) {
-            expColumns = expressionSummary.getColumnNames();
-            min = expressionSummary.getMin();
-            max = expressionSummary.getMax();
-            divideParticipants();
-            populateTables();
-
-        }
-    }
-
-    @Override
-    public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
-        proteinsSection.applyAnalysisColours(proteins, min, max);
-    }
-
-    @Override
-    public void onExpressionColumnChanged(final ExpressionColumnChangedEvent e) {
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                proteinsSection.selectExpressionCol(e.getColumn());
-            }
-        });
     }
 
 

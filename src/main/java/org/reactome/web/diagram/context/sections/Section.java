@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 
@@ -133,9 +134,11 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
     }
 
     public void selectExpressionCol(int col){
-        ensureVisible(headerScrollPanel, headerTable, 0, col);
-        hightlightCol(headerTable, col, RESOURCES.getCSS().hightlightedCol());
-        hightlightCol(dataTable, col + 1, RESOURCES.getCSS().selectedExpressionColumn());
+        if(headerTable!=null && dataTable!=null) {
+            ensureVisible(headerScrollPanel, headerTable, 0, col);
+            hightlightCol(headerTable, col, RESOURCES.getCSS().hightlightedCol());
+            hightlightCol(dataTable, col + 1, RESOURCES.getCSS().selectedExpressionColumn());
+        }
     }
 
     private void hightlightRow(FlexTable table, int row, String style){
@@ -164,9 +167,9 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
 
     private void ensureVisible(ScrollPanel scrollPanel, FlexTable table, int row, int col){
         if(scrollPanel!=null && table!=null) {
-            Widget w = table.getWidget(row, col);
-            if(w!=null) {
-                scrollPanel.ensureVisible(w);
+            Element element = table.getWidget(row, col).getElement();
+            if(element!=null) {
+                element.scrollIntoView();
             }else{
                 System.out.println("Widget null!");
             }
