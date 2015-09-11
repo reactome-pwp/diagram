@@ -1,13 +1,10 @@
 package org.reactome.web.diagram.renderers.impl.abs;
 
 import org.reactome.web.diagram.data.layout.Coordinate;
-import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.data.layout.NodeCommon;
 import org.reactome.web.diagram.data.layout.NodeProperties;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.util.AdvancedContext2d;
-import org.reactome.web.diagram.util.Console;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +37,11 @@ public class TextRenderer {
         ctx.fillText(message, centerPosition.getX(), centerPosition.getY());
     }
 
+    protected void borderTextSingleLine(AdvancedContext2d ctx, String message, Coordinate centerPosition){
+        ctx.fillText(message, centerPosition.getX(), centerPosition.getY());
+        ctx.strokeText(message, centerPosition.getX(), centerPosition.getY());
+    }
+
     protected void drawTextMultiLine(AdvancedContext2d ctx, String message, NodeProperties properties, Double factor, Coordinate offset) {
         NodeProperties prop = NodePropertiesFactory.transform(properties, factor, offset);
         drawTextMultiLine(ctx, message, prop);
@@ -62,6 +64,35 @@ public class TextRenderer {
 
         for (int i=0; i<textLines.size(); i++) {
             ctx.fillText(
+                    textLines.get(i),
+                    x,
+                    y + (i * fontSize)
+            );
+        }
+    }
+
+    protected void borderTextMultiLine(AdvancedContext2d ctx, String message, NodeProperties properties){
+        double availableWidth = properties.getWidth() - padding;
+        List<String> textLines = spitText(ctx, message, availableWidth);
+
+        double x = properties.getX() + properties.getWidth() / 2;
+        double y = (properties.getY() + properties.getHeight() / 2);
+
+        if(textLines.size()==1){
+            drawTextSingleLine(ctx, message, CoordinateFactory.get(x,y));
+            return;
+        }
+        // If multiple lines start drawing a bit higher
+        y = y - ((textLines.size()-1) * fontSize)/2;
+
+
+        for (int i=0; i<textLines.size(); i++) {
+            ctx.fillText(
+                    textLines.get(i),
+                    x,
+                    y + (i * fontSize)
+            );
+            ctx.strokeText(
                     textLines.get(i),
                     x,
                     y + (i * fontSize)

@@ -18,9 +18,12 @@ public class ShadowRenderer050 extends ShadowAbstractRenderer {
         ctx.save();
         double alpha = 0.4 - factor * 0.5;
         ctx.setGlobalAlpha(alpha < 0 ? 0 : alpha);
-        shape(ctx, shadow, factor, offset);
+
+        ctx.setStrokeStyle(shadow.getColour());
         ctx.setFillStyle(shadow.getColour());
+        shape(ctx, shadow, factor, offset);
         ctx.fill();
+        ctx.stroke();
         ctx.restore();
     }
 
