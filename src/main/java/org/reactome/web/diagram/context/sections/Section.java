@@ -69,9 +69,6 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
         int rowIndex = table.getCellForEvent(event).getRowIndex();
         if(table.equals(dataTable)){
             hightlightRow(dataTable, rowIndex, RESOURCES.getCSS().hightlightedRow());
-        }else if(table.equals(headerTable)){
-//            hightlightCol(headerTable, cellIndex, RESOURCES.getCSS().hightlightedCol());
-//            hightlightCol(dataTable, cellIndex+1, RESOURCES.getCSS().hightlightedCol());
         }
     }
 
@@ -96,15 +93,16 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
 
     public void setTableContents(List<List<String>> tableRows){
         dataTable.removeAllRows();
+        FlexTable.FlexCellFormatter flexCellFormatter = dataTable.getFlexCellFormatter();
         for(int r=0; r<tableRows.size(); r++){
             List<String> row = tableRows.get(r);
             for(int c=0; c<row.size(); c++){
                 dataTable.setWidget(r, c, new Label(row.get(c)));
-                dataTable.getFlexCellFormatter().setHorizontalAlignment(r, c, HasHorizontalAlignment.ALIGN_CENTER);
+                flexCellFormatter.setHorizontalAlignment(r, c, HasHorizontalAlignment.ALIGN_CENTER);
                 if(row.size()==1){
-                    dataTable.getFlexCellFormatter().addStyleName(r, c, RESOURCES.getCSS().largeCell());
+                    flexCellFormatter.addStyleName(r, c, RESOURCES.getCSS().largeCell());
                 }else{
-                    dataTable.getFlexCellFormatter().removeStyleName(r, c, RESOURCES.getCSS().largeCell());
+                    flexCellFormatter.removeStyleName(r, c, RESOURCES.getCSS().largeCell());
                 }
             }
         }
@@ -119,6 +117,7 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
                     Double value = Double.parseDouble(row.get(c));
                     String colour = AnalysisColours.get().expressionGradient.getColor(value, min, max);
                     dataTable.getCellFormatter().getElement(r,c).getStyle().setBackgroundColor(colour);
+                    dataTable.getCellFormatter().getElement(r,c).getStyle().setColor("#000000");
                 }
             }
         }

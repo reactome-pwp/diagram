@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.context.sections.Section;
 import org.reactome.web.diagram.data.AnalysisStatus;
-import org.reactome.web.diagram.data.analysis.AnalysisResult;
 import org.reactome.web.diagram.data.analysis.ExpressionSummary;
 import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.layout.DiagramObject;

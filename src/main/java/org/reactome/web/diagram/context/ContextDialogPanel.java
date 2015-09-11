@@ -17,8 +17,6 @@ import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 
-import java.util.List;
-
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
