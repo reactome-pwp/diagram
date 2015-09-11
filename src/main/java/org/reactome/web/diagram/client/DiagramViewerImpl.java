@@ -44,7 +44,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         LayoutLoadedHandler, GraphLoadedHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
-        GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler {
+        GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, DiagramExportRequestedHandler {
 
     private static final double ZOOM_FACTOR = 0.025;
     private static final double ZOOM_DELTA = 0.25;
@@ -111,6 +111,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
 
         this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramExportRequestedEvent.TYPE, this);
         this.eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         this.eventBus.addHandler(GraphLoadedEvent.TYPE, this);
         this.eventBus.addHandler(ThumbnailAreaMovedEvent.TYPE, this);
@@ -579,6 +580,11 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
                 forceDraw = true; //We give priority to other listeners here
             }
         });
+    }
+
+    @Override
+    public void onDiagramExportRequested(DiagramExportRequestedEvent event) {
+        this.canvas.exportImage();
     }
 
     @Override
