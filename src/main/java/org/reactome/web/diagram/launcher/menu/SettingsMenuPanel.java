@@ -51,9 +51,7 @@ public class SettingsMenuPanel extends AbsolutePanel implements DiagramProfileMe
 
 
     public void showRelativeTo(Button btn){
-        System.out.println("going");
         this.popupPanel.showRelativeTo(btn);
-        System.out.println("gone");
     }
 
     @Override
