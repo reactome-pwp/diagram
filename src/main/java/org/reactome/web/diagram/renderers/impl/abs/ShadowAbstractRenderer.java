@@ -33,19 +33,8 @@ public abstract class ShadowAbstractRenderer extends AbstractRenderer {
         if (item.getDisplayName() == null || item.getDisplayName().isEmpty()) {
             return;
         }
-
         Shadow shadow = (Shadow) item;
-        ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE * 5));
-        ctx.setTextAlign(Context2d.TextAlign.CENTER);
-        ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
-
-        NodeProperties prop = NodePropertiesFactory.get(
-                shadow.getMinX(),
-                shadow.getMinY(),
-                shadow.getMaxX() - shadow.getMinX(),
-                shadow.getMaxY() - shadow.getMinY()
-        );
-        prop = NodePropertiesFactory.transform(prop, factor, offset);
+        NodeProperties prop = NodePropertiesFactory.transform(shadow.getProp(), factor, offset);
 
         double padding = RendererProperties.NODE_TEXT_PADDING * 2;
         padding = (prop.getWidth() - padding * 2 < 0) ? 0 : padding;
@@ -55,9 +44,9 @@ public abstract class ShadowAbstractRenderer extends AbstractRenderer {
 
         TextMetrics metrics = ctx.measureText(item.getDisplayName());
         if (metrics.getWidth() <= prop.getWidth() - 0.5 * padding) {
-            textRenderer.drawTextSingleLine(ctx, item.getDisplayName(), CoordinateFactory.get(x, y));
+            textRenderer.borderTextSingleLine(ctx, item.getDisplayName(), CoordinateFactory.get(x, y));
         } else {
-            textRenderer.drawTextMultiLine(ctx, item.getDisplayName(), prop);
+            textRenderer.borderTextMultiLine(ctx, item.getDisplayName(), prop);
         }
     }
 
@@ -83,9 +72,9 @@ public abstract class ShadowAbstractRenderer extends AbstractRenderer {
 
     @Override
     public void setTextProperties(AdvancedContext2d ctx, ColourProfileType type) {
-//        ctx.setTextAlign(Context2d.TextAlign.CENTER);
-//        ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
-//        ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
-//        type.setTextProfile(ctx, DiagramColours.get().PROFILE.getCompartment());
+        ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE * 5));
+        ctx.setTextAlign(Context2d.TextAlign.CENTER);
+        ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
+        ctx.setLineWidth(0.75);
     }
 }
