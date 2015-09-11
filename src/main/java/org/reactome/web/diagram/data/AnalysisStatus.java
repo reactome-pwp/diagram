@@ -1,25 +1,31 @@
 package org.reactome.web.diagram.data;
 
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.URL;
 import org.reactome.web.diagram.data.analysis.AnalysisSummary;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.analysis.ExpressionSummary;
+import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
+import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class AnalysisStatus {
+public class AnalysisStatus implements ExpressionColumnChangedHandler {
 
     private String token;
     private String resource;
+    private Integer column;
 
     private AnalysisSummary analysisSummary;
     private ExpressionSummary expressionSummary;
 
-    public AnalysisStatus(String token, String resource) {
+    public AnalysisStatus(EventBus eventBus, String token, String resource) {
         if(token==null) throw new RuntimeException("token cannot be null");
         this.token = URL.decode(token);
         this.resource = resource==null?"TOTAL":resource;
+        this.column = 0;
+        eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
     }
 
     public String getToken() {
@@ -30,12 +36,21 @@ public class AnalysisStatus {
         return resource;
     }
 
+    public Integer getColumn() {
+        return column;
+    }
+
     public AnalysisType getAnalysisType(){
         return AnalysisType.getType(analysisSummary.getType());
     }
 
     public AnalysisSummary getAnalysisSummary() {
         return analysisSummary;
+    }
+
+    @Override
+    public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
+        this.column = e.getColumn();
     }
 
     public void setAnalysisSummary(AnalysisSummary analysisSummary) {

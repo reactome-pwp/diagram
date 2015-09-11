@@ -7,6 +7,8 @@ import java.util.List;
  */
 public interface Shadow extends DiagramObject {
 
+    NodeProperties getProp();
+
     List<Coordinate> getPoints();
 
     String getColour();

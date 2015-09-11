@@ -16,8 +16,12 @@ public class ShadowRenderer000 extends ShadowAbstractRenderer {
 
         shape(ctx, shadow, factor, offset);
         ctx.setFillStyle(shadow.getColour());
+        ctx.setStrokeStyle(shadow.getColour());
         ctx.setGlobalAlpha(0.15);
         ctx.fill();
+        ctx.setGlobalAlpha(1);
+        ctx.stroke();
+        ctx.setStrokeStyle(shadow.getColour());
     }
 
     @Override
