@@ -3,12 +3,15 @@ package org.reactome.web.diagram.context.dialogs;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.context.sections.Section;
+import org.reactome.web.diagram.data.AnalysisStatus;
+import org.reactome.web.diagram.data.analysis.AnalysisResult;
 import org.reactome.web.diagram.data.analysis.ExpressionSummary;
 import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.layout.DiagramObject;
@@ -32,13 +35,13 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         ExpressionColumnChangedHandler, AnalysisProfileChangedHandler {
 
     private EventBus eventBus;
-    private DiagramObject diagramObject;
     private GraphObject graphObject;
 
     private List<String> expColumns;
     private Double min;
     private Double max;
     private List<String> colNames = new LinkedList<>();
+    private int selectedExpCol = 0;
 
     private List<List<String>> proteins = new LinkedList<>();
     private List<List<String>> chemicals = new LinkedList<>();
@@ -50,15 +53,23 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     private Section dnasSection;
     private Section othersSection;
 
-    public MoleculesDialogPanel(EventBus eventBus, DiagramObject diagramObject, List<String> expColumns) {
+    public MoleculesDialogPanel(EventBus eventBus, DiagramObject diagramObject, AnalysisStatus analysisStatus) {
         this.eventBus = eventBus;
-        this.diagramObject = diagramObject;
         this.graphObject = diagramObject.getGraphObject();
-        this.expColumns = expColumns;
+        if(analysisStatus!=null){
+            ExpressionSummary expressionSummary = analysisStatus.getExpressionSummary();
+            if(expressionSummary!=null) {
+                this.expColumns = expressionSummary.getColumnNames();
+                this.max = expressionSummary.getMax();
+                this.min = expressionSummary.getMin();
+                this.selectedExpCol = analysisStatus.getColumn();
+            }
+        }
         if (graphObject instanceof GraphPhysicalEntity) {
             divideParticipants();
             initialiseWidget();
             populateTables();
+            selectExpressionColumn(this.selectedExpCol);
         }else{
             initWidget(new InlineLabel("???")); //TODO: Implement this case
         }
@@ -78,12 +89,12 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
         ExpressionSummary expressionSummary = event.getExpressionSummary();
         if(expressionSummary!=null) {
+            selectedExpCol = 0;
             expColumns = expressionSummary.getColumnNames();
             min = expressionSummary.getMin();
             max = expressionSummary.getMax();
             divideParticipants();
             populateTables();
-
         }
     }
 
@@ -94,12 +105,8 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
 
     @Override
     public void onExpressionColumnChanged(final ExpressionColumnChangedEvent e) {
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                proteinsSection.selectExpressionCol(e.getColumn());
-            }
-        });
+        selectedExpCol = e.getColumn();
+        selectExpressionColumn(selectedExpCol);
     }
 
     private void divideParticipants(){
@@ -135,7 +142,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
             if(expColumns!=null && !expColumns.isEmpty()) {
                 for (int col = 0; col < expColumns.size(); col++) {
                     Double exp = (participant.getExpression() != null) ? participant.getExpression().get(col) : null;
-                    String expression = exp != null ? "" + exp : "";
+                    String expression = exp != null ? "" + NumberFormat.getFormat("#.##E0").format(exp) : "";
                     row.add(expression);
                 }
             }
@@ -204,7 +211,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         return size;
     }
 
-    public void populateTables(){
+    private void populateTables(){
         if (proteins.size() > 0){
             proteinsSection.setTableContents(proteins);
             proteinsSection.setTableHeader(colNames);
@@ -229,6 +236,18 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
             othersSection.setTableContents(others);
             othersSection.setTableHeader(colNames);
         }
+    }
+
+    private void selectExpressionColumn(final int col){
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                if (proteins.size() > 0){ proteinsSection.selectExpressionCol(col); }
+                if (chemicals.size() > 0){ chemicalsSection.selectExpressionCol(col); }
+                if (dnas.size() > 0){ dnasSection.selectExpressionCol(col); }
+                if (others.size() > 0){ othersSection.selectExpressionCol(col); }
+            }
+        });
     }
 
 

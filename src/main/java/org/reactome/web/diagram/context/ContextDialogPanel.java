@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
     private Button pin;
     private Button close;
 
-    public ContextDialogPanel(EventBus eventBus, DiagramObject item, List<String> expColumns) {
+    public ContextDialogPanel(EventBus eventBus, DiagramObject item, AnalysisStatus analysisStatus) {
         super();
         setAutoHideEnabled(true);
         setModal(false);
@@ -40,7 +41,7 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
         FlowPanel fp = new FlowPanel();
         fp.add(this.pin = new PwpButton("Keeps the panel visible", RESOURCES.getCSS().pin(), this));
         fp.add(this.close = new PwpButton("Close", RESOURCES.getCSS().close(), this));
-        fp.add(new ContextInfoPanel(eventBus, item, expColumns));
+        fp.add(new ContextInfoPanel(eventBus, item, analysisStatus));
 
         setTitlePanel();
         setWidget(fp);

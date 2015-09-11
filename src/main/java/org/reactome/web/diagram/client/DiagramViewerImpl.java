@@ -391,14 +391,14 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         switch (button) {
             case NativeEvent.BUTTON_RIGHT:
                 DiagramObject item = this.getHovered(this.mouseCurrent);
-                List<String> expColumns = new LinkedList<>();
-                if(this.analysisStatus!=null){
-                    ExpressionSummary expressionSummary = this.analysisStatus.getExpressionSummary();
-                    if(expressionSummary!=null) {
-                        expColumns = expressionSummary.getColumnNames();
-                    }
-                }
-                this.context.showDialog(this.eventBus, item, expColumns);
+//                List<String> expColumns = new LinkedList<>();
+//                if(this.analysisStatus!=null){
+//                    ExpressionSummary expressionSummary = this.analysisStatus.getExpressionSummary();
+//                    if(expressionSummary!=null) {
+//                        expColumns = expressionSummary.getColumnNames();
+//                    }
+//                }
+                this.context.showDialog(this.eventBus, item, this.analysisStatus);
                 break;
             default:
                 setMouseDownPosition(event.getRelativeElement(), event);
