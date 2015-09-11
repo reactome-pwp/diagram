@@ -323,7 +323,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void setAnalysisToken(String token, String resource) {
-        AnalysisStatus analysisStatus = (token == null) ? null : new AnalysisStatus(token, resource);
+        AnalysisStatus analysisStatus = (token == null) ? null : new AnalysisStatus(eventBus, token, resource);
         this.loadAnalysis(analysisStatus);
     }
 
