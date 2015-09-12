@@ -90,8 +90,8 @@ public class DisplayManager {
     }
 
     private Box getBoundaries(Collection<DiagramObject> items){
-        List<Double> xx = new LinkedList<Double>();
-        List<Double> yy = new LinkedList<Double>();
+        List<Double> xx = new LinkedList<>();
+        List<Double> yy = new LinkedList<>();
         for (DiagramObject item : items) {
             if(item instanceof NodeCommon){
                 NodeCommon node = (NodeCommon) item;

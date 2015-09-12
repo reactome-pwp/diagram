@@ -51,7 +51,6 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     private static final int DIAGRAM_CONTEXT_CACHE_SIZE = 5;
     private final DiagramCanvas canvas; //Canvas only created once and reused every time a new diagram is loaded
-    private final DisplayManager displayManager;
     private final DiagramManager diagramManager;
     // mouse positions relative to canvas (not the model)
     // Do not assign the same value at the beginning
@@ -82,8 +81,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.loaderManager = new LoaderManager(this.eventBus);
         AnalysisDataLoader.initialise(this.eventBus);
 
-        this.displayManager = new DisplayManager(this);
-        this.diagramManager = new DiagramManager(this.displayManager);
+        this.diagramManager = new DiagramManager(new DisplayManager(this));
         this.initWidget(this.canvas);
     }
 

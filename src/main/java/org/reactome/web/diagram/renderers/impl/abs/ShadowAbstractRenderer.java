@@ -44,9 +44,11 @@ public abstract class ShadowAbstractRenderer extends AbstractRenderer {
 
         TextMetrics metrics = ctx.measureText(item.getDisplayName());
         if (metrics.getWidth() <= prop.getWidth() - 0.5 * padding) {
-            textRenderer.borderTextSingleLine(ctx, item.getDisplayName(), CoordinateFactory.get(x, y));
+            textRenderer.drawTextSingleLine(ctx, item.getDisplayName(), CoordinateFactory.get(x, y));
+//            textRenderer.borderTextSingleLine(ctx, item.getDisplayName(), CoordinateFactory.get(x, y));
         } else {
-            textRenderer.borderTextMultiLine(ctx, item.getDisplayName(), prop);
+            textRenderer.drawTextMultiLine(ctx, item.getDisplayName(), prop);
+//            textRenderer.borderTextMultiLine(ctx, item.getDisplayName(), prop);
         }
     }
 
