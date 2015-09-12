@@ -4,13 +4,14 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
@@ -229,7 +230,21 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                     for (int i = 0; i < canvases.size() - 1; i++) {
                         ctx.drawImage(canvases.get(i).getCanvasElement(),0,0);
                     }
-                    Window.open(ctx.getCanvas().toDataUrl("image/png"), "_blank", "screenshot");
+                    Image image = new Image();
+                    image.setUrl(ctx.getCanvas().toDataUrl("image/png"));
+                    final DialogBox d = new DialogBox(true);
+                    d.setHTML("Export diagram image");
+
+                    FlowPanel fp = new FlowPanel();
+                    fp.add(image); fp.add(new Button("Close", new ClickHandler() {
+                        @Override
+                        public void onClick(ClickEvent event) {
+                            d.hide();
+                        }
+                    }));
+                    d.setWidget(fp);
+
+                    d.center(); d.show();
                     cleanCanvas(ctx);
                 }
             }
