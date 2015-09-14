@@ -6,7 +6,8 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.events.*;
+import org.reactome.web.diagram.events.DiagramObjectsFlagResetEvent;
+import org.reactome.web.diagram.events.DiagramObjectsFlaggedEvent;
 import org.reactome.web.diagram.handlers.DiagramObjectsFlaggedHandler;
 
 import java.util.Set;
@@ -48,7 +49,8 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler, Di
     public void onDiagramObjectsFlagged(DiagramObjectsFlaggedEvent event) {
         String term = event.getTerm();
         Set<DiagramObject> flaggedItems =  event.getFlaggedItems();
-        this.term.setText(term + " - " + flaggedItems.size() + " entities flagged");
+        String msg = " - " + flaggedItems.size() + " entit" + (flaggedItems.size() == 1 ? "y" : "ies") + " flagged";
+        this.term.setText(term + msg);
         this.setVisible(true);
     }
 
