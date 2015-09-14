@@ -19,7 +19,7 @@ public class ImageDownloadDialog extends PopupPanel {
     public ImageDownloadDialog(Image image){
         super();
         boolean isIE = Window.Navigator.getUserAgent().toLowerCase().contains("ie");
-        this.setAutoHideEnabled(false);
+        this.setAutoHideEnabled(true);
         this.setModal(true);
         this.setAnimationEnabled(true);
         this.setGlassEnabled(true);
@@ -63,7 +63,6 @@ public class ImageDownloadDialog extends PopupPanel {
             @Override
             public void onClick(ClickEvent clickEvent) {
                 ImageDownloadDialog.this.hide();
-                ImageDownloadDialog.this.removeFromParent();
             }
         });
         header.add(title);
@@ -72,23 +71,27 @@ public class ImageDownloadDialog extends PopupPanel {
     }
 
     private void setAnchorContent(final Anchor anchor){
-        Scheduler.get().scheduleDeferred(
-                new Scheduler.ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                        anchor.getElement().setAttribute("download", "DiagramImage.png");
-                        Button button = new PwpButton("Save diagram as image", RESOURCES.getCSS().downloadLink(), new ClickHandler() {
-                            @Override
-                            public void onClick(ClickEvent clickEvent) {
-                                ImageDownloadDialog.this.hide();
-                                ImageDownloadDialog.this.removeFromParent();
-                            }
-                        });
-                        anchor.getElement().appendChild(button.getElement());
-                        ImageDownloadDialog.this.center();
-                    }
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                @Override
+                public void execute() {
+                    anchor.getElement().setAttribute("download", "DiagramImage.png");
+                    Button button = new PwpButton("Save diagram as image", RESOURCES.getCSS().downloadLink(), new ClickHandler() {
+                        @Override
+                        public void onClick(ClickEvent clickEvent) {
+                            ImageDownloadDialog.this.hide();
+                        }
+                    });
+                    anchor.getElement().appendChild(button.getElement());
+                    ImageDownloadDialog.this.center();
                 }
+            }
         );
+    }
+
+    @Override
+    public void hide() {
+        super.hide();
+        this.removeFromParent();
     }
 
     public static Resources RESOURCES;
