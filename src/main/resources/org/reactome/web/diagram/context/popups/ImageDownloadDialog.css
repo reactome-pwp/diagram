@@ -2,17 +2,19 @@
     border: 3px solid gray !important;
     border-radius: 15px;
     padding: 5px 10px 5px 10px;
-    /*background-color: rgb(88, 195, 229) !important;*/
+
+    background-color: rgb(88, 195, 229);
+
     background: -webkit-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For Safari 5.1 to 6.0 */
     background: -o-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For Opera 11.1 to 12.0 */
     background: -moz-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For Firefox 3.6 to 15 */
     background: linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* Standard syntax */
-
+    background-image: -ms-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For IE10 */
 }
 
 .analysisPanel {
-    min-width: 500px;
-    min-height: 400px;
+    max-width: 600px;
+    max-height: 400px;
     width: 100%;
     padding: 2px 0 0 2px;
     /*background-color: rgb(88, 195, 229) !important;*/
@@ -82,7 +84,11 @@
 }
 
 .image {
-    height: 320px;
+    /*height: 320px;*/
+    width:auto;
+    height:auto;
+    max-width:590px;
+    max-height:320px;
 }
 
 @sprite .downloadLink {
@@ -100,4 +106,12 @@
 
 @sprite .downloadLink:active:hover {
     gwt-image: 'downloadClicked' ;
+}
+
+.infoLabel {
+    max-width:590px;
+    color: white;
+    font-weight: bolder;
+    font-size: medium;
+    margin-top: 5px;
 }

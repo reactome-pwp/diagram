@@ -233,20 +233,6 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                     Image image = new Image();
                     image.setUrl(ctx.getCanvas().toDataUrl("image/png"));
                     final ImageDownloadDialog downloadDialogBox = new ImageDownloadDialog(image);
-
-//                    final DialogBox d = new DialogBox(true);
-//                    d.setHTML("Export diagram image");
-//
-//                    FlowPanel fp = new FlowPanel();
-//                    fp.add(image);
-//                    fp.add(new Button("Close", new ClickHandler() {
-//                        @Override
-//                        public void onClick(ClickEvent event) {
-//                            d.hide();
-//                        }
-//                    }));
-//                    d.setWidget(fp);
-                    downloadDialogBox.center();
                     downloadDialogBox.show();
                     cleanCanvas(ctx);
                 }

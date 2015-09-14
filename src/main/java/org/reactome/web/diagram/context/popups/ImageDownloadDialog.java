@@ -18,17 +18,13 @@ public class ImageDownloadDialog extends PopupPanel {
 
     public ImageDownloadDialog(Image image){
         super();
+        boolean isIE = Window.Navigator.getUserAgent().toLowerCase().contains("ie");
         this.setAutoHideEnabled(false);
         this.setModal(true);
         this.setAnimationEnabled(true);
         this.setGlassEnabled(true);
         this.setAutoHideOnHistoryEventsEnabled(true);
         this.addStyleName(RESOURCES.getCSS().popupPanel());
-
-        int width = (int) Math.round(Window.getClientWidth() * 0.5);
-        int height = (int) Math.round(Window.getClientHeight() * 0.5);
-        this.setWidth(width + "px");
-        this.setHeight(height + "px");
 
         FlowPanel vp = new FlowPanel();                         // Main panel
         vp.addStyleName(RESOURCES.getCSS().analysisPanel());
@@ -39,28 +35,18 @@ public class ImageDownloadDialog extends PopupPanel {
         imagePanel.setStyleName(RESOURCES.getCSS().imagePanel());
         image.setStyleName(RESOURCES.getCSS().image());
         vp.add(imagePanel);
-
-        final Anchor anchor = new Anchor();                     // For downloading the image
-        anchor.setHref(image.getUrl());
-        vp.add(anchor);
         this.add(vp);
 
-        Scheduler.get().scheduleDeferred(
-                new Scheduler.ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                        anchor.getElement().setAttribute("download", "DiagramImage.png");
-                        Button button = new PwpButton("Save diagram as image", RESOURCES.getCSS().downloadLink(), new ClickHandler() {
-                            @Override
-                            public void onClick(ClickEvent clickEvent) {
-                                ImageDownloadDialog.this.hide();
-                                ImageDownloadDialog.this.removeFromParent();
-                            }
-                        });
-                        anchor.getElement().appendChild(button.getElement());
-                    }
-                }
-        );
+        if (isIE) {
+            Label infoLabel = new Label("To save the diagram, simply right-click on the image, and then click \'Save Picture As...\'");
+            vp.setStyleName(RESOURCES.getCSS().infoLabel());
+            vp.add(infoLabel);
+        } else {
+            Anchor anchor = new Anchor();                     // For downloading the image
+            anchor.setHref(image.getUrl());
+            vp.add(anchor);
+            setAnchorContent(anchor);
+        }
     }
 
     private Widget setTitlePanel(){
@@ -85,6 +71,25 @@ public class ImageDownloadDialog extends PopupPanel {
         return header;
     }
 
+    private void setAnchorContent(final Anchor anchor){
+        Scheduler.get().scheduleDeferred(
+                new Scheduler.ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        anchor.getElement().setAttribute("download", "DiagramImage.png");
+                        Button button = new PwpButton("Save diagram as image", RESOURCES.getCSS().downloadLink(), new ClickHandler() {
+                            @Override
+                            public void onClick(ClickEvent clickEvent) {
+                                ImageDownloadDialog.this.hide();
+                                ImageDownloadDialog.this.removeFromParent();
+                            }
+                        });
+                        anchor.getElement().appendChild(button.getElement());
+                        ImageDownloadDialog.this.center();
+                    }
+                }
+        );
+    }
 
     public static Resources RESOURCES;
     static {
@@ -155,5 +160,7 @@ public class ImageDownloadDialog extends PopupPanel {
         String image();
 
         String downloadLink();
+
+        String infoLabel();
     }
 }
