@@ -21,6 +21,8 @@ public interface DiagramViewer extends IsWidget, HasHandlers, RequiresResize {
 
     HandlerRegistration addDiagramLoadedHandler(DiagramLoadedHandler handler);
 
+    HandlerRegistration addDiagramObjectsFlaggedHandler(DiagramObjectsFlaggedHandler handler);
+
     HandlerRegistration addDiagramObjectsFlagResetHandler(DiagramObjectsFlagResetHandler handler);
 
     HandlerRegistration addFireworksOpenedHandler(FireworksOpenedHandler handler);

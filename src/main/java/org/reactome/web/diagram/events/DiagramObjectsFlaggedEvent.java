@@ -14,10 +14,12 @@ public class DiagramObjectsFlaggedEvent extends GwtEvent<DiagramObjectsFlaggedHa
 
     private String term;
     private Set<DiagramObject> flaggedItems;
+    private boolean notify;
 
-    public DiagramObjectsFlaggedEvent(String term, Set<DiagramObject> flaggedItems) {
+    public DiagramObjectsFlaggedEvent(String term, Set<DiagramObject> flaggedItems, boolean notify) {
         this.term = term;
         this.flaggedItems = flaggedItems;
+        this.notify = notify;
     }
 
     @Override
@@ -36,6 +38,10 @@ public class DiagramObjectsFlaggedEvent extends GwtEvent<DiagramObjectsFlaggedHa
 
     public Set<DiagramObject> getFlaggedItems() {
         return flaggedItems;
+    }
+
+    public boolean getNotify() {
+        return notify;
     }
 
     @Override

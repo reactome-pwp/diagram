@@ -44,7 +44,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, DiagramExportRequestedHandler,
-        DiagramObjectsFlagResetHandler {
+        DiagramObjectsFlagRequestHandler, DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler {
 
     private static final double ZOOM_FACTOR = 0.025;
     private static final double ZOOM_DELTA = 0.25;
@@ -113,6 +113,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
 
         this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
         this.eventBus.addHandler(DiagramExportRequestedEvent.TYPE, this);
 
@@ -187,6 +189,11 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     @Override
+    public HandlerRegistration addDiagramObjectsFlaggedHandler(DiagramObjectsFlaggedHandler handler) {
+        return this.addHandler(handler, DiagramObjectsFlaggedEvent.TYPE);
+    }
+
+    @Override
     public HandlerRegistration addFireworksOpenedHandler(FireworksOpenedHandler handler) {
         return this.addHandler(handler, FireworksOpenedEvent.TYPE);
     }
@@ -198,21 +205,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void flagItems(String identifier) {
-        Set<GraphObject> items = this.context.getContent().getIdentifierMap().getElements(identifier);
-        this.flagged = new HashSet<>();
-        if(items!=null) {
-            for (GraphObject item : items) {
-                this.flagged.addAll(item.getDiagramObjects());
-                if(item instanceof GraphPhysicalEntity){
-                    GraphPhysicalEntity pe = (GraphPhysicalEntity) item;
-                    for (GraphPhysicalEntity entity : pe.getParentLocations()) {
-                        this.flagged.addAll(entity.getDiagramObjects());
-                    }
-                }
-            }
-        }
-        this.canvas.flag(this.flagged, this.context);
-        this.eventBus.fireEventFromSource(new DiagramObjectsFlaggedEvent(identifier, this.flagged), this);
+        this.eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(identifier), this);
     }
 
     @Override
@@ -555,6 +548,36 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void onDiagramExportRequested(DiagramExportRequestedEvent event) {
         this.canvas.exportImage();
+    }
+
+
+    @Override
+    public void onDiagramObjectsFlagged(DiagramObjectsFlaggedEvent event) {
+        this.flagged = event.getFlaggedItems();
+        this.canvas.flag(this.flagged, this.context);
+        if(event.getNotify()){
+            this.fireEvent(event);
+        }
+    }
+
+    @Override
+    public void onDiagramObjectsFlagRequested(DiagramObjectsFlagRequestedEvent event) {
+        String term = event.getTerm();
+        Set<GraphObject> items = this.context.getContent().getIdentifierMap().getElements(term);
+        Set<DiagramObject> flagged = new HashSet<>();
+        if(items!=null) {
+            for (GraphObject item : items) {
+                flagged.addAll(item.getDiagramObjects());
+                if(item instanceof GraphPhysicalEntity){
+                    GraphPhysicalEntity pe = (GraphPhysicalEntity) item;
+                    for (GraphPhysicalEntity entity : pe.getParentLocations()) {
+                        flagged.addAll(entity.getDiagramObjects());
+                    }
+                }
+            }
+        }
+        boolean notify = !event.getSource().equals(this);
+        this.eventBus.fireEventFromSource(new DiagramObjectsFlaggedEvent(term, flagged, notify), this);
     }
 
     @Override

@@ -44,12 +44,23 @@ public class InfoPanel extends Composite {
         this.add(header);
 
         this.add(new Label("Type: " + graphObject.getClassName()));
-        if(graphObject instanceof GraphPhysicalEntity){
+
+        String identifier = graphObject.getStId();
+        GeneNameListPanel geneNameListPanel = null;
+        if (graphObject instanceof GraphPhysicalEntity) {
             GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
-            String mainId =  pe.getIdentifier();
-            if(mainId!=null) {
-                this.add(new Label("Identifier: " + pe.getIdentifier()));
+            if(pe.getIdentifier()!=null) { //Always try to put other resources identifiers in front of ours
+                identifier = pe.getIdentifier() + " [" + identifier + "]";
             }
+            if (pe.getGeneNames() != null && !pe.getGeneNames().isEmpty()) {
+                geneNameListPanel = new GeneNameListPanel(pe.getGeneNames(), eventBus);
+            }
+        }
+
+        //Order matters
+        this.add(new Label("Identifier: " + identifier.trim()));
+        if(geneNameListPanel!=null) {
+            this.add(geneNameListPanel);
         }
 
         Collection<GraphReactionLikeEvent> participatesIn = new HashSet<>();

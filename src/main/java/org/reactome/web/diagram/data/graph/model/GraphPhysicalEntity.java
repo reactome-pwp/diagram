@@ -137,4 +137,18 @@ public abstract class GraphPhysicalEntity extends GraphObject {
         }
         return rtn;
     }
+
+    @Override
+    protected String getSecondaryDisplayName() {
+        String rtn = super.getSecondaryDisplayName();
+        if(identifier!=null) {
+            rtn += (rtn.isEmpty() ? "" : " ") + identifier ;
+        }
+        if(geneNames!=null){
+            for (String geneName : geneNames) {
+                rtn +=  (rtn.isEmpty() ? "" : " ") + geneName;
+            }
+        }
+        return rtn;
+    }
 }
