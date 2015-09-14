@@ -4,13 +4,13 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.RequiresResize;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContext;
@@ -472,7 +472,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         DiagramProfileProperties profileProperties = DiagramColours.get().PROFILE.getProperties();
         double aux = factor * 5;
 
-        this.flag.setLineWidth(aux);
+        this.flag.setLineWidth(factor * 10);
         this.flag.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getFlag());
 
         this.halo.setLineWidth(aux);
