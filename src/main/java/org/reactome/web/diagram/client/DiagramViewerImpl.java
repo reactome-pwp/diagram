@@ -192,6 +192,11 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     @Override
+    public HandlerRegistration addDiagramObjectsFlagResetHandler(DiagramObjectsFlagResetHandler handler) {
+        return this.addHandler(handler, DiagramObjectsFlagResetEvent.TYPE);
+    }
+
+    @Override
     public void flagItems(String identifier) {
         Set<GraphObject> items = this.context.getContent().getIdentifierMap().getElements(identifier);
         this.flagged = new HashSet<>();
@@ -553,10 +558,13 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     @Override
-    public void onDiagramObjectsFlagReset() {
+    public void onDiagramObjectsFlagReset(DiagramObjectsFlagResetEvent event) {
         if(this.flagged != null){
             this.flagged = new HashSet<>();
             this.canvas.flag(this.flagged, this.context);
+            if(!event.getSource().equals(this)){
+                this.fireEvent(event);
+            }
         }
     }
 
