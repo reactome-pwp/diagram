@@ -10,7 +10,6 @@ import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContext;
@@ -69,6 +68,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
     private AdvancedContext2d fadeOut;
 
+    private AdvancedContext2d flag;
     private AdvancedContext2d halo;
 
     private AdvancedContext2d reactionsHighlight;
@@ -112,15 +112,30 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
     }
 
-    public void addUserActionsHandlers(UserActionsHandlers handler){
-        if (this.canvases.isEmpty()){
+    public void addUserActionsHandlers(UserActionsHandlers handler) {
+        if (this.canvases.isEmpty()) {
             throw new RuntimeException("Multilayer canvas has not been yet initialised.");
         }
         Canvas canvas = this.canvases.get(this.canvases.size() - 1);
         UserActionsInstaller.addUserActionsHandlers(canvas, handler);
     }
 
-    public void halo(Collection<DiagramObject> items, DiagramContext context){
+    public void flag(Collection<DiagramObject> items, DiagramContext context) {
+        cleanCanvas(this.flag);
+        if (items == null || items.isEmpty()) return;
+        DiagramStatus status = context.getDiagramStatus();
+        double factor = status.getFactor();
+        Coordinate offset = status.getOffset();
+        for (DiagramObject item : items) {
+            if (item.getIsFadeOut() != null) continue;
+            Renderer renderer = this.rendererManager.getRenderer(item);
+            if (renderer != null) {
+                renderer.highlight(this.flag, item, factor, offset);
+            }
+        }
+    }
+
+    public void halo(Collection<DiagramObject> items, DiagramContext context) {
         cleanCanvas(this.halo);
         if (items == null || items.isEmpty()) return;
 
@@ -128,7 +143,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         double factor = status.getFactor();
         Coordinate offset = status.getOffset();
         for (DiagramObject item : items) {
-            if(item.getIsFadeOut()!=null) continue;
+            if (item.getIsFadeOut() != null) continue;
             Renderer renderer = this.rendererManager.getRenderer(item);
             if (renderer != null) {
                 renderer.highlight(this.halo, item, factor, offset);
@@ -141,7 +156,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         cleanCanvas(this.entitiesHighlight);
         cleanCanvas(this.reactionsHighlight);
         for (DiagramObject item : items) {
-            if(item.getIsFadeOut()!=null) continue;
+            if (item.getIsFadeOut() != null) continue;
             Renderer renderer = rendererManager.getRenderer(item);
             if (renderer == null) return;
             if (item instanceof Node) {
@@ -157,7 +172,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         cleanCanvas(this.entitiesSelection);
         cleanCanvas(this.reactionsSelection);
         for (DiagramObject item : items) {
-            if(item.getIsFadeOut()!=null) continue;
+            if (item.getIsFadeOut() != null) continue;
             Renderer renderer = rendererManager.getRenderer(item);
             if (renderer == null) return;
             if (item instanceof Node) {
@@ -228,7 +243,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                 } else {
                     this.cancel();
                     for (int i = 0; i < canvases.size() - 1; i++) {
-                        ctx.drawImage(canvases.get(i).getCanvasElement(),0,0);
+                        ctx.drawImage(canvases.get(i).getCanvasElement(), 0, 0);
                     }
                     Image image = new Image();
                     image.setUrl(ctx.getCanvas().toDataUrl("image/png"));
@@ -270,11 +285,11 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         return rtn;
     }
 
-    public void notifyHoveredExpression(DiagramObject item, Coordinate model){
+    public void notifyHoveredExpression(DiagramObject item, Coordinate model) {
         Renderer renderer = rendererManager.getRenderer(item);
         Double exp = (renderer != null) ? renderer.getExpressionHovered(item, model, column) : null;
-        boolean isChanged = (hoveredExpression!=null && exp==null) || (hoveredExpression==null && exp!=null);
-        if(isChanged || hoveredExpression!=null && !hoveredExpression.equals(exp)) {
+        boolean isChanged = (hoveredExpression != null && exp == null) || (hoveredExpression == null && exp != null);
+        if (isChanged || hoveredExpression != null && !hoveredExpression.equals(exp)) {
             hoveredExpression = exp;
             this.eventBus.fireEventFromSource(new ExpressionValueHoveredEvent(hoveredExpression), this);
         }
@@ -294,9 +309,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         Double minExp = 0.0; Double maxExp = 0.0;
         AnalysisType analysisType = AnalysisType.NONE;
-        if(analysisStatus!=null) {
+        if (analysisStatus != null) {
             analysisType = AnalysisType.getType(analysisStatus.getAnalysisSummary().getType());
-            if(analysisStatus.getExpressionSummary()!=null) {
+            if (analysisStatus.getExpressionSummary() != null) {
                 minExp = analysisStatus.getExpressionSummary().getMin();
                 maxExp = analysisStatus.getExpressionSummary().getMax();
             }
@@ -319,56 +334,56 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             MapSet<RenderType, DiagramObject> target = itemsDistribution.getItems(renderableClass);
 
             Set<DiagramObject> fadeOut = target.getElements(RenderType.FADE_OUT);
-            if(fadeOut!=null) {
+            if (fadeOut != null) {
                 renderFadeoutItems(renderer, fadeOut, factor, offset);
             }
 
-            if(analysisType.equals(AnalysisType.NONE)) {
+            if (analysisType.equals(AnalysisType.NONE)) {
                 //By doing this we avoid changing the context several time (which improves the rendering time)
                 renderer.setColourProperties(ctx, ColourProfileType.NORMAL);
                 renderer.setTextProperties(text, ColourProfileType.NORMAL);
                 Set<DiagramObject> normal = target.getElements(RenderType.NORMAL);
-                if(normal!=null) {
+                if (normal != null) {
                     renderItems(renderer, ctx, normal, factor, offset);
                 }
 
                 Set<DiagramObject> diseaseObjects = target.getElements(RenderType.DISEASE);
-                if(diseaseObjects!=null) {
+                if (diseaseObjects != null) {
                     ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
                     renderItems(renderer, ctx, diseaseObjects, factor, offset);
                 }
-            }else{
+            } else {
                 Set<DiagramObject> noHitByAnalysisNormal = target.getElements(RenderType.NOT_HIT_BY_ANALYSIS_NORMAL);
                 renderer.setColourProperties(ctx, ColourProfileType.ANALYSIS);
                 renderer.setTextProperties(text, ColourProfileType.ANALYSIS);
-                if(noHitByAnalysisNormal!=null) {
+                if (noHitByAnalysisNormal != null) {
                     renderItems(renderer, ctx, noHitByAnalysisNormal, factor, offset);
                 }
                 Set<DiagramObject> noHitByAnalysisDisease = target.getElements(RenderType.NOT_HIT_BY_ANALYSIS_DISEASE);
-                if(noHitByAnalysisDisease!=null) {
+                if (noHitByAnalysisDisease != null) {
                     ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
                     renderItems(renderer, ctx, noHitByAnalysisDisease, factor, offset);
                 }
                 Set<DiagramObject> enrichmentNormal = target.getElements(RenderType.HIT_BY_ENRICHMENT_NORMAL);
-                if(enrichmentNormal!=null) {
+                if (enrichmentNormal != null) {
                     ctx.setFillStyle(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax());
                     renderer.setTextProperties(text, ColourProfileType.NORMAL);
                     renderEnrichment(renderer, ctx, enrichmentNormal, factor, offset);
                 }
                 Set<DiagramObject> enrichmentDisease = target.getElements(RenderType.HIT_BY_ENRICHMENT_DISEASE);
-                if(enrichmentDisease!=null) {
+                if (enrichmentDisease != null) {
                     ctx.setFillStyle(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax());
                     ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
                     renderer.setTextProperties(text, ColourProfileType.NORMAL);
                     renderEnrichment(renderer, ctx, enrichmentDisease, factor, offset);
                 }
                 Set<DiagramObject> expressionNormal = target.getElements(RenderType.HIT_BY_EXPRESSION_NORMAL);
-                if(expressionNormal!=null) {
+                if (expressionNormal != null) {
                     renderer.setTextProperties(text, ColourProfileType.NORMAL);
                     renderExpression(renderer, ctx, expressionNormal, column, minExp, maxExp, factor, offset);
                 }
                 Set<DiagramObject> expressionDisease = target.getElements(RenderType.HIT_BY_EXPRESSION_DISEASE);
-                if(expressionDisease!=null) {
+                if (expressionDisease != null) {
                     renderer.setTextProperties(text, ColourProfileType.NORMAL);
                     ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
                     renderExpression(renderer, ctx, expressionDisease, column, minExp, maxExp, factor, offset);
@@ -381,9 +396,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         //Reactions to be drawn at the VERY END of it :)
         items = itemsDistribution.getAll("Reaction");
         reactionRenderer.setColourProperties(this.fadeOut, ColourProfileType.FADE_OUT);
-        if(!items.isEmpty()){ //No need to check for null here
+        if (!items.isEmpty()) { //No need to check for null here
             for (DiagramObject item : items) {
-                if(item.getIsFadeOut() != null) {
+                if (item.getIsFadeOut() != null) {
                     reactionRenderer.draw(this.fadeOut, item, factor, offset);
                 } else if (item.getIsDisease() != null) {
                     reactions.save();
@@ -452,7 +467,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         }
     }
 
-    private void setCanvasesProperties(double factor){
+    private void setCanvasesProperties(double factor) {
         this.fadeOut.setLineWidth(factor);
         this.fadeOut.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
 
@@ -465,6 +480,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         DiagramProfileProperties profileProperties = DiagramColours.get().PROFILE.getProperties();
         double aux = factor * 5;
+
+        this.flag.setLineWidth(aux);
+        this.flag.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getFlag());
 
         this.halo.setLineWidth(aux);
         this.halo.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getHalo());
@@ -492,6 +510,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.links = createCanvas(width, height);
 
         this.fadeOut = createCanvas(width, height);
+        this.flag = createCanvas(width, height);
         this.halo = createCanvas(width, height);
 
         this.reactionsHighlight = createCanvas(width, height);
@@ -581,7 +600,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             case "Interaction":     rtn = this.entities;            break;
             case "RNA":             rtn = this.entities;            break;
             case "Gene":            rtn = this.entities;            break;
-            case "Shadow":          rtn = this.shadows;            break;
+            case "Shadow":          rtn = this.shadows;             break;
             case "EntitySetAndMemberLink":
             case "EntitySetAndEntitySetLink":
                 rtn = this.links;

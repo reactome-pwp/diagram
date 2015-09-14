@@ -23,6 +23,8 @@ public interface DiagramViewer extends IsWidget, HasHandlers, RequiresResize {
 
     HandlerRegistration addFireworksOpenedHandler(FireworksOpenedHandler handler);
 
+    void flagItems(String identifier);
+
     void highlightItem(String stableIdentifier);
 
     void highlightItem(Long dbIdentifier);
@@ -33,6 +35,8 @@ public interface DiagramViewer extends IsWidget, HasHandlers, RequiresResize {
     void loadDiagram(Long dbId);
 
     void resetAnalysis();
+
+    void resetFlaggedItems();
 
     void resetHighlight();
 

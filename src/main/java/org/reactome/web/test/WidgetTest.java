@@ -3,6 +3,7 @@ package org.reactome.web.test;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -11,6 +12,8 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.client.DiagramViewer;
+import org.reactome.web.diagram.events.DiagramLoadedEvent;
+import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
 import org.reactome.web.diagram.util.Console;
 
 /**
@@ -39,8 +42,21 @@ public class WidgetTest implements EntryPoint {
                 initialise();
 
                 Console.info("");
-                diagram.loadDiagram("R-HSA-1181150");
-//                diagram.loadDiagram("R-HSA-5467345");
+                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        diagram.loadDiagram("R-HSA-1181150");
+//                      diagram.loadDiagram("R-HSA-5467345");
+                        diagram.addDiagramLoadedHandler(new DiagramLoadedHandler() {
+                            @Override
+                            public void onDiagramLoaded(DiagramLoadedEvent event) {
+//                                diagram.flagItems("O75593");
+//                                diagram.flagItems("16761");
+                                diagram.flagItems("LEFTA");
+                            }
+                        });
+                    }
+                });
             }
         });
     }

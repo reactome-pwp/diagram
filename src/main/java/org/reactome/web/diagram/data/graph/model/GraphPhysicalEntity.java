@@ -10,6 +10,7 @@ import java.util.*;
 public abstract class GraphPhysicalEntity extends GraphObject {
 
     protected String identifier;
+    protected List<String> geneNames = new ArrayList<>();
     protected String sampleIdentifier;
     protected List<GraphPhysicalEntity> children = new ArrayList<>();
             
@@ -22,6 +23,7 @@ public abstract class GraphPhysicalEntity extends GraphObject {
     public GraphPhysicalEntity(EntityNode node) {
         super(node);
         this.identifier = node.getIdentifier();
+        if(node.getGeneNames()!=null) this.geneNames = node.getGeneNames();
     }
 
     public boolean addParent(List<GraphPhysicalEntity> parents){
@@ -69,6 +71,10 @@ public abstract class GraphPhysicalEntity extends GraphObject {
 
     public String getIdentifier() {
         return identifier;
+    }
+
+    public List<String> getGeneNames() {
+        return geneNames;
     }
 
     public Set<GraphPhysicalEntity> getParticipants(){

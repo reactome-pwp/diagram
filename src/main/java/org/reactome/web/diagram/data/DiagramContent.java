@@ -59,6 +59,11 @@ public class DiagramContent {
             if(pe.getIdentifier()!=null) {
                 identifierMap.add(pe.getIdentifier(), dbObject);
             }
+            if(pe.getGeneNames()!=null){
+                for (String gene : pe.getGeneNames()) {
+                    identifierMap.add(gene, dbObject);
+                }
+            }
         }else if(dbObject instanceof GraphPathway){
             encapsulatedPathways.add((GraphPathway) dbObject);
         }
