@@ -10,8 +10,8 @@ import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
@@ -232,19 +232,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                     }
                     Image image = new Image();
                     image.setUrl(ctx.getCanvas().toDataUrl("image/png"));
-                    final DialogBox d = new DialogBox(true);
-                    d.setHTML("Export diagram image");
-
-                    FlowPanel fp = new FlowPanel();
-                    fp.add(image); fp.add(new Button("Close", new ClickHandler() {
-                        @Override
-                        public void onClick(ClickEvent event) {
-                            d.hide();
-                        }
-                    }));
-                    d.setWidget(fp);
-
-                    d.center(); d.show();
+                    final ImageDownloadDialog downloadDialogBox = new ImageDownloadDialog(image);
+                    downloadDialogBox.show();
                     cleanCanvas(ctx);
                 }
             }
