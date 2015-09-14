@@ -6,10 +6,9 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.events.*;
-import org.reactome.web.diagram.handlers.DiagramObjectsFlagResetHandler;
 import org.reactome.web.diagram.events.DiagramObjectsFlagResetEvent;
 import org.reactome.web.diagram.events.DiagramObjectsFlaggedEvent;
+import org.reactome.web.diagram.handlers.DiagramObjectsFlagResetHandler;
 import org.reactome.web.diagram.handlers.DiagramObjectsFlaggedHandler;
 
 import java.util.Set;
@@ -44,7 +43,6 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler,
     public void onClick(ClickEvent event) {
         if(event.getSource().equals(this.closeBtn)){
             eventBus.fireEventFromSource(new DiagramObjectsFlagResetEvent(), this);
-            this.setVisible(false);
         }
     }
 
@@ -58,7 +56,7 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler,
     }
 
     @Override
-    public void onDiagramObjectsFlagReset() {
+    public void onDiagramObjectsFlagReset(DiagramObjectsFlagResetEvent event) {
         this.setVisible(false);
     }
 
