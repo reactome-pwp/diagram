@@ -43,7 +43,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         LayoutLoadedHandler, GraphLoadedHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
-        GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, DiagramExportRequestedHandler {
+        GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, DiagramExportRequestedHandler,
+        DiagramObjectsFlagResetHandler {
 
     private static final double ZOOM_FACTOR = 0.025;
     private static final double ZOOM_DELTA = 0.25;
@@ -103,21 +104,24 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.canvas.addUserActionsHandlers(this);
 
         this.eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
+        this.eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
 
         this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
         this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
 
         this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
         this.eventBus.addHandler(DiagramExportRequestedEvent.TYPE, this);
+
+        this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
+
         this.eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         this.eventBus.addHandler(GraphLoadedEvent.TYPE, this);
         this.eventBus.addHandler(ThumbnailAreaMovedEvent.TYPE, this);
         this.eventBus.addHandler(ControlActionEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
-        this.eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
     }
 
     private void doUpdate() {
@@ -549,6 +553,14 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     @Override
+    public void onDiagramObjectsFlagReset() {
+        if(this.flagged != null){
+            this.flagged = new HashSet<>();
+            this.canvas.flag(this.flagged, this.context);
+        }
+    }
+
+    @Override
     public void onDiagramLoaded(DiagramLoadedEvent event) {
         fireEvent(event);
     }
@@ -618,11 +630,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void resetFlaggedItems() {
-        if(this.flagged != null){
-            this.flagged = new HashSet<>();
-            this.canvas.flag(this.flagged, this.context);
-            this.eventBus.fireEventFromSource(new DiagramObjectsFlagResetEvent(), this);
-        }
+        this.eventBus.fireEventFromSource(new DiagramObjectsFlagResetEvent(), this);
     }
 
     @Override
