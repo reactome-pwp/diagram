@@ -28,6 +28,7 @@ import org.reactome.web.diagram.launcher.controls.NavigationControlPanel;
 import org.reactome.web.diagram.legends.EnrichmentControl;
 import org.reactome.web.diagram.legends.ExpressionControl;
 import org.reactome.web.diagram.legends.ExpressionLegend;
+import org.reactome.web.diagram.legends.FlaggedItemsControl;
 import org.reactome.web.diagram.messages.AnalysisMessage;
 import org.reactome.web.diagram.messages.LoadingMessage;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
@@ -543,6 +544,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         //Expression legend and control panels
         this.add(new ExpressionLegend(eventBus));
         this.add(new ExpressionControl(eventBus));
+
+        //Flagged Objects control panel
+        this.add(new FlaggedItemsControl(eventBus));
 
         //Info panel
         if (DiagramFactory.SHOW_INFO) {
