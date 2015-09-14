@@ -16,7 +16,7 @@ public class DiagramObjectsFlagResetEvent extends GwtEvent<DiagramObjectsFlagRes
 
     @Override
     protected void dispatch(DiagramObjectsFlagResetHandler handler) {
-        handler.onDiagramObjectsFlagReset();
+        handler.onDiagramObjectsFlagReset(this);
     }
 
     @Override

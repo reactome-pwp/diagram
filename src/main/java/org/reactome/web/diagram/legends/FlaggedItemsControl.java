@@ -8,6 +8,8 @@ import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.DiagramObjectsFlagResetHandler;
+import org.reactome.web.diagram.events.DiagramObjectsFlagResetEvent;
+import org.reactome.web.diagram.events.DiagramObjectsFlaggedEvent;
 import org.reactome.web.diagram.handlers.DiagramObjectsFlaggedHandler;
 
 import java.util.Set;
@@ -42,6 +44,7 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler,
     public void onClick(ClickEvent event) {
         if(event.getSource().equals(this.closeBtn)){
             eventBus.fireEventFromSource(new DiagramObjectsFlagResetEvent(), this);
+            this.setVisible(false);
         }
     }
 
@@ -49,7 +52,8 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler,
     public void onDiagramObjectsFlagged(DiagramObjectsFlaggedEvent event) {
         String term = event.getTerm();
         Set<DiagramObject> flaggedItems =  event.getFlaggedItems();
-        this.term.setText(term + " - " + flaggedItems.size() + " entities flagged");
+        String msg = " - " + flaggedItems.size() + " entit" + (flaggedItems.size() == 1 ? "y" : "ies") + " flagged";
+        this.term.setText(term + msg);
         this.setVisible(true);
     }
 
@@ -62,5 +66,4 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler,
         this.eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
     }
-
 }
