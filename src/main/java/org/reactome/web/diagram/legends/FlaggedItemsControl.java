@@ -50,7 +50,7 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler,
     public void onDiagramObjectsFlagged(DiagramObjectsFlaggedEvent event) {
         String term = event.getTerm();
         Set<DiagramObject> flaggedItems =  event.getFlaggedItems();
-        String msg = " - " + flaggedItems.size() + (flaggedItems.size() == 1 ? "entity" : "entities") + " flagged";
+        String msg = " - " + flaggedItems.size() + (flaggedItems.size() == 1 ? " entity" : " entities") + " flagged";
         this.term.setText(term + msg);
         this.setVisible(true);
     }
