@@ -6,9 +6,7 @@ import org.reactome.web.diagram.context.sections.Section;
 import org.reactome.web.diagram.context.sections.SectionCellSelectedEvent;
 import org.reactome.web.diagram.context.sections.SectionCellSelectedHandler;
 import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.events.ControlActionEvent;
-import org.reactome.web.diagram.launcher.controls.ControlAction;
-import org.reactome.web.diagram.util.Console;
+import org.reactome.web.diagram.events.DiagramLoadRequestEvent;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
 import org.reactome.web.pwp.model.classes.Pathway;
 import org.reactome.web.pwp.model.classes.PhysicalEntity;
@@ -17,7 +15,6 @@ import org.reactome.web.pwp.model.client.handlers.PathwaysForEntitiesLoadedHandl
 import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
 import org.reactome.web.pwp.model.handlers.DatabaseObjectCreatedHandler;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -82,6 +79,6 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
     @Override
     public void onCellSelected(SectionCellSelectedEvent event) {
         String value = event.getValue();
-        Console.info("Cell selected: " + event.getValue());
+        this.eventBus.fireEventFromSource(new DiagramLoadRequestEvent(value), this);
     }
 }

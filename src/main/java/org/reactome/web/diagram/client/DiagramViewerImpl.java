@@ -40,9 +40,9 @@ import java.util.*;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserActionsHandlers,
-        LayoutLoadedHandler, GraphLoadedHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
+        LayoutLoadedHandler, GraphLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
-        DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler, DiagramLoadRequestHandler,
+        DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, DiagramExportRequestedHandler,
         DiagramObjectsFlagRequestHandler, DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler {
 
@@ -113,6 +113,10 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
 
         this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramLoadRequestEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
         this.eventBus.addHandler(DiagramExportRequestedEvent.TYPE, this);
 
         this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
@@ -338,8 +342,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         DiagramObject item = this.getHovered(this.mouseCurrent);
         GraphObject toOpen = item != null ? item.getGraphObject() : null;
         if (toOpen instanceof GraphPathway) {
-            this.eventBus.fireEventFromSource(new DiagramLoadRequestEvent(toOpen.getStId()), this);
-//            this.load(toOpen.getDbId().toString());
+            this.load(toOpen.getDbId().toString());
         }
     }
 
