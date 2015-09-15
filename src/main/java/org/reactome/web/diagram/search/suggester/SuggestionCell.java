@@ -21,7 +21,7 @@ public class SuggestionCell extends AbstractCell<GraphObject> {
         @SafeHtmlTemplates.Template("" +
                 "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis;\">" +
                     "<div style=\"float:left; margin-left: 5px\">{0}</div>" +
-                    "<div style=\"float:left; margin-left:10px; width:280px\">" +
+                    "<div style=\"float:left; margin-left:10px; width:260px\">" +
                         "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:small\">" +
                             "{1}" +
                         "</div>" +
@@ -32,7 +32,7 @@ public class SuggestionCell extends AbstractCell<GraphObject> {
         @SafeHtmlTemplates.Template("" +
                 "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis;\">" +
                     "<div style=\"float:left;margin: 7px 0 0 5px\">{0}</div>" +
-                    "<div style=\"float:left;margin-left:10px; width:280px\">" +
+                    "<div style=\"float:left;margin-left:10px; width:260px\">" +
                         "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:small\">" +
                             "{1}" +
                         "</div>" +
