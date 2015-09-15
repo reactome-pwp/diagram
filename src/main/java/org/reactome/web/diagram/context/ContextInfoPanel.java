@@ -114,7 +114,5 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
         String buttonSelected();
 
         String container();
-
-        String contentPanel();
     }
 }
