@@ -43,7 +43,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         LayoutLoadedHandler, GraphLoadedHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
-        GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, DiagramExportRequestedHandler {
+        GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, DiagramExportRequestedHandler,
+        DiagramObjectsFlagRequestHandler, DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler {
 
     private static final double ZOOM_FACTOR = 0.025;
     private static final double ZOOM_DELTA = 0.25;
@@ -67,6 +68,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     private GraphObject hovered = null;
     private GraphObject selected = null;
     private Set<DiagramObject> halo = new HashSet<>();
+    private Set<DiagramObject> flagged = new HashSet<>();
 
     private boolean diagramMoved = false;
     private boolean forceDraw = false;
@@ -102,21 +104,26 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.canvas.addUserActionsHandlers(this);
 
         this.eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
+        this.eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
 
         this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
         this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
 
         this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
         this.eventBus.addHandler(DiagramExportRequestedEvent.TYPE, this);
+
+        this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
+
         this.eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         this.eventBus.addHandler(GraphLoadedEvent.TYPE, this);
         this.eventBus.addHandler(ThumbnailAreaMovedEvent.TYPE, this);
         this.eventBus.addHandler(ControlActionEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
-        this.eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
     }
 
     private void doUpdate() {
@@ -150,6 +157,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         canvas.select(selected, this.context);
         canvas.highlight(hovered, this.context);
         canvas.halo(this.halo, this.context);
+        canvas.flag(this.flagged, this.context);
         Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
         long time = System.currentTimeMillis() - start;
         this.eventBus.fireEventFromSource(new DiagramRenderedEvent(this.context.getContent(), visibleArea, items.size(), time), this);
@@ -181,8 +189,23 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     @Override
+    public HandlerRegistration addDiagramObjectsFlaggedHandler(DiagramObjectsFlaggedHandler handler) {
+        return this.addHandler(handler, DiagramObjectsFlaggedEvent.TYPE);
+    }
+
+    @Override
     public HandlerRegistration addFireworksOpenedHandler(FireworksOpenedHandler handler) {
         return this.addHandler(handler, FireworksOpenedEvent.TYPE);
+    }
+
+    @Override
+    public HandlerRegistration addDiagramObjectsFlagResetHandler(DiagramObjectsFlagResetHandler handler) {
+        return this.addHandler(handler, DiagramObjectsFlagResetEvent.TYPE);
+    }
+
+    @Override
+    public void flagItems(String identifier) {
+        this.eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(identifier), this);
     }
 
     @Override
@@ -275,56 +298,6 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         }
     }
 
-    @Override
-    public void resetHighlight() {
-        if (this.hovered != null) {
-            this.hovered = null;
-            this.eventBus.fireEventFromSource(new GraphObjectHoveredEvent(), this);
-        }
-    }
-
-    @Override
-    public void resetSelection() {
-        this.halo = new HashSet<>();
-        if (this.selected != null) {
-            this.selected = null;
-            this.forceDraw = true;
-            this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(null, false), this);
-        }
-    }
-
-    public void resetDialogs() {
-        if (this.context != null) {
-            this.context.hideDialogs();
-        }
-    }
-
-    @Override
-    public void selectItem(String stableIdentifier) {
-        try {
-            GraphObject item = this.context.getContent().getDatabaseObject(stableIdentifier);
-            this.setSelection(item, true, false);
-        } catch (Exception e) {
-            this.resetSelection();
-        }
-    }
-
-    @Override
-    public void selectItem(Long dbIdentifier) {
-        try {
-            GraphObject item = this.context.getContent().getDatabaseObject(dbIdentifier);
-            this.setSelection(item, true, false);
-        } catch (Exception e) {
-            this.resetSelection();
-        }
-    }
-
-    @Override
-    public void setAnalysisToken(String token, String resource) {
-        AnalysisStatus analysisStatus = (token == null) ? null : new AnalysisStatus(eventBus, token, resource);
-        this.loadAnalysis(analysisStatus);
-    }
-
     private void loadAnalysis(AnalysisStatus analysisStatus) {
         if (analysisStatus == null) {
             if (this.analysisStatus != null) {
@@ -335,13 +308,6 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
             this.context.clearAnalysisOverlay();
             AnalysisDataLoader.get().loadAnalysisResult(analysisStatus, this.context.getContent());
         }
-    }
-
-    @Override
-    public void resetAnalysis() {
-        this.analysisStatus = null;
-        this.context.clearAnalysisOverlay();
-        forceDraw = true;
     }
 
     @Override
@@ -577,6 +543,47 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.canvas.exportImage();
     }
 
+
+    @Override
+    public void onDiagramObjectsFlagged(DiagramObjectsFlaggedEvent event) {
+        this.flagged = event.getFlaggedItems();
+        this.canvas.flag(this.flagged, this.context);
+        if(event.getNotify()){
+            this.fireEvent(event);
+        }
+    }
+
+    @Override
+    public void onDiagramObjectsFlagRequested(DiagramObjectsFlagRequestedEvent event) {
+        String term = event.getTerm();
+        Set<GraphObject> items = this.context.getContent().getIdentifierMap().getElements(term);
+        Set<DiagramObject> flagged = new HashSet<>();
+        if(items!=null) {
+            for (GraphObject item : items) {
+                flagged.addAll(item.getDiagramObjects());
+                if(item instanceof GraphPhysicalEntity){
+                    GraphPhysicalEntity pe = (GraphPhysicalEntity) item;
+                    for (GraphPhysicalEntity entity : pe.getParentLocations()) {
+                        flagged.addAll(entity.getDiagramObjects());
+                    }
+                }
+            }
+        }
+        boolean notify = !event.getSource().equals(this);
+        this.eventBus.fireEventFromSource(new DiagramObjectsFlaggedEvent(term, flagged, notify), this);
+    }
+
+    @Override
+    public void onDiagramObjectsFlagReset(DiagramObjectsFlagResetEvent event) {
+        if(this.flagged != null){
+            this.flagged = new HashSet<>();
+            this.canvas.flag(this.flagged, this.context);
+            if(!event.getSource().equals(this)){
+                this.fireEvent(event);
+            }
+        }
+    }
+
     @Override
     public void onDiagramLoaded(DiagramLoadedEvent event) {
         fireEvent(event);
@@ -630,6 +637,68 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void onThumbnailAreaMoved(ThumbnailAreaMovedEvent event) {
         this.padding(event.getCoordinate());
+    }
+
+    @Override
+    public void resetAnalysis() {
+        this.analysisStatus = null;
+        this.context.clearAnalysisOverlay();
+        forceDraw = true;
+    }
+
+    public void resetDialogs() {
+        if (this.context != null) {
+            this.context.hideDialogs();
+        }
+    }
+
+    @Override
+    public void resetFlaggedItems() {
+        this.eventBus.fireEventFromSource(new DiagramObjectsFlagResetEvent(), this);
+    }
+
+    @Override
+    public void resetHighlight() {
+        if (this.hovered != null) {
+            this.hovered = null;
+            this.eventBus.fireEventFromSource(new GraphObjectHoveredEvent(), this);
+        }
+    }
+
+    @Override
+    public void resetSelection() {
+        this.halo = new HashSet<>();
+        if (this.selected != null) {
+            this.selected = null;
+            this.forceDraw = true;
+            this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(null, false), this);
+        }
+    }
+
+    @Override
+    public void selectItem(String stableIdentifier) {
+        try {
+            GraphObject item = this.context.getContent().getDatabaseObject(stableIdentifier);
+            this.setSelection(item, true, false);
+        } catch (Exception e) {
+            this.resetSelection();
+        }
+    }
+
+    @Override
+    public void selectItem(Long dbIdentifier) {
+        try {
+            GraphObject item = this.context.getContent().getDatabaseObject(dbIdentifier);
+            this.setSelection(item, true, false);
+        } catch (Exception e) {
+            this.resetSelection();
+        }
+    }
+
+    @Override
+    public void setAnalysisToken(String token, String resource) {
+        AnalysisStatus analysisStatus = (token == null) ? null : new AnalysisStatus(eventBus, token, resource);
+        this.loadAnalysis(analysisStatus);
     }
 
     protected void setMouseDownPosition(Element element, MouseEvent event) {

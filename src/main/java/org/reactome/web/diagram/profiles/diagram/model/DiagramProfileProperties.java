@@ -14,6 +14,8 @@ public interface DiagramProfileProperties {
 
     String getHalo();
 
+    String getFlag();
+
     String getText();
 
     String getButton();

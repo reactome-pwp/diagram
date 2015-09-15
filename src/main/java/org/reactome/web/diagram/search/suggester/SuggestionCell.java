@@ -18,8 +18,30 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 public class SuggestionCell extends AbstractCell<GraphObject> {
 
     interface Templates extends SafeHtmlTemplates {
-        @SafeHtmlTemplates.Template("<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis;\">&nbsp;&nbsp;{0}&nbsp;&nbsp;<span>{1}</span></div>")
-        SafeHtml cell(SafeHtml image, SafeHtml value);
+        @SafeHtmlTemplates.Template("" +
+                "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis;\">" +
+                    "<div style=\"float:left; margin-left: 5px\">{0}</div>" +
+                    "<div style=\"float:left; margin-left:10px; width:280px\">" +
+                        "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:small\">" +
+                            "{1}" +
+                        "</div>" +
+                    "</div>" +
+                "</div>")
+        SafeHtml minCell(SafeHtml image, SafeHtml primary);
+
+        @SafeHtmlTemplates.Template("" +
+                "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis;\">" +
+                    "<div style=\"float:left;margin: 7px 0 0 5px\">{0}</div>" +
+                    "<div style=\"float:left;margin-left:10px; width:280px\">" +
+                        "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:small\">" +
+                            "{1}" +
+                        "</div>" +
+                        "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; margin-top:-2px; font-size:x-small;\">" +
+                            "{2}" +
+                        "</div>" +
+                    "</div>" +
+                "</div>")
+        SafeHtml cell(SafeHtml image, SafeHtml primary, SafeHtml secondary);
     }
 
     private static Templates templates = GWT.create(Templates.class);
@@ -40,12 +62,15 @@ public class SuggestionCell extends AbstractCell<GraphObject> {
 //        final ImagePrototypeElement imageElement = AbstractImagePrototype.create(value.getImageResource()).createElement();
 //        final SafeHtml safeImage = new OnlyToBeUsedInGeneratedCodeStringBlessedAsSafeHtml(imageElement.getString());
 
-        Image image = new Image(value.getImageResource());
-        SafeHtml safeImage = SafeHtmlUtils.fromTrustedString(image.toString());
+        Image img = new Image(value.getImageResource());
+        SafeHtml image = SafeHtmlUtils.fromTrustedString(img.toString());
 
-        SafeHtml safeValue = SafeHtmlUtils.fromTrustedString(value.getSearchDisplay());
-
-        SafeHtml rendered = templates.cell(safeImage, safeValue);
-        sb.append(rendered);
+        SafeHtml primary = SafeHtmlUtils.fromTrustedString(value.getPrimarySearchDisplay());
+        if(value.getSecondarySearchDisplay().isEmpty()) {
+            sb.append(templates.minCell(image, primary));
+        }else{
+            SafeHtml secondary = SafeHtmlUtils.fromTrustedString(value.getSecondarySearchDisplay());
+            sb.append(templates.cell(image, primary, secondary));
+        }
     }
 }

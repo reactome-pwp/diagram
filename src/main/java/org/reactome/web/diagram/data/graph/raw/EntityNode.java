@@ -13,5 +13,7 @@ public interface EntityNode extends GraphNode {
 
     String getIdentifier();
 
+    List<String> getGeneNames();
+
     List<Long> getDiagramIds();
 }

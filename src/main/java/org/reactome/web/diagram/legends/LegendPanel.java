@@ -160,6 +160,10 @@ public abstract class LegendPanel extends AbsolutePanel {
         String slide();
 
         String speed();
+
+        String flaggedItemsControl();
+
+        String flaggedItemsLabel();
     }
 
     protected EventBus eventBus;

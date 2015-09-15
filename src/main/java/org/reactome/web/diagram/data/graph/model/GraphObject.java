@@ -19,7 +19,8 @@ public abstract class GraphObject implements Comparable<GraphObject> {
     private Long dbId;
     private String stId;
     private String displayName;
-    private String searchDisplay;
+    private String primarySearchDisplay;
+    protected String secondarySearchDisplay;
 
     List<GraphPhysicalEntity> parents = new LinkedList<>();
 
@@ -69,12 +70,17 @@ public abstract class GraphObject implements Comparable<GraphObject> {
         return expression.get(column);
     }
 
-    public String getSearchDisplay() {
-        return searchDisplay;
+    public String getPrimarySearchDisplay() {
+        return primarySearchDisplay;
+    }
+
+    public String getSecondarySearchDisplay() {
+        return secondarySearchDisplay;
     }
 
     public void setSearchDisplay(String[] searchTerms) {
-        this.searchDisplay = this.displayName;
+        this.primarySearchDisplay = this.displayName;
+        this.secondarySearchDisplay = getSecondaryDisplayName();
 
         if (searchTerms == null || searchTerms.length == 0) return;
 
@@ -93,11 +99,17 @@ public abstract class GraphObject implements Comparable<GraphObject> {
          *                    replace it using the exact word that was found.
          */
         RegExp regExp = RegExp.compile(term, "gi");
-        this.searchDisplay = regExp.replace(this.searchDisplay, "<u><strong>$1</strong></u>");
+        this.primarySearchDisplay = regExp.replace(this.primarySearchDisplay, "<u><strong>$1</strong></u>");
+        this.secondarySearchDisplay = regExp.replace(this.secondarySearchDisplay, "<u><strong>$1</strong></u>");
+    }
+
+    protected String getSecondaryDisplayName(){
+        return stId;
     }
 
     public void clearSearchDisplayValue() {
-        this.searchDisplay = null;
+        this.primarySearchDisplay = null;
+        this.secondarySearchDisplay = null;
     }
 
     public SchemaClass getSchemaClass() {
