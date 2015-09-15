@@ -7,6 +7,9 @@
     <inherits name="uk.ac.ebi.pwp.structures.quadtree.QuadTree2D"/>
     <inherits name="org.reactome.web.pwp.model.PathwayPortalModel"/>
 
+    <!-- Default GWT style sheet (modified version of the Standard theme) -->
+    <inherits name='org.reactome.web.diagram.style.DiagramStyle'/>
+
     <source path="client"/>
     <source path="common"/>
     <source path="context"/>

@@ -4,17 +4,8 @@
 
   <inherits name="org.reactome.web.diagram.DiagramViewer" />
 
-  <!-- Default GWT style sheet -->
-  <inherits name='com.google.gwt.user.theme.standard.Standard'/>
-
   <!-- Specify the app entry point class.                         -->
   <entry-point class='org.reactome.web.test.WidgetTest'/>
-
-  <!-- Configuration properties (super dev mode) -->
-  <!--<add-linker name="xsiframe" />-->
-  <!--<set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>-->
-  <!--<set-configuration-property name="devModeRedirectEnabled" value="true" />-->
-  <!--<set-property name="compiler.useSourceMaps" value="true" />-->
 
   <!-- Specify the paths for translatable code                    -->
   <source path='diagram'/>
