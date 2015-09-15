@@ -5,6 +5,7 @@
     "highlight": "#FFFF00",
     "selection": "#0000FF",
     "halo": "#FF9900",
+    "flag": "#FF00FF",
     "text": "#0000FF",
     "button:": "#00FF00",
     "disease": "#FF0000"

@@ -77,6 +77,7 @@
 
 .largeCell{
     min-width: 252px !important;
+    max-width: 252px !important;
 }
 
 .dataScrollPanel {
