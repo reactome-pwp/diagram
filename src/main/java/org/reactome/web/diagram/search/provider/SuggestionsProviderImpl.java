@@ -51,7 +51,7 @@ public class SuggestionsProviderImpl implements SuggestionsProvider<GraphObject>
 
         Collections.sort(rtn);
         for (GraphObject object : rtn) {
-            object.setPrimarySearchDisplay(inputs);
+            object.setSearchDisplay(inputs);
         }
         return rtn;
     }
