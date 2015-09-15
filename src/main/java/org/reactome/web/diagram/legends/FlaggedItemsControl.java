@@ -27,9 +27,10 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler,
         LegendPanelCSS css = RESOURCES.getCSS();
         //Setting the legend style
         addStyleName(css.analysisControl());
-        addStyleName(css.enrichmentControl());
+        addStyleName(css.flaggedItemsControl());
 
         this.term = new InlineLabel();
+        this.term.setStyleName(RESOURCES.getCSS().flaggedItemsLabel());
         this.add(this.term);
 
         this.closeBtn = new PwpButton("Close and un-flag entities", css.close(), this);

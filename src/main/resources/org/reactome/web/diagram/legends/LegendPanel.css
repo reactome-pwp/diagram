@@ -241,3 +241,23 @@
     border-radius: 5px;
     outline: none;
 }
+
+.flaggedItemsControl {
+    /*centers in the middle*/
+    width: 260px;
+    margin-left:-130px; /* width and margin-left are related, please change both if needed */
+    left:50%;
+}
+
+.flaggedItemsControl span {
+    margin: 6px 0 0 20px;
+    float: left;
+    font-size: 12px;
+}
+
+.flaggedItemsLabel {
+    width: 197px !important;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
