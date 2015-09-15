@@ -78,7 +78,7 @@ public abstract class GraphObject implements Comparable<GraphObject> {
         return secondarySearchDisplay;
     }
 
-    public void setPrimarySearchDisplay(String[] searchTerms) {
+    public void setSearchDisplay(String[] searchTerms) {
         this.primarySearchDisplay = this.displayName;
         this.secondarySearchDisplay = getSecondaryDisplayName();
 
