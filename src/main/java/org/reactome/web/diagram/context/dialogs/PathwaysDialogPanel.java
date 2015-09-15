@@ -1,7 +1,14 @@
 package org.reactome.web.diagram.context.dialogs;
 
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.context.sections.Section;
+import org.reactome.web.diagram.context.sections.SectionCellSelectedEvent;
+import org.reactome.web.diagram.context.sections.SectionCellSelectedHandler;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.events.ControlActionEvent;
+import org.reactome.web.diagram.launcher.controls.ControlAction;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
 import org.reactome.web.pwp.model.classes.Pathway;
 import org.reactome.web.pwp.model.classes.PhysicalEntity;
@@ -10,16 +17,21 @@ import org.reactome.web.pwp.model.client.handlers.PathwaysForEntitiesLoadedHandl
 import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
 import org.reactome.web.pwp.model.handlers.DatabaseObjectCreatedHandler;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class PathwaysDialogPanel extends Composite implements DatabaseObjectCreatedHandler, PathwaysForEntitiesLoadedHandler {
+public class PathwaysDialogPanel extends Composite implements DatabaseObjectCreatedHandler, PathwaysForEntitiesLoadedHandler,
+        SectionCellSelectedHandler {
 
+    private EventBus eventBus;
     private FlowPanel container;
 
-    public PathwaysDialogPanel(DiagramObject diagramObject) {
+    public PathwaysDialogPanel(EventBus eventBus, DiagramObject diagramObject) {
+        this.eventBus = eventBus;
         this.container = new FlowPanel();
         this.container.add(new InlineLabel("Loading pathways dialog content..."));
         initWidget(new ScrollPanel(this.container));
@@ -43,9 +55,21 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
     @Override
     public void onPathwaysForEntitiesLoaded(List<Pathway> pathways) {
         this.container.clear();
-//        this.container.add(new Label("Number of pathways found: " + pathways.size()));
-        for (Pathway pathway : pathways) {
-            this.container.add(new Label(pathway.getDisplayName()));
+        if(pathways!=null && !pathways.isEmpty()){
+            Section section = new Section("Other Pathways (" + pathways.size() + ")" , 100);
+            List<List<String>> tableContents = new LinkedList<>();
+            for (Pathway pathway : pathways) {
+                List<String> row = new LinkedList<>();
+                row.add(pathway.getDisplayName());
+                row.add(pathway.getIdentifier());
+                tableContents.add(row);
+            }
+
+            section.setTableContents(tableContents);
+            section.addSectionCellSelectedHandler(this);
+            container.add(section);
+        } else {
+            this.container.add(new Label("This entity is not found in any other pathway."));
         }
     }
 
@@ -53,5 +77,11 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
     public void onPathwaysForEntitiesError(Throwable throwable) {
         this.container.clear();
         this.container.add(new Label("An error has occurred. ERROR: " + throwable.getMessage()));
+    }
+
+    @Override
+    public void onCellSelected(SectionCellSelectedEvent event) {
+        String value = event.getValue();
+        Console.info("Cell selected: " + event.getValue());
     }
 }

@@ -36,14 +36,14 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
         buttonsPanel.setStyleName(RESOURCES.getCSS().buttonsPanel());
         buttonsPanel.add(this.molecules = getButton("Molecules", RESOURCES.molecules()));
         buttonsPanel.add(this.pathways = getButton("Pathways", RESOURCES.pathways()));
-        buttonsPanel.add(this.interactors = getButton("Interactors", RESOURCES.interactors()));
+//        buttonsPanel.add(this.interactors = getButton("Interactors", RESOURCES.interactors())); // Uncomment to include interactors
         this.molecules.addStyleName(RESOURCES.getCSS().buttonSelected());
 
         this.container = new DeckLayoutPanel();
         this.container.setStyleName(RESOURCES.getCSS().container());
         this.container.add(new MoleculesDialogPanel(eventBus, diagramObject, analysisStatus));
-        this.container.add(new PathwaysDialogPanel(diagramObject));
-        this.container.add(new InteractorsDialogPanel(eventBus, diagramObject));
+        this.container.add(new PathwaysDialogPanel(eventBus, diagramObject));
+//        this.container.add(new InteractorsDialogPanel(eventBus, diagramObject)); // Uncomment to include interactors
         this.container.showWidget(0);
         this.container.setAnimationVertical(true);
         this.container.setAnimationDuration(500);

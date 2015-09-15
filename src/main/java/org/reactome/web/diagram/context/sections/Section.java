@@ -6,11 +6,16 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
+import org.reactome.web.diagram.search.searchbox.SearchBoxArrowKeysEvent;
+import org.reactome.web.diagram.search.searchbox.SearchBoxUpdatedEvent;
+import org.reactome.web.diagram.search.searchbox.SearchBoxUpdatedHandler;
+import org.reactome.web.diagram.util.Console;
 
 import java.util.List;
 
@@ -61,14 +66,23 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
         initWidget(vp);
     }
 
+    public HandlerRegistration addSectionCellSelectedHandler(SectionCellSelectedHandler handler){
+        return addHandler(handler, SectionCellSelectedEvent.TYPE);
+    }
+
     @Override
     public void onClick(ClickEvent event) {
         FlexTable table = (FlexTable) event.getSource();
         //gets the index of the cell and row the user clicked on
-//        int cellIndex = table.getCellForEvent(event).getCellIndex();
+        int cellIndex = table.getCellForEvent(event).getCellIndex();
         int rowIndex = table.getCellForEvent(event).getRowIndex();
         if(table.equals(dataTable)){
             hightlightRow(dataTable, rowIndex, RESOURCES.getCSS().hightlightedRow());
+            Widget widget = dataTable.getWidget(rowIndex, cellIndex);
+            if(widget instanceof Label) {
+                String value = ((Label) widget).getText();
+                fireEvent(new SectionCellSelectedEvent(value));
+            }
         }
     }
 
@@ -98,7 +112,7 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
             List<String> row = tableRows.get(r);
             for(int c=0; c<row.size(); c++){
                 dataTable.setWidget(r, c, new Label(row.get(c)));
-                flexCellFormatter.setHorizontalAlignment(r, c, HasHorizontalAlignment.ALIGN_CENTER);
+                flexCellFormatter.setHorizontalAlignment(r, c, HasHorizontalAlignment.ALIGN_LEFT);
                 if(row.size()==1){
                     flexCellFormatter.addStyleName(r, c, RESOURCES.getCSS().largeCell());
                 }else{
@@ -170,7 +184,7 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
             if(element!=null) {
                 element.scrollIntoView();
             }else{
-                System.out.println("Widget null!");
+                Console.warn("Not able to scroll into view");
             }
         }
     }
