@@ -42,7 +42,7 @@ import java.util.*;
 class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserActionsHandlers,
         LayoutLoadedHandler, GraphLoadedHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
-        DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
+        DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler, DiagramLoadRequestHandler,
         GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, DiagramExportRequestedHandler {
 
     private static final double ZOOM_FACTOR = 0.025;
@@ -108,6 +108,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
 
         this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramLoadRequestEvent.TYPE, this);
         this.eventBus.addHandler(DiagramExportRequestedEvent.TYPE, this);
         this.eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         this.eventBus.addHandler(GraphLoadedEvent.TYPE, this);
@@ -375,7 +376,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         DiagramObject item = this.getHovered(this.mouseCurrent);
         GraphObject toOpen = item != null ? item.getGraphObject() : null;
         if (toOpen instanceof GraphPathway) {
-            this.load(toOpen.getDbId().toString());
+            this.eventBus.fireEventFromSource(new DiagramLoadRequestEvent(toOpen.getStId()), this);
+//            this.load(toOpen.getDbId().toString());
         }
     }
 
@@ -580,6 +582,11 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void onDiagramLoaded(DiagramLoadedEvent event) {
         fireEvent(event);
+    }
+
+    @Override
+    public void onDiagramLoadRequest(DiagramLoadRequestEvent event) {
+        this.load(event.getIdentifier());
     }
 
     @Override
