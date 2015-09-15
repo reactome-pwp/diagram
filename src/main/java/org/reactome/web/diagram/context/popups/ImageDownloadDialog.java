@@ -18,7 +18,8 @@ public class ImageDownloadDialog extends PopupPanel {
 
     public ImageDownloadDialog(Image image){
         super();
-        boolean isIE = Window.Navigator.getUserAgent().toLowerCase().contains("ie");
+        String userAgent = Window.Navigator.getUserAgent().toLowerCase();
+        boolean isIE = userAgent.contains("msie") || userAgent.contains("trident");
         this.setAutoHideEnabled(true);
         this.setModal(true);
         this.setAnimationEnabled(true);
@@ -38,8 +39,8 @@ public class ImageDownloadDialog extends PopupPanel {
         this.add(vp);
 
         if (isIE) {
-            Label infoLabel = new Label("To save the diagram, simply right-click on the image, and then click \'Save Picture As...\'");
-            vp.setStyleName(RESOURCES.getCSS().infoLabel());
+            InlineLabel infoLabel = new InlineLabel("To save the diagram, simply right-click on the image, and then click \'Save Picture As...\'");
+            infoLabel.addStyleName(RESOURCES.getCSS().infoLabel());
             vp.add(infoLabel);
         } else {
             Anchor anchor = new Anchor();                     // For downloading the image
