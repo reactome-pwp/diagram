@@ -45,8 +45,15 @@ public class ImageDownloadDialog extends PopupPanel {
         } else {
             Anchor anchor = new Anchor();                     // For downloading the image
             anchor.setHref(image.getUrl());
+            anchor.getElement().setAttribute("download", "DiagramImage.png");
+            Button button = new PwpButton("Save diagram as image", RESOURCES.getCSS().downloadLink(), new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent clickEvent) {
+                    ImageDownloadDialog.this.hide();
+                }
+            });
+            anchor.getElement().appendChild(button.getElement());
             vp.add(anchor);
-            setAnchorContent(anchor);
         }
     }
 
@@ -71,28 +78,21 @@ public class ImageDownloadDialog extends PopupPanel {
         return header;
     }
 
-    private void setAnchorContent(final Anchor anchor){
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                @Override
-                public void execute() {
-                    anchor.getElement().setAttribute("download", "DiagramImage.png");
-                    Button button = new PwpButton("Save diagram as image", RESOURCES.getCSS().downloadLink(), new ClickHandler() {
-                        @Override
-                        public void onClick(ClickEvent clickEvent) {
-                            ImageDownloadDialog.this.hide();
-                        }
-                    });
-                    anchor.getElement().appendChild(button.getElement());
-                    ImageDownloadDialog.this.center();
-                }
-            }
-        );
-    }
-
     @Override
     public void hide() {
         super.hide();
         this.removeFromParent();
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                center();
+            }
+        });
     }
 
     public static Resources RESOURCES;
