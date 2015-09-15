@@ -139,10 +139,10 @@ public class DiagramContext {
         }
     }
 
-    public void showDialog(EventBus eventBus, DiagramObject item, AnalysisStatus analysisStatus){
+    public void showDialog(EventBus eventBus, DiagramObject item, DiagramContext context){
         if(item==null) return;
         if(!dialogMap.containsKey(item.getGraphObject())) {
-            dialogMap.put(item.getGraphObject(), new ContextDialogPanel(eventBus, item, analysisStatus));
+            dialogMap.put(item.getGraphObject(), new ContextDialogPanel(eventBus, item, context));
         }else{
             dialogMap.get(item.getGraphObject()).show();
         }

@@ -2,19 +2,13 @@ package org.reactome.web.diagram.context.sections;
 
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.ScrollEvent;
-import com.google.gwt.event.dom.client.ScrollHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
-import org.reactome.web.diagram.search.searchbox.SearchBoxArrowKeysEvent;
-import org.reactome.web.diagram.search.searchbox.SearchBoxUpdatedEvent;
-import org.reactome.web.diagram.search.searchbox.SearchBoxUpdatedHandler;
 import org.reactome.web.diagram.util.Console;
 
 import java.util.List;
@@ -22,11 +16,11 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class Section extends Composite implements ClickHandler, ScrollHandler {
+public class Section extends Composite implements ClickHandler, DoubleClickHandler, ScrollHandler {
     private Label sectionTitle;
 
-    private FlexTable headerTable;
-    private FlexTable dataTable;
+    private AdvancedFlexTable headerTable;
+    private AdvancedFlexTable dataTable;
 
     private ScrollPanel headerScrollPanel;
     private ScrollPanel dataScrollPanel;
@@ -37,7 +31,7 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
         sectionTitle = new Label(title);
         sectionHeader.add(sectionTitle);
 
-        headerTable = new FlexTable();
+        headerTable = new AdvancedFlexTable();
         headerTable.setStyleName(RESOURCES.getCSS().headerTable());
         headerTable.setCellPadding(1);
         headerTable.setCellSpacing(1);
@@ -47,11 +41,12 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
         headerScrollPanel.add(headerTable);
         headerScrollPanel.addScrollHandler(this);
 
-        dataTable = new FlexTable();
+        dataTable = new AdvancedFlexTable();
         dataTable.setStyleName(RESOURCES.getCSS().dataTable());
         dataTable.setCellPadding(1);
         dataTable.setCellSpacing(1);
         dataTable.addClickHandler(this);
+        dataTable.addDoubleClickHandler(this);
         dataScrollPanel = new ScrollPanel();
         dataScrollPanel.setStyleName(RESOURCES.getCSS().dataScrollPanel());
         dataScrollPanel.setHeight(height + "px");
@@ -73,6 +68,17 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
     @Override
     public void onClick(ClickEvent event) {
         FlexTable table = (FlexTable) event.getSource();
+        //gets the index of the cell and row the user clicked on
+//        int cellIndex = table.getCellForEvent(event).getCellIndex();
+        int rowIndex = table.getCellForEvent(event).getRowIndex();
+        if(table.equals(dataTable)){
+            hightlightRow(dataTable, rowIndex, RESOURCES.getCSS().hightlightedRow());
+        }
+    }
+
+    @Override
+    public void onDoubleClick(DoubleClickEvent event) {
+        AdvancedFlexTable table = (AdvancedFlexTable) event.getSource();
         //gets the index of the cell and row the user clicked on
         int cellIndex = table.getCellForEvent(event).getCellIndex();
         int rowIndex = table.getCellForEvent(event).getRowIndex();

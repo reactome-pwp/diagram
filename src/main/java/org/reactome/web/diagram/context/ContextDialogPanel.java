@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.context;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -9,12 +10,9 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.common.PwpButton;
-import org.reactome.web.diagram.data.AnalysisStatus;
+import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 
 /**
@@ -28,7 +26,7 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
     private Button pin;
     private Button close;
 
-    public ContextDialogPanel(EventBus eventBus, DiagramObject item, AnalysisStatus analysisStatus) {
+    public ContextDialogPanel(EventBus eventBus, DiagramObject item, DiagramContext context) {
         super();
         setAutoHideEnabled(true);
         setModal(false);
@@ -39,7 +37,7 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
         FlowPanel fp = new FlowPanel();
         fp.add(this.pin = new PwpButton("Keeps the panel visible", RESOURCES.getCSS().pin(), this));
         fp.add(this.close = new PwpButton("Close", RESOURCES.getCSS().close(), this));
-        fp.add(new ContextInfoPanel(eventBus, item, analysisStatus));
+        fp.add(new ContextInfoPanel(eventBus, item, context));
 
         setTitlePanel();
         setWidget(fp);
@@ -83,10 +81,15 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
     }
 
     private void setTitlePanel() {
-        Label title = new Label(this.item.getDisplayName());
+        FlowPanel fp = new FlowPanel();
+        Image img = new Image(this.item.getGraphObject().getImageResource());
+        fp.add(img);
+
+        InlineLabel title = new InlineLabel(this.item.getDisplayName());
         title.setTitle(this.item.getDisplayName());
-        title.setStyleName(RESOURCES.getCSS().headerText());
-        SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(title.toString());
+        fp.add(title);
+
+        SafeHtml safeHtml = SafeHtmlUtils.fromTrustedString(fp.toString());
         getCaption().setHTML(safeHtml);
         getCaption().asWidget().setStyleName(RESOURCES.getCSS().header());
     }
@@ -131,8 +134,6 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
         String popup();
 
         String header();
-
-        String headerText();
 
         String pin();
 

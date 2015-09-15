@@ -5,8 +5,11 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.context.sections.Section;
 import org.reactome.web.diagram.context.sections.SectionCellSelectedEvent;
 import org.reactome.web.diagram.context.sections.SectionCellSelectedHandler;
+import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.DiagramLoadRequestEvent;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
 import org.reactome.web.pwp.model.classes.Pathway;
 import org.reactome.web.pwp.model.classes.PhysicalEntity;
@@ -25,13 +28,17 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
         SectionCellSelectedHandler {
 
     private EventBus eventBus;
+    private DiagramContext context;
     private FlowPanel container;
+    private GraphObject graphObject;
 
-    public PathwaysDialogPanel(EventBus eventBus, DiagramObject diagramObject) {
+    public PathwaysDialogPanel(EventBus eventBus, DiagramObject diagramObject, DiagramContext context) {
         this.eventBus = eventBus;
+        this.context = context;
         this.container = new FlowPanel();
         this.container.add(new InlineLabel("Loading pathways dialog content..."));
         initWidget(new ScrollPanel(this.container));
+        this.graphObject = diagramObject.getGraphObject();
         DatabaseObjectFactory.get(diagramObject.getReactomeId(), this);
     }
 
@@ -52,21 +59,25 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
     @Override
     public void onPathwaysForEntitiesLoaded(List<Pathway> pathways) {
         this.container.clear();
+        Long dbId = context.getContent().getDbId();
         if(pathways!=null && !pathways.isEmpty()){
-            Section section = new Section("Other Pathways (" + pathways.size() + ")" , 100);
             List<List<String>> tableContents = new LinkedList<>();
             for (Pathway pathway : pathways) {
-                List<String> row = new LinkedList<>();
-                row.add(pathway.getDisplayName());
-                row.add(pathway.getIdentifier());
-                tableContents.add(row);
+                if(!pathway.getDbId().equals(dbId)) {
+                    List<String> row = new LinkedList<>();
+                    row.add(pathway.getDisplayName());
+                    tableContents.add(row);
+                }
             }
-
-            section.setTableContents(tableContents);
-            section.addSectionCellSelectedHandler(this);
-            container.add(section);
-        } else {
-            this.container.add(new Label("This entity is not found in any other pathway."));
+            if(tableContents.size()>0) {
+                Section section = new Section("Other Pathways (" + pathways.size() + ")", 110);
+                section.setTableContents(tableContents);
+                section.addSectionCellSelectedHandler(this);
+                container.add(section);
+            } else {
+                String className = graphObject.getClassName().toLowerCase();
+                this.container.add(new Label("This " + className +" is not present in any other pathway."));
+            }
         }
     }
 
@@ -79,6 +90,7 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
     @Override
     public void onCellSelected(SectionCellSelectedEvent event) {
         String value = event.getValue();
+        Console.info("Cell Selected: " + value);
         this.eventBus.fireEventFromSource(new DiagramLoadRequestEvent(value), this);
     }
 }
