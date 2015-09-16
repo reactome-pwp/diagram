@@ -10,6 +10,9 @@
     background: -moz-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For Firefox 3.6 to 15 */
     background: linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* Standard syntax */
     background-image: -ms-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For IE10 */
+
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: small !important;
 }
 
 .analysisPanel {
