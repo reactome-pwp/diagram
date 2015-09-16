@@ -9,6 +9,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import org.reactome.web.diagram.context.sections.Section;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.analysis.ExpressionSummary;
@@ -71,7 +72,8 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
             populateTables();
             selectExpressionColumn(this.selectedExpCol);
         }else{
-            initWidget(new InlineLabel("???")); //TODO: Implement this case
+            String className = graphObject.getClassName().toLowerCase();
+            initWidget(new Label("This " + className +" does not contain any other participating molecules."));
         }
         initHandlers();
     }
@@ -227,14 +229,38 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         if (chemicals.size() > 0) {
             chemicalsSection.setTableContents(chemicals);
             chemicalsSection.setTableHeader(colNames);
+            if(expColumns!=null && !expColumns.isEmpty()) {
+                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        chemicalsSection.applyAnalysisColours(chemicals, min, max);
+                    }
+                });
+            }
         }
         if (dnas.size() > 0) {
             dnasSection.setTableContents(dnas);
             dnasSection.setTableHeader(colNames);
+            if(expColumns!=null && !expColumns.isEmpty()) {
+                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        dnasSection.applyAnalysisColours(dnas, min, max);
+                    }
+                });
+            }
         }
         if (others.size() > 0){
             othersSection.setTableContents(others);
             othersSection.setTableHeader(colNames);
+            if(expColumns!=null && !expColumns.isEmpty()) {
+                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        othersSection.applyAnalysisColours(others, min, max);
+                    }
+                });
+            }
         }
     }
 

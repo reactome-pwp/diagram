@@ -197,15 +197,16 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
     }
 
     private void ensureVisible(ScrollPanel scrollPanel, FlexTable table, int row, int col){
-//        if(scrollPanel!=null && table!=null) {
-//            Element element = table.getWidget(row, col).getElement();
-//            if(element!=null) {
-//                element.scrollIntoView();
-//            }else{
-//                Console.warn("Not able to scroll into view");
-//            }
-//        }
+        if(scrollPanel!=null && table!=null && table.getRowCount()>row) {
+            Element element = table.getWidget(row, col).getElement();
+            if(element!=null) {
+                element.scrollIntoView();
+            }else{
+                Console.warn("Not able to scroll into view");
+            }
+        }
     }
+
 
     public static Resources RESOURCES;
 
