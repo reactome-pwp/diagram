@@ -16,7 +16,7 @@ public class GraphLoader implements RequestCallback {
         void onGraphLoaderError(Throwable exception);
     }
 
-    private final static String PREFIX = DiagramFactory.SERVER_PREFIX + "/download/current/diagram/";
+    private final static String PREFIX = DiagramFactory.SERVER + "/download/current/diagram/";
 
     private Handler handler;
     private Request request;
