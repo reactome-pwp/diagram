@@ -43,13 +43,10 @@
 
 .dataTable tbody tr {
     background-color: rgb(7, 133, 171);
-    /*background-color: rgb(0, 96, 136);*/
 }
 
 .dataTable tbody tr td {
     font: bold 9px arial;
-    max-width: 50px;
-    min-width: 50px; /*setting just the width does not work*/
     cursor: pointer;
 
     overflow: hidden;
@@ -62,7 +59,7 @@
 }
 
 .hightlightedRow {
-    background-color: gold !important;
+    background-color: darkorange !important;
 }
 
 .hightlightedCol {
@@ -70,14 +67,8 @@
 }
 
 .selectedExpressionColumn{
-    /*background-color: blue !important;*/
     border-right: 1px dashed white;
     border-left: 1px dashed white;
-}
-
-.largeCell{
-    min-width: 252px !important;
-    max-width: 252px !important;
 }
 
 .dataScrollPanel {

@@ -8,10 +8,10 @@ import com.google.gwt.event.shared.GwtEvent;
 public class SectionCellSelectedEvent extends GwtEvent<SectionCellSelectedHandler> {
     public static GwtEvent.Type<SectionCellSelectedHandler> TYPE = new GwtEvent.Type<SectionCellSelectedHandler>();
 
-    private String value;
+    private SelectionSummary selection;
 
-    public SectionCellSelectedEvent(String value) {
-        this.value = value.trim();
+    public SectionCellSelectedEvent(SelectionSummary selection) {
+        this.selection = selection;
     }
 
     @Override
@@ -24,7 +24,14 @@ public class SectionCellSelectedEvent extends GwtEvent<SectionCellSelectedHandle
         handler.onCellSelected(this);
     }
 
-    public String getValue() {
-        return value;
+    public SelectionSummary getSelection() {
+        return selection;
+    }
+
+    @Override
+    public String toString() {
+        return "SectionCellSelectedEvent{" +
+                "selection=" + selection +
+                '}';
     }
 }

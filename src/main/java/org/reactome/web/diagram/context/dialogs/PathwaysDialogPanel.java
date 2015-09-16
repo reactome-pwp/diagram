@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.context.sections.Section;
 import org.reactome.web.diagram.context.sections.SectionCellSelectedEvent;
 import org.reactome.web.diagram.context.sections.SectionCellSelectedHandler;
+import org.reactome.web.diagram.context.sections.SelectionSummary;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.DiagramObject;
@@ -14,15 +15,19 @@ import org.reactome.web.pwp.model.classes.DatabaseObject;
 import org.reactome.web.pwp.model.classes.Pathway;
 import org.reactome.web.pwp.model.classes.PhysicalEntity;
 import org.reactome.web.pwp.model.client.RESTFulClient;
+import org.reactome.web.pwp.model.client.handlers.AncestorsCreatedHandler;
 import org.reactome.web.pwp.model.client.handlers.PathwaysForEntitiesLoadedHandler;
 import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
 import org.reactome.web.pwp.model.handlers.DatabaseObjectCreatedHandler;
+import org.reactome.web.pwp.model.util.Ancestors;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class PathwaysDialogPanel extends Composite implements DatabaseObjectCreatedHandler, PathwaysForEntitiesLoadedHandler,
         SectionCellSelectedHandler {
@@ -31,6 +36,7 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
     private DiagramContext context;
     private FlowPanel container;
     private GraphObject graphObject;
+    private List<Pathway> pathwaysIndex = new ArrayList<>();
 
     public PathwaysDialogPanel(EventBus eventBus, DiagramObject diagramObject, DiagramContext context) {
         this.eventBus = eventBus;
@@ -64,15 +70,19 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
             List<List<String>> tableContents = new LinkedList<>();
             for (Pathway pathway : pathways) {
                 if(!pathway.getDbId().equals(dbId)) {
+                    pathwaysIndex.add(pathway);
                     List<String> row = new LinkedList<>();
                     row.add(pathway.getDisplayName());
+                    row.add("\u25b6");
                     tableContents.add(row);
                 }
             }
             if(tableContents.size()>0) {
-                Section section = new Section("Other Pathways (" + pathways.size() + ")", 110);
+                Section section = new Section("Other Pathways", 110);
                 section.setTableContents(tableContents);
                 section.addSectionCellSelectedHandler(this);
+                section.setDataColumnWidth(0, 240);
+                section.setDataColumnWidth(1, 9);
                 container.add(section);
             } else {
                 String className = graphObject.getClassName().toLowerCase();
@@ -89,8 +99,25 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
 
     @Override
     public void onCellSelected(SectionCellSelectedEvent event) {
-        String value = event.getValue();
-        Console.info("Cell Selected: " + value);
-        this.eventBus.fireEventFromSource(new DiagramLoadRequestEvent(value), this);
+        SelectionSummary selection = event.getSelection();
+        if(selection.getColIndex()==1) {
+            Pathway selectedPathway = pathwaysIndex.get(selection.getRowIndex());
+            if (selectedPathway != null && selectedPathway.getHasDiagram()) {
+                eventBus.fireEventFromSource(new DiagramLoadRequestEvent(selectedPathway.getDbId().toString()), this);
+            }else{
+                RESTFulClient.getAncestors(selectedPathway, new AncestorsCreatedHandler() {
+                    @Override
+                    public void onAncestorsLoaded(Ancestors ancestors) {
+                        Pathway p = ancestors.get(0).getLastPathwayWithDiagram();
+                        eventBus.fireEventFromSource(new DiagramLoadRequestEvent(p.getDbId().toString()), PathwaysDialogPanel.this);
+                    }
+
+                    @Override
+                    public void onAncestorsError(Throwable exception) {
+                        Console.error("No pathway with diagram found.");
+                    }
+                });
+            }
+        }
     }
 }

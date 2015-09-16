@@ -16,22 +16,25 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class Section extends Composite implements ClickHandler, DoubleClickHandler, ScrollHandler {
+public class Section extends Composite implements ClickHandler, ScrollHandler {
+    private String title;
     private Label sectionTitle;
 
-    private AdvancedFlexTable headerTable;
-    private AdvancedFlexTable dataTable;
+    private FlexTable headerTable;
+    private FlexTable dataTable;
 
     private ScrollPanel headerScrollPanel;
     private ScrollPanel dataScrollPanel;
 
     public Section(String title, Integer height){
+        this.title = title;
+
         FlowPanel sectionHeader = new FlowPanel();
         sectionHeader.setStyleName(RESOURCES.getCSS().sectionHeader());
         sectionTitle = new Label(title);
         sectionHeader.add(sectionTitle);
 
-        headerTable = new AdvancedFlexTable();
+        headerTable = new FlexTable();
         headerTable.setStyleName(RESOURCES.getCSS().headerTable());
         headerTable.setCellPadding(1);
         headerTable.setCellSpacing(1);
@@ -41,12 +44,11 @@ public class Section extends Composite implements ClickHandler, DoubleClickHandl
         headerScrollPanel.add(headerTable);
         headerScrollPanel.addScrollHandler(this);
 
-        dataTable = new AdvancedFlexTable();
+        dataTable = new FlexTable();
         dataTable.setStyleName(RESOURCES.getCSS().dataTable());
         dataTable.setCellPadding(1);
         dataTable.setCellSpacing(1);
         dataTable.addClickHandler(this);
-        dataTable.addDoubleClickHandler(this);
         dataScrollPanel = new ScrollPanel();
         dataScrollPanel.setStyleName(RESOURCES.getCSS().dataScrollPanel());
         dataScrollPanel.setHeight(height + "px");
@@ -68,18 +70,7 @@ public class Section extends Composite implements ClickHandler, DoubleClickHandl
     @Override
     public void onClick(ClickEvent event) {
         FlexTable table = (FlexTable) event.getSource();
-        //gets the index of the cell and row the user clicked on
-//        int cellIndex = table.getCellForEvent(event).getCellIndex();
-        int rowIndex = table.getCellForEvent(event).getRowIndex();
-        if(table.equals(dataTable)){
-            hightlightRow(dataTable, rowIndex, RESOURCES.getCSS().hightlightedRow());
-        }
-    }
-
-    @Override
-    public void onDoubleClick(DoubleClickEvent event) {
-        AdvancedFlexTable table = (AdvancedFlexTable) event.getSource();
-        //gets the index of the cell and row the user clicked on
+        // gets the index of the cell and row the user clicked on
         int cellIndex = table.getCellForEvent(event).getCellIndex();
         int rowIndex = table.getCellForEvent(event).getRowIndex();
         if(table.equals(dataTable)){
@@ -87,7 +78,7 @@ public class Section extends Composite implements ClickHandler, DoubleClickHandl
             Widget widget = dataTable.getWidget(rowIndex, cellIndex);
             if(widget instanceof Label) {
                 String value = ((Label) widget).getText();
-                fireEvent(new SectionCellSelectedEvent(value));
+                fireEvent(new SectionCellSelectedEvent(new SelectionSummary(rowIndex, cellIndex, value)));
             }
         }
     }
@@ -99,6 +90,14 @@ public class Section extends Composite implements ClickHandler, DoubleClickHandl
             headerScrollPanel.setHorizontalScrollPosition(dataScrollPanel.getHorizontalScrollPosition());
         }else if(scrollPanel.equals(headerScrollPanel)){
             dataScrollPanel.setHorizontalScrollPosition(headerScrollPanel.getHorizontalScrollPosition());
+        }
+    }
+
+    public void selectExpressionCol(int col){
+        if(headerTable!=null && dataTable!=null) {
+            ensureVisible(headerScrollPanel, headerTable, 0, col);
+            hightlightCol(headerTable, col, RESOURCES.getCSS().hightlightedCol());
+            hightlightCol(dataTable, col + 1, RESOURCES.getCSS().selectedExpressionColumn());
         }
     }
 
@@ -114,18 +113,26 @@ public class Section extends Composite implements ClickHandler, DoubleClickHandl
     public void setTableContents(List<List<String>> tableRows){
         dataTable.removeAllRows();
         FlexTable.FlexCellFormatter flexCellFormatter = dataTable.getFlexCellFormatter();
-        for(int r=0; r<tableRows.size(); r++){
+        for(int r=0; r<tableRows.size(); r++){      // for all rows
             List<String> row = tableRows.get(r);
-            for(int c=0; c<row.size(); c++){
-                dataTable.setWidget(r, c, new Label(row.get(c)));
-                flexCellFormatter.setHorizontalAlignment(r, c, HasHorizontalAlignment.ALIGN_LEFT);
+            for(int c=0; c<row.size(); c++){        //for all columns
+                Label lb = new Label(row.get(c));
+                if(c==0) {
+                    lb.setTitle(row.get(0)); // Set the tooltip for long strings
+                    flexCellFormatter.setHorizontalAlignment(r, c, HasHorizontalAlignment.ALIGN_LEFT);
+                } else {
+                    flexCellFormatter.setHorizontalAlignment(r, c, HasHorizontalAlignment.ALIGN_CENTER);
+                }
+                dataTable.setWidget(r, c, lb);
+
                 if(row.size()==1){
-                    flexCellFormatter.addStyleName(r, c, RESOURCES.getCSS().largeCell());
+                    setDataColumnWidth(c, 252);
                 }else{
-                    flexCellFormatter.removeStyleName(r, c, RESOURCES.getCSS().largeCell());
+                    setDataColumnWidth(c, 50);
                 }
             }
         }
+        updateTitle(tableRows.size());
     }
 
     public void applyAnalysisColours(List<List<String>> tableRows, Double min, Double max){
@@ -147,16 +154,21 @@ public class Section extends Composite implements ClickHandler, DoubleClickHandl
         dataScrollPanel.setHeight(height + "px");
     }
 
-    public void setTitle(String title){
-        this.sectionTitle.setText(title);
-
+    public void setDataColumnWidth(int col, int width){
+        if(dataTable==null) return;
+        for(int r=0; r<dataTable.getRowCount(); r++){
+            if(dataTable.getCellCount(r)>col){
+                dataTable.getCellFormatter().getElement(r, col).getStyle().setProperty("minWidth", width + "px");
+                dataTable.getCellFormatter().getElement(r, col).getStyle().setProperty("maxWidth", width + "px");
+            }
+        }
     }
 
-    public void selectExpressionCol(int col){
-        if(headerTable!=null && dataTable!=null) {
-            ensureVisible(headerScrollPanel, headerTable, 0, col);
-            hightlightCol(headerTable, col, RESOURCES.getCSS().hightlightedCol());
-            hightlightCol(dataTable, col + 1, RESOURCES.getCSS().selectedExpressionColumn());
+    private void updateTitle(int number){
+        if(number>0) {
+            sectionTitle.setText(title + " (" + number + ")");
+        } else {
+            sectionTitle.setText(title);
         }
     }
 
@@ -185,14 +197,14 @@ public class Section extends Composite implements ClickHandler, DoubleClickHandl
     }
 
     private void ensureVisible(ScrollPanel scrollPanel, FlexTable table, int row, int col){
-        if(scrollPanel!=null && table!=null) {
-            Element element = table.getWidget(row, col).getElement();
-            if(element!=null) {
-                element.scrollIntoView();
-            }else{
-                Console.warn("Not able to scroll into view");
-            }
-        }
+//        if(scrollPanel!=null && table!=null) {
+//            Element element = table.getWidget(row, col).getElement();
+//            if(element!=null) {
+//                element.scrollIntoView();
+//            }else{
+//                Console.warn("Not able to scroll into view");
+//            }
+//        }
     }
 
     public static Resources RESOURCES;
@@ -225,8 +237,6 @@ public class Section extends Composite implements ClickHandler, DoubleClickHandl
         String hightlightedCol();
 
         String selectedExpressionColumn();
-
-        String largeCell();
 
         String dataScrollPanel();
     }
