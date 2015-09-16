@@ -101,20 +101,22 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
     public void onCellSelected(SectionCellSelectedEvent event) {
         SelectionSummary selection = event.getSelection();
         if(selection.getColIndex()==1) {
-            Pathway selectedPathway = pathwaysIndex.get(selection.getRowIndex());
-            if (selectedPathway != null && selectedPathway.getHasDiagram()) {
-                eventBus.fireEventFromSource(new DiagramLoadRequestEvent(selectedPathway.getDbId().toString()), this);
+            final Pathway pathway = pathwaysIndex.get(selection.getRowIndex());
+            if (pathway == null){
+                Console.error("No pathway associated with " + selection.getRowIndex());
+            } else if (pathway.getHasDiagram()) {
+                eventBus.fireEventFromSource(new DiagramLoadRequestEvent(pathway), this);
             }else{
-                RESTFulClient.getAncestors(selectedPathway, new AncestorsCreatedHandler() {
+                RESTFulClient.getAncestors(pathway, new AncestorsCreatedHandler() {
                     @Override
                     public void onAncestorsLoaded(Ancestors ancestors) {
-                        Pathway p = ancestors.get(0).getLastPathwayWithDiagram();
-                        eventBus.fireEventFromSource(new DiagramLoadRequestEvent(p.getDbId().toString()), PathwaysDialogPanel.this);
+                        Pathway aux = ancestors.get(0).getLastPathwayWithDiagram();
+                        eventBus.fireEventFromSource(new DiagramLoadRequestEvent(aux, pathway), PathwaysDialogPanel.this);
                     }
 
                     @Override
                     public void onAncestorsError(Throwable exception) {
-                        Console.error("No pathway with diagram found.");
+                        Console.error("No pathway with diagram found for " + pathway);
                     }
                 });
             }

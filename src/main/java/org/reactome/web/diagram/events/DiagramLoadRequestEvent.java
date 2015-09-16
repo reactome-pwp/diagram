@@ -2,6 +2,7 @@ package org.reactome.web.diagram.events;
 
 import com.google.gwt.event.shared.GwtEvent;
 import org.reactome.web.diagram.handlers.DiagramLoadRequestHandler;
+import org.reactome.web.pwp.model.classes.Pathway;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -9,10 +10,16 @@ import org.reactome.web.diagram.handlers.DiagramLoadRequestHandler;
 public class DiagramLoadRequestEvent extends GwtEvent<DiagramLoadRequestHandler> {
     public static final Type<DiagramLoadRequestHandler> TYPE = new Type<>();
 
-    private String identifier;
+    private Pathway pathway;
+    private Pathway subpathway;
 
-    public DiagramLoadRequestEvent(String identifier) {
-        this.identifier = identifier;
+    public DiagramLoadRequestEvent(Pathway pathway) {
+        this.pathway = pathway;
+    }
+
+    public DiagramLoadRequestEvent(Pathway pathway, Pathway subpathway) {
+        this.pathway = pathway;
+        this.subpathway = subpathway;
     }
 
     @Override
@@ -25,14 +32,19 @@ public class DiagramLoadRequestEvent extends GwtEvent<DiagramLoadRequestHandler>
         handler.onDiagramLoadRequest(this);
     }
 
-    public String getIdentifier() {
-        return identifier;
+    public Pathway getPathway() {
+        return pathway;
+    }
+
+    public Pathway getSubpathway() {
+        return subpathway;
     }
 
     @Override
     public String toString() {
         return "DiagramLoadRequestEvent{" +
-                "identifier='" + identifier + '\'' +
+                "pathway=" + pathway.getIdentifier() +
+                (subpathway == null ? "" : ", subpathway=" + subpathway.getIdentifier()) +
                 '}';
     }
 }

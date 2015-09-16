@@ -32,6 +32,7 @@ import org.reactome.web.diagram.util.DiagramEventBus;
 import org.reactome.web.diagram.util.LruCache;
 import org.reactome.web.diagram.util.ViewportUtils;
 import org.reactome.web.diagram.util.actions.UserActionsHandlers;
+import org.reactome.web.pwp.model.classes.Pathway;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.*;
@@ -269,20 +270,23 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void loadDiagram(String stId) {
-        if (stId != null && (this.context == null || !stId.equals(this.context.getContent().getStableId()))) {
-            this.load("" + stId); //Names are interchangeable because there are symlinks
-        } else {
-            fireEvent(new DiagramLoadedEvent(this.context));
+        if (stId != null) {
+            if (this.context == null || !stId.equals(this.context.getContent().getStableId())) {
+                this.load(stId); //Names are interchangeable because there are symlinks
+            } else {
+                this.eventBus.fireEventFromSource(new DiagramLoadedEvent(this.context), this);
+            }
         }
     }
 
     @Override
-    @Deprecated
     public void loadDiagram(Long dbId) {
-        if (dbId != null && (this.context == null || !dbId.equals(this.context.getContent().getDbId()))) {
-            this.load("" + dbId); //Names are interchangeable because there are symlinks
-        } else {
-            fireEvent(new DiagramLoadedEvent(this.context));
+        if (dbId != null) {
+            if (this.context == null || !dbId.equals(this.context.getContent().getDbId())) {
+                this.load("" + dbId); //Names are interchangeable because there are symlinks
+            } else {
+                this.eventBus.fireEventFromSource(new DiagramLoadedEvent(this.context), this);
+            }
         }
     }
 
@@ -591,9 +595,34 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         fireEvent(event);
     }
 
+    //This is ONLY used in "onDiagramLoadRequest" and is meant to remove the handler from the event bus
+    //once the action has been achieved
+    private HandlerRegistration reg;
+
     @Override
     public void onDiagramLoadRequest(DiagramLoadRequestEvent event) {
-        this.load(event.getIdentifier());
+        final Pathway diagram = event.getPathway();
+        final Pathway subpatwhay = event.getSubpathway();
+        if(subpatwhay!=null){
+            reg = this.eventBus.addHandler(DiagramLoadedEvent.TYPE, new DiagramLoadedHandler() {
+                @Override
+                public void onDiagramLoaded(DiagramLoadedEvent event) {
+                    if(!event.getContext().getContent().getDbId().equals(diagram.getDbId())) return;
+                    if(reg!=null) {
+                        reg.removeHandler(); reg=null; //This handler is not longer needed :D
+                        GraphObject item = context.getContent().getDatabaseObject(subpatwhay.getIdentifier());
+                        setSelection(item, true, true);
+                    }
+                }
+            });
+        }
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                //Order is important. Needs to be called after previous handler subscription
+                loadDiagram(diagram.getDbId());
+            }
+        });
     }
 
     @Override
