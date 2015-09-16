@@ -1,9 +1,12 @@
 package org.reactome.web.diagram.launcher.menu.submenu;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.MenuBar;
@@ -17,6 +20,7 @@ public abstract class SubMenuBar extends MenuBar {
 
     public SubMenuBar(boolean vertical) {
         super(vertical);
+        this.addStyleName(RESOURCES.getCSS().subMenu());
         relocateSubMenu();
     }
 
@@ -56,5 +60,28 @@ public abstract class SubMenuBar extends MenuBar {
                 }
             }
         });
+    }
+
+
+    public static SettingsMenuResources RESOURCES;
+    static {
+        RESOURCES = GWT.create(SettingsMenuResources.class);
+        RESOURCES.getCSS().ensureInjected();
+    }
+
+    public interface SettingsMenuResources extends ClientBundle {
+
+        @Source(SettingsMenuPanelCSS.CSS)
+        SettingsMenuPanelCSS getCSS();
+    }
+
+    @CssResource.ImportedWithPrefix("diagram-SubMenuBar")
+    public interface SettingsMenuPanelCSS extends CssResource {
+        /**
+         * The path to the default CSS styles used by this resource.
+         */
+        String CSS = "org/reactome/web/diagram/launcher/menu/submenu/SubMenuBar.css";
+
+        String subMenu();
     }
 }

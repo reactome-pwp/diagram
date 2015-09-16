@@ -11,6 +11,9 @@
     padding: 2px;
     border-radius: 15px;
     border: solid 2px rgb(7, 133, 171);
+
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: small !important;
 }
 
 .header {
