@@ -1,7 +1,6 @@
 package org.reactome.web.diagram.context;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -13,26 +12,38 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.DiagramContext;
-import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.layout.*;
+import org.reactome.web.diagram.data.layout.impl.BoundFactory;
+import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
+import org.reactome.web.diagram.data.layout.impl.ShapeFactory;
+import org.reactome.web.diagram.events.GraphObjectSelectedEvent;
+import org.reactome.web.diagram.handlers.GraphObjectSelectedHandler;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class ContextDialogPanel extends DialogBox implements ClickHandler {
+public class ContextDialogPanel extends DialogBox implements ClickHandler, GraphObjectSelectedHandler {
 
     private DiagramObject item;
+    private GraphObject graphObject;
+    private DiagramContext context;
+    private Widget canvas;
 
     private boolean pinned = false;
     private Button pin;
     private Button close;
 
-    public ContextDialogPanel(EventBus eventBus, DiagramObject item, DiagramContext context) {
+    public ContextDialogPanel(EventBus eventBus, DiagramObject item, DiagramContext context, Widget canvas) {
         super();
         setAutoHideEnabled(true);
         setModal(false);
         setStyleName(RESOURCES.getCSS().popup());
 
         this.item = item;
+        this.graphObject = item.getGraphObject();
+        this.context = context;
+        this.canvas = canvas;
 
         FlowPanel fp = new FlowPanel();
         fp.add(this.pin = new PwpButton("Keeps the panel visible", RESOURCES.getCSS().pin(), this));
@@ -41,9 +52,10 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
 
         setTitlePanel();
         setWidget(fp);
+        this.addStyleName(RESOURCES.getCSS().popupSelected());
+        eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
 
-        center();
-        show();
+        show(true);
     }
 
     @Override
@@ -80,6 +92,13 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
         if(this.pinned) this.show();
     }
 
+    public void show(boolean resetPosition) {
+        if(resetPosition){
+            setPosition();
+        }
+        super.show();
+    }
+
     private void setTitlePanel() {
         FlowPanel fp = new FlowPanel();
         Image img = new Image(this.item.getGraphObject().getImageResource());
@@ -94,11 +113,41 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
         getCaption().asWidget().setStyleName(RESOURCES.getCSS().header());
     }
 
+    private void setPosition(){
+        Coordinate offset = context.getDiagramStatus().getOffset();
+        double factor = context.getDiagramStatus().getFactor();
+
+        Coordinate position = null;
+        Bound canvasBounds = BoundFactory.get(canvas.getAbsoluteLeft(), canvas.getAbsoluteTop(), canvas.getOffsetWidth(), canvas.getOffsetHeight());
+        if(item instanceof NodeCommon) {
+            NodeCommon node = (NodeCommon) item;
+            NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+            position = ContextShowStrategy.getPosition(330, 170, prop, canvasBounds);
+        }else if (item instanceof EdgeCommon){
+            EdgeCommon edge = (EdgeCommon) item;
+            Shape shape = ShapeFactory.transform(edge.getReactionShape(), factor, offset);
+            position = ContextShowStrategy.getPosition(330, 170, shape, canvasBounds);
+        }
+
+        if(position!=null) {
+            setPopupPosition(position.getX().intValue(), position.getY().intValue());
+        }
+    }
+
 
     public static Resources RESOURCES;
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
+    }
+
+    @Override
+    public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
+        if (graphObject.equals(event.getGraphObject())){
+            this.addStyleName(RESOURCES.getCSS().popupSelected());
+        } else {
+            this.removeStyleName(RESOURCES.getCSS().popupSelected());
+        }
     }
 
     public interface Resources extends ClientBundle {
@@ -132,6 +181,8 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler {
         String CSS = "org/reactome/web/diagram/context/ContextDialogPanel.css";
 
         String popup();
+
+        String popupSelected();
 
         String header();
 

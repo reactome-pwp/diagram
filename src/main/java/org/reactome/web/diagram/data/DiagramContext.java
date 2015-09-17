@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.data;
 
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.ui.Widget;
 import org.reactome.web.diagram.context.ContextDialogPanel;
 import org.reactome.web.diagram.data.analysis.*;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
@@ -139,12 +140,12 @@ public class DiagramContext {
         }
     }
 
-    public void showDialog(EventBus eventBus, DiagramObject item, DiagramContext context){
+    public void showDialog(EventBus eventBus, DiagramObject item, Widget canvas){
         if(item==null) return;
         if(!dialogMap.containsKey(item.getGraphObject())) {
-            dialogMap.put(item.getGraphObject(), new ContextDialogPanel(eventBus, item, context));
+            dialogMap.put(item.getGraphObject(), new ContextDialogPanel(eventBus, item, this, canvas));
         }else{
-            dialogMap.get(item.getGraphObject()).show();
+            dialogMap.get(item.getGraphObject()).show(true);
         }
     }
 

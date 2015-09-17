@@ -16,6 +16,14 @@
     font-size: small !important;
 }
 
+.popupSelected {
+    border: solid 3px rgb(7, 114, 149);
+}
+
+.popupSelected .header span{
+    color: midnightblue;
+}
+
 .header {
     margin: 0 0 2px 4px;
 }

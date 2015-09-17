@@ -12,6 +12,7 @@ import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.DiagramLoadRequestEvent;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
+import org.reactome.web.pwp.model.classes.Event;
 import org.reactome.web.pwp.model.classes.Pathway;
 import org.reactome.web.pwp.model.classes.PhysicalEntity;
 import org.reactome.web.pwp.model.client.RESTFulClient;
@@ -20,17 +21,16 @@ import org.reactome.web.pwp.model.client.handlers.PathwaysForEntitiesLoadedHandl
 import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
 import org.reactome.web.pwp.model.handlers.DatabaseObjectCreatedHandler;
 import org.reactome.web.pwp.model.util.Ancestors;
+import org.reactome.web.pwp.model.util.Path;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class PathwaysDialogPanel extends Composite implements DatabaseObjectCreatedHandler, PathwaysForEntitiesLoadedHandler,
-        SectionCellSelectedHandler {
+        SectionCellSelectedHandler, AncestorsCreatedHandler {
 
     private EventBus eventBus;
     private DiagramContext context;
@@ -53,6 +53,9 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
         if (databaseObject instanceof PhysicalEntity) {
             PhysicalEntity pe = databaseObject.cast();
             RESTFulClient.loadPathwaysForEntities(pe, this);
+        }else if (databaseObject instanceof Event){
+            Event event = (Event) databaseObject;
+            RESTFulClient.getAncestors(event, this);
         }
     }
 
@@ -64,6 +67,31 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
 
     @Override
     public void onPathwaysForEntitiesLoaded(List<Pathway> pathways) {
+        populatePathwaysTable(pathways);
+    }
+
+    @Override
+    public void onPathwaysForEntitiesError(Throwable throwable) {
+        this.container.clear();
+        this.container.add(new Label("An error has occurred. ERROR: " + throwable.getMessage()));
+    }
+
+    @Override
+    public void onAncestorsLoaded(Ancestors ancestors) {
+        Set<Pathway> rtn = new HashSet<>();
+        for (Path ancestor : ancestors) {
+            rtn.add(ancestor.getLastPathway());
+        }
+        populatePathwaysTable(rtn);
+    }
+
+    @Override
+    public void onAncestorsError(Throwable throwable) {
+        this.container.clear();
+        this.container.add(new Label("An error has occurred. ERROR: " + throwable.getMessage()));
+    }
+
+    private void populatePathwaysTable(Collection<Pathway> pathways){
         this.container.clear();
         Long dbId = context.getContent().getDbId();
         if(pathways!=null && !pathways.isEmpty()){
@@ -89,12 +117,6 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
                 this.container.add(new Label("This " + className +" is not present in any other pathway."));
             }
         }
-    }
-
-    @Override
-    public void onPathwaysForEntitiesError(Throwable throwable) {
-        this.container.clear();
-        this.container.add(new Label("An error has occurred. ERROR: " + throwable.getMessage()));
     }
 
     @Override

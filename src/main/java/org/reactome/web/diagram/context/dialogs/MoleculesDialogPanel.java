@@ -8,7 +8,6 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import org.reactome.web.diagram.context.sections.Section;
 import org.reactome.web.diagram.data.AnalysisStatus;
@@ -24,6 +23,7 @@ import org.reactome.web.diagram.handlers.AnalysisResetHandler;
 import org.reactome.web.diagram.handlers.AnalysisResultLoadedHandler;
 import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -66,7 +66,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
                 this.selectedExpCol = analysisStatus.getColumn();
             }
         }
-        if (graphObject instanceof GraphPhysicalEntity) {
+        if (graphObject instanceof GraphPhysicalEntity || graphObject instanceof GraphReactionLikeEvent) {
             divideParticipants();
             initialiseWidget();
             populateTables();
@@ -112,8 +112,14 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     }
 
     private void divideParticipants(){
-        GraphPhysicalEntity pe = (GraphPhysicalEntity) this.graphObject;
-        Set<GraphPhysicalEntity> participants = pe.getParticipants();
+        Set<GraphPhysicalEntity> participants = new HashSet<>();
+        if (graphObject instanceof GraphPhysicalEntity) {
+            GraphPhysicalEntity pe = (GraphPhysicalEntity) this.graphObject;
+            participants = pe.getParticipants();
+        } else if (graphObject instanceof GraphReactionLikeEvent) {
+            GraphReactionLikeEvent rle = (GraphReactionLikeEvent) this.graphObject;
+            participants = rle.getParticipants();
+        }
 
         proteins = new LinkedList<>();
         chemicals = new LinkedList<>();
