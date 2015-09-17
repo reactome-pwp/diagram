@@ -67,7 +67,11 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
 
     @Override
     public void onPathwaysForEntitiesLoaded(List<Pathway> pathways) {
-        populatePathwaysTable(pathways);
+        Set<Pathway> rtn = new HashSet<>();
+        for (Pathway path : pathways) {
+            rtn.add(path);
+        }
+        populatePathwaysTable(rtn);
     }
 
     @Override
