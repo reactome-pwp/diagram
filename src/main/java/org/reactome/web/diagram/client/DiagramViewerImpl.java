@@ -360,6 +360,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         switch (button) {
             case NativeEvent.BUTTON_RIGHT:
                 DiagramObject item = this.getHovered(this.mouseCurrent);
+                GraphObject toSel = item != null ? item.getGraphObject() : null;
+                this.setSelection(toSel, false, true);
                 this.context.showDialog(this.eventBus, item, this.context);
                 break;
             default:
