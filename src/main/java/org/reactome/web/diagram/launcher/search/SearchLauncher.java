@@ -9,6 +9,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.DiagramContent;
@@ -47,6 +48,8 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     private Boolean isExpanded = false;
 
+    private Timer focusTimer;
+
     public SearchLauncher(EventBus eventBus) {
         //Setting the search style
         setStyleName(RESOURCES.getCSS().launchPanel());
@@ -60,6 +63,13 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         this.input.setStyleName(RESOURCES.getCSS().input());
         this.input.getElement().setPropertyString("placeholder", OPENING_TEXT);
         this.add(input);
+
+        focusTimer = new Timer() {
+            @Override
+            public void run() {
+                SearchLauncher.this.input.setFocus(true);
+            }
+        };
 
         this.initHandlers();
         this.searchBtn.setEnabled(false);
@@ -132,6 +142,9 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     }
 
     private void collapsePanel(){
+        if(focusTimer.isRunning()){
+            focusTimer.cancel();
+        }
         removeStyleName(RESOURCES.getCSS().launchPanelExpanded());
         input.removeStyleName(RESOURCES.getCSS().inputActive());
         isExpanded = false;
@@ -143,6 +156,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         input.addStyleName(RESOURCES.getCSS().inputActive());
         isExpanded = true;
         fireEvent(new PanelExpandedEvent());
+        focusTimer.schedule(300);
     }
 
     private void initHandlers(){
