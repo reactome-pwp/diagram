@@ -3,7 +3,9 @@ package org.reactome.web.diagram.data.graph.model;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -19,8 +21,6 @@ public abstract class GraphReactionLikeEvent extends GraphEvent {
 
     private List<GraphReactionLikeEvent> followingEvents = new ArrayList<>();
     private List<GraphReactionLikeEvent> precedingEvents = new ArrayList<>();
-
-    private GraphCompartment compartment;
 
     public GraphReactionLikeEvent(EventNode node) {
         super(node);
@@ -105,8 +105,19 @@ public abstract class GraphReactionLikeEvent extends GraphEvent {
         this.requirements = requirements;
     }
 
-    public GraphCompartment getCompartment() {
-        return compartment;
-    }
+    public Set<GraphPhysicalEntity> getParticipants(){
+        Set<GraphPhysicalEntity> parts = new HashSet<>();
+        parts.addAll(inputs);
+        parts.addAll(outputs);
+        parts.addAll(catalysts);
+        parts.addAll(activators);
+        parts.addAll(inhibitors);
+        parts.addAll(requirements);
 
+        Set<GraphPhysicalEntity> rtn = new HashSet<>();
+        for (GraphPhysicalEntity entity : parts) {
+            rtn.addAll(entity.getParticipants());
+        }
+        return rtn;
+    }
 }
