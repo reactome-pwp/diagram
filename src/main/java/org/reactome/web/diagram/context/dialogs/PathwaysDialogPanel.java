@@ -101,7 +101,7 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
         if(pathways!=null && !pathways.isEmpty()){
             List<List<String>> tableContents = new LinkedList<>();
             for (Pathway pathway : pathways) {
-                if(!pathway.getDbId().equals(dbId)) {
+                if(!pathway.getDbId().equals(dbId) && pathway.getHasDiagram()) { // Filter out the pathways without diagram
                     pathwaysIndex.add(pathway);
                     List<String> row = new LinkedList<>();
                     row.add(pathway.getDisplayName());
