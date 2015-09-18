@@ -84,7 +84,7 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
     public void onAncestorsLoaded(Ancestors ancestors) {
         Set<Pathway> rtn = new HashSet<>();
         for (Path ancestor : ancestors) {
-            rtn.add(ancestor.getLastPathway());
+            rtn.add(ancestor.getLastPathwayWithDiagram());
         }
         populatePathwaysTable(rtn);
     }
