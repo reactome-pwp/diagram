@@ -132,7 +132,7 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
                 Console.error("No pathway associated with " + selection.getRowIndex());
             } else if (pathway.getHasDiagram()) {
                 eventBus.fireEventFromSource(new DiagramLoadRequestEvent(pathway), this);
-            }else{
+            } else {
                 RESTFulClient.getAncestors(pathway, new AncestorsCreatedHandler() {
                     @Override
                     public void onAncestorsLoaded(Ancestors ancestors) {
