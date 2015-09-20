@@ -35,7 +35,6 @@ public interface DiagramViewer extends IsWidget, HasHandlers, RequiresResize {
 
     void loadDiagram(String stId);
 
-    @Deprecated
     void loadDiagram(Long dbId);
 
     void resetAnalysis();
