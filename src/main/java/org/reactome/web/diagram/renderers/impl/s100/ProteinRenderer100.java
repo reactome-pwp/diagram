@@ -16,15 +16,13 @@ public class ProteinRenderer100 extends ProteinAbstractRenderer {
         if(!isVisible(item)) return;
         super.draw(ctx, item, factor, offset);
         Node node = (Node) item;
-//        shape(ctx, node, factor, offset);
-//        NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
-//        Coordinate centre = node.getPosition().transform(factor, offset);
-//        CanvasGradient radgrad = ctx.createRadialGradient(centre.getX(), centre.getY(), factor, centre.getX(), centre.getY(), prop.getWidth());
-//        radgrad.addColorStop(0, "#BBDDD6");
-//        radgrad.addColorStop(0.3f, DiagramColours.get().PROFILE.getProtein().getFill());
-//        ctx.setFillStyle(radgrad);
-//        ctx.fill();
-        drawAttachments(ctx, node, factor, offset);
+        drawAttachments(ctx, node, factor, offset, true);
+    }
+
+    @Override
+    public void highlight(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
+        super.highlight(ctx, item, factor, offset);
+        drawAttachments(ctx, (Node) item, factor, offset, false);
     }
 
     @Override

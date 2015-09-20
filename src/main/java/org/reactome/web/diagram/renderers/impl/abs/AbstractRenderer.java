@@ -43,7 +43,7 @@ public abstract class AbstractRenderer implements Renderer {
         draw(ctx, item, factor, offset); //By default the normal draw method is called
     }
 
-    public void drawAttachments(AdvancedContext2d ctx, Node node, Double factor, Coordinate offset){
+    public void drawAttachments(AdvancedContext2d ctx, Node node, Double factor, Coordinate offset, boolean fill){
         List<NodeAttachment> atList = node.getNodeAttachments();
         if(atList!=null){
             for (NodeAttachment nodeAttachment : atList) {
@@ -56,7 +56,16 @@ public abstract class AbstractRenderer implements Renderer {
                         s.getB().getY()-s.getA().getY()
                 );
                 ctx.stroke();
-                ctx.fill();
+                if (fill) {
+                    ctx.fill();
+                } else {
+                    ctx.clearRect(
+                            s.getA().getX(),
+                            s.getA().getY(),
+                            s.getB().getX() - s.getA().getX(),
+                            s.getB().getY() - s.getA().getY()
+                    );
+                }
 
                 if(nodeAttachment.getLabel()!=null) {
                     //TODO move this to a higher level and set it once OR use the TextRenderer to draw it
