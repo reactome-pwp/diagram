@@ -2,11 +2,14 @@ package org.reactome.web.diagram.context.sections;
 
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ScrollEvent;
+import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.util.Console;
@@ -74,7 +77,7 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
         int cellIndex = table.getCellForEvent(event).getCellIndex();
         int rowIndex = table.getCellForEvent(event).getRowIndex();
         if(table.equals(dataTable)){
-            hightlightRow(dataTable, rowIndex, RESOURCES.getCSS().hightlightedRow());
+            hightlightRow(dataTable, rowIndex, RESOURCES.getCSS().highlightedRow());
             Widget widget = dataTable.getWidget(rowIndex, cellIndex);
             if(widget instanceof Label) {
                 String value = ((Label) widget).getText();
@@ -96,7 +99,7 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
     public void selectExpressionCol(int col){
         if(headerTable!=null && dataTable!=null) {
             ensureVisible(headerScrollPanel, headerTable, 0, col);
-            hightlightCol(headerTable, col, RESOURCES.getCSS().hightlightedCol());
+            hightlightCol(headerTable, col, RESOURCES.getCSS().highlightedCol());
             hightlightCol(dataTable, col + 1, RESOURCES.getCSS().selectedExpressionColumn());
         }
     }
@@ -233,9 +236,9 @@ public class Section extends Composite implements ClickHandler, ScrollHandler {
 
         String dataTable();
 
-        String hightlightedRow();
+        String highlightedRow();
 
-        String hightlightedCol();
+        String highlightedCol();
 
         String selectedExpressionColumn();
 
