@@ -99,7 +99,7 @@ public class DiagramKey extends DialogBox implements GraphObjectHoveredHandler, 
                 renderer.setColourProperties(items, ColourProfileType.NORMAL);
                 renderer.draw(items, node, FACTOR, OFFSET);
                 renderer.setTextProperties(items, ColourProfileType.NORMAL);
-                items.setFont(RendererProperties.getFont(11));
+                items.setFont(RendererProperties.getFont(8));
                 renderer.drawText(items, node, FACTOR, OFFSET);
             } else {
                 Console.error(node.getRenderableClass());
