@@ -1,15 +1,13 @@
 package org.reactome.web.diagram.context.dialogs;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import org.reactome.web.diagram.context.sections.Section;
+import org.reactome.web.diagram.context.dialogs.molecules.MoleculesTable;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.analysis.ExpressionSummary;
 import org.reactome.web.diagram.data.graph.model.*;
@@ -39,20 +37,20 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     private GraphObject graphObject;
 
     private List<String> expColumns;
-    private Double min;
-    private Double max;
+    private double min;
+    private double max;
     private List<String> colNames = new LinkedList<>();
     private int selectedExpCol = 0;
 
-    private List<List<String>> proteins = new LinkedList<>();
-    private List<List<String>> chemicals = new LinkedList<>();
-    private List<List<String>> dnas = new LinkedList<>();
-    private List<List<String>> others = new LinkedList<>();
+    private List<GraphEntityWithAccessionedSequence> proteins = new LinkedList<>();
+    private List<GraphSimpleEntity> chemicals = new LinkedList<>();
+    private List<GraphGenomeEncodedEntity> dnas = new LinkedList<>();
+    private List<GraphOtherEntity> others = new LinkedList<>();
 
-    private Section proteinsSection;
-    private Section chemicalsSection;
-    private Section dnasSection;
-    private Section othersSection;
+    private MoleculesTable<GraphEntityWithAccessionedSequence> proteinsTable;
+    private MoleculesTable<GraphSimpleEntity> chemicalsTable;
+    private MoleculesTable<GraphGenomeEncodedEntity> dnasTable;
+    private MoleculesTable<GraphOtherEntity> othersTable;
 
     public MoleculesDialogPanel(EventBus eventBus, DiagramObject diagramObject, AnalysisStatus analysisStatus) {
         this.eventBus = eventBus;
@@ -69,8 +67,6 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         if (graphObject instanceof GraphPhysicalEntity || graphObject instanceof GraphReactionLikeEvent) {
             divideParticipants();
             initialiseWidget();
-            populateTables();
-            selectExpressionColumn(this.selectedExpCol);
         }else{
             String className = graphObject.getClassName().toLowerCase();
             initWidget(new Label("This " + className +" does not contain any other participating molecules."));
@@ -80,35 +76,52 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
 
     @Override
     public void onAnalysisReset(AnalysisResetEvent event) {
-        expColumns = null;
-        min = null;
-        max = null;
-        divideParticipants();
-        populateTables();
+        removeExpressionValues();
     }
 
     @Override
     public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
         ExpressionSummary expressionSummary = event.getExpressionSummary();
         if(expressionSummary!=null) {
-            selectedExpCol = 0;
             expColumns = expressionSummary.getColumnNames();
             min = expressionSummary.getMin();
             max = expressionSummary.getMax();
-            divideParticipants();
-            populateTables();
+            loadExpressionValues();
         }
     }
 
     @Override
     public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
-        proteinsSection.applyAnalysisColours(proteins, min, max);
+        removeExpressionValues();
+        loadExpressionValues();
     }
 
     @Override
     public void onExpressionColumnChanged(final ExpressionColumnChangedEvent e) {
         selectedExpCol = e.getColumn();
-        selectExpressionColumn(selectedExpCol);
+        highlightColumn(selectedExpCol);
+    }
+
+    private void loadExpressionValues(){
+        if(proteinsTable!=null) proteinsTable.addExpressionColumns(expColumns, min, max, selectedExpCol);
+        if(chemicalsTable!=null) chemicalsTable.addExpressionColumns(expColumns, min, max, selectedExpCol);
+        if(dnasTable!=null) dnasTable.addExpressionColumns(expColumns, min, max, selectedExpCol);
+        if(othersTable!=null) othersTable.addExpressionColumns(expColumns, min, max, selectedExpCol);
+        highlightColumn(selectedExpCol);
+    }
+
+    private void removeExpressionValues(){
+        if(proteinsTable!=null) proteinsTable.removeExpressionColumns();
+        if(chemicalsTable!=null) chemicalsTable.removeExpressionColumns();
+        if(dnasTable!=null) dnasTable.removeExpressionColumns();
+        if(othersTable!=null) othersTable.removeExpressionColumns();
+    }
+
+    private void highlightColumn(int col){
+        if(proteinsTable!=null) proteinsTable.highlightExpColumn(col);
+        if(chemicalsTable!=null) chemicalsTable.highlightExpColumn(col);
+        if(dnasTable!=null) dnasTable.highlightExpColumn(col);
+        if(othersTable!=null) othersTable.highlightExpColumn(col);
     }
 
     private void divideParticipants(){
@@ -127,40 +140,14 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         others = new LinkedList<>();
 
         for (GraphPhysicalEntity participant : participants) {
-            List<List<String>> table;
             if (participant instanceof GraphSimpleEntity) {
-                table = chemicals;
+                chemicals.add((GraphSimpleEntity) participant);
             } else if (participant instanceof GraphEntityWithAccessionedSequence) {
-                table = proteins;
+                proteins.add((GraphEntityWithAccessionedSequence) participant);
             } else if (participant instanceof GraphGenomeEncodedEntity) {
-                table = dnas;
+                dnas.add((GraphGenomeEncodedEntity) participant);
             } else {
-                table = others;
-            }
-
-            List<String> row = new LinkedList<>();
-            String participantName;
-            if (participant.getIdentifier() != null && !participant.getIdentifier().isEmpty()) {
-                participantName = participant.getIdentifier();
-            } else {
-                participantName = participant.getDisplayName();
-            }
-            row.add(participantName);
-
-            if(expColumns!=null && !expColumns.isEmpty()) {
-                for (int col = 0; col < expColumns.size(); col++) {
-                    Double exp = (participant.getExpression() != null) ? participant.getExpression().get(col) : null;
-                    String expression = exp != null ? "" + NumberFormat.getFormat("#.##E0").format(exp) : "";
-                    row.add(expression);
-                }
-            }
-            table.add(row);
-        }
-
-        colNames.clear();
-        if(expColumns!=null && !expColumns.isEmpty()) {
-            for (int col = 0; col < expColumns.size(); col++) {
-                colNames.add(expColumns.get(col));
+                others.add((GraphOtherEntity) participant);
             }
         }
     }
@@ -175,23 +162,27 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     private void initialiseWidget(){
         FlowPanel vp = new FlowPanel();
         vp.setStyleName(RESOURCES.getCSS().container());
-        int optimalSize = getOptimalSize();
+        String optimalSize = getOptimalSize() + "px";
         //There is a certain order in which we want the participating molecules to be listed
-        if (proteins.size() > 0){
-            proteinsSection = new Section("Proteins", optimalSize);
-            vp.add(proteinsSection);
+        if (!proteins.isEmpty()){
+            proteinsTable = new MoleculesTable<>("Proteins", proteins, expColumns, min, max, selectedExpCol);
+            proteinsTable.setHeight(optimalSize);
+            vp.add(proteinsTable);
         }
-        if (chemicals.size() > 0) {
-            chemicalsSection = new Section("Chemical compounds", optimalSize);
-            vp.add(chemicalsSection);
+        if (!chemicals.isEmpty()) {
+            chemicalsTable = new MoleculesTable<>("Chemical compounds", chemicals, expColumns, min, max, selectedExpCol);
+            chemicalsTable.setHeight(optimalSize);
+            vp.add(chemicalsTable);
         }
-        if (dnas.size() > 0) {
-            dnasSection = new Section("DNA", optimalSize);
-            vp.add(dnasSection);
+        if (!dnas.isEmpty()) {
+            dnasTable = new MoleculesTable<>("DNA", dnas, expColumns, min, max, selectedExpCol);
+            dnasTable.setHeight(optimalSize);
+            vp.add(dnasTable);
         }
-        if (others.size() > 0){
-            othersSection = new Section("Others", optimalSize);
-            vp.add(othersSection);
+        if (!others.isEmpty()){
+            othersTable = new MoleculesTable<>("Others", others, expColumns, min, max, selectedExpCol);
+            othersTable.setHeight(optimalSize);
+            vp.add(othersTable);
         }
         initWidget(vp);
     }
@@ -206,80 +197,17 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
 
         switch(requiredSections){
             case 1:
-                size = 115;
+                size = 150;
                 break;
             case 2:
-                size = 50;
+                size = 80;
                 break;
             default:
-                size = 40;
+                size = 60;
                 break;
         }
 
         return size;
-    }
-
-    private void populateTables(){
-        if (proteins.size() > 0){
-            proteinsSection.setTableContents(proteins);
-            proteinsSection.setTableHeader(colNames);
-            if(expColumns!=null && !expColumns.isEmpty()) {
-                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                        proteinsSection.applyAnalysisColours(proteins, min, max);
-                    }
-                });
-            }
-        }
-        if (chemicals.size() > 0) {
-            chemicalsSection.setTableContents(chemicals);
-            chemicalsSection.setTableHeader(colNames);
-            if(expColumns!=null && !expColumns.isEmpty()) {
-                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                        chemicalsSection.applyAnalysisColours(chemicals, min, max);
-                    }
-                });
-            }
-        }
-        if (dnas.size() > 0) {
-            dnasSection.setTableContents(dnas);
-            dnasSection.setTableHeader(colNames);
-            if(expColumns!=null && !expColumns.isEmpty()) {
-                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                        dnasSection.applyAnalysisColours(dnas, min, max);
-                    }
-                });
-            }
-        }
-        if (others.size() > 0){
-            othersSection.setTableContents(others);
-            othersSection.setTableHeader(colNames);
-            if(expColumns!=null && !expColumns.isEmpty()) {
-                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                        othersSection.applyAnalysisColours(others, min, max);
-                    }
-                });
-            }
-        }
-    }
-
-    private void selectExpressionColumn(final int col){
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                if (proteins.size() > 0){ proteinsSection.selectExpressionCol(col); }
-                if (chemicals.size() > 0){ chemicalsSection.selectExpressionCol(col); }
-                if (dnas.size() > 0){ dnasSection.selectExpressionCol(col); }
-                if (others.size() > 0){ othersSection.selectExpressionCol(col); }
-            }
-        });
     }
 
 

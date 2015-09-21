@@ -1,0 +1,13 @@
+.unselectedExpression {
+    background-color: transparent !important;
+
+    -webkit-transition: background-color 1s; /* Chrome, Safari, Opera */
+    transition: background-color 1s;
+}
+
+.selectedExpression {
+    background-color: white !important;
+
+    -webkit-transition: background-color 1s; /* Chrome, Safari, Opera */
+    transition: background-color 1s;
+}
