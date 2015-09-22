@@ -3,6 +3,7 @@ package org.reactome.web.diagram.renderers;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
+import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
@@ -26,7 +27,7 @@ public interface Renderer {
      * belong to the Edges).
      * @return the identifier of the diagram object hovered. Null if the item or delegates are not hovered
      */
-    Long getHovered(DiagramObject item, Coordinate pos);
+    HoveredItem getHovered(DiagramObject item, Coordinate pos);
 
     Double getExpressionHovered(DiagramObject item, Coordinate pos, int t);
 

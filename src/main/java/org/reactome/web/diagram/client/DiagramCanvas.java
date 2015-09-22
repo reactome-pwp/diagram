@@ -39,6 +39,7 @@ import org.reactome.web.diagram.renderers.ConnectorRenderer;
 import org.reactome.web.diagram.renderers.Renderer;
 import org.reactome.web.diagram.renderers.RendererManager;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
+import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.helper.ItemsDistribution;
@@ -268,9 +269,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         for (DiagramObject item : target) {
             Renderer renderer = rendererManager.getRenderer(item);
             if (renderer != null) {
-                Long id = renderer.getHovered(item, model);
-                if (id != null) {
-                    rtn.add(id);
+                HoveredItem hovered = renderer.getHovered(item, model);
+                if (hovered != null) {
+                    rtn.add(hovered.getHovered());
                 }
             }
         }

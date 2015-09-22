@@ -8,6 +8,7 @@ import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.RendererManager;
+import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
@@ -44,11 +45,11 @@ public abstract class NodeAbstractRenderer extends AbstractRenderer {
     }
 
     @Override
-    public Long getHovered(DiagramObject item, Coordinate pos) {
+    public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
         if (isVisible(item)) {
             Node node = (Node) item;
             if (node.isHovered(pos)) {
-                return node.getId();
+                return new HoveredItem(node.getId());
             }
 
             for (Connector connector : node.getConnectors()) {
@@ -56,7 +57,7 @@ public abstract class NodeAbstractRenderer extends AbstractRenderer {
                     Stoichiometry stoichiometry = connector.getStoichiometry();
                     if (stoichiometry != null && stoichiometry.getValue() != null && stoichiometry.getValue() > 1) {
                         if (ShapeCategory.isHovered(stoichiometry.getShape(), pos)) {
-                            return connector.getEdgeId();
+                            return new HoveredItem(connector.getEdgeId());
                         }
                     }
                 }
@@ -64,13 +65,13 @@ public abstract class NodeAbstractRenderer extends AbstractRenderer {
                 Shape shape = connector.getEndShape();
                 if (shape != null) {
                     if (ShapeCategory.isHovered(shape, pos)) {
-                        return connector.getEdgeId();
+                        return new HoveredItem(connector.getEdgeId());
                     }
                 }
 
                 for (Segment segment : connector.getSegments()) {
                     if (SegmentCategory.isInSegment(segment, pos)) {
-                        return connector.getEdgeId();
+                        return new HoveredItem(connector.getEdgeId());
                     }
                 }
             }

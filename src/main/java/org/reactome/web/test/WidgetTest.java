@@ -52,7 +52,7 @@ public class WidgetTest implements EntryPoint {
                             public void onDiagramLoaded(DiagramLoadedEvent event) {
 //                                diagram.flagItems("O75593");
 //                                diagram.flagItems("16761");
-                                diagram.flagItems("LEFTA");
+//                                diagram.flagItems("LEFTA");
                             }
                         });
                     }

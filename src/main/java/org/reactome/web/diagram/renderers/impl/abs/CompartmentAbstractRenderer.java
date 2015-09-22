@@ -7,6 +7,7 @@ import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
+import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
@@ -50,7 +51,7 @@ public abstract class CompartmentAbstractRenderer extends AbstractRenderer {
     }
 
     @Override
-    public Long getHovered(DiagramObject item, Coordinate pos) {
+    public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
         return null;
     }
 

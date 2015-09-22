@@ -10,6 +10,7 @@ import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
+import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
@@ -49,7 +50,7 @@ public abstract class ChemicalAbstractRenderer extends NodeAbstractRenderer {
     }
 
     @Override
-    public Long getHovered(DiagramObject item, Coordinate pos) {
+    public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
         if (!isVisible(item)) return null;
 
         //TODO: Do not call super but check whether the mouse in on the arrow or the grayish box

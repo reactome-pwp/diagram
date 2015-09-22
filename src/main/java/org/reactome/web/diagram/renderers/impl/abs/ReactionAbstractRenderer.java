@@ -9,6 +9,7 @@ import org.reactome.web.diagram.data.layout.Shape;
 import org.reactome.web.diagram.data.layout.impl.ShapeFactory;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
+import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
@@ -53,12 +54,12 @@ public abstract class ReactionAbstractRenderer extends EdgeAbstractRenderer {
     }
 
     @Override
-    public final Long getHovered(DiagramObject item, Coordinate pos) {
+    public final HoveredItem getHovered(DiagramObject item, Coordinate pos) {
         if(isVisible(item)) {
             try {
                 Edge edge = (Edge) item;
                 if (edge.isHovered(pos)) {
-                    return edge.getId();
+                    return new HoveredItem(edge.getId());
                 }
             }catch (ClassCastException e){
                 return null;
