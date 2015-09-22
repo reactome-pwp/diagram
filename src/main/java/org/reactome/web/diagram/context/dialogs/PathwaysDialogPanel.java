@@ -84,7 +84,7 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
     public void onAncestorsLoaded(Ancestors ancestors) {
         Set<Pathway> rtn = new HashSet<>();
         for (Path ancestor : ancestors) {
-            rtn.add(ancestor.getLastPathwayWithDiagram());
+            rtn.add(ancestor.getLastPathwayWithDiagram()); //We do not include subpathways in the list
         }
         populatePathwaysTable(rtn);
     }
@@ -98,28 +98,30 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
     private void populatePathwaysTable(Collection<Pathway> pathways){
         this.container.clear();
         Long dbId = context.getContent().getDbId();
-        if(pathways!=null && !pathways.isEmpty()){
-            List<List<String>> tableContents = new LinkedList<>();
+        List<List<String>> tableContents = new LinkedList<>();
+        if (pathways != null && !pathways.isEmpty()) {
             for (Pathway pathway : pathways) {
-                if(!pathway.getDbId().equals(dbId) && pathway.getHasDiagram()) { // Filter out the pathways without diagram
+                if (pathway.getDbId().equals(dbId)) continue;
+                if (pathway.getHasDiagram()) { // We do not include subpathways in the list
+                    if (pathwaysIndex.contains(pathway)) continue;
                     pathwaysIndex.add(pathway);
                     List<String> row = new LinkedList<>();
-                    row.add(pathway.getDisplayName());
+                    row.add(pathway.getDisplayName() + " [" + pathway.getSpecies().get(0).getDisplayName() + "]");
                     row.add("\u25b6");
                     tableContents.add(row);
                 }
             }
-            if(tableContents.size()>0) {
-                Section section = new Section("Other Pathways", 110);
-                section.setTableContents(tableContents);
-                section.addSectionCellSelectedHandler(this);
-                section.setDataColumnWidth(0, 240);
-                section.setDataColumnWidth(1, 9);
-                container.add(section);
-            } else {
-                String className = graphObject.getClassName().toLowerCase();
-                this.container.add(new Label("This " + className +" is not present in any other pathway."));
-            }
+        }
+        if (tableContents.size() > 0) {
+            Section section = new Section("Other Pathways", 110);
+            section.setTableContents(tableContents);
+            section.addSectionCellSelectedHandler(this);
+            section.setDataColumnWidth(0, 240);
+            section.setDataColumnWidth(1, 9);
+            container.add(section);
+        } else {
+            String className = graphObject.getClassName().toLowerCase();
+            this.container.add(new Label("This " + className + " is not present in any other pathway."));
         }
     }
 
@@ -129,22 +131,23 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
         if(selection.getColIndex()==1) {
             final Pathway pathway = pathwaysIndex.get(selection.getRowIndex());
             if (pathway == null){
-                Console.error("No pathway associated with " + selection.getRowIndex());
+                Console.error("No pathway associated with " + selection.getRowIndex(), this);
             } else if (pathway.getHasDiagram()) {
                 eventBus.fireEventFromSource(new DiagramLoadRequestEvent(pathway), this);
             } else {
-                RESTFulClient.getAncestors(pathway, new AncestorsCreatedHandler() {
-                    @Override
-                    public void onAncestorsLoaded(Ancestors ancestors) {
-                        Pathway aux = ancestors.get(0).getLastPathwayWithDiagram();
-                        eventBus.fireEventFromSource(new DiagramLoadRequestEvent(aux, pathway), PathwaysDialogPanel.this);
-                    }
-
-                    @Override
-                    public void onAncestorsError(Throwable exception) {
-                        Console.error("No pathway with diagram found for " + pathway);
-                    }
-                });
+                Console.error("No diagram for " + pathway.toString(), this);
+//                RESTFulClient.getAncestors(pathway, new AncestorsCreatedHandler() {
+//                    @Override
+//                    public void onAncestorsLoaded(Ancestors ancestors) {
+//                        Pathway aux = ancestors.get(0).getLastPathwayWithDiagram();
+//                        eventBus.fireEventFromSource(new DiagramLoadRequestEvent(aux, pathway), PathwaysDialogPanel.this);
+//                    }
+//
+//                    @Override
+//                    public void onAncestorsError(Throwable exception) {
+//                        Console.error("No pathway with diagram found for " + pathway);
+//                    }
+//                });
             }
         }
     }

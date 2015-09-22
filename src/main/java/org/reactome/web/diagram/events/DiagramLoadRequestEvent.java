@@ -11,15 +11,9 @@ public class DiagramLoadRequestEvent extends GwtEvent<DiagramLoadRequestHandler>
     public static final Type<DiagramLoadRequestHandler> TYPE = new Type<>();
 
     private Pathway pathway;
-    private Pathway subpathway;
 
     public DiagramLoadRequestEvent(Pathway pathway) {
         this.pathway = pathway;
-    }
-
-    public DiagramLoadRequestEvent(Pathway pathway, Pathway subpathway) {
-        this.pathway = pathway;
-        this.subpathway = subpathway;
     }
 
     @Override
@@ -36,15 +30,10 @@ public class DiagramLoadRequestEvent extends GwtEvent<DiagramLoadRequestHandler>
         return pathway;
     }
 
-    public Pathway getSubpathway() {
-        return subpathway;
-    }
-
     @Override
     public String toString() {
         return "DiagramLoadRequestEvent{" +
                 "pathway=" + pathway.getIdentifier() +
-                (subpathway == null ? "" : ", subpathway=" + subpathway.getIdentifier()) +
                 '}';
     }
 }
