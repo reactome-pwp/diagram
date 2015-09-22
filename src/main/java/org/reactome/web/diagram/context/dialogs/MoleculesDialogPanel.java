@@ -39,7 +39,6 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     private List<String> expColumns;
     private double min;
     private double max;
-    private List<String> colNames = new LinkedList<>();
     private int selectedExpCol = 0;
 
     private List<GraphEntityWithAccessionedSequence> proteins = new LinkedList<>();
@@ -190,20 +189,20 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     private int getOptimalSize(){
         int size;
         int requiredSections = 0;
-        if (proteins.size() > 0){   requiredSections++; }
-        if (chemicals.size() > 0) { requiredSections++; }
-        if (dnas.size() > 0) {      requiredSections++; }
-        if (others.size() > 0){     requiredSections++; }
+        if (proteins.size() > 0)    requiredSections++;
+        if (chemicals.size() > 0)   requiredSections++;
+        if (dnas.size() > 0)        requiredSections++;
+        if (others.size() > 0)      requiredSections++;
 
         switch(requiredSections){
             case 1:
-                size = 150;
+                size = 145;
                 break;
             case 2:
-                size = 80;
+                size = 120;
                 break;
             default:
-                size = 60;
+                size = 100;
                 break;
         }
 
