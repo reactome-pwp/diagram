@@ -26,7 +26,10 @@ import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
 import org.reactome.web.diagram.launcher.LeftTopLauncherPanel;
 import org.reactome.web.diagram.launcher.RightTopLauncherPanel;
 import org.reactome.web.diagram.launcher.controls.NavigationControlPanel;
-import org.reactome.web.diagram.legends.*;
+import org.reactome.web.diagram.legends.EnrichmentControl;
+import org.reactome.web.diagram.legends.ExpressionControl;
+import org.reactome.web.diagram.legends.ExpressionLegend;
+import org.reactome.web.diagram.legends.FlaggedItemsControl;
 import org.reactome.web.diagram.messages.AnalysisMessage;
 import org.reactome.web.diagram.messages.LoadingMessage;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
@@ -80,6 +83,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private AdvancedContext2d text;
     private AdvancedContext2d overlay;
     private AdvancedContext2d entitiesSelection;
+    private AdvancedContext2d shadowsText;
 
     private AdvancedContext2d buffer;
 
@@ -305,13 +309,10 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             }
         }
 
-        //renderItems uses "reactions" context2d to draw connectors. It is better to set the colour properties once
-        Renderer reactionRenderer = rendererManager.getRenderer("Reaction");
-        reactionRenderer.setColourProperties(reactions, colourProfileType);
-
         ItemsDistribution itemsDistribution = new ItemsDistribution(items, analysisType);
         for (String renderableClass : itemsDistribution.keySet()) {
             if (renderableClass.equals("Reaction")) continue; //Reactions are drawn at the end (they follow slightly different approach)
+            if (renderableClass.equals("Shadow")) continue; //Shadows will be rendered at the end because their text has to be on top of everything
 
             final Renderer renderer = rendererManager.getRenderer(renderableClass);
             if (renderer == null) continue;
@@ -381,10 +382,13 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         cleanCanvas(this.buffer); //It could have been used for the expression overlay (it is fastest cleaning it once)
 
-        //Reactions to be drawn at the VERY END of it :)
+        //Reactions are rendered after all the other types. They have special characteristics.
+        //renderItems uses "reactions" context2d to draw connectors. It is better to set the colour properties once
         items = itemsDistribution.getAll("Reaction");
-        reactionRenderer.setColourProperties(this.fadeOut, ColourProfileType.FADE_OUT);
         if (!items.isEmpty()) { //No need to check for null here
+            Renderer reactionRenderer = rendererManager.getRenderer("Reaction");
+            reactionRenderer.setColourProperties(reactions, colourProfileType);
+            reactionRenderer.setColourProperties(this.fadeOut, ColourProfileType.FADE_OUT);
             for (DiagramObject item : items) {
                 if (item.getIsFadeOut() != null) {
                     reactionRenderer.draw(this.fadeOut, item, factor, offset);
@@ -397,6 +401,14 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                     reactionRenderer.draw(reactions, item, factor, offset);
                 }
             }
+        }
+
+        //Shadows to be rendered at the VERY END of it :)
+        Renderer shadowRenderer = rendererManager.getRenderer("Shadow");
+        shadowRenderer.setTextProperties(shadowsText, ColourProfileType.NORMAL);
+        for (DiagramObject item : itemsDistribution.getAll("Shadow")) {
+            shadowRenderer.draw(shadows, item, factor, offset);
+            shadowRenderer.drawText(shadowsText, item, factor, offset);
         }
     }
 
@@ -512,6 +524,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.text = createCanvas(width, height);
         this.overlay = createCanvas(width, height);
         this.entitiesSelection = createCanvas(width, height);
+        this.shadowsText = createCanvas(width, height);
 
         //DO NOT CHANGE THE ORDER OF THE FOLLOWING TWO LINES
         this.add(new LoadingMessage(eventBus));                 //Loading message panel
