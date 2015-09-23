@@ -28,6 +28,7 @@ import org.reactome.web.diagram.data.loader.AnalysisDataLoader;
 import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
+import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.util.DiagramEventBus;
 import org.reactome.web.diagram.util.LruCache;
 import org.reactome.web.diagram.util.ViewportUtils;
@@ -737,9 +738,9 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     private DiagramObject getHovered(Coordinate mouse) {
         Coordinate model = context.getDiagramStatus().getModelCoordinate(mouse);
         Collection<DiagramObject> target = this.context.getHoveredTarget(model);
-        Collection<Long> hovered = this.canvas.getHovered(target, model);
-        for (Long id : hovered) {
-            DiagramObject item = context.getContent().getDiagramObject(id);
+        Collection<HoveredItem> hoveredItems = this.canvas.getHovered(target, model);
+        for (HoveredItem hovered : hoveredItems) {
+            DiagramObject item = context.getContent().getDiagramObject(hovered.getHoveredId());
 
             //TODO: The graph has to be pruned in the server side
             if (item == null || item.getIsFadeOut() != null) continue;

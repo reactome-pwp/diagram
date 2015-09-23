@@ -264,14 +264,14 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
      * renderer assigned. The most accurate and reliable way of finding out the hovered object by the mouse
      * pointer is using the renderer isHovered method.
      */
-    public Collection<Long> getHovered(Collection<DiagramObject> target, Coordinate model) {
-        List<Long> rtn = new LinkedList<>();
+    public Collection<HoveredItem> getHovered(Collection<DiagramObject> target, Coordinate model) {
+        List<HoveredItem> rtn = new LinkedList<>();
         for (DiagramObject item : target) {
             Renderer renderer = rendererManager.getRenderer(item);
             if (renderer != null) {
                 HoveredItem hovered = renderer.getHovered(item, model);
                 if (hovered != null) {
-                    rtn.add(hovered.getHovered());
+                    rtn.add(hovered);
                 }
             }
         }
