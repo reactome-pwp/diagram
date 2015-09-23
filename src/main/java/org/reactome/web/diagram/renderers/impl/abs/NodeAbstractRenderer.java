@@ -48,7 +48,14 @@ public abstract class NodeAbstractRenderer extends AbstractRenderer {
     public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
         if (isVisible(item)) {
             Node node = (Node) item;
-            if (node.isHovered(pos)) {
+
+            NodeProperties prop = node.getProp();
+            boolean nodeMainShapeHovered = (
+                    (pos.getX() >= prop.getX()) && (pos.getX() <= (prop.getX() + prop.getWidth()))) &&
+                    ((pos.getY() >= prop.getY()) && (pos.getY() <= (prop.getY() + prop.getHeight()))
+                    );
+
+            if (nodeMainShapeHovered) {
                 return new HoveredItem(node.getId());
             }
 

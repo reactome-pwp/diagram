@@ -2,10 +2,9 @@ package org.reactome.web.diagram.renderers.impl.abs;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import org.reactome.web.diagram.data.graph.model.GraphReactionLikeEvent;
-import org.reactome.web.diagram.data.layout.Coordinate;
-import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.data.layout.Edge;
-import org.reactome.web.diagram.data.layout.Shape;
+import org.reactome.web.diagram.data.layout.*;
+import org.reactome.web.diagram.data.layout.category.SegmentCategory;
+import org.reactome.web.diagram.data.layout.category.ShapeCategory;
 import org.reactome.web.diagram.data.layout.impl.ShapeFactory;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
@@ -58,12 +57,26 @@ public abstract class ReactionAbstractRenderer extends EdgeAbstractRenderer {
         if(isVisible(item)) {
             try {
                 Edge edge = (Edge) item;
-                if (edge.isHovered(pos)) {
-                    return new HoveredItem(edge.getId());
+                Shape shape = edge.getReactionShape();
+                if(shape!=null){
+                    if(ShapeCategory.isHovered(shape, pos)){
+                        return new HoveredItem(edge.getId());
+                    }
                 }
-            }catch (ClassCastException e){
-                return null;
-            }
+
+                shape = edge.getEndShape();
+                if(shape!=null){
+                    if(ShapeCategory.isHovered(shape, pos)){
+                        return new HoveredItem(edge.getId());
+                    }
+                }
+
+                for (Segment segment : edge.getSegments()) {
+                    if (SegmentCategory.isInSegment(segment, pos)) {
+                        return new HoveredItem(edge.getId());
+                    }
+                }
+            }catch (ClassCastException e){ /* Nothing here */ }
         }
         return null;
     }

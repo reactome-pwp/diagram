@@ -10,6 +10,7 @@ import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.Renderer;
 import org.reactome.web.diagram.renderers.RendererManager;
+import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.util.AdvancedContext2d;
@@ -23,6 +24,11 @@ public abstract class AbstractRenderer implements Renderer {
 
     @Override
     public Double getExpressionHovered(DiagramObject item, Coordinate pos, int t) {
+        return null;
+    }
+
+    @Override
+    public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
         return null;
     }
 

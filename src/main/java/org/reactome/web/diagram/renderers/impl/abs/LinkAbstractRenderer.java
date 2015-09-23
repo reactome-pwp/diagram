@@ -7,7 +7,6 @@ import org.reactome.web.diagram.data.layout.Segment;
 import org.reactome.web.diagram.data.layout.impl.SegmentFactory;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
-import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
@@ -35,11 +34,6 @@ public abstract class LinkAbstractRenderer extends EdgeAbstractRenderer {
             ctx.stroke();
         }
         ShapeAbstractRenderer.draw(ctx, link.getEndShape(), factor, offset);
-    }
-
-    @Override
-    public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
-        return null;
     }
 
     @Override

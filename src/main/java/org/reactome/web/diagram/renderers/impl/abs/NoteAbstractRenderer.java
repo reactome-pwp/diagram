@@ -8,7 +8,6 @@ import org.reactome.web.diagram.data.layout.NodeProperties;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
-import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
@@ -42,11 +41,6 @@ public abstract class NoteAbstractRenderer extends AbstractRenderer {
     @Override
     public void highlight(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
 
-    }
-
-    @Override
-    public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
-        return null;
     }
 
     @Override

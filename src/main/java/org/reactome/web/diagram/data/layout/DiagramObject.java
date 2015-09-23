@@ -8,7 +8,7 @@ import uk.ac.ebi.pwp.structures.quadtree.client.QuadTreeBox;
  */
 public interface DiagramObject extends QuadTreeBox {
 
-    Long getId(); //unique per diagram id 643809
+    Long getId(); //unique per diagram
 
     Long getReactomeId();
 
@@ -27,11 +27,5 @@ public interface DiagramObject extends QuadTreeBox {
     <T extends GraphObject> T getGraphObject();
 
     void setGraphObject(GraphObject obj);
-
-    void setSchemaClass(String schemaClass);
-
-    //The implementation of this is done in DiagramObjectCategory
-    //(http://www.gwtproject.org/doc/latest/DevGuideAutoBeans.html#categories)
-    boolean isHovered(Coordinate coordinate);
 
 }

@@ -3,6 +3,9 @@ package org.reactome.web.diagram.renderers.impl.s100;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.NodeAttachment;
+import org.reactome.web.diagram.data.layout.category.ShapeCategory;
+import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.impl.abs.ProteinAbstractRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
@@ -23,6 +26,19 @@ public class ProteinRenderer100 extends ProteinAbstractRenderer {
     public void highlight(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         super.highlight(ctx, item, factor, offset);
         drawAttachments(ctx, (Node) item, factor, offset, false);
+    }
+
+    @Override
+    public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
+        Node node = (Node) item;
+        if(node.getNodeAttachments()!=null) {
+            for (NodeAttachment attachment : node.getNodeAttachments()) {
+                if (ShapeCategory.isHovered(attachment.getShape(), pos)) {
+                    return new HoveredItem(node.getId(), attachment);
+                }
+            }
+        }
+        return super.getHovered(item, pos);
     }
 
     @Override

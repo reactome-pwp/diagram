@@ -5,7 +5,6 @@ import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Link;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
-import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
 /**
@@ -19,11 +18,6 @@ public class InteractionAbstractRenderer extends EdgeAbstractRenderer{
         Link link = (Link) item;
         drawSegments(ctx, link.getSegments(), factor, offset);
         ShapeAbstractRenderer.draw(ctx, link.getEndShape(), factor, offset);
-    }
-
-    @Override
-    public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
-        return null;
     }
 
     @Override

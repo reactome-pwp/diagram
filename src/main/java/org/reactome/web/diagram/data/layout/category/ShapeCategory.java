@@ -12,17 +12,19 @@ public abstract class ShapeCategory {
 
     public static boolean isHovered(Shape shape, Coordinate coordinate){
         String type = shape.getType();
-        if (type.equals("ARROW")) {
-            return pointInTriangle(coordinate, shape.getA(), shape.getB(), shape.getC());
-        } else if (type.equals("BOX")) {
-            return pointInBox(coordinate, shape.getA(), shape.getB());
-        } else if (type.equals("CIRCLE") || type.equals("DOUBLE_CIRCLE")) {
-            return pointInCircle(coordinate, shape.getC(), shape.getR());
-        } else if (type.equals("STOP")) {
-            Segment segment = SegmentFactory.get(shape.getA(), shape.getB());
-            return SegmentCategory.isInSegment(segment, coordinate);
-        } else {
-            throw new RuntimeException("Do not know shape " + type);
+        switch (type) {
+            case "ARROW":
+                return pointInTriangle(coordinate, shape.getA(), shape.getB(), shape.getC());
+            case "BOX":
+                return pointInBox(coordinate, shape.getA(), shape.getB());
+            case "CIRCLE":
+            case "DOUBLE_CIRCLE":
+                return pointInCircle(coordinate, shape.getC(), shape.getR());
+            case "STOP":
+                Segment segment = SegmentFactory.get(shape.getA(), shape.getB());
+                return SegmentCategory.isInSegment(segment, coordinate);
+            default:
+                throw new RuntimeException("Do not know shape " + type);
         }
     }
 
