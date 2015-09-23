@@ -740,7 +740,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         Collection<DiagramObject> target = this.context.getHoveredTarget(model);
         Collection<HoveredItem> hoveredItems = this.canvas.getHovered(target, model);
         for (HoveredItem hovered : hoveredItems) {
-            DiagramObject item = context.getContent().getDiagramObject(hovered.getHoveredId());
+            DiagramObject item = context.getContent().getDiagramObject(hovered.getDiagramId());
 
             //TODO: The graph has to be pruned in the server side
             if (item == null || item.getIsFadeOut() != null) continue;

@@ -18,32 +18,32 @@ package org.reactome.web.diagram.renderers.common;
  */
 public class HoveredItem {
 
-    private Long hovered;
+    private Long diagramId;
     private Double expression;
     private SummaryItem summaryItem;
 
-    public HoveredItem(Long hovered) {
-        this.hovered = hovered;
+    public HoveredItem(Long diagramId) {
+        this.diagramId = diagramId;
     }
 
-    public HoveredItem(Long hovered, Double expression) {
-        this.hovered = hovered;
+    public HoveredItem(Long diagramId, Double expression) {
+        this.diagramId = diagramId;
         this.expression = expression;
     }
 
-    public HoveredItem(Long hovered, SummaryItem summaryItem) {
-        this.hovered = hovered;
+    public HoveredItem(Long diagramId, SummaryItem summaryItem) {
+        this.diagramId = diagramId;
         this.summaryItem = summaryItem;
     }
 
-    public HoveredItem(Long hovered, Double expression, SummaryItem summaryItem) {
-        this.hovered = hovered;
+    public HoveredItem(Long diagramId, Double expression, SummaryItem summaryItem) {
+        this.diagramId = diagramId;
         this.expression = expression;
         this.summaryItem = summaryItem;
     }
 
-    public Long getHovered() {
-        return hovered;
+    public Long getDiagramId() {
+        return diagramId;
     }
 
     public Double getExpression() {
