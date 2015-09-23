@@ -51,4 +51,6 @@ public interface DiagramViewer extends IsWidget, HasHandlers, RequiresResize {
 
     void setAnalysisToken(String token, String resource);
 
+    void setVisible(boolean visible);
+
 }

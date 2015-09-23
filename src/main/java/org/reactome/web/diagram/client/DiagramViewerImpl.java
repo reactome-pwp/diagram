@@ -720,6 +720,19 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.loadAnalysis(analysisStatus);
     }
 
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if(visible) onResize();
+        if (context != null) {
+            if (visible) {
+                context.restoreDialogs();
+            } else {
+                context.hideDialogs();
+            }
+        }
+    }
+
     protected void setMouseDownPosition(Element element, MouseEvent event) {
         this.mouseDown = CoordinateFactory.get(event.getRelativeX(element), event.getRelativeY(element));
     }
