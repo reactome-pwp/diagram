@@ -30,7 +30,7 @@ public interface DiagramObject extends QuadTreeBox {
 
     void setSchemaClass(String schemaClass);
 
-    //The implementation of this is done in RawObjectCategory
+    //The implementation of this is done in DiagramObjectCategory
     //(http://www.gwtproject.org/doc/latest/DevGuideAutoBeans.html#categories)
     boolean isHovered(Coordinate coordinate);
 
