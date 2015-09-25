@@ -73,9 +73,10 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private AdvancedContext2d halo;
 
     private AdvancedContext2d reactionsHighlight;
-    private AdvancedContext2d reactionsSelection;
     private AdvancedContext2d entitiesHighlight;
+
     private AdvancedContext2d reactions;
+    private AdvancedContext2d reactionsSelection;
     private AdvancedContext2d reactionDecorators;
 
     private AdvancedContext2d entities;
@@ -485,24 +486,23 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.reactionDecorators.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
 
         DiagramProfileProperties profileProperties = DiagramColours.get().PROFILE.getProperties();
-        double aux = factor * 5;
 
         this.flag.setLineWidth(factor * 10);
         this.flag.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getFlag());
 
-        this.halo.setLineWidth(aux);
+        this.halo.setLineWidth(factor * 5);
         this.halo.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getHalo());
 
-        this.reactionsSelection.setLineWidth(aux);
+        this.reactionsSelection.setLineWidth(factor * 3);
         this.reactionsSelection.setStrokeStyle(profileProperties.getSelection());
 
-        this.entitiesHighlight.setLineWidth(factor * 9);
+        this.entitiesHighlight.setLineWidth(factor * 8);
         this.entitiesHighlight.setStrokeStyle(profileProperties.getHighlight());
 
         this.entitiesSelection.setLineWidth(factor * 3);
         this.entitiesSelection.setStrokeStyle(profileProperties.getSelection());
 
-        this.reactionsHighlight.setLineWidth(aux);
+        this.reactionsHighlight.setLineWidth(factor * 7);
         this.reactionsHighlight.setStrokeStyle(profileProperties.getHighlight());
     }
 
@@ -520,10 +520,10 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.halo = createCanvas(width, height);
 
         this.reactionsHighlight = createCanvas(width, height);
-        this.reactionsSelection = createCanvas(width, height);
         this.entitiesHighlight = createCanvas(width, height);
 
         this.reactions = createCanvas(width, height);
+        this.reactionsSelection = createCanvas(width, height);
         this.reactionDecorators = createCanvas(width, height);
 
         this.entities = createCanvas(width, height);

@@ -23,38 +23,35 @@ public abstract class ConnectorAbstractRenderer implements ConnectorRenderer {
                 ctx.save();
                 ctx.setFillStyle(PROFILE.getReaction().getLighterFill());
                 ctx.setStrokeStyle(PROFILE.getReaction().getLighterStroke());
-                drawSegments(ctx, connector, factor, offset);
+                drawConnector(ctx, connector, factor, offset);
                 ctx.restore();
 
                 decorator.save();
                 decorator.setFillStyle(PROFILE.getReaction().getLighterFill());
                 decorator.setStrokeStyle(PROFILE.getReaction().getLighterStroke());
-                ShapeAbstractRenderer.draw(decorator, connector.getEndShape(), factor, offset);
                 drawStoichiometry(decorator, connector.getStoichiometry(), factor, offset);
                 decorator.restore();
             }else if(connector.getIsDisease()!=null){
                 ctx.save();
                 ctx.setFillStyle(PROFILE.getProperties().getDisease());
                 ctx.setStrokeStyle(PROFILE.getProperties().getDisease());
-                drawSegments(ctx, connector, factor, offset);
+                drawConnector(ctx, connector, factor, offset);
                 ctx.restore();
 
                 decorator.save();
                 decorator.setFillStyle(PROFILE.getProperties().getDisease());
                 decorator.setStrokeStyle(PROFILE.getProperties().getDisease());
-                ShapeAbstractRenderer.draw(decorator, connector.getEndShape(), factor, offset);
                 drawStoichiometry(decorator, connector.getStoichiometry(), factor, offset);
                 decorator.restore();
             }else{
-                drawSegments(ctx, connector, factor, offset);
-                ShapeAbstractRenderer.draw(decorator, connector.getEndShape(), factor, offset);
+                drawConnector(ctx, connector, factor, offset);
                 drawStoichiometry(decorator, connector.getStoichiometry(), factor, offset);
             }
         }
 
     }
 
-    private void drawSegments(AdvancedContext2d ctx, Connector connector, Double factor, Coordinate offset){
+    private void drawConnector(AdvancedContext2d ctx, Connector connector, Double factor, Coordinate offset){
         ctx.beginPath();
         for (Segment segment : connector.getSegments()) {
             segment = SegmentFactory.transform(segment, factor, offset);
@@ -62,6 +59,7 @@ public abstract class ConnectorAbstractRenderer implements ConnectorRenderer {
             ctx.lineTo(segment.getTo().getX(), segment.getTo().getY());
         }
         ctx.stroke();
+        ShapeAbstractRenderer.draw(ctx, connector.getEndShape(), factor, offset);
     }
 
     private void drawStoichiometry(AdvancedContext2d ctx, Stoichiometry stoichiometry, Double factor, Coordinate offset) {
