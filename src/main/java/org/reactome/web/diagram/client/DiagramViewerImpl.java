@@ -67,7 +67,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     private int viewportWidth = 0;
     private int viewportHeight = 0;
 
-    private GraphObject hovered = null;
+    private HoveredItem hovered = null;
     private GraphObject selected = null;
     private Set<DiagramObject> halo = new HashSet<>();
     private Set<DiagramObject> flagged = new HashSet<>();
@@ -142,29 +142,29 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         }
         if (force || !mouseCurrent.equals(mousePrevious)) {
             if (this.context != null) {
-                DiagramObject item = this.getHovered(mouseCurrent);
+                HoveredItem hovered = this.getHovered(mouseCurrent);
+                DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
                 this.canvas.setCursor(item == null ? Style.Cursor.DEFAULT : Style.Cursor.POINTER);
-                this.highlight(item);
+                this.highlight(hovered);
                 this.mousePrevious = this.mouseCurrent;
             }
         }
     }
 
     private void draw() {
-        List<DiagramObject> selected = this.selected != null ? this.selected.getDiagramObjects() : new LinkedList<DiagramObject>();
-        List<DiagramObject> hovered = this.hovered != null ? this.hovered.getDiagramObjects() : new LinkedList<DiagramObject>();
-        if (this.context == null) return;
+        if (context == null)  return;
         long start = System.currentTimeMillis();
+        List<DiagramObject> selected = this.selected != null ? this.selected.getDiagramObjects() : new LinkedList<DiagramObject>();
         canvas.clear();
-        Collection<DiagramObject> items = this.context.getVisibleElements(viewportWidth, viewportHeight);
-        canvas.render(items, this.context);
-        canvas.select(selected, this.context);
-        canvas.highlight(hovered, this.context);
-        canvas.halo(this.halo, this.context);
-        canvas.flag(this.flagged, this.context);
+        Collection<DiagramObject> items = context.getVisibleElements(viewportWidth, viewportHeight);
+        canvas.render(items, context);
+        canvas.select(selected, context);
+        canvas.highlight(hovered, context);
+        canvas.halo(halo, context);
+        canvas.flag(flagged, context);
         Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
         long time = System.currentTimeMillis() - start;
-        this.eventBus.fireEventFromSource(new DiagramRenderedEvent(this.context.getContent(), visibleArea, items.size(), time), this);
+        this.eventBus.fireEventFromSource(new DiagramRenderedEvent(context.getContent(), visibleArea, items.size(), time), this);
     }
 
     @Override
@@ -253,18 +253,30 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         } catch (Exception e) {/*Nothing here*/}
     }
 
-    private void highlight(DiagramObject item) {
-        GraphObject hovered = item != null && item.getIsFadeOut() == null ? item.getGraphObject() : null;
+    private void highlight(HoveredItem hovered) {
         if (Objects.equals(this.hovered, hovered)) return;
+        DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
+        GraphObject graphObject = item != null && item.getIsFadeOut() == null ? item.getGraphObject() : null;
+        canvas.highlight(hovered, context);
+
+        //Even though at the level of HoveredItem they are different, we only notify if the hovered diagram
+        //object is actually different, sw we do not take into account attachments or entities summary.
+        DiagramObject prev = this.hovered != null ? this.hovered.getHoveredObject() : null;
         this.hovered = hovered;
-        GraphObjectHoveredEvent event = new GraphObjectHoveredEvent(hovered, item);
-        this.eventBus.fireEventFromSource(event, this);
-        fireEvent(event); //needs outside notification
+        if(!Objects.equals(prev, item)) {
+            //we don't rely on the listener of the following event because finer grain of the hovering is lost
+            GraphObjectHoveredEvent event = new GraphObjectHoveredEvent(graphObject, item);
+            this.eventBus.fireEventFromSource(event, this);
+            fireEvent(event); //needs outside notification
+        }
     }
 
     private void highlight(GraphObject graphObject) {
-        if (Objects.equals(this.hovered, graphObject)) return;
-        this.hovered = graphObject;
+        HoveredItem hovered = new HoveredItem(graphObject);
+        if (Objects.equals(this.hovered, hovered)) return;
+        this.hovered = hovered;
+        canvas.highlight(hovered, context);
+        //we don't rely on the listener of the following event because finer grain of the hovering is lost
         GraphObjectHoveredEvent event = new GraphObjectHoveredEvent(graphObject);
         this.eventBus.fireEventFromSource(event, this);
     }
@@ -336,7 +348,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         event.preventDefault();
         event.stopPropagation();
         if (!this.diagramMoved) {
-            DiagramObject item = this.getHovered(this.mouseCurrent);
+            HoveredItem hovered = this.getHovered(mouseCurrent);
+            DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
             GraphObject toSel = item != null ? item.getGraphObject() : null;
             this.setSelection(toSel, false, true);
         }
@@ -345,7 +358,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onDoubleClick(DoubleClickEvent event) {
-        DiagramObject item = this.getHovered(this.mouseCurrent);
+        HoveredItem hovered = this.getHovered(mouseCurrent);
+        DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
         GraphObject toOpen = item != null ? item.getGraphObject() : null;
         if (toOpen instanceof GraphPathway) {
             this.load(toOpen.getDbId().toString());
@@ -360,7 +374,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         int button = event.getNativeEvent().getButton();
         switch (button) {
             case NativeEvent.BUTTON_RIGHT:
-                DiagramObject item = this.getHovered(this.mouseCurrent);
+                HoveredItem hovered = this.getHovered(mouseCurrent);
+                DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
                 GraphObject toSel = item != null ? item.getGraphObject() : null;
                 this.setSelection(toSel, false, true);
                 this.context.showDialog(this.eventBus, item, this.canvas);
@@ -423,7 +438,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     public void onTouchEnd(TouchEndEvent event) {
         if (!this.diagramMoved) {
             //Do NOT use this.mouseCurrent in the next line
-            DiagramObject item = this.getHovered(this.mouseDown);
+            HoveredItem hovered = this.getHovered(mouseDown);
+            DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
             GraphObject toSel = item != null ? item.getGraphObject() : null;
             this.setSelection(toSel, false, true);
         }
@@ -528,9 +544,13 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
+        //In order to have fine grain hovering capabilities, this class is not taking actions for onGraphObjectHovered
+        //when it is fired by its own, so we ONLY want to do the STANDARD action (highlight) when the event comes from
+        //the outside. That is the reason of the next line of code
+        if(event.getSource().equals(this)) return;
         if (context != null) {
-            //this.hovered = event.getHoveredObjects(); Don't do it here. Hovering can now fired from the outside
-            canvas.highlight(event.getHoveredObjects(), this.context);
+            //this.hovered = new HoveredItem(event.getHoveredObjects()); // Don't do it here. Hovering can also be fired from the outside
+            canvas.highlight(new HoveredItem(event.getGraphObject()), this.context);
         }
     }
 
@@ -679,9 +699,10 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void resetHighlight() {
-        if (this.hovered != null) {
-            this.hovered = null;
-            this.eventBus.fireEventFromSource(new GraphObjectHoveredEvent(), this);
+        if (hovered != null) {
+            hovered = null;
+            canvas.highlight(null, context);
+            eventBus.fireEventFromSource(new GraphObjectHoveredEvent(), this);
         }
     }
 
@@ -748,19 +769,20 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         return CoordinateFactory.get(x, y);
     }
 
-    private DiagramObject getHovered(Coordinate mouse) {
+    private HoveredItem getHovered(Coordinate mouse) {
         Coordinate model = context.getDiagramStatus().getModelCoordinate(mouse);
         Collection<DiagramObject> target = this.context.getHoveredTarget(model);
         Collection<HoveredItem> hoveredItems = this.canvas.getHovered(target, model);
         for (HoveredItem hovered : hoveredItems) {
             DiagramObject item = context.getContent().getDiagramObject(hovered.getDiagramId());
+            hovered.setDiagramObject(item); //VERY IMPORTANT! Here we have access to the content and can transform diagramId to diagramObject
 
             //TODO: The graph has to be pruned in the server side
             if (item == null || item.getIsFadeOut() != null) continue;
 
             if (item.getGraphObject() instanceof GraphPhysicalEntity || item.getGraphObject() instanceof GraphEvent) {
                 this.notifyHoveredExpression(item, model);
-                return item;
+                return hovered;
             }
         }
         this.notifyHoveredExpression(null, model);

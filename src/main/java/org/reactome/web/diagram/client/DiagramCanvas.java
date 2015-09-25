@@ -16,10 +16,7 @@ import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
-import org.reactome.web.diagram.data.layout.Coordinate;
-import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.data.layout.Edge;
-import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
 import org.reactome.web.diagram.events.ExpressionValueHoveredEvent;
 import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
@@ -44,6 +41,7 @@ import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.helper.ItemsDistribution;
 import org.reactome.web.diagram.renderers.helper.RenderType;
+import org.reactome.web.diagram.renderers.impl.abs.AttachmentAbstractRenderer;
 import org.reactome.web.diagram.thumbnail.DiagramThumbnail;
 import org.reactome.web.diagram.tooltips.TooltipContainer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
@@ -81,6 +79,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private AdvancedContext2d reactionDecorators;
 
     private AdvancedContext2d entities;
+    private AdvancedContext2d entitiesDecorators;
     private AdvancedContext2d text;
     private AdvancedContext2d overlay;
     private AdvancedContext2d entitiesSelection;
@@ -155,19 +154,25 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         }
     }
 
-    public void highlight(List<DiagramObject> items, DiagramContext context) {
-        DiagramStatus status = context.getDiagramStatus();
+    public void highlight(HoveredItem hoveredItem, DiagramContext context) {
         cleanCanvas(this.entitiesHighlight);
         cleanCanvas(this.reactionsHighlight);
-        for (DiagramObject item : items) {
+        cleanCanvas(this.entitiesDecorators);
+        if(hoveredItem==null) return;
+        DiagramStatus status = context.getDiagramStatus();
+        for (DiagramObject item : hoveredItem.getDiagramObjects()) {
             if (item.getIsFadeOut() != null) continue;
             Renderer renderer = rendererManager.getRenderer(item);
             if (renderer == null) return;
             if (item instanceof Node) {
-                renderer.highlight(this.entitiesHighlight, item, status.getFactor(), status.getOffset());
+                renderer.highlight(entitiesHighlight, item, status.getFactor(), status.getOffset());
             } else if (item instanceof Edge) {
-                renderer.highlight(this.reactionsHighlight, item, status.getFactor(), status.getOffset());
+                renderer.highlight(reactionsHighlight, item, status.getFactor(), status.getOffset());
             }
+        }
+        NodeAttachment attachment = hoveredItem.getAttachment();
+        if(attachment!=null){
+            AttachmentAbstractRenderer.drawAttachment(entitiesDecorators, attachment, status.getFactor(), status.getOffset(), true);
         }
     }
 
@@ -522,6 +527,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.reactionDecorators = createCanvas(width, height);
 
         this.entities = createCanvas(width, height);
+        this.entitiesDecorators = createCanvas(width, height);
         this.text = createCanvas(width, height);
         this.overlay = createCanvas(width, height);
         this.entitiesSelection = createCanvas(width, height);

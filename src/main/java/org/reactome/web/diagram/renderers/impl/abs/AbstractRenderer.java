@@ -1,18 +1,14 @@
 package org.reactome.web.diagram.renderers.impl.abs;
 
-import com.google.gwt.canvas.dom.client.Context2d;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.impl.SegmentFactory;
-import org.reactome.web.diagram.data.layout.impl.ShapeFactory;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
-import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.Renderer;
 import org.reactome.web.diagram.renderers.RendererManager;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.OverlayContext;
-import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
 import java.util.List;
@@ -47,46 +43,6 @@ public abstract class AbstractRenderer implements Renderer {
         }
         ctx.setFillStyle(AnalysisColours.get().expressionGradient.getColor(value, min, max));
         draw(ctx, item, factor, offset); //By default the normal draw method is called
-    }
-
-    public void drawAttachments(AdvancedContext2d ctx, Node node, Double factor, Coordinate offset, boolean fill){
-        List<NodeAttachment> atList = node.getNodeAttachments();
-        if(atList!=null){
-            for (NodeAttachment nodeAttachment : atList) {
-                Shape s = ShapeFactory.transform(nodeAttachment.getShape(), factor, offset);
-                ctx.beginPath();
-                ctx.rect(
-                        s.getA().getX(),
-                        s.getA().getY(),
-                        s.getB().getX()-s.getA().getX(),
-                        s.getB().getY()-s.getA().getY()
-                );
-                ctx.stroke();
-                if (fill) {
-                    ctx.fill();
-                } else {
-                    ctx.clearRect(
-                            s.getA().getX(),
-                            s.getA().getY(),
-                            s.getB().getX() - s.getA().getX(),
-                            s.getB().getY() - s.getA().getY()
-                    );
-                }
-
-                if(nodeAttachment.getLabel()!=null) {
-                    //TODO move this to a higher level and set it once OR use the TextRenderer to draw it
-                    // for setting the text of the attachment
-                    ctx.save();
-                    ctx.setTextAlign(Context2d.TextAlign.CENTER);
-                    ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
-                    ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
-                    ctx.setFillStyle(DiagramColours.get().PROFILE.getAttachment().getText());
-                    Coordinate c = s.getB().minus(s.getA()).divide(2).add(s.getA());
-                    ctx.fillText(nodeAttachment.getLabel(), c.getX(), c.getY());
-                    ctx.restore();
-                }
-            }
-        }
     }
 
     public void drawSegments(AdvancedContext2d ctx, List<Segment> segments, Double factor, Coordinate offset) {

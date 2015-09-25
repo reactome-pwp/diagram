@@ -1,6 +1,11 @@
 package org.reactome.web.diagram.renderers.common;
 
+import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.NodeAttachment;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Some items draw part of other items (e.g. nodes can also render some connectors that belong to the edges).
@@ -21,8 +26,14 @@ import org.reactome.web.diagram.data.layout.NodeAttachment;
 public class HoveredItem {
 
     private Long diagramId;
+    private DiagramObject diagramObject;
+    private GraphObject graphObject;
     private NodeAttachment attachment;
     private SummaryItem summaryItem;
+
+    public HoveredItem(GraphObject graphObject) {
+        this.graphObject = graphObject;
+    }
 
     public HoveredItem(Long diagramId) {
         this.diagramId = diagramId;
@@ -42,12 +53,51 @@ public class HoveredItem {
         return diagramId;
     }
 
+    public List<DiagramObject> getDiagramObjects(){
+        if(graphObject!=null){
+            return graphObject.getDiagramObjects();
+        }
+        if(diagramObject!=null){
+            return diagramObject.getGraphObject().getDiagramObjects();
+        }
+        return new LinkedList<>();
+    }
+
+    public DiagramObject getHoveredObject() {
+        return diagramObject;
+    }
+
     public NodeAttachment getAttachment() {
         return attachment;
     }
 
     public SummaryItem getSummaryItem() {
         return summaryItem;
+    }
+
+    public void setDiagramObject(DiagramObject diagramObject) {
+        this.diagramId = diagramObject.getId();
+        this.diagramObject = diagramObject;
+        this.graphObject = this.diagramObject.getGraphObject();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        HoveredItem that = (HoveredItem) o;
+
+        if (graphObject != null ? !graphObject.equals(that.graphObject) : that.graphObject != null) return false;
+        //noinspection SimplifiableIfStatement
+        if (attachment != null ? !attachment.equals(that.attachment) : that.attachment != null) return false;
+        return summaryItem == that.summaryItem;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return graphObject != null ? graphObject.hashCode() : 0;
     }
 
     @Override

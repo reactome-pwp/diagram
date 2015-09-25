@@ -1,15 +1,14 @@
 package org.reactome.web.diagram.renderers.impl.abs;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import org.reactome.web.diagram.data.layout.Coordinate;
-import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.data.layout.Node;
-import org.reactome.web.diagram.data.layout.NodeProperties;
+import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.util.AdvancedContext2d;
+
+import java.util.List;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -92,5 +91,14 @@ public abstract class ProteinAbstractRenderer extends NodeAbstractRenderer {
         ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
         ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
         type.setTextProfile(ctx, DiagramColours.get().PROFILE.getProtein());
+    }
+
+    protected void drawAttachments(AdvancedContext2d ctx, Node node, Double factor, Coordinate offset, boolean fill){
+        List<NodeAttachment> atList = node.getNodeAttachments();
+        if(atList!=null){
+            for (NodeAttachment nodeAttachment : atList) {
+                AttachmentAbstractRenderer.drawAttachment(ctx, nodeAttachment, factor, offset, fill);
+            }
+        }
     }
 }
