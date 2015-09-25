@@ -487,6 +487,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         DiagramProfileProperties profileProperties = DiagramColours.get().PROFILE.getProperties();
 
+        this.entitiesDecorators.setGlobalAlpha(0.5);
+        this.entitiesDecorators.setFillStyle(profileProperties.getHighlight());
+
         this.flag.setLineWidth(factor * 10);
         this.flag.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getFlag());
 
