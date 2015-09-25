@@ -10,7 +10,7 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
 /**
  * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
  */
-public class InteractionAbstractRenderer extends EdgeAbstractRenderer{
+public abstract class InteractionAbstractRenderer extends EdgeAbstractRenderer{
     @Override
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         if (!isVisible(item)) return;

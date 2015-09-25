@@ -4,10 +4,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.client.DiagramFactory;
@@ -81,6 +78,12 @@ public class WidgetTest implements EntryPoint {
             @Override
             public void onMouseOver(MouseOverEvent event) {
                 diagram.highlightItem(stId);
+            }
+        });
+        button.addMouseOutHandler(new MouseOutHandler() {
+            @Override
+            public void onMouseOut(MouseOutEvent event) {
+                diagram.resetHighlight();
             }
         });
         button.setTitle(title);
