@@ -9,7 +9,7 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
  */
 public interface ConnectorRenderer {
 
-    void draw(AdvancedContext2d ctx, AdvancedContext2d decorator, Node node, Double factor, Coordinate offset);
+    void draw(AdvancedContext2d ctx, AdvancedContext2d fadeout, AdvancedContext2d decorator, Node node, Double factor, Coordinate offset);
 
     boolean stoichiometryVisible();
 

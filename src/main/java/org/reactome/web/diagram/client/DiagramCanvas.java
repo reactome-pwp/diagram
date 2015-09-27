@@ -42,6 +42,7 @@ import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.helper.ItemsDistribution;
 import org.reactome.web.diagram.renderers.helper.RenderType;
 import org.reactome.web.diagram.renderers.impl.abs.AttachmentAbstractRenderer;
+import org.reactome.web.diagram.renderers.impl.abs.ShapeAbstractRenderer;
 import org.reactome.web.diagram.thumbnail.DiagramThumbnail;
 import org.reactome.web.diagram.tooltips.TooltipContainer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
@@ -174,6 +175,10 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         NodeAttachment attachment = hoveredItem.getAttachment();
         if(attachment!=null){
             AttachmentAbstractRenderer.drawAttachment(entitiesDecorators, attachment, status.getFactor(), status.getOffset(), true);
+        }
+        SummaryItem summaryItem = hoveredItem.getSummaryItem();
+        if(summaryItem!=null){
+            ShapeAbstractRenderer.draw(entitiesDecorators, summaryItem.getShape(), status.getFactor(), status.getOffset());
         }
     }
 
@@ -426,7 +431,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             renderer.drawText(this.text, item, factor, offset);
             if (item instanceof Node) {
                 Node node = (Node) item;
-                connectorRenderer.draw(this.reactions, this.reactionDecorators, node, factor, offset);
+                connectorRenderer.draw(this.reactions, this.fadeOut, this.reactionDecorators, node, factor, offset);
             }
         }
     }
@@ -438,7 +443,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             renderer.draw(this.fadeOut, item, factor, offset);
             if (item instanceof Node) {
                 Node node = (Node) item;
-                connectorRenderer.draw(this.fadeOut, this.fadeOut, node, factor, offset);
+                connectorRenderer.draw(this.fadeOut, this.fadeOut, this.reactionDecorators, node, factor, offset);
             }
         }
         renderer.setTextProperties(this.fadeOut, ColourProfileType.FADE_OUT);
@@ -456,7 +461,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             renderer.drawText(this.text, item, factor, offset);
             if (item instanceof Node) {
                 Node node = (Node) item;
-                connectorRenderer.draw(this.reactions, this.reactionDecorators, node, factor, offset);
+                connectorRenderer.draw(this.reactions, this.fadeOut, this.reactionDecorators, node, factor, offset);
             }
         }
     }
@@ -469,7 +474,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             renderer.drawText(this.text, item, factor, offset);
             if (item instanceof Node) {
                 Node node = (Node) item;
-                connectorRenderer.draw(this.reactions, this.reactionDecorators, node, factor, offset);
+                connectorRenderer.draw(this.reactions, this.fadeOut, this.reactionDecorators, node, factor, offset);
             }
         }
     }

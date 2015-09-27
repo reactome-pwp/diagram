@@ -1,8 +1,10 @@
 package org.reactome.web.diagram.renderers.impl.abs;
 
+import com.google.gwt.canvas.dom.client.Context2d;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Shape;
 import org.reactome.web.diagram.data.layout.impl.ShapeFactory;
+import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
 /**
@@ -16,6 +18,7 @@ public abstract class ShapeAbstractRenderer {
         if (shape == null) return;
         shape = ShapeFactory.transform(shape, factor, offset);
         String type = shape.getType();
+        double x=0, y=0;
         switch (type) {
             case "ARROW":
                 ctx.beginPath();
@@ -27,6 +30,8 @@ public abstract class ShapeAbstractRenderer {
                 fill(ctx, shape.getEmpty());
                 break;
             case "BOX":
+                x = shape.getA().getX() + (shape.getB().getX() - shape.getA().getX())/ 2.0;
+                y = shape.getA().getY() + (shape.getB().getY() - shape.getA().getY())/ 2.0;
                 ctx.beginPath();
                 ctx.rect(
                         shape.getA().getX(),
@@ -38,6 +43,7 @@ public abstract class ShapeAbstractRenderer {
                 fill(ctx, shape.getEmpty());
                 break;
             case "CIRCLE":
+                x = shape.getC().getX(); y = shape.getC().getY();
                 ctx.beginPath();
                 ctx.arc(
                         shape.getC().getX(),
@@ -50,6 +56,7 @@ public abstract class ShapeAbstractRenderer {
                 fill(ctx, shape.getEmpty());
                 break;
             case "DOUBLE_CIRCLE":
+                x = shape.getC().getX(); y = shape.getC().getY();
                 ctx.beginPath();
                 ctx.arc(
                         shape.getC().getX(),
@@ -78,6 +85,16 @@ public abstract class ShapeAbstractRenderer {
                 break;
             default:
                 throw new RuntimeException("Do not know shape " + type);
+        }
+
+        if(shape.getS()!=null){
+            ctx.save();
+            ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
+            ctx.setTextAlign(Context2d.TextAlign.CENTER);
+            ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
+            ctx.setFillStyle(ctx.getStrokeStyle());
+            ctx.fillText(shape.getS(),x, y);
+            ctx.restore();
         }
     }
 

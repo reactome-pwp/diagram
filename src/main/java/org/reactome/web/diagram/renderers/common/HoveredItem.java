@@ -3,6 +3,7 @@ package org.reactome.web.diagram.renderers.common;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.NodeAttachment;
+import org.reactome.web.diagram.data.layout.SummaryItem;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -63,6 +64,10 @@ public class HoveredItem {
         return new LinkedList<>();
     }
 
+    public GraphObject getGraphObject() {
+        return graphObject;
+    }
+
     public DiagramObject getHoveredObject() {
         return diagramObject;
     }
@@ -105,7 +110,7 @@ public class HoveredItem {
         return "HoveredItem{" +
                 "diagramId=" + diagramId +
                 (attachment == null ? "" :  ", attachment=" + attachment.getReactomeId()) +
-                (summaryItem == null ? "" : ", summaryItem=" + summaryItem) +
+                (summaryItem == null ? "" : ", summaryItem=" + summaryItem.getType()) +
                 '}';
     }
 }

@@ -112,5 +112,14 @@ public abstract class NodeAbstractRenderer extends AbstractRenderer {
         }
     }
 
+    protected void drawSummaryItems(AdvancedContext2d ctx, NodeCommon node, Double factor, Coordinate offset){
+        List<SummaryItem> list = node.getSummaryItems();
+        if(list!=null){
+            for (SummaryItem summaryItem : list) {
+                ShapeAbstractRenderer.draw(ctx, summaryItem.getShape(), factor, offset);
+            }
+        }
+    }
+
     public abstract void shape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed);
 }

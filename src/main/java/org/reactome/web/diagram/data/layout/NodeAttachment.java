@@ -9,13 +9,7 @@ public interface NodeAttachment {
 
     String getDescription();
 
-    @Deprecated
-    Long getTrackId();
-
     Long getReactomeId();
-
-    @Deprecated
-    String getRenderableClass();
 
     Shape getShape();
 

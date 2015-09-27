@@ -15,16 +15,17 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
  */
 public abstract class ConnectorAbstractRenderer implements ConnectorRenderer {
 
-    public void draw(AdvancedContext2d ctx, AdvancedContext2d decorator, Node node, Double factor, Coordinate offset) {
+    @Override
+    public void draw(AdvancedContext2d ctx,AdvancedContext2d fadeout, AdvancedContext2d decorator, Node node, Double factor, Coordinate offset) {
         if(!RendererManager.get().getRenderer(node).isVisible(node)) return;
         DiagramProfile PROFILE = DiagramColours.get().PROFILE;
         for (Connector connector : node.getConnectors()) {
             if(connector.getIsFadeOut()!=null) {
-                ctx.save();
-                ctx.setFillStyle(PROFILE.getReaction().getLighterFill());
-                ctx.setStrokeStyle(PROFILE.getReaction().getLighterStroke());
-                drawConnector(ctx, connector, factor, offset);
-                ctx.restore();
+                fadeout.save();
+                fadeout.setFillStyle(PROFILE.getReaction().getLighterFill());
+                fadeout.setStrokeStyle(PROFILE.getReaction().getLighterStroke());
+                drawConnector(fadeout, connector, factor, offset);
+                fadeout.restore();
 
                 decorator.save();
                 decorator.setFillStyle(PROFILE.getReaction().getLighterFill());

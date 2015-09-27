@@ -19,6 +19,7 @@ public abstract class DiagramObjectsFactory {
     interface ModelAutoBeanFactory extends AutoBeanFactory {
         AutoBean<Coordinate> position();
         AutoBean<Color> colorRGB();
+        AutoBean<SummaryItem> summaryItem();
         AutoBean<NodeAttachment> nodeAttachment();
         AutoBean<Identifier> mainId();
 

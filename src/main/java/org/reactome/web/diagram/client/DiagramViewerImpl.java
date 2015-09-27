@@ -259,6 +259,15 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         GraphObject graphObject = item != null && item.getIsFadeOut() == null ? item.getGraphObject() : null;
         canvas.highlight(hovered, context);
 
+        if (hovered != null) {
+            if (hovered.getAttachment() != null) {
+                this.eventBus.fireEventFromSource(new EntityDecoratorHoveredEvent(item, hovered.getAttachment()), this);
+            }
+            if (hovered.getSummaryItem() != null) {
+                this.eventBus.fireEventFromSource(new EntityDecoratorHoveredEvent(item, hovered.getSummaryItem()), this);
+            }
+        }
+
         //Even though at the level of HoveredItem they are different, we only notify if the hovered diagram
         //object is actually different, sw we do not take into account attachments or entities summary.
         DiagramObject prev = this.hovered != null ? this.hovered.getHoveredObject() : null;
@@ -348,10 +357,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         event.preventDefault();
         event.stopPropagation();
         if (!this.diagramMoved) {
-            HoveredItem hovered = this.getHovered(mouseCurrent);
-            DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
-            GraphObject toSel = item != null ? item.getGraphObject() : null;
-            this.setSelection(toSel, false, true);
+            this.setSelection(this.getHovered(mouseCurrent), false, true);
         }
         this.diagramMoved = false;
     }
@@ -376,8 +382,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
             case NativeEvent.BUTTON_RIGHT:
                 HoveredItem hovered = this.getHovered(mouseCurrent);
                 DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
-                GraphObject toSel = item != null ? item.getGraphObject() : null;
-                this.setSelection(toSel, false, true);
+                this.setSelection(hovered, false, true);
                 this.context.showDialog(this.eventBus, item, this.canvas);
                 break;
             default:
@@ -438,10 +443,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     public void onTouchEnd(TouchEndEvent event) {
         if (!this.diagramMoved) {
             //Do NOT use this.mouseCurrent in the next line
-            HoveredItem hovered = this.getHovered(mouseDown);
-            DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
-            GraphObject toSel = item != null ? item.getGraphObject() : null;
-            this.setSelection(toSel, false, true);
+            this.setSelection(this.getHovered(mouseDown), false, true);
         }
         this.mouseDown = null;
         this.diagramMoved = false;
@@ -720,7 +722,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     public void selectItem(String stableIdentifier) {
         try {
             GraphObject item = this.context.getContent().getDatabaseObject(stableIdentifier);
-            this.setSelection(item, true, false);
+            this.setSelection(new HoveredItem(item), true, false);
         } catch (Exception e) {
             this.resetSelection();
         }
@@ -730,7 +732,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     public void selectItem(Long dbIdentifier) {
         try {
             GraphObject item = this.context.getContent().getDatabaseObject(dbIdentifier);
-            this.setSelection(item, true, false);
+            this.setSelection(new HoveredItem(item), true, false);
         } catch (Exception e) {
             this.resetSelection();
         }
@@ -830,7 +832,16 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.context.restoreDialogs();
     }
 
-    private void setSelection(GraphObject toSelect, boolean zoom, boolean fireExternally) {
+    private void setSelection(HoveredItem hoveredItem, boolean zoom, boolean fireExternally) {
+        GraphObject toSelect = hoveredItem != null ? hoveredItem.getGraphObject() : null;
+        if(toSelect!=null){
+            if(hoveredItem.getAttachment()!=null){
+                this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getAttachment()), this);
+            }
+            if(hoveredItem.getSummaryItem()!=null){
+                this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getSummaryItem()), this);
+            }
+        }
         if (!Objects.equals(this.selected, toSelect)) {
             this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(toSelect, zoom, fireExternally), this);
         }
