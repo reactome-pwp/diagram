@@ -163,8 +163,10 @@ public class WidgetTest implements EntryPoint {
     private Widget getDemoTopPanel(){
         FlowPanel fp = new FlowPanel();
         fp.add(getLoadButton("R-HSA-1181150", ""));
-        fp.add(getLoadButton("R-HSA-71291", ""));
+        fp.add(getLoadButton("R-HSA-2990846", ""));
+        fp.add(getLoadButton("R-HSA-163841", ""));
         fp.add(getLoadButton("R-HSA-75153", ""));
+        fp.add(getLoadButton("R-HSA-71291", ""));
         fp.add(new InlineLabel(" "));
         fp.add(getLoadButton("R-HSA-162909", ""));
         fp.add(new InlineLabel(" "));
