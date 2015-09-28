@@ -250,17 +250,6 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
         @Source("../images/diagramKey.png")
         ImageResource diagramKey();
 
-        @Source("../images/close_clicked.png")
-        ImageResource closeClicked();
-
-        @Source("../images/close_disabled.png")
-        ImageResource closeDisabled();
-
-        @Source("../images/close_hovered.png")
-        ImageResource closeHovered();
-
-        @Source("../images/close_normal.png")
-        ImageResource closeNormal();
     }
 
     @CssResource.ImportedWithPrefix("diagram-DiagramKey")
