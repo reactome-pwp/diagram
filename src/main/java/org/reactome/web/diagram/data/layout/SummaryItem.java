@@ -8,4 +8,8 @@ public interface SummaryItem {
     String getType();
 
     Shape getShape();
+
+    Boolean getPressed();
+
+    void setPressed(boolean pressed);
 }
