@@ -4,17 +4,14 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.TextResource;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.*;
-import org.reactome.web.diagram.common.PwpButton;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Image;
+import org.reactome.web.diagram.controls.top.common.AbstractMenuDialog;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.factory.DiagramObjectException;
@@ -42,8 +39,8 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class DiagramKey extends DialogBox implements GraphObjectHoveredHandler, GraphObjectSelectedHandler,
-        DiagramRequestedHandler, DiagramProfileChangedHandler, ClickHandler {
+public class DiagramKey extends AbstractMenuDialog implements GraphObjectHoveredHandler, GraphObjectSelectedHandler,
+        DiagramRequestedHandler, DiagramProfileChangedHandler {
 
     private static final Double FACTOR = 0.82;
     private static final Coordinate OFFSET = CoordinateFactory.get(0, 0);
@@ -59,11 +56,9 @@ public class DiagramKey extends DialogBox implements GraphObjectHoveredHandler, 
     private List<Canvas> canvases = new LinkedList<>();
 
     public DiagramKey(EventBus eventBus) {
-        super(false, false);
+        super("Diagram key");
         this.eventBus = eventBus;
         this.initHandlers();
-
-        setTitlePanel();
 
         AbsolutePanel canvases = new AbsolutePanel();
         canvases.setStyleName(RESOURCES.getCSS().diagramCanvases());
@@ -71,12 +66,8 @@ public class DiagramKey extends DialogBox implements GraphObjectHoveredHandler, 
         this.items = this.createCanvas(canvases, 200, 315);
         this.selection = this.createCanvas(canvases, 200, 315);
 
-        FlowPanel container = new FlowPanel();
-        container.add(new PwpButton("Close", RESOURCES.getCSS().close(), this));
-        container.add(canvases);
-        container.add(new Image(RESOURCES.diagramKey()));
-        setWidget(container);
-        setStyleName(RESOURCES.getCSS().diagramKeyPanel());
+        add(canvases);
+        add(new Image(RESOURCES.diagramKey()));
 
         try {
             diagram = DiagramObjectsFactory.getModelObject(Diagram.class, RESOURCES.diagramkeyJson().getText());
@@ -107,7 +98,7 @@ public class DiagramKey extends DialogBox implements GraphObjectHoveredHandler, 
         }
         for (Edge edge : diagram.getEdges()) {
             Renderer renderer = RendererManager.get().getDiagramKeyRenderer(edge);
-            if (renderer != null){
+            if (renderer != null) {
                 renderer.setColourProperties(items, ColourProfileType.NORMAL);
                 renderer.draw(items, edge, FACTOR, OFFSET);
                 renderer.setTextProperties(items, ColourProfileType.NORMAL);
@@ -118,7 +109,7 @@ public class DiagramKey extends DialogBox implements GraphObjectHoveredHandler, 
         }
         for (Note note : diagram.getNotes()) {
             Renderer renderer = RendererManager.get().getDiagramKeyRenderer(note);
-            if (renderer != null){
+            if (renderer != null) {
                 renderer.setTextProperties(items, ColourProfileType.NORMAL);
                 renderer.drawText(items, note, FACTOR, OFFSET);
             } else {
@@ -158,11 +149,11 @@ public class DiagramKey extends DialogBox implements GraphObjectHoveredHandler, 
             }
         }
         for (Edge edge : diagram.getEdges()) {
-            if(edge.getRenderableClass().equals(renderableClass)){
+            if (edge.getRenderableClass().equals(renderableClass)) {
                 Renderer renderer = RendererManager.get().getDiagramKeyRenderer(edge);
                 if (renderer != null) {
                     ctx.save();
-                    ctx.setLineWidth(ctx.getLineWidth()/1.5);
+                    ctx.setLineWidth(ctx.getLineWidth() / 1.5);
                     renderer.draw(ctx, edge, FACTOR, OFFSET);
                     ctx.restore();
                     break;
@@ -179,16 +170,6 @@ public class DiagramKey extends DialogBox implements GraphObjectHoveredHandler, 
         this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
         this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
-    }
-
-    @Override
-    public void onClick(ClickEvent event) {
-        if(isShowing()){
-            hide();
-        }else {
-            center();
-            show();
-        }
     }
 
     @Override
@@ -228,7 +209,7 @@ public class DiagramKey extends DialogBox implements GraphObjectHoveredHandler, 
     @Override
     public void setVisible(boolean visible) {
         super.setVisible(visible);
-        if(visible) draw();
+        if (visible) draw();
     }
 
     private void cleanCanvas(Context2d ctx) {
@@ -251,17 +232,9 @@ public class DiagramKey extends DialogBox implements GraphObjectHoveredHandler, 
         return canvas.getContext2d().cast();
     }
 
-    private void setTitlePanel() {
-        Label title = new Label("Diagram key");
-        title.setStyleName(RESOURCES.getCSS().headerText());
-        SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(title.toString());
-        getCaption().setHTML(safeHtml);
-        getCaption().asWidget().setStyleName(RESOURCES.getCSS().header());
-    }
-
-
 
     public static Resources RESOURCES;
+
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
@@ -297,14 +270,6 @@ public class DiagramKey extends DialogBox implements GraphObjectHoveredHandler, 
          */
         String CSS = "org/reactome/web/diagram/controls/top/key/DiagramKey.css";
 
-        String diagramKeyPanel();
-
-        String header();
-
-        String headerText();
-
         String diagramCanvases();
-
-        String close();
     }
 }
