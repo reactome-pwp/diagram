@@ -19,6 +19,10 @@ public class ChemicalRenderer050 extends ChemicalAbstractRenderer {
         Node node = (Node) item;
         if(node.getTrivial()==null || !node.getTrivial()){
             super.draw(ctx, item, factor, offset);
+            ctx.save();
+            ctx.setGlobalAlpha((factor - 0.5) * 2);
+            drawSummaryItems(ctx, (Node) item, factor, offset);
+            ctx.restore();
         }else{
             ctx.save();
             ctx.setGlobalAlpha((factor - 0.5) * 2);

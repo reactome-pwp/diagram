@@ -15,7 +15,10 @@ public class ProteinRenderer050 extends ProteinAbstractRenderer {
     @Override
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         super.draw(ctx, item, factor, offset);
+        ctx.save();
+        ctx.setGlobalAlpha((factor - 0.5) * 2);
         drawSummaryItems(ctx, (Node) item, factor, offset);
+        ctx.restore();
     }
 
     @Override
