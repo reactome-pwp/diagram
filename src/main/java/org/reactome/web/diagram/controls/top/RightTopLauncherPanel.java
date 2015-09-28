@@ -9,10 +9,11 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.controls.top.illustrations.DiagramIllustrations;
 import org.reactome.web.diagram.controls.top.key.DiagramKey;
 import org.reactome.web.diagram.controls.top.menu.SettingsMenuPanel;
 import org.reactome.web.diagram.events.DiagramExportRequestedEvent;
-import org.reactome.web.diagram.util.Console;
+
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -20,6 +21,8 @@ import org.reactome.web.diagram.util.Console;
 public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
 
     private EventBus eventBus;
+
+    private DiagramIllustrations diagramIllustrations;
     private DiagramKey diagramKey;
     private SettingsMenuPanel settings;
 
@@ -32,6 +35,7 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
         this.setStyleName(RESOURCES.getCSS().launcherPanel());
 
         this.eventBus = eventBus;
+        this.diagramIllustrations = new DiagramIllustrations(eventBus);
         this.diagramKey = new DiagramKey(eventBus);
         this.settings = new SettingsMenuPanel(eventBus);
 
@@ -53,9 +57,9 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
     @Override
     public void onClick(ClickEvent event) {
         PwpButton btn = (PwpButton) event.getSource();
-        if(btn.equals(this.captureBtn)){
+        if (btn.equals(this.captureBtn)) {
             this.eventBus.fireEventFromSource(new DiagramExportRequestedEvent(), this);
-        }else if (btn.equals(this.diagramKeyBtn)) {
+        } else if (btn.equals(this.diagramKeyBtn)) {
             if (this.diagramKey.isShowing()) {
                 this.diagramKey.hide();
             } else {
@@ -63,8 +67,12 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
             }
         } else if (btn.equals(this.settingBtn)) {
             this.settings.showRelativeTo(btn);
-        } else if (btn.equals(this.illustrationsBtn)){
-            Console.log("And now we show the illustrations :P");
+        } else if (btn.equals(this.illustrationsBtn)) {
+            if (this.diagramIllustrations.isShowing()) {
+                this.diagramIllustrations.hide();
+            } else {
+                this.diagramIllustrations.showRelativeTo(btn);
+            }
         }
     }
 
