@@ -1,0 +1,60 @@
+.menuDialog {
+    background-color: white !important;
+    opacity: 0.85;
+    border: 2px solid rgba(88, 195, 229, 0.8);
+    border-radius: 16px;
+
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+
+    margin: 5px 0;
+}
+
+.header {
+    margin: 0 0 2px 4px;
+}
+
+.header:hover{
+    cursor: move !important;
+}
+
+.header:active:hover{
+    cursor: move !important;
+}
+
+.header button {
+    float: right;
+}
+
+.headerText {
+    float: left;
+    color: rgb(0, 90, 117);
+    font-weight: bolder;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    margin-left: 5px;
+    min-width: 150px;
+    max-width: 160px;
+}
+
+@sprite .close {
+    gwt-image:'closeNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: right;
+    position: absolute;
+    top: 2px;
+    right: 5px;
+}
+
+@sprite .close:hover {
+    gwt-image:'closeHovered';
+}
+
+@sprite .close:active:hover {
+    gwt-image: 'closeClicked';
+}
