@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.launcher.menu.submenu;
+package org.reactome.web.diagram.controls.top.menu.submenu;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -11,7 +11,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.Widget;
-import org.reactome.web.diagram.launcher.menu.SettingsMenuPanel;
+import org.reactome.web.diagram.controls.top.menu.SettingsMenuPanel;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -80,7 +80,7 @@ public abstract class SubMenuBar extends MenuBar {
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String CSS = "org/reactome/web/diagram/launcher/menu/submenu/SubMenuBar.css";
+        String CSS = "org/reactome/web/diagram/controls/top/menu/submenu/SubMenuBar.css";
 
         String subMenu();
     }

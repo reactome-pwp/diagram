@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.launcher;
+package org.reactome.web.diagram.controls.top;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -9,9 +9,10 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.controls.top.key.DiagramKey;
+import org.reactome.web.diagram.controls.top.menu.SettingsMenuPanel;
 import org.reactome.web.diagram.events.DiagramExportRequestedEvent;
-import org.reactome.web.diagram.launcher.key.DiagramKey;
-import org.reactome.web.diagram.launcher.menu.SettingsMenuPanel;
+import org.reactome.web.diagram.util.Console;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -22,6 +23,7 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
     private DiagramKey diagramKey;
     private SettingsMenuPanel settings;
 
+    private PwpButton illustrationsBtn;
     private PwpButton captureBtn;
     private PwpButton diagramKeyBtn;
     private PwpButton settingBtn;
@@ -32,6 +34,9 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
         this.eventBus = eventBus;
         this.diagramKey = new DiagramKey(eventBus);
         this.settings = new SettingsMenuPanel(eventBus);
+
+        this.illustrationsBtn = new PwpButton("Show illustrations", RESOURCES.getCSS().illustrations(), this);
+        this.add(illustrationsBtn);
 
         this.captureBtn = new PwpButton("Diagram export", RESOURCES.getCSS().camera(), this);
         this.add(this.captureBtn);
@@ -58,6 +63,8 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
             }
         } else if (btn.equals(this.settingBtn)) {
             this.settings.showRelativeTo(btn);
+        } else if (btn.equals(this.illustrationsBtn)){
+            Console.log("And now we show the illustrations :P");
         }
     }
 
@@ -73,50 +80,64 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
         ResourceCSS getCSS();
 
 
-        @Source("key/images/camera_clicked.png")
+        @Source("images/camera_clicked.png")
         ImageResource cameraClicked();
 
-        @Source("key/images/camera_disabled.png")
+        @Source("images/camera_disabled.png")
         ImageResource cameraDisabled();
 
-        @Source("key/images/camera_hovered.png")
+        @Source("images/camera_hovered.png")
         ImageResource cameraHovered();
 
-        @Source("key/images/camera_normal.png")
+        @Source("images/camera_normal.png")
         ImageResource cameraNormal();
-        
-        @Source("key/images/key_clicked.png")
+
+        @Source("images/illustrations_clicked.png")
+        ImageResource illustrationsClicked();
+
+        @Source("images/illustrations_disabled.png")
+        ImageResource illustrationsDisabled();
+
+        @Source("images/illustrations_hovered.png")
+        ImageResource illustrationsHovered();
+
+        @Source("images/illustrations_normal.png")
+        ImageResource illustrationsNormal();
+
+        @Source("images/key_clicked.png")
         ImageResource keyClicked();
 
-        @Source("key/images/key_disabled.png")
+        @Source("images/key_disabled.png")
         ImageResource keyDisabled();
 
-        @Source("key/images/key_hovered.png")
+        @Source("images/key_hovered.png")
         ImageResource keyHovered();
 
-        @Source("key/images/key_normal.png")
+        @Source("images/key_normal.png")
         ImageResource keyNormal();
 
-        @Source("menu/images/settings_clicked.png")
+        @Source("images/settings_clicked.png")
         ImageResource settingsClicked();
 
-        @Source("menu/images/settings_disabled.png")
+        @Source("images/settings_disabled.png")
         ImageResource settingsDisabled();
 
-        @Source("menu/images/settings_hovered.png")
+        @Source("images/settings_hovered.png")
         ImageResource settingsHovered();
 
-        @Source("menu/images/settings_normal.png")
+        @Source("images/settings_normal.png")
         ImageResource settingsNormal();
     }
 
     @CssResource.ImportedWithPrefix("diagram-LeftTopLauncher")
     public interface ResourceCSS extends CssResource {
-        String CSS = "org/reactome/web/diagram/launcher/RightTopLauncherPanel.css";
+        String CSS = "org/reactome/web/diagram/controls/top/RightTopLauncherPanel.css";
 
         String launcherPanel();
 
         String camera();
+
+        String illustrations();
 
         String key();
 

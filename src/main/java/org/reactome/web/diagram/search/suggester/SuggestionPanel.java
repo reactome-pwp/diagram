@@ -15,15 +15,14 @@ import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
+import org.reactome.web.diagram.controls.top.search.SearchPerformedEvent;
+import org.reactome.web.diagram.controls.top.search.SearchPerformedHandler;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
-import org.reactome.web.diagram.launcher.search.SearchPerformedEvent;
-import org.reactome.web.diagram.launcher.search.SearchPerformedHandler;
 import org.reactome.web.diagram.search.events.SuggestionSelectedEvent;
 import org.reactome.web.diagram.search.handlers.SuggestionSelectedHandler;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
 import org.reactome.web.diagram.search.searchbox.SearchBoxArrowKeysEvent;
 import org.reactome.web.diagram.search.searchbox.SearchBoxArrowKeysHandler;
-import org.reactome.web.diagram.util.Console;
 
 import java.util.List;
 

@@ -1,14 +1,14 @@
 package org.reactome.web.diagram.events;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.reactome.web.diagram.launcher.controls.ControlAction;
+import org.reactome.web.diagram.controls.navigation.ControlAction;
 import org.reactome.web.diagram.handlers.ControlActionHandler;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class ControlActionEvent extends GwtEvent<ControlActionHandler> {
-    public static Type<ControlActionHandler> TYPE = new Type<ControlActionHandler>();
+    public static Type<ControlActionHandler> TYPE = new Type<>();
 
     ControlAction action;
 

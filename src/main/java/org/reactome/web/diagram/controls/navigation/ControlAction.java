@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.launcher.controls;
+package org.reactome.web.diagram.controls.navigation;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>

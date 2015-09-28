@@ -7,8 +7,8 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
+import org.reactome.web.diagram.controls.top.search.SearchLauncher;
 import org.reactome.web.diagram.search.infopanel.SelectionInfoPanel;
-import org.reactome.web.diagram.launcher.search.SearchLauncher;
 import org.reactome.web.diagram.search.suggester.SuggestionPanel;
 
 /**

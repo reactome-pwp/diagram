@@ -1,11 +1,11 @@
-package org.reactome.web.diagram.launcher;
+package org.reactome.web.diagram.controls.top;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
-import org.reactome.web.diagram.launcher.controls.MainControlPanel;
+import org.reactome.web.diagram.controls.navigation.MainControlPanel;
 import org.reactome.web.diagram.search.SearchPanel;
 
 /**
@@ -37,7 +37,7 @@ public class LeftTopLauncherPanel extends FlowPanel {
 
     @CssResource.ImportedWithPrefix("diagram-LeftTopLauncher")
     public interface ResourceCSS extends CssResource {
-        String CSS = "org/reactome/web/diagram/launcher/LeftTopLauncherPanel.css";
+        String CSS = "org/reactome/web/diagram/controls/top/LeftTopLauncherPanel.css";
 
         String launcherPanel();
     }

@@ -13,10 +13,10 @@
     <source path="client"/>
     <source path="common"/>
     <source path="context"/>
+    <source path="controls"/>
     <source path="data"/>
     <source path="events"/>
     <source path="handlers"/>
-    <source path="launcher"/>
     <source path="legends"/>
     <source path="messages"/>
     <source path="profiles"/>

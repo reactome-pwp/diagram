@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.launcher.menu;
+package org.reactome.web.diagram.controls.top.menu;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
@@ -10,10 +10,10 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
+import org.reactome.web.diagram.controls.top.menu.submenu.AnalysisProfileMenuBar;
+import org.reactome.web.diagram.controls.top.menu.submenu.DiagramProfileMenuBar;
 import org.reactome.web.diagram.events.AnalysisProfileChangedEvent;
 import org.reactome.web.diagram.events.DiagramProfileChangedEvent;
-import org.reactome.web.diagram.launcher.menu.submenu.AnalysisProfileMenuBar;
-import org.reactome.web.diagram.launcher.menu.submenu.DiagramProfileMenuBar;
 import org.reactome.web.diagram.profiles.analysis.model.AnalysisProfile;
 import org.reactome.web.diagram.profiles.diagram.model.DiagramProfile;
 
@@ -93,7 +93,7 @@ public class SettingsMenuPanel extends AbsolutePanel implements DiagramProfileMe
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String CSS = "org/reactome/web/diagram/launcher/menu/MenuPanel.css";
+        String CSS = "org/reactome/web/diagram/controls/top/menu/MenuPanel.css";
 
         String menuPanel();
 

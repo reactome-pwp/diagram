@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.launcher.controls;
+package org.reactome.web.diagram.controls.navigation;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -94,7 +94,7 @@ public class MainControlPanel extends FlowPanel implements ClickHandler {
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String CSS = "org/reactome/web/diagram/launcher/controls/MainControlPanel.css";
+        String CSS = "org/reactome/web/diagram/controls/navigation/MainControlPanel.css";
 
         String mainControlPanel();
 

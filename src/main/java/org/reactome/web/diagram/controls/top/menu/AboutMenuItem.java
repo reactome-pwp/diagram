@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.launcher.menu;
+package org.reactome.web.diagram.controls.top.menu;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;

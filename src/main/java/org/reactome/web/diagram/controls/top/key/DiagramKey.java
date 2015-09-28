@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.launcher.key;
+package org.reactome.web.diagram.controls.top.key;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
@@ -274,19 +274,19 @@ public class DiagramKey extends DialogBox implements GraphObjectHoveredHandler, 
         @Source("data/diagramkey.json")
         TextResource diagramkeyJson();
 
-        @Source("images/diagramKey.png")
+        @Source("../images/diagramKey.png")
         ImageResource diagramKey();
 
-        @Source("images/close_clicked.png")
+        @Source("../images/close_clicked.png")
         ImageResource closeClicked();
 
-        @Source("images/close_disabled.png")
+        @Source("../images/close_disabled.png")
         ImageResource closeDisabled();
 
-        @Source("images/close_hovered.png")
+        @Source("../images/close_hovered.png")
         ImageResource closeHovered();
 
-        @Source("images/close_normal.png")
+        @Source("../images/close_normal.png")
         ImageResource closeNormal();
     }
 
@@ -295,7 +295,7 @@ public class DiagramKey extends DialogBox implements GraphObjectHoveredHandler, 
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String CSS = "org/reactome/web/diagram/launcher/key/DiagramKey.css";
+        String CSS = "org/reactome/web/diagram/controls/top/key/DiagramKey.css";
 
         String diagramKeyPanel();
 
