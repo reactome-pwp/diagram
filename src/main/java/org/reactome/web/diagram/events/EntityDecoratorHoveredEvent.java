@@ -16,6 +16,10 @@ public class EntityDecoratorHoveredEvent extends GwtEvent<EntityDecoratorHovered
     private NodeAttachment attachment;
     private SummaryItem summaryItem;
 
+    public EntityDecoratorHoveredEvent(DiagramObject diagramObject) {
+        this.diagramObject = diagramObject;
+    }
+
     public EntityDecoratorHoveredEvent(DiagramObject diagramObject, NodeAttachment attachment) {
         this.diagramObject = diagramObject;
         this.attachment = attachment;
@@ -52,7 +56,7 @@ public class EntityDecoratorHoveredEvent extends GwtEvent<EntityDecoratorHovered
     public String toString() {
         return "EntityDecoratorHoveredEvent{" +
                 "diagramObject=" + diagramObject +
-                (attachment != null ? ", attachment=" + attachment.getReactomeId() : "") +
+                (attachment != null ? ", attachment=" + attachment.getDescription() : "") +
                 (summaryItem != null ? ", summaryItem=" + summaryItem.getType() : "") +
                 '}';
     }
