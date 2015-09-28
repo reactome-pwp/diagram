@@ -30,7 +30,7 @@ public abstract class ConnectorAbstractRenderer implements ConnectorRenderer {
                 decorator.save();
                 decorator.setFillStyle(PROFILE.getReaction().getLighterFill());
                 decorator.setStrokeStyle(PROFILE.getReaction().getLighterStroke());
-                drawStoichiometry(decorator, connector.getStoichiometry(), factor, offset);
+                drawStoichiometry(fadeout, connector.getStoichiometry(), factor, offset);
                 decorator.restore();
             }else if(connector.getIsDisease()!=null){
                 ctx.save();
