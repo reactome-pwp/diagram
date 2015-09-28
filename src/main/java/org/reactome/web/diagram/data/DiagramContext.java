@@ -10,6 +10,7 @@ import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 import uk.ac.ebi.pwp.structures.quadtree.client.QuadTree;
@@ -21,8 +22,10 @@ import java.util.*;
  */
 public class DiagramContext {
     static final double ANALYSIS_MIN_PERCENTAGE = 0.03;
-    //The maximum number of elements for every QuadTree quadrant node
-    static final int NUMBER_OF_ELEMENTS = 25;
+
+    //The number of elements for every QuadTree quadrant node
+    static final int NUMBER_OF_ELEMENTS = 15;
+    static final int INC_STEP = 10;
 
     private DiagramContent content;
     private DiagramStatus diagramStatus;
@@ -34,17 +37,11 @@ public class DiagramContext {
     public DiagramContext(DiagramContent content) {
         this.content = content;
 
-        this.quadTree = new QuadTree<>(
-                content.minX,
-                content.minY,
-                content.maxX,
-                content.maxY,
-                NUMBER_OF_ELEMENTS
-        );
-
-        for (DiagramObject node : content.getDiagramObjects()) {
-            this.quadTree.add(node);
-        }
+        //It will create a QuadTree with the minimum elements per quadrant starting with
+        //NUMBER_OF_ELEMENTS and increasing by steps of INC_STEP (Even though it could
+        //penalise the loading time a little bit, this strategy improves the user experience
+        //for pathways with few overlap and does its best for the others
+        this.createQuadTree(content.getDiagramObjects(), NUMBER_OF_ELEMENTS, INC_STEP);
 
         //Status needs to be created every time we load a new content
         this.diagramStatus = new DiagramStatus();
@@ -155,5 +152,20 @@ public class DiagramContext {
                 "content=" + content +
                 ", status=" + diagramStatus +
                 '}';
+    }
+
+    private void createQuadTree(Collection<DiagramObject> diagramObjects, int elements, int step){
+        try {
+            this.quadTree = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, elements);
+
+            for (DiagramObject node :diagramObjects) {
+                this.quadTree.add(node);
+            }
+            if(elements > NUMBER_OF_ELEMENTS) {
+                Console.warn(this.content.getStableId() + " >> QuadTree created with quadrants of " + elements + " elements.");
+            }
+        }catch (RuntimeException e){
+            this.createQuadTree(diagramObjects, elements + step, step);
+        }
     }
 }
