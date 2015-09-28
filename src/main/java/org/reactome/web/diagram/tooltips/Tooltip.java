@@ -8,7 +8,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.reactome.web.diagram.data.layout.Coordinate;
-import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 
 /**
@@ -21,13 +20,16 @@ public class Tooltip extends PopupPanel {
         this.setStyleName(RESOURCES.getCSS().popup());
     }
 
-    public static Tooltip getTooltip(DiagramObject item) {
+    public static Tooltip getTooltip() {
         if (tooltip == null) {
             tooltip = new Tooltip();
         }
-        tooltip.clear();
-        tooltip.add(new InlineLabel(item != null ? item.getDisplayName() : ""));
         return tooltip;
+    }
+
+    public void setText(String text){
+        tooltip.clear();
+        tooltip.add(new InlineLabel(text != null ? text : ""));
     }
 
     public void hide() {
@@ -41,9 +43,7 @@ public class Tooltip extends PopupPanel {
     }
 
     private Coordinate findOptimalPosition(double offsetX, double offsetY, double distance){
-        Coordinate optPosition = CoordinateFactory.get(offsetX,offsetY + distance );
-
-        return optPosition;
+        return CoordinateFactory.get(offsetX,offsetY + distance );
     }
 
     public void setPositionAndShow(TooltipContainer container, double offsetX, double offsetY, double distance) {
@@ -77,13 +77,5 @@ public class Tooltip extends PopupPanel {
         String CSS = "org/reactome/web/diagram/tooltips/ToolTips.css";
 
         String popup();
-
-        String popupTopLeft();
-
-        String popupTopRight();
-
-        String popupBottomLeft();
-
-        String popupBottomRight();
     }
 }
