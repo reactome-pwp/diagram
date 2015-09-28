@@ -1,9 +1,11 @@
 package org.reactome.web.diagram.renderers.impl.abs;
 
+import com.google.gwt.canvas.dom.client.Context2d;
 import org.reactome.web.diagram.data.graph.model.GraphReactionLikeEvent;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.category.SegmentCategory;
 import org.reactome.web.diagram.data.layout.category.ShapeCategory;
+import org.reactome.web.diagram.data.layout.impl.ShapeFactory;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
@@ -18,10 +20,7 @@ public abstract class ReactionAbstractRenderer extends EdgeAbstractRenderer {
     @Override
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         if (!isVisible(item)) return;
-
-        Edge edge = (Edge) item;
-        strokeShape(ctx, edge, factor, offset);
-//        drawSymbol(ctx, edge, factor, offset);
+        strokeShape(ctx, (Edge) item, factor, offset);
     }
 
     @Override
@@ -33,22 +32,23 @@ public abstract class ReactionAbstractRenderer extends EdgeAbstractRenderer {
         drawSegments(ctx, edge.getSegments(), factor, offset);
         ShapeAbstractRenderer.draw(ctx, edge.getEndShape(), factor, offset);
         ShapeAbstractRenderer.draw(ctx, edge.getReactionShape(), factor, offset);
+        drawSymbol(ctx, edge, factor, offset);
     }
 
-//    public void drawSymbol(AdvancedContext2d ctx, Edge edge, Double factor, Coordinate offset){
-//        if(edge.getReactionShape().getS()!=null){
-//            Shape shape = ShapeFactory.transform(edge.getReactionShape(), factor, offset);
-//            double x = shape.getA().getX() + (shape.getB().getX() - shape.getA().getX())/ 2.0;
-//            double y = shape.getA().getY() + (shape.getB().getY() - shape.getA().getY())/ 2.0;
-//            ctx.save();
-//            ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
-//            ctx.setTextAlign(Context2d.TextAlign.CENTER);
-//            ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
-//            ctx.setFillStyle(ctx.getStrokeStyle());
-//            ctx.fillText(shape.getS(),x, y);
-//            ctx.restore();
-//        }
-//    }
+    protected void drawSymbol(AdvancedContext2d ctx, Edge edge, Double factor, Coordinate offset){
+        if(edge.getReactionShape().getS()!=null){
+            Shape shape = ShapeFactory.transform(edge.getReactionShape(), factor, offset);
+            double x = shape.getA().getX() + (shape.getB().getX() - shape.getA().getX())/ 2.0;
+            double y = shape.getA().getY() + (shape.getB().getY() - shape.getA().getY())/ 2.0;
+            ctx.save();
+            ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
+            ctx.setTextAlign(Context2d.TextAlign.CENTER);
+            ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
+            ctx.setFillStyle(ctx.getStrokeStyle());
+            ctx.fillText(shape.getS(),x, y);
+            ctx.restore();
+        }
+    }
 
     @Override
     public final HoveredItem getHovered(DiagramObject item, Coordinate pos) {
