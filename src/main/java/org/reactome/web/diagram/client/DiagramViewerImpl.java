@@ -229,6 +229,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void transform(Coordinate offset, double factor) {
+        //An animation can be working and a new pathway might be requested :(
+        if(this.context==null) return;
         DiagramStatus status = this.context.getDiagramStatus();
         status.setOffset(offset);
         status.setFactor(factor);
@@ -262,9 +264,10 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         if (hovered != null) {
             if (hovered.getAttachment() != null) {
                 this.eventBus.fireEventFromSource(new EntityDecoratorHoveredEvent(item, hovered.getAttachment()), this);
-            }
-            if (hovered.getSummaryItem() != null) {
+            } else if (hovered.getSummaryItem() != null) {
                 this.eventBus.fireEventFromSource(new EntityDecoratorHoveredEvent(item, hovered.getSummaryItem()), this);
+            } else {
+                this.eventBus.fireEventFromSource(new EntityDecoratorHoveredEvent(item), this);
             }
         }
 
@@ -839,6 +842,9 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
                 this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getAttachment()), this);
             }
             if(hoveredItem.getSummaryItem()!=null){
+                Boolean pressed = hovered.getSummaryItem().getPressed();
+                hovered.getSummaryItem().setPressed(pressed == null || !pressed);
+                forceDraw = true;
                 this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getSummaryItem()), this);
             }
         }
