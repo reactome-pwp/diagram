@@ -97,7 +97,7 @@ public abstract class ProteinAbstractRenderer extends NodeAbstractRenderer {
         List<NodeAttachment> atList = node.getNodeAttachments();
         if(atList!=null){
             for (NodeAttachment nodeAttachment : atList) {
-                AttachmentAbstractRenderer.drawAttachment(ctx, nodeAttachment, factor, offset, fill);
+                AttachmentAbstractRenderer.draw(ctx, nodeAttachment, factor, offset, fill);
             }
         }
     }

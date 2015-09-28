@@ -116,7 +116,7 @@ public abstract class NodeAbstractRenderer extends AbstractRenderer {
         List<SummaryItem> list = node.getSummaryItems();
         if(list!=null){
             for (SummaryItem summaryItem : list) {
-                ShapeAbstractRenderer.draw(ctx, summaryItem.getShape(), factor, offset);
+                SummaryItemAbstractRenderer.draw(ctx, summaryItem, factor, offset);
             }
         }
     }
