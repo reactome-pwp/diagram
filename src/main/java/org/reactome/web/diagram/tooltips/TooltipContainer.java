@@ -11,11 +11,13 @@ import org.reactome.web.diagram.data.layout.impl.ShapeFactory;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 
+import java.util.Objects;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class TooltipContainer extends AbsolutePanel implements DiagramRequestedHandler, DiagramLoadedHandler,
-        GraphObjectHoveredHandler, GraphObjectSelectedHandler,
+        GraphObjectHoveredHandler, EntityDecoratorHoveredHandler,
         DiagramZoomHandler, DiagramPanningHandler {
 
     private static final int DELAY = 500;
@@ -23,7 +25,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
 
     private EventBus eventBus;
     private DiagramContext context;
-    private DiagramObject hovered;
+    private Object hovered;
 
     private Timer hoveredTimer;
 
@@ -45,7 +47,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
 
     private void initHandlers() {
         this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
-        this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
+        this.eventBus.addHandler(EntityDecoratorHoveredEvent.TYPE, this);
         this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramPanningEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
@@ -61,26 +63,21 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     }
 
     @Override
-    public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
-        if (this.hoveredTimer.isRunning()) {
-            this.hoveredTimer.cancel();
-        }
-        this.hovered = event.getHoveredObject();
-        if (this.hovered == null) {
-            showTooltipExecute(); //this will quickly hide the tooltip ;)
+    public void onEntityDecoratorHovered(final EntityDecoratorHoveredEvent event) {
+        if (event.getAttachment() != null) {
+            setHovered(event.getAttachment());
+        } else if (event.getSummaryItem() != null) {
+            setHovered(event.getSummaryItem());
         } else {
-            this.hoveredTimer.schedule(DELAY);
+            setHovered(event.getDiagramObject());
         }
     }
 
     @Override
-    public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
-        Tooltip tooltip = Tooltip.getTooltip(hovered);
-        if (tooltip.isVisible()) {
-            if (this.hovered != null && !this.hovered.getGraphObject().equals(event.getGraphObject())) {
-                this.hovered = null;
-                tooltip.hide();
-            }
+    public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
+        boolean isDecorator = (hovered instanceof NodeAttachment || hovered instanceof SummaryItem);
+        if(!isDecorator || event.getHoveredObject()==null) {
+            setHovered(event.getHoveredObject());
         }
     }
 
@@ -91,7 +88,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
 
     @Override
     public void onDiagramPanningEvent(DiagramPanningEvent event) {
-        Tooltip tooltip = Tooltip.getTooltip(hovered);
+        Tooltip tooltip = Tooltip.getTooltip();
         if (tooltip.isVisible()) {
             tooltip.hide();
         }
@@ -117,6 +114,19 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
         this.height = height;
     }
 
+    private void setHovered(Object hovered){
+        if(Objects.equals(this.hovered, hovered)) return;
+        if (this.hoveredTimer.isRunning()) {
+            this.hoveredTimer.cancel();
+        }
+        this.hovered = hovered;
+        if (this.hovered == null) {
+            showTooltipExecute(); //this will quickly hide the tooltip ;)
+        } else {
+            this.hoveredTimer.schedule(DELAY);
+        }
+    }
+
     private void showTooltip() {
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
@@ -127,7 +137,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     }
 
     private void showTooltipExecute() {
-        Tooltip tooltip = Tooltip.getTooltip(hovered);
+        Tooltip tooltip = Tooltip.getTooltip();
         if (hovered == null || context == null) {
             tooltip.hide();
         } else {
@@ -139,10 +149,12 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
                     return;
                 }
                 Node node = (Node) hovered;
+                tooltip.setText(node.getDisplayName());
                 NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
                 tooltip.setPositionAndShow(this, prop.getX(), prop.getY(), prop.getHeight() + 8.0 * factor);
             } else if (hovered instanceof Edge) {
                 Edge edge = (Edge) hovered;
+                tooltip.setText(edge.getDisplayName());
                 Shape shape = ShapeFactory.transform(edge.getReactionShape(), factor, offset);
                 String type = shape.getType();
                 if (type.equals("BOX")) {
@@ -152,7 +164,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
                             shape.getA().getY(),
                             (shape.getB().getY() - shape.getA().getY()) + 8.0 * factor
                     );
-                }else if(type.equals("CIRCLE") || type.equals("DOUBLE_CIRCLE")){
+                } else if (type.equals("CIRCLE") || type.equals("DOUBLE_CIRCLE")) {
                     tooltip.setPositionAndShow(
                             this,
                             shape.getC().getX() - shape.getR(),
@@ -160,7 +172,32 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
                             shape.getR() + 8.0 * factor
                     );
                 }
-
+            } else if (hovered instanceof NodeAttachment){
+                NodeAttachment attachment = (NodeAttachment) hovered;
+                tooltip.setText(attachment.getDescription());
+                Shape shape = ShapeFactory.transform(attachment.getShape(), factor, offset);
+                String type = shape.getType();
+                if (type.equals("BOX")) {
+                    tooltip.setPositionAndShow(
+                            this,
+                            shape.getA().getX(),
+                            shape.getA().getY(),
+                            (shape.getB().getY() - shape.getA().getY()) + 4.0 * factor
+                    );
+                }
+            } else if (hovered instanceof SummaryItem){
+                SummaryItem summaryItem = (SummaryItem) hovered;
+                Shape shape = ShapeFactory.transform(summaryItem.getShape(), factor, offset);
+                tooltip.setText(shape.getS() + " interactions");
+                String type = shape.getType();
+                if (type.equals("CIRCLE")) {
+                    tooltip.setPositionAndShow(
+                            this,
+                            shape.getC().getX() - shape.getR(),
+                            shape.getC().getY(),
+                            shape.getR() + 8.0 * factor
+                    );
+                }
             } else {
                 tooltip.hide(); //just in case :)
             }
