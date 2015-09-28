@@ -16,11 +16,11 @@ import java.util.List;
  * We also have to take into account that there are inner elements in the drawn objects which we need to keep
  * track of. For example the "summary items" or "expression levels" in the nodes.
  *
- *   --------------[A]-[A]-------       [A] -> These are node attachments
- *   | [X]                  [X] |       [X] -> These are summary items
+ *  [X]-------------[A]-[A]----[X]       [A] -> These are node attachments
+ *   |                          |        [X] -> These are summary items
  *   |       display name       |
- *   | [X]                  [X] |
- *   ----------------------------
+ *   |                          |
+ *  [X]------------------------[X]
  *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
