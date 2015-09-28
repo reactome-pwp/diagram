@@ -14,7 +14,7 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
  */
 public abstract class AttachmentAbstractRenderer {
 
-    public static void drawAttachment(AdvancedContext2d ctx, NodeAttachment attachment, Double factor, Coordinate offset, boolean fill){
+    public static void draw(AdvancedContext2d ctx, NodeAttachment attachment, Double factor, Coordinate offset, boolean fill){
         Shape s = ShapeFactory.transform(attachment.getShape(), factor, offset);
         ctx.beginPath();
         ctx.rect(
