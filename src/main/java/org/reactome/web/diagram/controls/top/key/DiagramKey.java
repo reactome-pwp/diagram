@@ -11,20 +11,15 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
+import org.reactome.web.diagram.controls.navigation.ControlAction;
 import org.reactome.web.diagram.controls.top.common.AbstractMenuDialog;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.factory.DiagramObjectException;
 import org.reactome.web.diagram.data.layout.factory.DiagramObjectsFactory;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
-import org.reactome.web.diagram.events.DiagramProfileChangedEvent;
-import org.reactome.web.diagram.events.DiagramRequestedEvent;
-import org.reactome.web.diagram.events.GraphObjectHoveredEvent;
-import org.reactome.web.diagram.events.GraphObjectSelectedEvent;
-import org.reactome.web.diagram.handlers.DiagramProfileChangedHandler;
-import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
-import org.reactome.web.diagram.handlers.GraphObjectHoveredHandler;
-import org.reactome.web.diagram.handlers.GraphObjectSelectedHandler;
+import org.reactome.web.diagram.events.*;
+import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.Renderer;
 import org.reactome.web.diagram.renderers.RendererManager;
@@ -40,7 +35,7 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class DiagramKey extends AbstractMenuDialog implements GraphObjectHoveredHandler, GraphObjectSelectedHandler,
-        DiagramRequestedHandler, DiagramProfileChangedHandler {
+        DiagramRequestedHandler, DiagramProfileChangedHandler, ControlActionHandler {
 
     private static final Double FACTOR = 0.82;
     private static final Coordinate OFFSET = CoordinateFactory.get(0, 0);
@@ -170,6 +165,7 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
         this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
         this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(ControlActionEvent.TYPE, this);
     }
 
     @Override
@@ -194,6 +190,13 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
     @Override
     public void onDiagramRequested(DiagramRequestedEvent event) {
 
+    }
+
+    @Override
+    public void onControlAction(ControlActionEvent event) {
+        if(event.getAction().equals(ControlAction.FIREWORKS)) {
+            hide();
+        }
     }
 
     @Override
@@ -234,7 +237,6 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
 
 
     public static Resources RESOURCES;
-
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
