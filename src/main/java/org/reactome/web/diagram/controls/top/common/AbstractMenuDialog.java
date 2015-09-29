@@ -27,13 +27,20 @@ public abstract class AbstractMenuDialog extends DialogBox implements ClickHandl
         setTitlePanel(title);
 
         this.container = new FlowPanel();
-        this.container.add(new PwpButton("Close", RESOURCES.getCSS().close(), this));
+        clear();
+
         setWidget(this.container);
         setStyleName(RESOURCES.getCSS().menuDialog());
     }
 
     public void add(Widget w){
         container.add(w);
+    }
+
+    @Override
+    public void clear() {
+        this.container.clear();
+        this.container.add(new PwpButton("Close", RESOURCES.getCSS().close(), this));
     }
 
     @Override
