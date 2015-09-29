@@ -17,6 +17,7 @@ import org.reactome.web.diagram.data.graph.model.GraphSubpathway;
 import org.reactome.web.diagram.events.ControlActionEvent;
 import org.reactome.web.diagram.events.DiagramLoadedEvent;
 import org.reactome.web.diagram.events.GraphObjectSelectedEvent;
+import org.reactome.web.diagram.events.IllustrationSelectedEvent;
 import org.reactome.web.diagram.handlers.ControlActionHandler;
 import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
 import org.reactome.web.diagram.handlers.GraphObjectSelectedHandler;
@@ -128,7 +129,7 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
                 public void onClick(ClickEvent event) {
                     if (!event.isMetaKeyDown() && !event.isControlKeyDown()) event.preventDefault();
                     event.stopPropagation();
-                    Console.log(event.isMetaKeyDown() + " >> " + figure.getUrl());
+                    eventBus.fireEventFromSource(new IllustrationSelectedEvent(figure.getUrl()), DiagramIllustrations.this);
                 }
             });
             return anchor;
