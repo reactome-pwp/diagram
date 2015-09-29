@@ -34,6 +34,9 @@ import org.reactome.web.pwp.model.handlers.DatabaseObjectLoadedHandler;
  */
 public class DiagramIllustrations extends AbstractMenuDialog implements ControlActionHandler,
         DiagramLoadedHandler, GraphObjectSelectedHandler {
+
+    public static String SERVER = "http://www.reactome.org";
+
     private EventBus eventBus;
 
     private FlowPanel main = new FlowPanel();
@@ -93,7 +96,8 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
                             figure.load(new DatabaseObjectLoadedHandler() {
                                 @Override
                                 public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
-                                    panel.add(getIllustration(pathway, (Figure) databaseObject));
+                                    Figure figure = (Figure) databaseObject;
+                                    panel.add(getIllustration(pathway, SERVER + figure.getUrl()));
                                 }
 
                                 @Override
@@ -114,8 +118,8 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
         });
     }
 
-    private Widget getIllustration(Pathway pathway, final Figure figure) {
-        if (figure != null) {
+    private Widget getIllustration(Pathway pathway, final String url) {
+        if (url != null && !url.isEmpty()) {
             FlowPanel fp = new FlowPanel();
             fp.setStyleName(RESOURCES.getCSS().illustration());
             Image image = new Image(RESOURCES.illustration());
@@ -123,13 +127,14 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
             Label label = new Label(pathway.getDisplayName());
             label.setText(pathway.getDisplayName());
             fp.add(label);
-            Anchor anchor = new Anchor(SafeHtmlUtils.fromTrustedString(fp.toString()), figure.getUrl());
+            Anchor anchor = new Anchor(SafeHtmlUtils.fromTrustedString(fp.toString()), url);
             anchor.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
                     if (!event.isMetaKeyDown() && !event.isControlKeyDown()) event.preventDefault();
                     event.stopPropagation();
-                    eventBus.fireEventFromSource(new IllustrationSelectedEvent(figure.getUrl()), DiagramIllustrations.this);
+                    hide();
+                    eventBus.fireEventFromSource(new IllustrationSelectedEvent(url), DiagramIllustrations.this);
                 }
             });
             return anchor;
@@ -161,7 +166,6 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
 
 
     public static Resources RESOURCES;
-
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();

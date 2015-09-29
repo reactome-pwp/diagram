@@ -93,6 +93,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private DiagramThumbnail thumbnail;
     private List<Canvas> canvases = new LinkedList<>();
 
+    private IllustrationPanel illustration;
+
     private int column = 0;
     private Double hoveredExpression = null;
 
@@ -196,6 +198,14 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                 renderer.highlight(this.reactionsSelection, item, status.getFactor(), status.getOffset());
             }
         }
+    }
+
+    public void setIllustration(String url){
+        this.illustration.setUrl(url);
+    }
+
+    public void resetIllustration(){
+        this.illustration.reset();
     }
 
     public void setCursor(Style.Cursor cursor) {
@@ -571,6 +581,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         //Launcher panels
         this.add(new LeftTopLauncherPanel(eventBus));
         this.add(new RightTopLauncherPanel(eventBus));
+
+        //Illustration panel
+        this.add(this.illustration = new IllustrationPanel(), 0 , 0);
     }
 
     private AdvancedContext2d createCanvas(int width, int height) {

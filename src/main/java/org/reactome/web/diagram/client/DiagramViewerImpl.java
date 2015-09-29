@@ -46,7 +46,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, DiagramExportRequestedHandler,
-        DiagramObjectsFlagRequestHandler, DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler {
+        DiagramObjectsFlagRequestHandler, DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler,
+        IllustrationSelectedHandler {
 
     private static final double ZOOM_FACTOR = 0.025;
     private static final double ZOOM_DELTA = 0.25;
@@ -123,6 +124,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.eventBus.addHandler(DiagramExportRequestedEvent.TYPE, this);
 
         this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
+        this.eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
 
         this.eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         this.eventBus.addHandler(GraphLoadedEvent.TYPE, this);
@@ -298,8 +300,6 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         if (stId != null) {
             if (this.context == null || !stId.equals(this.context.getContent().getStableId())) {
                 this.load(stId); //Names are interchangeable because there are symlinks
-            } else {
-                this.eventBus.fireEventFromSource(new DiagramLoadedEvent(this.context), this);
             }
         }
     }
@@ -309,8 +309,6 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         if (dbId != null) {
             if (this.context == null || !dbId.equals(this.context.getContent().getDbId())) {
                 this.load("" + dbId); //Names are interchangeable because there are symlinks
-            } else {
-                this.eventBus.fireEventFromSource(new DiagramLoadedEvent(this.context), this);
             }
         }
     }
@@ -319,6 +317,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.resetSelection();
         this.resetHighlight();
         this.resetDialogs();
+        this.resetIllustration();
         this.eventBus.fireEventFromSource(new DiagramRequestedEvent(), this);
         DiagramContext context = this.contextMap.get(identifier);
         if (context == null) {
@@ -640,6 +639,11 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     @Override
+    public void onIllustrationSelected(IllustrationSelectedEvent event) {
+        this.canvas.setIllustration(event.getUrl());
+    }
+
+    @Override
     public void onLayoutLoaded(LayoutLoadedEvent event) {
         this.setContext(event.getContext());
         this.fitDiagram(false);
@@ -695,6 +699,10 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         if (this.context != null) {
             this.context.hideDialogs();
         }
+    }
+
+    public void resetIllustration(){
+        this.canvas.resetIllustration();
     }
 
     @Override

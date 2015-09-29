@@ -1,0 +1,52 @@
+.panelHidden {
+    animation-direction: reverse;
+    -webkit-transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
+    -moz-transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
+    -o-transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
+    transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
+
+    background-color: white;
+    width: 0;
+    height: 0;
+}
+
+.panelShown {
+    -webkit-transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
+    -moz-transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
+    -o-transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
+    transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
+
+    background-color: white;
+    width: 100%;
+    height: 100%;
+}
+
+.panelShown img {
+    width: 99%;
+    padding: 5px;
+    margin-bottom: 100px;
+}
+
+.container {
+    height: 100%;
+}
+
+@sprite .close {
+    gwt-image:'closeNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: right;
+    position: absolute;
+    top: 7px;
+    right: 10px;
+}
+
+@sprite .close:hover {
+    gwt-image:'closeHovered';
+}
+
+@sprite .close:active:hover {
+    gwt-image: 'closeClicked';
+}
