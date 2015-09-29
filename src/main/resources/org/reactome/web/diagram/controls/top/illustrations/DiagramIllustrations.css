@@ -1,0 +1,36 @@
+.illustrations {
+    width: 350px;
+    min-height: 50px;
+    padding: 0 0 5px 5px;
+}
+
+.illustration {
+    clear: both;
+    margin: 10px 0 5px 5px;
+}
+
+.illustration img {
+    float: left;
+    height: 24px;
+    width: 24px;
+}
+
+.illustration div {
+    float: left;
+    font-size: small;
+    margin: 5px 0 0 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 300px;
+}
+
+.error {
+    color: #ee665a;
+    font-size: small;
+    margin: 10px 0 0 5px;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 300px;
+}
