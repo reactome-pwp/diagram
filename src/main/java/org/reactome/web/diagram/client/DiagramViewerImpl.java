@@ -857,6 +857,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
             }
         }
         if (!Objects.equals(this.selected, toSelect)) {
+            this.resetIllustration();
             this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(toSelect, zoom, fireExternally), this);
         }
     }
