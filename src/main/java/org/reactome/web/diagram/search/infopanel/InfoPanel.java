@@ -5,9 +5,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.*;
-import org.reactome.web.diagram.data.graph.model.GraphObject;
-import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
-import org.reactome.web.diagram.data.graph.model.GraphReactionLikeEvent;
+import org.reactome.web.diagram.data.graph.model.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -93,12 +91,24 @@ public class InfoPanel extends Composite {
             GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
             Set<GraphPhysicalEntity> parentLocations = pe.getParentLocations();
             if (!parentLocations.isEmpty()) {
-                int size = parentLocations.size();
-                String title = "Part of " + size + " structure" + (size>1?"s:":":");
-                this.add(new DatabaseObjectListPanel(title, parentLocations, eventBus));
+                Set<GraphComplex> complexes = new HashSet<>();
+                Set<GraphEntitySet> sets = new HashSet<>();
+                for (GraphPhysicalEntity parentLocation : parentLocations) {
+                    participatesIn.addAll(parentLocation.participatesIn());
+                    if (parentLocation instanceof GraphComplex) complexes.add((GraphComplex) parentLocation);
+                    else if (parentLocation instanceof GraphEntitySet) sets.add((GraphEntitySet) parentLocation);
+                }
 
-                for (GraphPhysicalEntity aa : parentLocations) {
-                    participatesIn.addAll(aa.participatesIn());
+                if (!complexes.isEmpty()) {
+                    int size = complexes.size();
+                    String title = "Part of " + size + " complex" + (size > 1 ? "es:" : ":");
+                    this.add(new DatabaseObjectListPanel(title, complexes, eventBus));
+                }
+
+                if (!sets.isEmpty()) {
+                    int size = sets.size();
+                    String title = "Part of " + size + " set" + (size > 1 ? "s:" : ":");
+                    this.add(new DatabaseObjectListPanel(title, sets, eventBus));
                 }
             }
         }
