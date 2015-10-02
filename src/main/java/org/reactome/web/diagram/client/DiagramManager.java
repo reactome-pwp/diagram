@@ -26,4 +26,8 @@ class DiagramManager {
         Set<DiagramObject> toDisplay = item.getRelatedDiagramObjects();
         this.displayManager.display(toDisplay, true);
     }
+
+    public void displayDiagramObjects(Set<DiagramObject> items) {
+        this.displayManager.display(items, true);
+    }
 }
