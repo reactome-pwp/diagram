@@ -211,7 +211,6 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
 
 
     public static Resources RESOURCES;
-
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();

@@ -2,6 +2,7 @@ package org.reactome.web.diagram.renderers.impl.s100;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import org.reactome.web.diagram.data.graph.model.GraphEntitySet;
+import org.reactome.web.diagram.data.graph.model.Participant;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -15,10 +16,7 @@ import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.impl.abs.SetAbstractRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -29,29 +27,28 @@ public class SetRenderer100 extends SetAbstractRenderer {
         GraphEntitySet set = item.getGraphObject();
         NodeProperties prop = ((Node) item).getProp();
 
-        Map<String, Double> participants = set.getParticipantsExpression(t);
-        List<Double> expression = new LinkedList<>(participants.values());
-        if(expression.isEmpty()) return null;
+        List<Participant> participantsWithExpression = Participant.asSortedList(set.getParticipantsExpression(t));
+        if (participantsWithExpression.isEmpty()) return null;
 
-        Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
         Double delta = prop.getWidth() / set.getParticipants().size();
         double minX = prop.getX();
-        for (Double value : expression) {
+        for (Participant participant : participantsWithExpression) {
+            Double value = participant.getExpression();
             double maxX = minX + delta;
-            if(pos.getX()>minX && pos.getX()<=maxX) return value;
+            if (pos.getX() > minX && pos.getX() <= maxX) return value;
             minX = maxX;
         }
         return null;
     }
 
     @Override
-    public void drawEnrichment(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, Double factor, Coordinate offset){
+    public void drawEnrichment(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, Double factor, Coordinate offset) {
         GraphEntitySet set = item.getGraphObject();
         double percentage = set.getHitParticipants().size() / (double) set.getParticipants().size();
 
         ctx.save();
         setColourProperties(ctx, ColourProfileType.ANALYSIS);
-        if(item.getIsDisease()!=null) ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
+        if (item.getIsDisease() != null) ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
         super.draw(ctx, item, factor, offset);
         ctx.restore();
 
@@ -83,24 +80,22 @@ public class SetRenderer100 extends SetAbstractRenderer {
 
         ctx.save();
         setColourProperties(ctx, ColourProfileType.ANALYSIS);
-        if(item.getIsDisease()!=null) ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
+        if (item.getIsDisease() != null) ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
         super.draw(ctx, item, factor, offset);
         ctx.restore();
 
         GraphEntitySet set = item.getGraphObject();
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
-        Map<String, Double> participants = set.getParticipantsExpression(t);
-        List<Double> expression = new LinkedList<>(participants.values());
-        Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
         Double delta = prop.getWidth() / set.getParticipants().size();
-        double x =  prop.getX();
+        double x = prop.getX();
 
         AdvancedContext2d buffer = overlay.getBuffer();
         buffer.save();
         buffer.setLineWidth(ctx.getLineWidth());
         buffer.setStrokeStyle(ctx.getStrokeStyle());
         buffer.setFillStyle(ctx.getFillStyle());
-        for (Double value : expression) {
+        for (Participant participant : Participant.asSortedList(set.getParticipantsExpression(t))) {
+            Double value = participant.getExpression();
             buffer.setFillStyle(AnalysisColours.get().expressionGradient.getColor(value, min, max));
             buffer.fillRect(x, prop.getY(), delta, prop.getHeight());
             x += delta;
@@ -114,9 +109,9 @@ public class SetRenderer100 extends SetAbstractRenderer {
 
         setColourProperties(buffer, ColourProfileType.ANALYSIS);
         buffer.setLineWidth(ctx.getLineWidth());
-        if(node.getNeedDashedBorder()!=null){
+        if (node.getNeedDashedBorder() != null) {
             buffer.dashedRoundedRectangle(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight(), RendererProperties.ROUND_RECT_ARC_WIDTH, RendererProperties.DASHED_LINE_PATTERN);
-        }else {
+        } else {
             buffer.roundedRectangle(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight(), RendererProperties.ROUND_RECT_ARC_WIDTH);
         }
         buffer.stroke();

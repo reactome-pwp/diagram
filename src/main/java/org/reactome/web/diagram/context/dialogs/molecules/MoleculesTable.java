@@ -15,6 +15,8 @@ import com.google.gwt.view.client.ListDataProvider;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -32,7 +34,17 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
         addColumn(type, name);
         addExpressionColumns(expression, min, max, sel);
 
-        ListDataProvider<T> dataProvider = new ListDataProvider<>(molecules);
+        Collections.sort(molecules, GraphPhysicalEntity.getIdentifierComparator());
+        //We have to move all the molecules without expression at the very end
+        List<T> list = new LinkedList<>();
+        List<T> tailList = new LinkedList<>();
+        for (T molecule : molecules) {
+            if (molecule.getExpression() == null || molecule.getExpression().isEmpty()) tailList.add(molecule);
+            else list.add(molecule);
+        }
+        list.addAll(tailList);
+
+        ListDataProvider<T> dataProvider = new ListDataProvider<>(list);
         dataProvider.addDataDisplay(this);
     }
 
@@ -76,7 +88,7 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
         Column<T, String> columnTitle = new Column<T, String>(new TextCell()) {
             @Override
             public String getValue(T object) {
-                return object.getIdentifier()!=null && !object.getIdentifier().isEmpty() ? object.getIdentifier() : object.getStId();
+                return object.getIdentifier() != null && !object.getIdentifier().isEmpty() ? object.getIdentifier() : object.getStId();
             }
         };
         columnTitle.setSortable(true);

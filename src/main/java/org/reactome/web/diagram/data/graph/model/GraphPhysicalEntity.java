@@ -151,4 +151,13 @@ public abstract class GraphPhysicalEntity extends GraphObject {
         }
         return rtn;
     }
+
+    public static Comparator<GraphPhysicalEntity> getIdentifierComparator(){
+        return new Comparator<GraphPhysicalEntity>() {
+            @Override
+            public int compare(GraphPhysicalEntity o1, GraphPhysicalEntity o2) {
+                return o1.getIdentifier().compareTo(o2.getIdentifier());
+            }
+        };
+    }
 }

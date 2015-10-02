@@ -2,6 +2,7 @@ package org.reactome.web.diagram.renderers.impl.s100;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import org.reactome.web.diagram.data.graph.model.GraphComplex;
+import org.reactome.web.diagram.data.graph.model.Participant;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -15,10 +16,7 @@ import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.impl.abs.ComplexAbstractRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -29,16 +27,15 @@ public class ComplexRenderer100 extends ComplexAbstractRenderer {
         GraphComplex complex = item.getGraphObject();
         NodeProperties prop = ((Node) item).getProp();
 
-        Map<String, Double> participants = complex.getParticipantsExpression(t);
-        List<Double> expression = new LinkedList<>(participants.values());
-        if(expression.isEmpty()) return null;
+        List<Participant> participantsWithExpression = Participant.asSortedList(complex.getParticipantsExpression(t));
+        if (participantsWithExpression.isEmpty()) return null;
 
-        Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
         Double delta = prop.getWidth() / complex.getParticipants().size();
         double minX = prop.getX();
-        for (Double value : expression) {
+        for (Participant participant : participantsWithExpression) {
+            Double value = participant.getExpression();
             double maxX = minX + delta;
-            if(pos.getX()>minX && pos.getX()<=maxX) return value;
+            if (pos.getX() > minX && pos.getX() <= maxX) return value;
             minX = maxX;
         }
         return null;
@@ -54,7 +51,7 @@ public class ComplexRenderer100 extends ComplexAbstractRenderer {
 
         ctx.save();
         setColourProperties(ctx, ColourProfileType.ANALYSIS);
-        if(item.getIsDisease()!=null) ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
+        if (item.getIsDisease() != null) ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
         shape(ctx, prop, node.getNeedDashedBorder());
         ctx.fill();
         ctx.stroke();
@@ -84,21 +81,19 @@ public class ComplexRenderer100 extends ComplexAbstractRenderer {
 
         ctx.save();
         setColourProperties(ctx, ColourProfileType.ANALYSIS);
-        if(item.getIsDisease()!=null) ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
+        if (item.getIsDisease() != null) ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
         shape(ctx, prop, node.getNeedDashedBorder());
         ctx.fill();
         ctx.stroke();
         ctx.restore();
 
-        Map<String, Double> participants = complex.getParticipantsExpression(t);
-        List<Double> expression = new LinkedList<>(participants.values());
-        Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
         Double delta = prop.getWidth() / complex.getParticipants().size();
         double x = prop.getX();
 
         AdvancedContext2d buffer = overlay.getBuffer();
         buffer.save();
-        for (Double value : expression) {
+        for (Participant participant : Participant.asSortedList(complex.getParticipantsExpression(t))) {
+            double value = participant.getExpression();
             buffer.setFillStyle(AnalysisColours.get().expressionGradient.getColor(value, min, max));
             buffer.fillRect(x, prop.getY(), delta, prop.getHeight());
             x += delta;
