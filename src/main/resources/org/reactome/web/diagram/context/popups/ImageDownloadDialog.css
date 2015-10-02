@@ -112,9 +112,31 @@
 }
 
 .infoLabel {
-    max-width:590px;
+    float: left;
+    width:300px;
     color: white;
     font-weight: bolder;
-    font-size: medium;
+    font-size: smaller;
     margin-top: 5px;
+}
+
+.genomespace {
+    background-color: #45b0d8;
+    border: none;
+    border-radius: 15px;
+    color: white;
+    float:right;
+    font-size: large;
+    margin-top: 6px;
+    padding: 6px;
+}
+
+.genomespace:hover {
+    background-color: #177dc0;
+    cursor: pointer !important;
+}
+
+.genomespace:active:hover {
+    background-color: #07558b;
+    cursor: pointer !important;
 }
