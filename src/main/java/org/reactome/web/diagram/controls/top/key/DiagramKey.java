@@ -121,7 +121,11 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
 
     private DiagramObject getDiagramObject(GraphObject graphObject) {
         if (graphObject != null) {
-            return graphObject.getDiagramObjects().get(0);
+            try {
+                return graphObject.getDiagramObjects().get(0);
+            }catch (IndexOutOfBoundsException e){
+                return null;
+            }
         }
         return null;
     }
