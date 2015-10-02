@@ -113,6 +113,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Label("Protein"));
         fp.add(getSelectionButton("R-HSA-1181114", "NODAL(27-347) [extracellular region]"));
         fp.add(getSelectionButton("R-HSA-1225914", "FOXH1 [nucleoplasm]"));
+        fp.add(getSelectionButton("R-HSA-1181326", "LEFTY1"));
 
         fp.add(new Label("--"));
         fp.add(new Label("Chemical"));
