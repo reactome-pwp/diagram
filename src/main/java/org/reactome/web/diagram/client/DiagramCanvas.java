@@ -510,7 +510,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.flag.setLineWidth(factor * 10);
         this.flag.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getFlag());
 
-        this.halo.setLineWidth(factor * 5);
+        this.halo.setLineWidth(factor * 6);
         this.halo.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getHalo());
 
         this.reactionsSelection.setLineWidth(factor * 3);
