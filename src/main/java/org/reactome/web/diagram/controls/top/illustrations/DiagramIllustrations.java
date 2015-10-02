@@ -9,6 +9,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.controls.navigation.ControlAction;
 import org.reactome.web.diagram.controls.top.common.AbstractMenuDialog;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
@@ -34,8 +35,6 @@ import org.reactome.web.pwp.model.handlers.DatabaseObjectLoadedHandler;
  */
 public class DiagramIllustrations extends AbstractMenuDialog implements ControlActionHandler,
         DiagramLoadedHandler, GraphObjectSelectedHandler {
-
-    public static String SERVER = "http://www.reactome.org";
 
     private EventBus eventBus;
 
@@ -97,7 +96,7 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
                                 @Override
                                 public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
                                     Figure figure = (Figure) databaseObject;
-                                    panel.add(getIllustration(pathway, SERVER + figure.getUrl()));
+                                    panel.add(getIllustration(pathway, DiagramFactory.ILLUSTRATION_SERVER + figure.getUrl()));
                                 }
 
                                 @Override

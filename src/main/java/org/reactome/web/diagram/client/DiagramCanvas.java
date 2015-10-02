@@ -205,7 +205,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     }
 
     public void resetIllustration(){
-        this.illustration.reset();
+        if(this.illustration!=null) {
+            this.illustration.reset();
+        }
     }
 
     public void setCursor(Style.Cursor cursor) {
@@ -249,7 +251,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         ctx.clearRect(0, 0, ctx.getCanvas().getWidth(), ctx.getCanvas().getHeight());
     }
 
-    public void exportImage() {
+    public void exportImage(final String diagramStId) {
         final Context2d ctx = this.canvases.get(this.canvases.size() - 1).getContext2d();
         //This is silly but gives some visual feedback of the picture taking :D
         (new Timer() {
@@ -272,7 +274,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                     }
                     Image image = new Image();
                     image.setUrl(ctx.getCanvas().toDataUrl("image/png"));
-                    final ImageDownloadDialog downloadDialogBox = new ImageDownloadDialog(image);
+                    final ImageDownloadDialog downloadDialogBox = new ImageDownloadDialog(image, diagramStId);
                     downloadDialogBox.show();
                     cleanCanvas(ctx);
                 }
