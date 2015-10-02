@@ -573,7 +573,9 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onDiagramExportRequested(DiagramExportRequestedEvent event) {
-        this.canvas.exportImage();
+        if(context!=null) {
+            this.canvas.exportImage(this.context.getContent().getStableId());
+        }
     }
 
 
