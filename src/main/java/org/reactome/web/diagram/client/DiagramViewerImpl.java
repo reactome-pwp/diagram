@@ -517,29 +517,32 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onGraphObjectSelected(final GraphObjectSelectedEvent event) {
-        final GraphObject item = event.getGraphObject();
-        if (!Objects.equals(item, this.selected)) {
-            List<DiagramObject> selected = new LinkedList<>();
-            if (item == null) {
+        GraphObject graphObject = event.getGraphObject();
+        if (!Objects.equals(graphObject, this.selected)) {
+            if (graphObject == null) {
                 this.halo = new HashSet<>();
                 this.selected = null;
             } else {
-                boolean fadeOut = true;
-                for (DiagramObject diagramObject : item.getDiagramObjects()) {
+                boolean fadeOut = !graphObject.getDiagramObjects().isEmpty();
+                for (DiagramObject diagramObject : graphObject.getDiagramObjects()) {
                     fadeOut &= diagramObject.getIsFadeOut() != null;
                 }
                 if (!fadeOut) {
-                    selected = item.getDiagramObjects();
-                    this.selected = item;
-                    this.halo = item.getRelatedDiagramObjects();
-                    this.halo.removeAll(item.getDiagramObjects());
+                    this.selected = graphObject;
+                    this.halo = graphObject.getRelatedDiagramObjects();
+                    if(graphObject instanceof GraphPhysicalEntity){
+                        GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+                        for (GraphPhysicalEntity parent : pe.getParentLocations()) {
+                            this.halo.addAll(parent.getDiagramObjects());   //halo its parents but not the reactions where they participate
+                        }
+                    }
                 }
             }
-            canvas.select(selected, this.context);
-            canvas.halo(this.halo, this.context);
-            if (event.getZoom()) {
-                this.diagramManager.displayDiagramObjects(item);
+            if(event.getZoom()) {
+                this.diagramManager.displayDiagramObjects(this.halo);
             }
+            if(this.selected!=null) this.halo.removeAll(this.selected.getDiagramObjects());
+            forceDraw = true;
             if (event.getFireExternally()) {
                 fireEvent(event);
             }
@@ -733,20 +736,18 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void selectItem(String stableIdentifier) {
-        try {
-            GraphObject item = this.context.getContent().getDatabaseObject(stableIdentifier);
-            this.setSelection(new HoveredItem(item), true, false);
-        } catch (Exception e) {
-            this.resetSelection();
-        }
+        selectItem(this.context.getContent().getDatabaseObject(stableIdentifier));
     }
 
     @Override
     public void selectItem(Long dbIdentifier) {
-        try {
-            GraphObject item = this.context.getContent().getDatabaseObject(dbIdentifier);
+        selectItem(this.context.getContent().getDatabaseObject(dbIdentifier));
+    }
+
+    private void selectItem(GraphObject item) {
+        if (item != null) {
             this.setSelection(new HoveredItem(item), true, false);
-        } catch (Exception e) {
+        } else {
             this.resetSelection();
         }
     }
