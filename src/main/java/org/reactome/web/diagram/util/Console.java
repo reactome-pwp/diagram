@@ -17,14 +17,14 @@ public abstract class Console {
         }
     }-*/;
 
-    public static void error(String msg, Object source){
+    public static void error(Object msg, Object source){
         error(source.getClass().getSimpleName() + " >> " + msg);
     }
 
-    public static void error(String msg){
+    public static void error(Object msg){
         if(!DiagramFactory.CONSOLE_VERBOSE) return;
         if(IS_SCRIPT){
-            Console._error(msg);
+            Console._error(String.valueOf(msg));
         }else{
             System.err.println(msg);
         }
@@ -36,14 +36,14 @@ public abstract class Console {
         }
     }-*/;
 
-    public static void info(String msg, Object source){
+    public static void info(Object msg, Object source){
         info(source.getClass().getSimpleName() + " >> " + msg);
     }
     
-    public static void info(String msg){
+    public static void info(Object msg){
         if(!DiagramFactory.CONSOLE_VERBOSE) return;
         if(IS_SCRIPT){
-            Console._info(msg);
+            Console._info(String.valueOf(msg));
         }else{
             System.out.println(msg);
         }
@@ -55,14 +55,14 @@ public abstract class Console {
         }
     }-*/;
 
-    public static void log(String msg, Object source){
+    public static void log(Object msg, Object source){
         log(source.getClass().getSimpleName() + " >> " + msg);
     }
     
-    public static void log(String msg){
+    public static void log(Object msg){
         if(!DiagramFactory.CONSOLE_VERBOSE) return;
         if(IS_SCRIPT){
-            Console._log(msg);
+            Console._log(String.valueOf(msg));
         }else{
             System.out.println(msg);
         }
@@ -74,15 +74,15 @@ public abstract class Console {
         }
     }-*/;
 
-    public static void warn(String msg, Object source){
+    public static void warn(Object msg, Object source){
         warn(source.getClass().getSimpleName() + " >> " + msg);
     }
 
     
-    public static void warn(String msg){
+    public static void warn(Object msg){
         if(!DiagramFactory.CONSOLE_VERBOSE) return;
         if(IS_SCRIPT){
-            Console._warn(msg);
+            Console._warn(String.valueOf(msg));
         }else{
             System.out.println("! "  + msg);
         }
