@@ -94,21 +94,30 @@
     max-height:320px;
 }
 
-@sprite .downloadLink {
-    gwt-image: 'downloadNormal';
-    outline: none;
-    background-repeat: no-repeat;
-    border: 0;
-    cursor: pointer;
-    margin-top: 7px;
+.downloadPNG {
+    background-color: #45b0d8;
+    border: none;
+    border-radius: 15px;
+    color: white;
+    float:left;
+    font-size: large;
+    margin-top: 6px;
+    padding: 6px;
 }
 
-@sprite .downloadLink:hover {
-    gwt-image: 'downloadHovered';
+.downloadPNG img {
+    vertical-align: middle !important;
+    padding-right: 3px;
 }
 
-@sprite .downloadLink:active:hover {
-    gwt-image: 'downloadClicked' ;
+.downloadPNG:hover {
+    background-color: #177dc0;
+    cursor: pointer !important;
+}
+
+.downloadPNG:active:hover {
+    background-color: #07558b;
+    cursor: pointer !important;
 }
 
 .infoLabel {
@@ -129,6 +138,11 @@
     font-size: large;
     margin-top: 6px;
     padding: 6px;
+}
+
+.genomespace img {
+    vertical-align: middle !important;
+    padding-right: 3px;
 }
 
 .genomespace:hover {

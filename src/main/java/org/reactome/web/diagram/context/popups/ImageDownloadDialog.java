@@ -7,6 +7,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.common.PwpButton;
@@ -47,17 +49,21 @@ public class ImageDownloadDialog extends PopupPanel {
             Anchor anchor = new Anchor();                     // For downloading the image
             anchor.setHref(image.getUrl());
             anchor.getElement().setAttribute("download", "DiagramImage.png");
-            Button button = new PwpButton("Save diagram as image", RESOURCES.getCSS().downloadLink(), new ClickHandler() {
+            Button button = getButton("Download as PNG", RESOURCES.headerIcon());
+            button.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent clickEvent) {
                     hide();
                 }
             });
+            button.setStyleName(RESOURCES.getCSS().downloadPNG());
+            button.setTitle("Save diagram as a PNG image");
             anchor.getElement().appendChild(button.getElement());
             buttons.add(anchor);
         }
         if(gsUploadByPostAvailable()){
-            Button genomespace = new Button("Upload to GenomeSpace", new ClickHandler() {
+            Button genomespace = getButton("Upload to GenomeSpace", RESOURCES.headerIcon());
+            genomespace.addClickHandler( new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
                     String mimeString = "image/png";
@@ -70,6 +76,7 @@ public class ImageDownloadDialog extends PopupPanel {
                 }
             });
             genomespace.setStyleName(RESOURCES.getCSS().genomespace());
+            genomespace.setTitle("Upload diagram image to GenomeSpace");
             buttons.add(genomespace);
         }
         vp.add(buttons);
@@ -94,6 +101,16 @@ public class ImageDownloadDialog extends PopupPanel {
         header.add(title);
         header.add(closeBtn);
         return header;
+    }
+
+    private Button getButton(String text, ImageResource imageResource){
+        FlowPanel fp = new FlowPanel();
+        fp.add(new Image(imageResource));
+        fp.add(new InlineLabel(text));
+
+        SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(fp.toString());
+        Button btn = new Button(safeHtml);
+        return btn;
     }
 
     @Override
@@ -161,15 +178,6 @@ public class ImageDownloadDialog extends PopupPanel {
 
         @Source("images/close_normal.png")
         ImageResource closeNormal();
-
-        @Source("images/download_clicked.png")
-        ImageResource downloadClicked();
-
-        @Source("images/download_hovered.png")
-        ImageResource downloadHovered();
-
-        @Source("images/download_normal.png")
-        ImageResource downloadNormal();
     }
 
     /**
@@ -202,7 +210,7 @@ public class ImageDownloadDialog extends PopupPanel {
 
         String image();
 
-        String downloadLink();
+        String downloadPNG();
 
         String infoLabel();
 
