@@ -2,6 +2,8 @@
     width: 350px;
     min-height: 50px;
     padding: 0 0 5px 5px;
+
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
 }
 
 .illustration {
@@ -28,7 +30,17 @@
 .error {
     color: #ee665a;
     font-size: small;
-    margin: 10px 0 0 5px;
+    margin: 10px 0 0 9px;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 300px;
+}
+
+.loading {
+    color: #61c2d0;
+    font-size: small;
+    margin: 10px 0 0 9px;
     overflow:hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

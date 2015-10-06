@@ -13,6 +13,7 @@
 
 .header {
     margin: 0 0 2px 4px;
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
 }
 
 .header:hover{

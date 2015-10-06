@@ -81,7 +81,9 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
     private void setIllustrations(Long dbId, final FlowPanel panel){
         panel.clear();
         if(dbId==null) return;
-        panel.add(new Label("Loading..."));
+        Label loadingLbl = new Label("Loading...");
+        loadingLbl.setStyleName(RESOURCES.getCSS().loading());
+        panel.add(loadingLbl);
         DatabaseObjectFactory.get(dbId, new DatabaseObjectCreatedHandler() {
             @Override
             public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
@@ -190,5 +192,7 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
         String illustration();
 
         String error();
+
+        String loading();
     }
 }
