@@ -49,7 +49,7 @@ public class ImageDownloadDialog extends PopupPanel {
             Anchor anchor = new Anchor();                     // For downloading the image
             anchor.setHref(image.getUrl());
             anchor.getElement().setAttribute("download", "DiagramImage.png");
-            Button button = getButton("Download as PNG", RESOURCES.headerIcon());
+            Button button = getButton("Download as PNG", RESOURCES.downloadNormal());
             button.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent clickEvent) {
@@ -62,7 +62,7 @@ public class ImageDownloadDialog extends PopupPanel {
             buttons.add(anchor);
         }
         if(gsUploadByPostAvailable()){
-            Button genomespace = getButton("Upload to GenomeSpace", RESOURCES.headerIcon());
+            Button genomespace = getButton("Upload to GenomeSpace", RESOURCES.uploadNormal());
             genomespace.addClickHandler( new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
@@ -178,6 +178,12 @@ public class ImageDownloadDialog extends PopupPanel {
 
         @Source("images/close_normal.png")
         ImageResource closeNormal();
+
+        @Source("images/download_normal.png")
+        ImageResource downloadNormal();
+
+        @Source("images/upload_normal.png")
+        ImageResource uploadNormal();
     }
 
     /**
