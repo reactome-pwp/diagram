@@ -18,6 +18,10 @@ class DiagramManager {
         this.displayManager = displayManager;
     }
 
+    public void cancelDisplayAnimation(){
+        displayManager.cancelDisplayAnimation();
+    }
+
     public void fitDiagram(DiagramContent c, boolean animation) {
         displayManager.display(c.getMinX(), c.getMinY(), c.getMaxX(), c.getMaxY(), animation);
     }
