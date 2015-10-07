@@ -318,6 +318,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.resetHighlight();
         this.resetDialogs();
         this.resetIllustration();
+        this.diagramManager.cancelDisplayAnimation();
         this.eventBus.fireEventFromSource(new DiagramRequestedEvent(), this);
         DiagramContext context = this.contextMap.get(identifier);
         if (context == null) {

@@ -29,6 +29,10 @@ public class DisplayManager {
         this.handler = handler;
     }
 
+    public void cancelDisplayAnimation(){
+        if(this.diagramAnimation!=null) this.diagramAnimation.cancel();
+    }
+
     public void display(Collection<DiagramObject> items, boolean animation){
         if(items!=null && !items.isEmpty()) {
             Box box = getBoundaries(items);
