@@ -162,6 +162,7 @@
     margin: 2px;
     height: 24px;
     width: 24px;
+    outline: none;
 }
 
 .enrichmentLegend {
