@@ -76,7 +76,7 @@ public class ImageDownloadDialog extends PopupPanel {
                 }
             });
             genomespace.setStyleName(RESOURCES.getCSS().genomespace());
-            genomespace.setTitle("Upload diagram image to GenomeSpace");
+            genomespace.setTitle("Upload image to GenomeSpace");
             buttons.add(genomespace);
         }
         vp.add(buttons);

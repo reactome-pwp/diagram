@@ -45,7 +45,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         LayoutLoadedHandler, GraphLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
-        GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, DiagramExportRequestedHandler,
+        GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, CanvasExportRequestedHandler,
         DiagramObjectsFlagRequestHandler, DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler,
         IllustrationSelectedHandler {
 
@@ -121,7 +121,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramExportRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
 
         this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
         this.eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
@@ -575,7 +575,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     @Override
-    public void onDiagramExportRequested(DiagramExportRequestedEvent event) {
+    public void onDiagramExportRequested(CanvasExportRequestedEvent event) {
         if(context!=null) {
             this.canvas.exportImage(this.context.getContent().getStableId());
         }

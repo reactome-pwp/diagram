@@ -12,7 +12,7 @@ import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.controls.top.illustrations.DiagramIllustrations;
 import org.reactome.web.diagram.controls.top.key.DiagramKey;
 import org.reactome.web.diagram.controls.top.menu.SettingsMenuPanel;
-import org.reactome.web.diagram.events.DiagramExportRequestedEvent;
+import org.reactome.web.diagram.events.CanvasExportRequestedEvent;
 
 
 /**
@@ -58,7 +58,7 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
     public void onClick(ClickEvent event) {
         PwpButton btn = (PwpButton) event.getSource();
         if (btn.equals(this.captureBtn)) {
-            this.eventBus.fireEventFromSource(new DiagramExportRequestedEvent(), this);
+            this.eventBus.fireEventFromSource(new CanvasExportRequestedEvent(), this);
         } else if (btn.equals(this.diagramKeyBtn)) {
             if (this.diagramKey.isShowing()) {
                 this.diagramKey.hide();
