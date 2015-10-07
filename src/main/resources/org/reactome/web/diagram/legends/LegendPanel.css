@@ -13,6 +13,12 @@
     border-radius: 5px;
     bottom: 10px;
     height: 28px;
+
+    /* Used to animate the positioning of the flaggedItems panel */
+    -webkit-transition: bottom 0.3s ease-in-out;
+    -moz-transition: bottom 0.3s ease-in-out;
+    -o-transition: bottom 0.3s ease-in-out;
+    transition: bottom 0.3s ease-in-out;
 }
 
 @sprite .close {
@@ -260,4 +266,8 @@
     overflow:hidden;
     white-space:nowrap;
     text-overflow:ellipsis;
+}
+
+.flaggedItemsControlMovedUp {
+    bottom: 45px;
 }

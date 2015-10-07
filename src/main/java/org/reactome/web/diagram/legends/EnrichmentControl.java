@@ -64,7 +64,7 @@ public class EnrichmentControl extends LegendPanel implements ClickHandler,
             case SPECIES_COMPARISON:
                 String message = event.getType().name().replaceAll("_", " ");
                 this.message.setText(message.toUpperCase());
-                this.setVisible(true);
+                makeVisible(200); // Appear with delay
                 break;
             default:
                 hide();

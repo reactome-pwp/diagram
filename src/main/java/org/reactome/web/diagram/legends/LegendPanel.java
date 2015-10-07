@@ -6,6 +6,7 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.TextResource;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 /**
@@ -164,14 +165,28 @@ public abstract class LegendPanel extends AbsolutePanel {
         String flaggedItemsControl();
 
         String flaggedItemsLabel();
+
+        String flaggedItemsControlMovedUp();
     }
 
     protected EventBus eventBus;
+    private Timer fadeInTimer;
 
     public LegendPanel(EventBus eventBus) {
         this.eventBus = eventBus;
         //Setting the legend style
         getElement().getStyle().setPosition(com.google.gwt.dom.client.Style.Position.ABSOLUTE);
         setStyleName(RESOURCES.getCSS().legendPanel());
+
+        fadeInTimer = new Timer() {
+            @Override
+            public void run() {
+                LegendPanel.this.setVisible(true);
+            }
+        };
+    }
+
+    protected void makeVisible(int delay){
+        fadeInTimer.schedule(delay);
     }
 }

@@ -97,7 +97,7 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
             this.eventBus.fireEventFromSource(new ExpressionColumnChangedEvent(this.currentCol), this);
             this.expressionSummary = event.getExpressionSummary();
             this.setName();
-            this.setVisible(true);
+            makeVisible(200); // Appear with delay
         } else {
             this.setVisible(false);
         }
@@ -225,4 +225,6 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
     public void onDiagramRequested(DiagramRequestedEvent event) {
         this.setVisible(false);
     }
+
+
 }
