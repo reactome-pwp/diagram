@@ -3,8 +3,8 @@
   "properties": {
     "hovering": "#DFDF00",
     "highlight": "#DFDF00",
-    "selection": "#62A9FF",
-    "halo": "#4DB8B8",
+    "selection": "#4D4DFF",
+    "halo": "#E2B066",
     "flag": "#FF00FF",
     "text": "#000000",
     "button:": "#00FF00",
