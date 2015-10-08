@@ -104,7 +104,7 @@ public class DiagramColours implements DiagramProfileChangedHandler {
         }
 
         public static List<String> getProfiles() {
-            List<String> rtn = new ArrayList<String>();
+            List<String> rtn = new ArrayList<>();
             for (ProfileType value : values()) {
                 rtn.add(value.diagramProfile.getName());
             }
@@ -121,7 +121,7 @@ public class DiagramColours implements DiagramProfileChangedHandler {
         }
 
         public static ProfileType getStandard(){
-            return PROFILE_01;
+            return PROFILE_02;
         }
 
         public DiagramProfile getDiagramProfile() {
