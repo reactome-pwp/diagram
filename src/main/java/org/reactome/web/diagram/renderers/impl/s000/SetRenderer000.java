@@ -92,10 +92,6 @@ public class SetRenderer000 extends SetAbstractRenderer {
         GraphEntitySet set = item.getGraphObject();
         double percentage = set.getHitParticipants().size() / (double) set.getParticipants().size();
 
-        List<Double> expression = new LinkedList<>(set.getParticipantsExpression(t).values());
-        Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
-        double value = ExpressionUtil.median(expression);
-
         Node node = (Node) item;
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
 
@@ -106,6 +102,10 @@ public class SetRenderer000 extends SetAbstractRenderer {
         ctx.fill();
         ctx.stroke();
         ctx.restore();
+
+        List<Double> expression = new LinkedList<>(set.getParticipantsExpression(t).values());
+        Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
+        Double value = ExpressionUtil.median(expression);
 
         AdvancedContext2d buffer = overlay.getBuffer();
         buffer.save();

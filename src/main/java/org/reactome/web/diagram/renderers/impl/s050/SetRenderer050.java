@@ -80,10 +80,6 @@ public class SetRenderer050 extends SetAbstractRenderer {
         GraphEntitySet set = item.getGraphObject();
         double percentage = set.getHitParticipants().size() / (double) set.getParticipants().size();
 
-        List<Double> expression = new LinkedList<>(set.getParticipantsExpression(t).values());
-        Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
-        double value = ExpressionUtil.median(expression);
-
         Node node = (Node) item;
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
 
@@ -92,6 +88,10 @@ public class SetRenderer050 extends SetAbstractRenderer {
         if(item.getIsDisease()!=null) ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
         super.draw(ctx, item, factor, offset);
         ctx.restore();
+
+        List<Double> expression = new LinkedList<>(set.getParticipantsExpression(t).values());
+        Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
+        double value = ExpressionUtil.median(expression);
 
         AdvancedContext2d buffer = overlay.getBuffer();
         buffer.save();

@@ -80,10 +80,6 @@ public class ComplexRenderer050 extends ComplexAbstractRenderer {
         GraphComplex complex = item.getGraphObject();
         double percentage = complex.getHitParticipants().size() / (double) complex.getParticipants().size();
 
-        List<Double> expression = new LinkedList<>(complex.getParticipantsExpression(t).values());
-        Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
-        double value = ExpressionUtil.median(expression);
-
         Node node = (Node) item;
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
 
@@ -94,6 +90,10 @@ public class ComplexRenderer050 extends ComplexAbstractRenderer {
         ctx.fill();
         ctx.stroke();
         ctx.restore();
+
+        List<Double> expression = new LinkedList<>(complex.getParticipantsExpression(t).values());
+        Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
+        Double value = ExpressionUtil.median(expression);
 
         AdvancedContext2d buffer = overlay.getBuffer();
         buffer.save();

@@ -21,6 +21,7 @@ import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.profiles.analysis.model.AnalysisProfile;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.ExpressionUtil;
 import org.reactome.web.diagram.util.gradient.ThreeColorGradient;
 
@@ -170,46 +171,50 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
         return canvas;
     }
 
-    private void draw(){
+    private void draw() {
         if (!this.isVisible()) return;
 
-        Context2d ctx = this.flag.getContext2d();
-        ctx.clearRect(0, 0, this.flag.getOffsetWidth(), this.flag.getOffsetHeight());
+        try {
+            Context2d ctx = this.flag.getContext2d();
+            ctx.clearRect(0, 0, this.flag.getOffsetWidth(), this.flag.getOffsetHeight());
 
-        List<Double> hoveredValues = getExpressionValues(this.hovered, this.column);
-        if (!hoveredValues.isEmpty()) {
-            String colour = DiagramColours.get().PROFILE.getProperties().getHovering();
-            for (Double value : hoveredValues) {
-                double p = ThreeColorGradient.getPercentage(value, this.min, this.max);
+            List<Double> hoveredValues = getExpressionValues(this.hovered, this.column);
+            if (!hoveredValues.isEmpty()) {
+                String colour = DiagramColours.get().PROFILE.getProperties().getHovering();
+                for (Double value : hoveredValues) {
+                    double p = ThreeColorGradient.getPercentage(value, this.min, this.max);
+                    drawLeftPin(ctx, p, colour, colour);
+                }
+                if (hoveredValues.size() > 1) {
+                    Double median = ExpressionUtil.median(hoveredValues);
+                    double p = ThreeColorGradient.getPercentage(median, this.min, this.max);
+                    colour = AnalysisColours.get().PROFILE.getExpression().getLegend().getMedian();
+                    drawLeftPin(ctx, p, colour, colour);
+                }
+            }
+
+            if (this.expHovered != null) {
+                double p = ThreeColorGradient.getPercentage(this.expHovered, this.min, this.max);
+                String colour = AnalysisColours.get().PROFILE.getExpression().getLegend().getHover();
                 drawLeftPin(ctx, p, colour, colour);
             }
-            if(hoveredValues.size()>1) {
-                Double median = ExpressionUtil.median(hoveredValues);
-                double p = ThreeColorGradient.getPercentage(median, this.min, this.max);
-                colour = AnalysisColours.get().PROFILE.getExpression().getLegend().getMedian();
-                drawLeftPin(ctx, p, colour, colour);
-            }
-        }
 
-        if (this.expHovered != null) {
-            double p = ThreeColorGradient.getPercentage(this.expHovered, this.min, this.max);
-            String colour = AnalysisColours.get().PROFILE.getExpression().getLegend().getHover();
-            drawLeftPin(ctx, p, colour, colour);
-        }
-
-        List<Double> selectedValues = getExpressionValues(this.selected, this.column);
-        if (!selectedValues.isEmpty()) {
-            String colour = DiagramColours.get().PROFILE.getProperties().getSelection();
-            for (Double value : selectedValues) {
-                double p = ThreeColorGradient.getPercentage(value, this.min, this.max);
-                drawRightPin(ctx, p, colour, colour);
+            List<Double> selectedValues = getExpressionValues(this.selected, this.column);
+            if (!selectedValues.isEmpty()) {
+                String colour = DiagramColours.get().PROFILE.getProperties().getSelection();
+                for (Double value : selectedValues) {
+                    double p = ThreeColorGradient.getPercentage(value, this.min, this.max);
+                    drawRightPin(ctx, p, colour, colour);
+                }
+                if (selectedValues.size() > 1) {
+                    Double median = ExpressionUtil.median(selectedValues);
+                    double p = ThreeColorGradient.getPercentage(median, this.min, this.max);
+                    colour = AnalysisColours.get().PROFILE.getExpression().getLegend().getMedian();
+                    drawRightPin(ctx, p, colour, colour);
+                }
             }
-            if(selectedValues.size()>1) {
-                Double median = ExpressionUtil.median(selectedValues);
-                double p = ThreeColorGradient.getPercentage(median, this.min, this.max);
-                colour = AnalysisColours.get().PROFILE.getExpression().getLegend().getMedian();
-                drawRightPin(ctx, p, colour, colour);
-            }
+        } catch (Exception e) {
+            Console.error(e.getMessage(), this);
         }
     }
 

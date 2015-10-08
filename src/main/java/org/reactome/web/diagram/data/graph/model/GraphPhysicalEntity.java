@@ -85,7 +85,7 @@ public abstract class GraphPhysicalEntity extends GraphObject {
 
     public Map<String, Double> getParticipantsExpression(int column){
         Map<String, Double> rtn = new HashMap<>();
-        if(this.isHit()) {
+        if(this.isHit() && this.getExpression(column)!=null) {
             rtn.put(sampleIdentifier, this.getExpression(column));
         }
         return rtn;

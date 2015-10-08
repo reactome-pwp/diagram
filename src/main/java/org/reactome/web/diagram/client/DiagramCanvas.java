@@ -46,6 +46,7 @@ import org.reactome.web.diagram.renderers.impl.abs.SummaryItemAbstractRenderer;
 import org.reactome.web.diagram.thumbnail.DiagramThumbnail;
 import org.reactome.web.diagram.tooltips.TooltipContainer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.actions.UserActionsHandlers;
 import org.reactome.web.diagram.util.actions.UserActionsInstaller;
@@ -482,7 +483,11 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         ConnectorRenderer connectorRenderer = this.rendererManager.getConnectorRenderer();
         OverlayContext overlay = new OverlayContext(this.overlay, this.buffer);
         for (DiagramObject item : objects) {
-            renderer.drawExpression(ctx, overlay, item, c, min, max, factor, offset);
+            try {
+                renderer.drawExpression(ctx, overlay, item, c, min, max, factor, offset);
+            }catch (Exception e){
+                Console.error(e.getMessage(), this);
+            }
             renderer.drawText(this.text, item, factor, offset);
             if (item instanceof Node) {
                 Node node = (Node) item;

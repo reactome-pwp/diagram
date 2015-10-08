@@ -10,6 +10,7 @@ import org.reactome.web.diagram.renderers.RendererManager;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.util.AdvancedContext2d;
+import org.reactome.web.diagram.util.Console;
 
 import java.util.List;
 
@@ -36,13 +37,20 @@ public abstract class AbstractRenderer implements Renderer {
     @Override
     public void drawExpression(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset){
         GraphObject graphObject = item.getGraphObject();
-        List<Double> expression = graphObject.getExpression();
-        double value = min;
-        if(expression!=null) {
-            value = expression.get(t);
-        }
-        ctx.setFillStyle(AnalysisColours.get().expressionGradient.getColor(value, min, max));
+        setExpressionColour(ctx, graphObject.getExpression(), min, max, t);
         draw(ctx, item, factor, offset); //By default the normal draw method is called
+    }
+
+    private void setExpressionColour(AdvancedContext2d ctx, List<Double> expression, Double min, Double max, int t){
+        try {
+            double value = min;
+            if(expression!=null) {
+                value = expression.get(t);
+            }
+            ctx.setFillStyle(AnalysisColours.get().expressionGradient.getColor(value, min, max));
+        }catch (Exception e){
+            Console.error(e.getMessage(), this);
+        }
     }
 
     public void drawSegments(AdvancedContext2d ctx, List<Segment> segments, Double factor, Coordinate offset) {
