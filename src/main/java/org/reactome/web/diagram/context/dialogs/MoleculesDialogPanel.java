@@ -37,8 +37,8 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     private GraphObject graphObject;
 
     private List<String> expColumns;
-    private double min;
-    private double max;
+    private Double min;
+    private Double max;
     private int selectedExpCol = 0;
 
     private List<GraphEntityWithAccessionedSequence> proteins = new LinkedList<>();
@@ -81,6 +81,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     @Override
     public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
         ExpressionSummary expressionSummary = event.getExpressionSummary();
+        removeExpressionValues();
         if(expressionSummary!=null) {
             expColumns = expressionSummary.getColumnNames();
             min = expressionSummary.getMin();
@@ -102,6 +103,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     }
 
     private void loadExpressionValues(){
+        if(min==null || max==null) return;
         if(proteinsTable!=null) proteinsTable.addExpressionColumns(expColumns, min, max, selectedExpCol);
         if(chemicalsTable!=null) chemicalsTable.addExpressionColumns(expColumns, min, max, selectedExpCol);
         if(dnasTable!=null) dnasTable.addExpressionColumns(expColumns, min, max, selectedExpCol);

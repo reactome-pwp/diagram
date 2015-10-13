@@ -26,7 +26,7 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
 
     private List<Column<T, String>> expression = new ArrayList<>();
 
-    public MoleculesTable(String name, List<T> molecules, List<String> expression, double min, double max, int sel) {
+    public MoleculesTable(String name, List<T> molecules, List<String> expression, Double min, Double max, int sel) {
         super(molecules.size(), (MoleculesTableResource) GWT.create(MoleculesTableResource.class));
         setAlwaysShowScrollBars(false);
         Column<T, String> type = buildColumnTitle();
@@ -48,8 +48,8 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
         dataProvider.addDataDisplay(this);
     }
 
-    public void addExpressionColumns(List<String> expression, double min, double max, int sel) {
-        if (expression != null) {
+    public void addExpressionColumns(List<String> expression, Double min, Double max, int sel) {
+        if (expression != null && min!=null && max!=null) {
             for (int i = 0; i < expression.size(); i++) {
                 Column<T, String> exp = buildColumnExpression(i, min, max);
                 exp.setHorizontalAlignment(HasHorizontalAlignment.HorizontalAlignmentConstant.endOf(HasDirection.Direction.LTR));
