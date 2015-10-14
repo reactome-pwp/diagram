@@ -102,6 +102,13 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         highlightColumn(selectedExpCol);
     }
 
+    public void forceDraw(){
+        proteinsTable.redraw();
+        chemicalsTable.redraw();
+        dnasTable.redraw();
+        othersTable.redraw();
+    }
+
     private void loadExpressionValues(){
         if(min==null || max==null) return;
         if(proteinsTable!=null) proteinsTable.addExpressionColumns(expColumns, min, max, selectedExpCol);

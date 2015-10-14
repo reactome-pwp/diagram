@@ -58,7 +58,9 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
                 this.setColumnWidth(exp, 60, Unit.PX);
             }
         }
-        highlightExpColumn(sel);
+        if(this.getRowCount()>0) {
+            highlightExpColumn(sel);
+        }
     }
 
     public void highlightExpColumn(int col) {

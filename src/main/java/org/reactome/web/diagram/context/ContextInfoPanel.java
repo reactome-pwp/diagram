@@ -75,6 +75,9 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
         btn.addStyleName(RESOURCES.getCSS().buttonSelected());
         if(btn.equals(this.molecules)){
             this.container.showWidget(0);
+            // The following addresses a known gub in GTW where
+            // DataGrids inside DeckLayoutPanels fail to render properly
+            ((MoleculesDialogPanel)this.container.getVisibleWidget()).forceDraw();
         }else if(btn.equals(this.pathways)){
             this.container.showWidget(1);
         }else if(btn.equals(this.interactors)){
