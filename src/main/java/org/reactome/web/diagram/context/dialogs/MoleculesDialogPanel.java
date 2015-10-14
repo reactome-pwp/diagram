@@ -170,33 +170,32 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     private void initialiseWidget(){
         FlowPanel vp = new FlowPanel();
         vp.setStyleName(RESOURCES.getCSS().container());
-        String optimalSize = getOptimalSize() + "px";
         //There is a certain order in which we want the participating molecules to be listed
         if (!proteins.isEmpty()){
             proteinsTable = new MoleculesTable<>("Proteins", proteins, expColumns, min, max, selectedExpCol);
-            proteinsTable.setHeight(optimalSize);
+            proteinsTable.setHeight(getOptimalSize(proteins) + "px");
             vp.add(proteinsTable);
         }
         if (!chemicals.isEmpty()) {
             chemicalsTable = new MoleculesTable<>("Chemical compounds", chemicals, expColumns, min, max, selectedExpCol);
-            chemicalsTable.setHeight(optimalSize);
+            chemicalsTable.setHeight(getOptimalSize(chemicals) + "px");
             vp.add(chemicalsTable);
         }
         if (!dnas.isEmpty()) {
             dnasTable = new MoleculesTable<>("DNA", dnas, expColumns, min, max, selectedExpCol);
-            dnasTable.setHeight(optimalSize);
+            dnasTable.setHeight(getOptimalSize(dnas) + "px");
             vp.add(dnasTable);
         }
         if (!others.isEmpty()){
             othersTable = new MoleculesTable<>("Others", others, expColumns, min, max, selectedExpCol);
-            othersTable.setHeight(optimalSize);
+            othersTable.setHeight(getOptimalSize(others) + "px");
             vp.add(othersTable);
         }
         initWidget(vp);
     }
 
-    private int getOptimalSize(){
-        int size;
+    private int getOptimalSize(List list){
+        int maxSize;
         int requiredSections = 0;
         if (proteins.size() > 0)    requiredSections++;
         if (chemicals.size() > 0)   requiredSections++;
@@ -205,17 +204,18 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
 
         switch(requiredSections){
             case 1:
-                size = 145;
+                maxSize = 145;
                 break;
             case 2:
-                size = 120;
+                maxSize = 120;
                 break;
             default:
-                size = 100;
+                maxSize = 100;
                 break;
         }
 
-        return size;
+        int size = (list.size()+1) * 12 + 15; // Setting the size of the table based on the size of its contents
+        return size <= maxSize ? size : maxSize;
     }
 
 
