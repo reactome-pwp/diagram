@@ -7,6 +7,7 @@ import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.util.Console;
 
 import java.util.*;
 
@@ -155,7 +156,9 @@ public abstract class DiagramContentFactory {
             for (Long dbId : dbIds) {
                 //noinspection unchecked
                 T t = (T) GraphObjectFactory.content.getDatabaseObject(dbId);
-                if(t!=null) {
+                if (t == null) {
+                    Console.error("There is no information for " + dbId);
+                } else {
                     rtn.add(t);
                 }
             }
