@@ -1,6 +1,5 @@
 package org.reactome.web.diagram.context.dialogs.molecules;
 
-import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -11,7 +10,6 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.CssResource.ImportedWithPrefix;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.view.client.ListDataProvider;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
@@ -138,12 +136,6 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
             }
         };
         columnTitle.setSortable(true);
-        columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {
-            @Override
-            public void update(int i, T t, String s) {
-                Window.alert("i:" + i + " t:" + t.getDisplayName() + " " + s);
-            }
-        });
         return columnTitle;
     }
 
