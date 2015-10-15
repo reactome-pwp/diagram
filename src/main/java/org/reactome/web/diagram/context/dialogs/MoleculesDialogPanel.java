@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import org.reactome.web.diagram.context.dialogs.molecules.MoleculesTable;
 import org.reactome.web.diagram.data.AnalysisStatus;
+import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.analysis.ExpressionSummary;
 import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.layout.DiagramObject;
@@ -36,6 +37,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     private EventBus eventBus;
     private GraphObject graphObject;
 
+    private AnalysisType analysisType;
     private List<String> expColumns;
     private Double min;
     private Double max;
@@ -55,6 +57,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         this.eventBus = eventBus;
         this.graphObject = diagramObject.getGraphObject();
         if(analysisStatus!=null){
+            this.analysisType = analysisStatus.getAnalysisType();
             ExpressionSummary expressionSummary = analysisStatus.getExpressionSummary();
             if(expressionSummary!=null) {
                 this.expColumns = expressionSummary.getColumnNames();
@@ -76,10 +79,13 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     @Override
     public void onAnalysisReset(AnalysisResetEvent event) {
         removeExpressionValues();
+        loadAnalysisType();
     }
 
     @Override
     public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
+        analysisType = event.getType();
+        loadAnalysisType();
         ExpressionSummary expressionSummary = event.getExpressionSummary();
         removeExpressionValues();
         if(expressionSummary!=null) {
@@ -92,6 +98,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
 
     @Override
     public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
+        loadAnalysisType();
         removeExpressionValues();
         loadExpressionValues();
     }
@@ -103,10 +110,10 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     }
 
     public void forceDraw(){
-        proteinsTable.redraw();
-        chemicalsTable.redraw();
-        dnasTable.redraw();
-        othersTable.redraw();
+        if(proteinsTable!=null) proteinsTable.redraw();
+        if(chemicalsTable!=null) chemicalsTable.redraw();
+        if(dnasTable!=null) dnasTable.redraw();
+        if(othersTable!=null) othersTable.redraw();
     }
 
     private void loadExpressionValues(){
@@ -116,6 +123,13 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         if(dnasTable!=null) dnasTable.addExpressionColumns(expColumns, min, max, selectedExpCol);
         if(othersTable!=null) othersTable.addExpressionColumns(expColumns, min, max, selectedExpCol);
         highlightColumn(selectedExpCol);
+    }
+
+    private void loadAnalysisType(){
+        if(proteinsTable!=null) proteinsTable.setAnalysisType(analysisType);
+        if(chemicalsTable!=null) chemicalsTable.setAnalysisType(analysisType);
+        if(dnasTable!=null) dnasTable.setAnalysisType(analysisType);
+        if(othersTable!=null) othersTable.setAnalysisType(analysisType);
     }
 
     private void removeExpressionValues(){
@@ -172,22 +186,22 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         vp.setStyleName(RESOURCES.getCSS().container());
         //There is a certain order in which we want the participating molecules to be listed
         if (!proteins.isEmpty()){
-            proteinsTable = new MoleculesTable<>("Proteins", proteins, expColumns, min, max, selectedExpCol);
+            proteinsTable = new MoleculesTable<>("Proteins", proteins, analysisType, expColumns, min, max, selectedExpCol);
             proteinsTable.setHeight(getOptimalSize(proteins) + "px");
             vp.add(proteinsTable);
         }
         if (!chemicals.isEmpty()) {
-            chemicalsTable = new MoleculesTable<>("Chemical compounds", chemicals, expColumns, min, max, selectedExpCol);
+            chemicalsTable = new MoleculesTable<>("Chemical compounds", chemicals, analysisType, expColumns, min, max, selectedExpCol);
             chemicalsTable.setHeight(getOptimalSize(chemicals) + "px");
             vp.add(chemicalsTable);
         }
         if (!dnas.isEmpty()) {
-            dnasTable = new MoleculesTable<>("DNA", dnas, expColumns, min, max, selectedExpCol);
+            dnasTable = new MoleculesTable<>("DNA", dnas, analysisType, expColumns, min, max, selectedExpCol);
             dnasTable.setHeight(getOptimalSize(dnas) + "px");
             vp.add(dnasTable);
         }
         if (!others.isEmpty()){
-            othersTable = new MoleculesTable<>("Others", others, expColumns, min, max, selectedExpCol);
+            othersTable = new MoleculesTable<>("Others", others, analysisType, expColumns, min, max, selectedExpCol);
             othersTable.setHeight(getOptimalSize(others) + "px");
             vp.add(othersTable);
         }

@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.context.dialogs.molecules;
 
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -10,9 +11,12 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.CssResource.ImportedWithPrefix;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.view.client.ListDataProvider;
+import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,33 +27,27 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
-
     private List<Column<T, String>> expression = new ArrayList<>();
+    private ListDataProvider<T> dataProvider;
+    private AnalysisType analysisType;
 
-    public MoleculesTable(String name, List<T> molecules, List<String> expression, Double min, Double max, int sel) {
+    public MoleculesTable(String name, List<T> molecules, AnalysisType analysisType, List<String> expression, Double min, Double max, int sel) {
         super(molecules.size(), (MoleculesTableResource) GWT.create(MoleculesTableResource.class));
+        this.analysisType = analysisType;
         setAlwaysShowScrollBars(false);
+
+        List<T> list = sortMolecules(molecules, analysisType);
+        dataProvider = new ListDataProvider<>(list);
+        dataProvider.addDataDisplay(this);
+
         Column<T, String> type = buildColumnTitle();
-        setColumnWidth(type, 80, Unit.PX);
         addColumn(type, name);
         addExpressionColumns(expression, min, max, sel);
-
-        Collections.sort(molecules, GraphPhysicalEntity.getIdentifierComparator());
-        //We have to move all the molecules without expression at the very end
-        List<T> list = new LinkedList<>();
-        List<T> tailList = new LinkedList<>();
-        for (T molecule : molecules) {
-            if (molecule.getExpression() == null || molecule.getExpression().isEmpty()) tailList.add(molecule);
-            else list.add(molecule);
-        }
-        list.addAll(tailList);
-
-        ListDataProvider<T> dataProvider = new ListDataProvider<>(list);
-        dataProvider.addDataDisplay(this);
     }
 
     public void addExpressionColumns(List<String> expression, Double min, Double max, int sel) {
         if (expression != null && min!=null && max!=null) {
+            this.setColumnWidth(0, 80, Unit.PX); // Resize the 1st column
             for (int i = 0; i < expression.size(); i++) {
                 Column<T, String> exp = buildColumnExpression(i, min, max);
                 exp.setHorizontalAlignment(HasHorizontalAlignment.HorizontalAlignmentConstant.endOf(HasDirection.Direction.LTR));
@@ -84,6 +82,52 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
             removeColumn(expColumn);
         }
         expression.clear();
+        if(getColumnCount() == 1) {
+            // Resize the 1st column so that it gets all the available space
+            this.setColumnWidth(0, 257, Unit.PX);
+        }
+    }
+
+    public void setAnalysisType(AnalysisType analysisType){
+        this.analysisType = analysisType;
+        // Re-sort the list
+        List<T> list = dataProvider.getList();
+        dataProvider.setList(sortMolecules(list, analysisType));
+        redraw();
+    }
+
+    private List<T> sortMolecules(List<T> molecules, AnalysisType analysisType){
+        Collections.sort(molecules, GraphPhysicalEntity.getIdentifierComparator());
+        List<T> list = new LinkedList<>();
+        List<T> tailList = new LinkedList<>();
+        if(analysisType==null || analysisType == AnalysisType.OVERREPRESENTATION || analysisType==AnalysisType.SPECIES_COMPARISON) {
+            // We have to move all the NOT HIT molecules at the very end
+            for (T molecule : molecules) {
+                if (!molecule.isHit()) tailList.add(molecule);
+                else list.add(molecule);
+            }
+        }else{
+            // We have to move all the molecules without expression at the very end
+            for (T molecule : molecules) {
+                if (molecule.getExpression() == null || molecule.getExpression().isEmpty()) tailList.add(molecule);
+                else list.add(molecule);
+            }
+        }
+        list.addAll(tailList);
+        return list;
+    }
+
+    private void applyORAColour(){
+        List<T> list = dataProvider.getList();
+        for(int i=0;i<list.size();i++){
+            T object = dataProvider.getList().get(i);
+            if(object.isHit()){
+                getRowElement(i).getCells().getItem(0).getStyle().setBackgroundColor(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax());
+                getRowElement(i).getCells().getItem(0).getStyle().setColor("#000000");
+            }else{
+                getRowElement(i).getCells().getItem(0).getStyle().setBackgroundColor("transparent");
+            }
+        }
     }
 
     private Column<T, String> buildColumnTitle() {
@@ -94,6 +138,12 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
             }
         };
         columnTitle.setSortable(true);
+        columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {
+            @Override
+            public void update(int i, T t, String s) {
+                Window.alert("i:" + i + " t:" + t.getDisplayName() + " " + s);
+            }
+        });
         return columnTitle;
     }
 
@@ -107,9 +157,16 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
         };
     }
 
+    @Override
+    public void redraw() {
+        super.redraw();
+        if(this.analysisType==AnalysisType.OVERREPRESENTATION || this.analysisType==AnalysisType.SPECIES_COMPARISON ) {
+            applyORAColour();
+        }
+    }
+
 
     public static Resources RESOURCES;
-
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
