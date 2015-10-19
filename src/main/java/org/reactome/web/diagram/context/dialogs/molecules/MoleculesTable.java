@@ -1,8 +1,11 @@
 package org.reactome.web.diagram.context.dialogs.molecules;
 
-import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.cell.client.ClickableTextCell;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.HasDirection;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.ClientBundle;
@@ -10,7 +13,9 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.CssResource.ImportedWithPrefix;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
+import com.google.gwt.user.client.ui.CustomScrollPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HeaderPanel;
 import com.google.gwt.view.client.ListDataProvider;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
@@ -27,20 +32,31 @@ import java.util.List;
 public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
     private List<Column<T, String>> expression = new ArrayList<>();
     private ListDataProvider<T> dataProvider;
+    private Column<T, String> type;
     private AnalysisType analysisType;
+    private String name;
 
     public MoleculesTable(String name, List<T> molecules, AnalysisType analysisType, List<String> expression, Double min, Double max, int sel) {
         super(molecules.size(), (MoleculesTableResource) GWT.create(MoleculesTableResource.class));
+        this.name = name;
         this.analysisType = analysisType;
         setAlwaysShowScrollBars(false);
 
         List<T> list = sortMolecules(molecules, analysisType);
         dataProvider = new ListDataProvider<>(list);
         dataProvider.addDataDisplay(this);
+        setMoleculesLabels(false); // Show identifiers by default
 
-        Column<T, String> type = buildColumnTitle();
-        addColumn(type, name);
         addExpressionColumns(expression, min, max, sel);
+
+        // Make the scrollbars invisible
+        HeaderPanel panel = (HeaderPanel) this.getWidget();
+        CustomScrollPanel scrollPanel = (CustomScrollPanel) panel.getContentWidget();
+        scrollPanel.getHorizontalScrollbar().asWidget().getElement().getStyle().setOpacity(0);
+    }
+
+    public HandlerRegistration addMoleculeSelectedHandler(MoleculeSelectedHandler handler){
+        return addHandler(handler, MoleculeSelectedEvent.TYPE);
     }
 
     public void addExpressionColumns(List<String> expression, Double min, Double max, int sel) {
@@ -57,6 +73,13 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
         if(this.getRowCount()>0) {
             highlightExpColumn(sel);
         }
+    }
+
+    public void setMoleculesLabels(boolean displayNames){
+        if(type!=null) { removeColumn(type); }
+        type = buildColumnTitle(displayNames);
+        insertColumn(0, type, name);
+        redraw();
     }
 
     public void highlightExpColumn(int col) {
@@ -128,14 +151,23 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
         }
     }
 
-    private Column<T, String> buildColumnTitle() {
-        Column<T, String> columnTitle = new Column<T, String>(new TextCell()) {
+    private Column<T, String> buildColumnTitle(final boolean displayNames) {
+        Column<T, String> columnTitle = new Column<T, String>(new ClickableTextCell()) {
             @Override
             public String getValue(T object) {
-                return object.getIdentifier() != null && !object.getIdentifier().isEmpty() ? object.getIdentifier() : object.getStId();
+                if(displayNames){
+                    return object.getDisplayName();
+                }else{
+                    return object.getIdentifier() != null && !object.getIdentifier().isEmpty() ? object.getIdentifier() : object.getStId();
+                }
             }
         };
         columnTitle.setSortable(true);
+        columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {
+            public void update(int index, T object, String value) {
+                fireEvent(new MoleculeSelectedEvent(object));
+            }
+        });
         return columnTitle;
     }
 
@@ -153,7 +185,12 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
     public void redraw() {
         super.redraw();
         if(this.analysisType==AnalysisType.OVERREPRESENTATION || this.analysisType==AnalysisType.SPECIES_COMPARISON ) {
-            applyORAColour();
+            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                @Override
+                public void execute() {
+                    applyORAColour();
+                }
+            });
         }
     }
 

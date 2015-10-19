@@ -1,3 +1,30 @@
 .container {
     overflow: auto;
 }
+
+@sprite .names {
+    gwt-image: 'namesNormal';
+    outline: none;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    margin-left: 237px;
+    border-radius: 6px;
+    /*position: absolute;*/
+    /*top: 5px;*/
+    /*right: 30px;*/
+}
+
+@sprite .names:hover {
+    gwt-image: 'namesHovered';
+}
+
+@sprite .namesActive, .names:active:hover {
+    gwt-image: 'namesClicked' !important;
+    margin-left: 237px;
+    outline: none;
+    background-repeat: no-repeat;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}

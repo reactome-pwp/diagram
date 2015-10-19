@@ -1,22 +1,26 @@
 package org.reactome.web.diagram.context.dialogs;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.context.dialogs.molecules.MoleculeSelectedEvent;
+import org.reactome.web.diagram.context.dialogs.molecules.MoleculeSelectedHandler;
 import org.reactome.web.diagram.context.dialogs.molecules.MoleculesTable;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.analysis.ExpressionSummary;
 import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.events.AnalysisProfileChangedEvent;
-import org.reactome.web.diagram.events.AnalysisResetEvent;
-import org.reactome.web.diagram.events.AnalysisResultLoadedEvent;
-import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
+import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.AnalysisProfileChangedHandler;
 import org.reactome.web.diagram.handlers.AnalysisResetHandler;
 import org.reactome.web.diagram.handlers.AnalysisResultLoadedHandler;
@@ -32,7 +36,7 @@ import java.util.Set;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class MoleculesDialogPanel extends Composite implements AnalysisResultLoadedHandler, AnalysisResetHandler,
-        ExpressionColumnChangedHandler, AnalysisProfileChangedHandler {
+        ExpressionColumnChangedHandler, AnalysisProfileChangedHandler, ClickHandler, MoleculeSelectedHandler {
 
     private EventBus eventBus;
     private GraphObject graphObject;
@@ -52,6 +56,9 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     private MoleculesTable<GraphSimpleEntity> chemicalsTable;
     private MoleculesTable<GraphGenomeEncodedEntity> dnasTable;
     private MoleculesTable<GraphOtherEntity> othersTable;
+
+    private Button changeBtn;
+    private boolean displayNames;
 
     public MoleculesDialogPanel(EventBus eventBus, DiagramObject diagramObject, AnalysisStatus analysisStatus) {
         this.eventBus = eventBus;
@@ -104,9 +111,32 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     }
 
     @Override
+    public void onClick(ClickEvent event) {
+        Button btn = (Button) event.getSource();
+        if(btn.equals(changeBtn)){
+            this.displayNames = !this.displayNames;
+        }
+        //Apply the right style here
+        if(this.displayNames) {
+            changeBtn.setStyleName(RESOURCES.getCSS().namesActive());
+        }else {
+            changeBtn.setStyleName(RESOURCES.getCSS().names());
+        }
+        changeLabels();
+    }
+
+    @Override
     public void onExpressionColumnChanged(final ExpressionColumnChangedEvent e) {
         selectedExpCol = e.getColumn();
         highlightColumn(selectedExpCol);
+    }
+
+    @Override
+    public void onMoleculeSelected(MoleculeSelectedEvent event) {
+        GraphPhysicalEntity object = event.getValue();
+        if (object != null) {
+            eventBus.fireEventFromSource(new GraphObjectSelectedEvent(object, true), this);
+        }
     }
 
     public void forceDraw(){
@@ -114,6 +144,13 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         if(chemicalsTable!=null) chemicalsTable.redraw();
         if(dnasTable!=null) dnasTable.redraw();
         if(othersTable!=null) othersTable.redraw();
+    }
+
+    private void changeLabels(){
+        if(proteinsTable!=null) proteinsTable.setMoleculesLabels(this.displayNames);
+        if(chemicalsTable!=null) chemicalsTable.setMoleculesLabels(this.displayNames);
+        if(dnasTable!=null) dnasTable.setMoleculesLabels(this.displayNames);
+        if(othersTable!=null) othersTable.setMoleculesLabels(this.displayNames);
     }
 
     private void loadExpressionValues(){
@@ -184,26 +221,38 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     private void initialiseWidget(){
         FlowPanel vp = new FlowPanel();
         vp.setStyleName(RESOURCES.getCSS().container());
+
+        changeBtn = new PwpButton("Show/hide names", RESOURCES.getCSS().names(), this);
+        vp.add(changeBtn);
+
         //There is a certain order in which we want the participating molecules to be listed
         if (!proteins.isEmpty()){
             proteinsTable = new MoleculesTable<>("Proteins", proteins, analysisType, expColumns, min, max, selectedExpCol);
             proteinsTable.setHeight(getOptimalSize(proteins) + "px");
+            proteinsTable.addMoleculeSelectedHandler(this);
             vp.add(proteinsTable);
         }
         if (!chemicals.isEmpty()) {
             chemicalsTable = new MoleculesTable<>("Chemical compounds", chemicals, analysisType, expColumns, min, max, selectedExpCol);
             chemicalsTable.setHeight(getOptimalSize(chemicals) + "px");
+            chemicalsTable.addMoleculeSelectedHandler(this);
             vp.add(chemicalsTable);
         }
         if (!dnas.isEmpty()) {
             dnasTable = new MoleculesTable<>("DNA", dnas, analysisType, expColumns, min, max, selectedExpCol);
             dnasTable.setHeight(getOptimalSize(dnas) + "px");
+            dnasTable.addMoleculeSelectedHandler(this);
             vp.add(dnasTable);
         }
         if (!others.isEmpty()){
             othersTable = new MoleculesTable<>("Others", others, analysisType, expColumns, min, max, selectedExpCol);
             othersTable.setHeight(getOptimalSize(others) + "px");
+            othersTable.addMoleculeSelectedHandler(this);
             vp.add(othersTable);
+        }
+        // Hide the button if nothing is shown
+        if(proteins.isEmpty() && chemicals.isEmpty() && dnas.isEmpty() && others.isEmpty()){
+            changeBtn.setVisible(false);
         }
         initWidget(vp);
     }
@@ -242,6 +291,15 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     public interface Resources extends ClientBundle {
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
+
+        @Source("../images/names_clicked.png")
+        ImageResource namesClicked();
+
+        @Source("../images/names_normal.png")
+        ImageResource namesNormal();
+
+        @Source("../images/names_hovered.png")
+        ImageResource namesHovered();
     }
 
     @CssResource.ImportedWithPrefix("diagram-MoleculesDialogPanel")
@@ -250,5 +308,9 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         String CSS = "org/reactome/web/diagram/context/DialogPanelsCommon.css";
 
         String container();
+
+        String names();
+
+        String namesActive();
     }
 }
