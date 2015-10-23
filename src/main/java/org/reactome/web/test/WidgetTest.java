@@ -1,8 +1,6 @@
 package org.reactome.web.test;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Timer;
@@ -26,12 +24,9 @@ public class WidgetTest implements EntryPoint {
 
     @Override
     public void onModuleLoad() {
-        GWT.runAsync(new RunAsyncCallback() {
-            public void onFailure(Throwable caught) {
-            }
-
-            @SuppressWarnings("unchecked")
-            public void onSuccess() {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
                 DiagramFactory.CONSOLE_VERBOSE = true;
                 DiagramFactory.EVENT_BUS_VERBOSE = true;
 //                DiagramFactory.SHOW_INFO = true;
