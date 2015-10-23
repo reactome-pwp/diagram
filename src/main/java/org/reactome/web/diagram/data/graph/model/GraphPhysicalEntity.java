@@ -156,6 +156,12 @@ public abstract class GraphPhysicalEntity extends GraphObject {
         return new Comparator<GraphPhysicalEntity>() {
             @Override
             public int compare(GraphPhysicalEntity o1, GraphPhysicalEntity o2) {
+                if(o1==null || o2==null){
+                    return 1;
+                }
+                if(o1.getIdentifier()==null || o2.getIdentifier()==null){
+                    return 1;
+                }
                 return o1.getIdentifier().compareTo(o2.getIdentifier());
             }
         };
