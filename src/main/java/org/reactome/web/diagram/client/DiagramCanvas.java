@@ -162,26 +162,50 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     public void highlight(HoveredItem hoveredItem, DiagramContext context) {
         cleanCanvas(this.entitiesHighlight);
         cleanCanvas(this.reactionsHighlight);
-        cleanCanvas(this.entitiesDecorators);
         if(hoveredItem==null) return;
         DiagramStatus status = context.getDiagramStatus();
         for (DiagramObject item : hoveredItem.getDiagramObjects()) {
             if (item.getIsFadeOut() != null) continue;
             Renderer renderer = rendererManager.getRenderer(item);
-            if (renderer == null) return;
+            if (renderer == null) continue;
             if (item instanceof Node) {
                 renderer.highlight(entitiesHighlight, item, status.getFactor(), status.getOffset());
             } else if (item instanceof Edge) {
                 renderer.highlight(reactionsHighlight, item, status.getFactor(), status.getOffset());
             }
         }
+    }
+
+    public void decorators(HoveredItem hoveredItem, DiagramContext context) {
+        cleanCanvas(this.entitiesDecorators);
+        if (hoveredItem == null) return;
+
+        DiagramStatus status = context.getDiagramStatus();
+
         NodeAttachment attachment = hoveredItem.getAttachment();
         if(attachment!=null){
             AttachmentAbstractRenderer.draw(entitiesDecorators, attachment, status.getFactor(), status.getOffset(), true);
         }
+
         SummaryItem summaryItem = hoveredItem.getSummaryItem();
         if(summaryItem!=null){
             SummaryItemAbstractRenderer.draw(entitiesDecorators, summaryItem, status.getFactor(), status.getOffset(), true);
+        }
+
+        for (DiagramObject item : hoveredItem.getDiagramObjects()) {
+            if (item.getIsFadeOut() != null) continue;
+            if (!item.getId().equals(hoveredItem.getDiagramId())) continue;
+            Renderer renderer = rendererManager.getRenderer(item);
+            if (renderer == null) continue;
+            this.entitiesDecorators.save();
+            this.entitiesDecorators.setGlobalAlpha(1);
+            if (hoveredItem.getContextMenuTrigger() == null) {
+                this.entitiesDecorators.setFillStyle(DiagramColours.get().PROFILE.getProperties().getTrigger());
+            } else {
+                this.entitiesDecorators.setFillStyle(DiagramColours.get().PROFILE.getProperties().getSelection());
+            }
+            renderer.focus(this.entitiesDecorators, item, status.getFactor(), status.getOffset());
+            this.entitiesDecorators.restore();
         }
     }
 

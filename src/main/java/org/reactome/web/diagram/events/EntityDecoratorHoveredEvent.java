@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.events;
 
 import com.google.gwt.event.shared.GwtEvent;
+import org.reactome.web.diagram.data.layout.ContextMenuTrigger;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.NodeAttachment;
 import org.reactome.web.diagram.data.layout.SummaryItem;
@@ -15,6 +16,7 @@ public class EntityDecoratorHoveredEvent extends GwtEvent<EntityDecoratorHovered
     private DiagramObject diagramObject;
     private NodeAttachment attachment;
     private SummaryItem summaryItem;
+    private ContextMenuTrigger trigger;
 
     public EntityDecoratorHoveredEvent(DiagramObject diagramObject) {
         this.diagramObject = diagramObject;
@@ -28,6 +30,11 @@ public class EntityDecoratorHoveredEvent extends GwtEvent<EntityDecoratorHovered
     public EntityDecoratorHoveredEvent(DiagramObject diagramObject, SummaryItem summaryItem) {
         this.diagramObject = diagramObject;
         this.summaryItem = summaryItem;
+    }
+
+    public EntityDecoratorHoveredEvent(DiagramObject diagramObject, ContextMenuTrigger trigger) {
+        this.diagramObject = diagramObject;
+        this.trigger = trigger;
     }
 
     @Override
@@ -47,6 +54,10 @@ public class EntityDecoratorHoveredEvent extends GwtEvent<EntityDecoratorHovered
         return summaryItem;
     }
 
+    public ContextMenuTrigger getTrigger() {
+        return trigger;
+    }
+
     @Override
     protected void dispatch(EntityDecoratorHoveredHandler handler) {
         handler.onEntityDecoratorHovered(this);
@@ -58,6 +69,7 @@ public class EntityDecoratorHoveredEvent extends GwtEvent<EntityDecoratorHovered
                 "diagramObject=" + diagramObject +
                 (attachment != null ? ", attachment=" + attachment.getDescription() : "") +
                 (summaryItem != null ? ", summaryItem=" + summaryItem.getType() : "") +
+                (trigger != null ? ", ContextMenuTrigger -> Hovered" : "") +
                 '}';
     }
 }

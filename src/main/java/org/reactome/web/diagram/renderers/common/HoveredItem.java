@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.renderers.common;
 
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.layout.ContextMenuTrigger;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.NodeAttachment;
 import org.reactome.web.diagram.data.layout.SummaryItem;
@@ -18,7 +19,7 @@ import java.util.List;
  *
  *  [X]-------------[A]-[A]----[X]       [A] -> These are node attachments
  *   |                          |        [X] -> These are summary items
- *   |       display name       |
+ *   |       display name   [C] |        [C] -> Context menu trigger
  *   |                          |
  *  [X]------------------------[X]
  *
@@ -31,6 +32,7 @@ public class HoveredItem {
     private GraphObject graphObject;
     private NodeAttachment attachment;
     private SummaryItem summaryItem;
+    private ContextMenuTrigger trigger;
 
     public HoveredItem(GraphObject graphObject) {
         this.graphObject = graphObject;
@@ -48,6 +50,11 @@ public class HoveredItem {
     public HoveredItem(Long diagramId, SummaryItem summaryItem) {
         this.diagramId = diagramId;
         this.summaryItem = summaryItem;
+    }
+
+    public HoveredItem(Long diagramId, ContextMenuTrigger trigger) {
+        this.diagramId = diagramId;
+        this.trigger = trigger;
     }
 
     public Long getDiagramId() {
@@ -80,6 +87,10 @@ public class HoveredItem {
         return summaryItem;
     }
 
+    public ContextMenuTrigger getContextMenuTrigger() {
+        return trigger;
+    }
+
     public void setDiagramObject(DiagramObject diagramObject) {
         this.diagramId = diagramObject.getId();
         this.diagramObject = diagramObject;
@@ -93,11 +104,11 @@ public class HoveredItem {
 
         HoveredItem that = (HoveredItem) o;
 
+        if (trigger != null ? !trigger.equals(that.trigger) : that.trigger != null) return false;
         if (graphObject != null ? !graphObject.equals(that.graphObject) : that.graphObject != null) return false;
         //noinspection SimplifiableIfStatement
         if (attachment != null ? !attachment.equals(that.attachment) : that.attachment != null) return false;
         return summaryItem == that.summaryItem;
-
     }
 
     @Override

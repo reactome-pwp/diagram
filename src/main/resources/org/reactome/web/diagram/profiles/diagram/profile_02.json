@@ -6,6 +6,7 @@
     "selection": "#0000FF",
     "halo": "#CF7C00",
     "flag": "#FF00FF",
+    "trigger": "#6666FF",
     "text": "#0000FF",
     "button:": "#00FF00",
     "disease": "#FF0000"

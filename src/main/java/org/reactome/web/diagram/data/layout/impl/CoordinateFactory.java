@@ -57,6 +57,25 @@ public class CoordinateFactory implements Coordinate {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CoordinateFactory that = (CoordinateFactory) o;
+
+        //noinspection SimplifiableIfStatement
+        if (x != null ? !x.equals(that.x) : that.x != null) return false;
+        return !(y != null ? !y.equals(that.y) : that.y != null);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = x != null ? x.hashCode() : 0;
+        result = 31 * result + (y != null ? y.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "Position{" +
                 "x=" + x +

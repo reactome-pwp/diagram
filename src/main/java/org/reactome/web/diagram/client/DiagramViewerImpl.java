@@ -162,6 +162,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         canvas.render(items, context);
         canvas.select(selected, context);
         canvas.highlight(hovered, context);
+        canvas.decorators(hovered, context);
         canvas.halo(halo, context);
         canvas.flag(flagged, context);
         Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
@@ -262,19 +263,22 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
         GraphObject graphObject = item != null && item.getIsFadeOut() == null ? item.getGraphObject() : null;
         canvas.highlight(hovered, context);
+        canvas.decorators(hovered, context);
 
         if (hovered != null) {
             if (hovered.getAttachment() != null) {
                 this.eventBus.fireEventFromSource(new EntityDecoratorHoveredEvent(item, hovered.getAttachment()), this);
             } else if (hovered.getSummaryItem() != null) {
                 this.eventBus.fireEventFromSource(new EntityDecoratorHoveredEvent(item, hovered.getSummaryItem()), this);
+            } else if (hovered.getContextMenuTrigger() != null) {
+                this.eventBus.fireEventFromSource(new EntityDecoratorHoveredEvent(item, hovered.getContextMenuTrigger()), this);
             } else {
                 this.eventBus.fireEventFromSource(new EntityDecoratorHoveredEvent(item), this);
             }
         }
 
         //Even though at the level of HoveredItem they are different, we only notify if the hovered diagram
-        //object is actually different, sw we do not take into account attachments or entities summary.
+        //object is actually different, so we do not take into account attachments or entities summary.
         DiagramObject prev = this.hovered != null ? this.hovered.getHoveredObject() : null;
         this.hovered = hovered;
         if(!Objects.equals(prev, item)) {
@@ -858,6 +862,11 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
                 hovered.getSummaryItem().setPressed(pressed == null || !pressed);
                 forceDraw = true;
                 this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getSummaryItem()), this);
+            }
+            if(hoveredItem.getContextMenuTrigger()!=null){
+                this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getContextMenuTrigger()), this);
+                DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
+                this.context.showDialog(this.eventBus, item, this.canvas);
             }
         }
         if (!Objects.equals(this.selected, toSelect)) {

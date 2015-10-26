@@ -1,8 +1,10 @@
 package org.reactome.web.diagram.data.layout.category;
 
 import com.google.web.bindery.autobean.shared.AutoBean;
+import org.reactome.web.diagram.data.layout.ContextMenuTrigger;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.layout.NodeCommon;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 
 /**
@@ -59,6 +61,16 @@ public class DiagramObjectCategory {
 //        DiagramObject r = rawObjectAutoBean.as();
 //        return r.getReactomeId() != null ? r.getReactomeId().hashCode() : 0;
 //    }
+
+    //Don't use getContextMenuTrigger (because AutoBean only overrides the non-property methods)
+    public static ContextMenuTrigger contextMenuTrigger(AutoBean<? extends DiagramObject> rawObjectAutoBean){
+        DiagramObject r = rawObjectAutoBean.as();
+        if(r instanceof NodeCommon){
+            NodeCommon node = (NodeCommon) r;
+            return new ContextMenuTrigger(node.getProp());
+        }
+        return null;
+    }
 
     public static String toString(AutoBean<? extends DiagramObject> rawObjectAutoBean){
         DiagramObject r = rawObjectAutoBean.as();

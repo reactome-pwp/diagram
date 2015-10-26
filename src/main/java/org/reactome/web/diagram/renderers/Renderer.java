@@ -9,6 +9,7 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
+ * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public interface Renderer {
 
@@ -19,6 +20,8 @@ public interface Renderer {
     void drawExpression(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset);
 
     void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset);
+
+    void focus(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset);
 
     void highlight(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset);
 

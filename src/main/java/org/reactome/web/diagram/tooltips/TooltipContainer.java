@@ -28,6 +28,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     private Object hovered;
 
     private Timer hoveredTimer;
+    private Timer infoTimer; //For messages that don't have to last long on the viewport (like the trigger hovering)
 
     private int width;
     private int height;
@@ -68,6 +69,8 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
             setHovered(event.getAttachment());
         } else if (event.getSummaryItem() != null) {
             setHovered(event.getSummaryItem());
+        } else if (event.getTrigger() != null) {
+            setHovered(event.getTrigger());
         } else {
             setHovered(event.getDiagramObject());
         }
@@ -123,7 +126,12 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
         if (this.hovered == null) {
             showTooltipExecute(); //this will quickly hide the tooltip ;)
         } else {
-            this.hoveredTimer.schedule(DELAY);
+            if(this.hovered instanceof ContextMenuTrigger){
+                Tooltip.getTooltip().hide(); //Corrects the behaviour for other possible shown tooltips
+                this.hoveredTimer.schedule(DELAY * 4);
+            }else {
+                this.hoveredTimer.schedule(DELAY);
+            }
         }
     }
 
@@ -137,7 +145,10 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     }
 
     private void showTooltipExecute() {
-        Tooltip tooltip = Tooltip.getTooltip();
+        final Tooltip tooltip = Tooltip.getTooltip();
+
+        if(infoTimer !=null) infoTimer.cancel();
+
         if (hovered == null || context == null) {
             tooltip.hide();
         } else {
@@ -185,7 +196,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
                             (shape.getB().getY() - shape.getA().getY()) + 4.0 * factor
                     );
                 }
-            } else if (hovered instanceof SummaryItem){
+            } else if (hovered instanceof SummaryItem) {
                 SummaryItem summaryItem = (SummaryItem) hovered;
                 Shape shape = ShapeFactory.transform(summaryItem.getShape(), factor, offset);
                 tooltip.setText(shape.getS() + " interactions");
@@ -198,6 +209,22 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
                             shape.getR() + 8.0 * factor
                     );
                 }
+            } else if (hovered instanceof ContextMenuTrigger){
+                ContextMenuTrigger trigger = ((ContextMenuTrigger) hovered).transform(factor, offset);
+                tooltip.setText("Click to open the context menu");
+                tooltip.setPositionAndShow(
+                        TooltipContainer.this,
+                        trigger.getB().getX() - 200,
+                        trigger.getC().getY(),
+                        factor
+                );
+                infoTimer = new Timer() {
+                    @Override
+                    public void run() {
+                        tooltip.hide();
+                    }
+                };
+                infoTimer.schedule(1500);
             } else {
                 tooltip.hide(); //just in case :)
             }

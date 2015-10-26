@@ -16,6 +16,8 @@ public interface DiagramProfileProperties {
 
     String getFlag();
 
+    String getTrigger();
+
     String getText();
 
     String getButton();

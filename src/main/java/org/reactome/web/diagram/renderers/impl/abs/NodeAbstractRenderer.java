@@ -36,6 +36,20 @@ public abstract class NodeAbstractRenderer extends AbstractRenderer {
     }
 
     @Override
+    public void focus(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset){
+        if (!isVisible(item)) return;
+        ContextMenuTrigger trigger = item.contextMenuTrigger();
+        if(trigger==null) return;
+        trigger = trigger.transform(factor, offset);
+        ctx.beginPath();
+        ctx.moveTo(trigger.getA().getX(), trigger.getA().getY());
+        ctx.lineTo(trigger.getB().getX(), trigger.getB().getY());
+        ctx.lineTo(trigger.getC().getX(), trigger.getC().getY());
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    @Override
     public void highlight(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         if (!isVisible(item)) return;
         Node node = (Node) item;
@@ -56,6 +70,10 @@ public abstract class NodeAbstractRenderer extends AbstractRenderer {
                     );
 
             if (nodeMainShapeHovered) {
+                ContextMenuTrigger trigger = node.contextMenuTrigger();
+                if(trigger.isHovered(pos)){
+                    return new HoveredItem(node.getId(), trigger);
+                }
                 return new HoveredItem(node.getId());
             }
 
