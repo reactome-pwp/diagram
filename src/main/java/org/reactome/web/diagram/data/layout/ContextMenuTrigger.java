@@ -19,15 +19,17 @@ public class ContextMenuTrigger {
 
     public ContextMenuTrigger(NodeCommon node) {
         NodeProperties prop = node.getProp();
-        if(node.getRenderableClass().equals("Gene")){
-            this.a = CoordinateFactory.get(prop.getX() + prop.getWidth() - 5, prop.getY() + prop.getHeight() * 3/4);
-            this.b = CoordinateFactory.get(prop.getX() + prop.getWidth() - 12, prop.getY() + prop.getHeight() * 3/4 - 4);
-            this.c = CoordinateFactory.get(prop.getX() + prop.getWidth() - 12, prop.getY() + prop.getHeight() * 3/4 + 4);
-        }else {
-            this.a = CoordinateFactory.get(prop.getX() + prop.getWidth() - 5, prop.getY() + prop.getHeight() / 2);
-            this.b = CoordinateFactory.get(prop.getX() + prop.getWidth() - 12, prop.getY() + prop.getHeight() / 2 - 4);
-            this.c = CoordinateFactory.get(prop.getX() + prop.getWidth() - 12, prop.getY() + prop.getHeight() / 2 + 4);
+        Double x, y;
+        if (node.getRenderableClass().equals("Gene")) {
+            x = prop.getX() + prop.getWidth();
+            y = prop.getY() + prop.getHeight() * 3 / 4;
+        } else {
+            x = prop.getX() + prop.getWidth();
+            y = prop.getY() + prop.getHeight() / 2;
         }
+        this.a = CoordinateFactory.get(x - 5, y);
+        this.b = CoordinateFactory.get(x - 12, y - 4);
+        this.c = CoordinateFactory.get(x - 12, y + 4);
     }
 
     public boolean isHovered(Coordinate m) {
