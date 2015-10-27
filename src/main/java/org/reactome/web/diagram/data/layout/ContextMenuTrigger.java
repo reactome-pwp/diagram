@@ -17,10 +17,17 @@ public class ContextMenuTrigger {
         this.c = c;
     }
 
-    public ContextMenuTrigger(NodeProperties prop) {
-        this.a = CoordinateFactory.get(prop.getX() + prop.getWidth() - 5, prop.getY() + prop.getHeight() / 2);
-        this.b = CoordinateFactory.get(prop.getX() + prop.getWidth() - 12, prop.getY() + prop.getHeight() / 2 - 4);
-        this.c = CoordinateFactory.get(prop.getX() + prop.getWidth() - 12, prop.getY() + prop.getHeight() / 2 + 4);
+    public ContextMenuTrigger(NodeCommon node) {
+        NodeProperties prop = node.getProp();
+        if(node.getRenderableClass().equals("Gene")){
+            this.a = CoordinateFactory.get(prop.getX() + prop.getWidth() - 5, prop.getY() + prop.getHeight() * 3/4);
+            this.b = CoordinateFactory.get(prop.getX() + prop.getWidth() - 12, prop.getY() + prop.getHeight() * 3/4 - 4);
+            this.c = CoordinateFactory.get(prop.getX() + prop.getWidth() - 12, prop.getY() + prop.getHeight() * 3/4 + 4);
+        }else {
+            this.a = CoordinateFactory.get(prop.getX() + prop.getWidth() - 5, prop.getY() + prop.getHeight() / 2);
+            this.b = CoordinateFactory.get(prop.getX() + prop.getWidth() - 12, prop.getY() + prop.getHeight() / 2 - 4);
+            this.c = CoordinateFactory.get(prop.getX() + prop.getWidth() - 12, prop.getY() + prop.getHeight() / 2 + 4);
+        }
     }
 
     public boolean isHovered(Coordinate m) {

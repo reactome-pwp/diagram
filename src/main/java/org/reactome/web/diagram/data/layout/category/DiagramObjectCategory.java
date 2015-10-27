@@ -67,7 +67,7 @@ public class DiagramObjectCategory {
         DiagramObject r = rawObjectAutoBean.as();
         if(r instanceof NodeCommon){
             NodeCommon node = (NodeCommon) r;
-            return new ContextMenuTrigger(node.getProp());
+            return new ContextMenuTrigger(node);
         }
         return null;
     }
