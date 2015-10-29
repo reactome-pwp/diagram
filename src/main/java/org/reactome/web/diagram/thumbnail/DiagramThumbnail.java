@@ -160,7 +160,8 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
             if (this.from != null && this.to != null) {
                 //Do not change any property of the status since it will be updated once the corresponding
                 //action is performed in the main view and notified (thumbnail status changes on demand)
-                Coordinate padding = this.from.minus(mouse.minus(this.delta)).divide(this.factor);
+                Double factor = Math.ceil(this.factor); //Fix for unstable thumbnail dragging behaviour
+                Coordinate padding = this.from.minus(mouse.minus(this.delta)).divide(factor);
                 this.eventBus.fireEventFromSource(new ThumbnailAreaMovedEvent(padding), this);
             }
         } else {
