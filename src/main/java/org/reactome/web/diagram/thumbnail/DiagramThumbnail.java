@@ -43,6 +43,8 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
     Coordinate mouseDown = null;
     Coordinate delta = null;
 
+    boolean locked = true;
+
     private Canvas compartments;
     private Canvas items;
     private Canvas highlight;
@@ -88,7 +90,7 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
     public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
         this.cleanCanvas(this.selection);
         GraphObject graphObject = event.getGraphObject();
-        if(graphObject !=null) {
+        if (graphObject != null) {
             for (DiagramObject selected : graphObject.getDiagramObjects()) {
                 this.select(selected);
             }
@@ -99,7 +101,7 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
     public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
         this.cleanCanvas(this.highlight);
         GraphObject hovered = event.getGraphObject();
-        List<DiagramObject> toHover = hovered!=null?hovered.getDiagramObjects():new LinkedList<DiagramObject>();
+        List<DiagramObject> toHover = hovered != null ? hovered.getDiagramObjects() : new LinkedList<DiagramObject>();
         for (DiagramObject item : toHover) {
             this.highlight(item);
         }
@@ -154,14 +156,17 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
     public void onMouseMove(MouseMoveEvent event) {
         event.stopPropagation();
         event.preventDefault();
+        if(this.locked){
+            getElement().getStyle().setCursor(Style.Cursor.DEFAULT);
+            return;
+        }
         Element elem = event.getRelativeElement();
         Coordinate mouse = CoordinateFactory.get(event.getRelativeX(elem), event.getRelativeY(elem));
         if (this.mouseDown != null) {
             if (this.from != null && this.to != null) {
                 //Do not change any property of the status since it will be updated once the corresponding
                 //action is performed in the main view and notified (thumbnail status changes on demand)
-                Double factor = Math.ceil(this.factor); //Fix for unstable thumbnail dragging behaviour
-                Coordinate padding = this.from.minus(mouse.minus(this.delta)).divide(factor);
+                Coordinate padding = this.from.minus(mouse.minus(this.delta)).divide(this.factor);
                 this.eventBus.fireEventFromSource(new ThumbnailAreaMovedEvent(padding), this);
             }
         } else {
@@ -307,7 +312,7 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
                 && mouse.getY() <= this.to.getY();
     }
 
-    private void setCanvasProperties(){
+    private void setCanvasProperties() {
         AdvancedContext2d ctx = this.highlight.getContext2d().cast();
         ctx.setFillStyle(DiagramColours.get().PROFILE.getProperties().getHighlight());
         ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getHighlight());
@@ -331,5 +336,6 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
             this.to = to.add(this.offset).multiply(this.factor);
             this.drawFrame();
         }
+        this.locked = (this.from.getX() <= 0 && this.from.getY() <= 0 && this.to.getX() >= this.frame.getOffsetWidth() && this.to.getY() >= this.frame.getOffsetHeight());
     }
 }
