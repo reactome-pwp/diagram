@@ -695,7 +695,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onThumbnailAreaMoved(ThumbnailAreaMovedEvent event) {
-        this.padding(event.getCoordinate());
+        this.padding(event.getCoordinate().multiply(context.getDiagramStatus().getFactor()));
     }
 
     @Override

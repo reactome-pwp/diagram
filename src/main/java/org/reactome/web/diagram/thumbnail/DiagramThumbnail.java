@@ -43,8 +43,6 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
     Coordinate mouseDown = null;
     Coordinate delta = null;
 
-    boolean locked = true;
-
     private Canvas compartments;
     private Canvas items;
     private Canvas highlight;
@@ -156,10 +154,6 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
     public void onMouseMove(MouseMoveEvent event) {
         event.stopPropagation();
         event.preventDefault();
-        if(this.locked){
-            getElement().getStyle().setCursor(Style.Cursor.DEFAULT);
-            return;
-        }
         Element elem = event.getRelativeElement();
         Coordinate mouse = CoordinateFactory.get(event.getRelativeX(elem), event.getRelativeY(elem));
         if (this.mouseDown != null) {
@@ -251,14 +245,13 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
 
     private void setContent(DiagramContent content, Box visibleArea) {
         if (this.content == content) return;
-
         this.content = content;
 
         this.factor = HEIGHT / (this.content.getHeight() + FRAME);
         int width = (int) Math.ceil((this.content.getWidth() + FRAME) * this.factor);
-        this.offset = CoordinateFactory.get(FRAME / 2 - content.getMinX(), FRAME / 2 - content.getMinY());
-
         this.resize(width, HEIGHT);
+
+        this.offset = CoordinateFactory.get(FRAME / 2.0 - content.getMinX(), FRAME / 2.0 - content.getMinY());
         this.items.getContext2d().setLineWidth(this.factor < MIN_LINE_WIDTH ? MIN_LINE_WIDTH : this.factor);
 
         this.setVisible(true);
@@ -336,6 +329,5 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
             this.to = to.add(this.offset).multiply(this.factor);
             this.drawFrame();
         }
-        this.locked = (this.from.getX() <= 0 && this.from.getY() <= 0 && this.to.getX() >= this.frame.getOffsetWidth() && this.to.getY() >= this.frame.getOffsetHeight());
     }
 }
