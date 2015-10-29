@@ -19,13 +19,12 @@ public class ContextMenuTrigger {
 
     public ContextMenuTrigger(NodeCommon node) {
         NodeProperties prop = node.getProp();
-        Double x, y;
+        Double x = prop.getX() + prop.getWidth();
+        Double y = prop.getY();
         if (node.getRenderableClass().equals("Gene")) {
-            x = prop.getX() + prop.getWidth();
-            y = prop.getY() + prop.getHeight() * 3 / 4;
+            y += prop.getHeight() * 3 / 4;
         } else {
-            x = prop.getX() + prop.getWidth();
-            y = prop.getY() + prop.getHeight() / 2;
+            y += prop.getHeight() / 2;
         }
         this.a = CoordinateFactory.get(x - 5, y);
         this.b = CoordinateFactory.get(x - 12, y - 4);
