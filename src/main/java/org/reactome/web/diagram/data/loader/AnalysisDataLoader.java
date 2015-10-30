@@ -35,7 +35,7 @@ import java.util.Set;
  */
 public class AnalysisDataLoader implements AnalysisLoaderHandler {
     private static AnalysisDataLoader analysisDataLoader;
-    private final static String PREFIX = DiagramFactory.SERVER + "/AnalysisService/token/";
+    protected final static String PREFIX = DiagramFactory.SERVER + "/AnalysisService/token/";
 
     private EventBus eventBus;
 
