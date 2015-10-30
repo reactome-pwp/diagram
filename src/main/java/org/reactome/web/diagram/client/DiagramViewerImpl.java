@@ -25,6 +25,7 @@ import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.loader.AnalysisDataLoader;
+import org.reactome.web.diagram.data.loader.AnalysisTokenValidator;
 import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
@@ -759,8 +760,17 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void setAnalysisToken(String token, String resource) {
-        AnalysisStatus analysisStatus = (token == null) ? null : new AnalysisStatus(eventBus, token, resource);
-        this.loadAnalysis(analysisStatus);
+        final AnalysisStatus analysisStatus = (token == null) ? null : new AnalysisStatus(eventBus, token, resource);
+        AnalysisTokenValidator.checkTokenAvailability(token, new AnalysisTokenValidator.TokenAvailabilityHandler() {
+            @Override
+            public void onTokenAvailabilityChecked(boolean available, String message) {
+                if (available) {
+                    loadAnalysis(analysisStatus);
+                } else {
+                    eventBus.fireEventFromSource(new DiagramInternalErrorEvent(message), DiagramViewerImpl.this);
+                }
+            }
+        });
     }
 
     @Override
