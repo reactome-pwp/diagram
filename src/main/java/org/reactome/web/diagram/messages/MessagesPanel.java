@@ -29,14 +29,11 @@ public abstract class MessagesPanel extends AbsolutePanel {
         @Source(MessagesPanelCSS.CSS)
         MessagesPanelCSS getCSS();
 
-        @Source("images/loader.gif")
+        @Source("images/error.png")
         ImageResource error();
 
-        @Source("images/loader.gif")
+        @Source("images/loader_lines.gif")
         ImageResource loader();
-
-//        @Source("images/loader.gif")
-//        ImageResource warning();
     }
 
     /**
@@ -54,6 +51,8 @@ public abstract class MessagesPanel extends AbsolutePanel {
         String loadingMessage();
 
         String analysisOverlayMessage();
+
+        String errorMessage();
     }
 
     protected EventBus eventBus;

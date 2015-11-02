@@ -26,9 +26,12 @@ public class LoadingMessage extends MessagesPanel implements DiagramRequestedHan
         //Setting the legend style
         addStyleName(css.loadingMessage());
 
+        InlineLabel lb = new InlineLabel("Loading diagram...");
+
+
         FlowPanel fp = new FlowPanel();
         fp.add(new Image(RESOURCES.loader()));
-        fp.add(new InlineLabel("Loading diagram..."));
+        fp.add(lb);
         this.add(fp);
 
         this.initHandlers();

@@ -134,13 +134,6 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
         }
     }
 
-
-    public static Resources RESOURCES;
-    static {
-        RESOURCES = GWT.create(Resources.class);
-        RESOURCES.getCSS().ensureInjected();
-    }
-
     @Override
     public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
         if (graphObject.equals(event.getGraphObject())){
@@ -148,6 +141,13 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
         } else {
             this.removeStyleName(RESOURCES.getCSS().popupSelected());
         }
+    }
+
+
+    public static Resources RESOURCES;
+    static {
+        RESOURCES = GWT.create(Resources.class);
+        RESOURCES.getCSS().ensureInjected();
     }
 
     public interface Resources extends ClientBundle {

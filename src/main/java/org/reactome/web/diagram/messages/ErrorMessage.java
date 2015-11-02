@@ -7,15 +7,17 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.events.AnalysisResultLoadedEvent;
 import org.reactome.web.diagram.events.AnalysisResultRequestedEvent;
 import org.reactome.web.diagram.events.DiagramInternalErrorEvent;
+import org.reactome.web.diagram.events.DiagramRequestedEvent;
 import org.reactome.web.diagram.handlers.AnalysisResultLoadedHandler;
 import org.reactome.web.diagram.handlers.AnalysisResultRequestedHandler;
 import org.reactome.web.diagram.handlers.DiagramInternalErrorHandler;
+import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class ErrorMessage extends MessagesPanel implements AnalysisResultRequestedHandler, AnalysisResultLoadedHandler,
-        DiagramInternalErrorHandler {
+        DiagramRequestedHandler, DiagramInternalErrorHandler {
 
     private InlineLabel message;
 
@@ -24,7 +26,7 @@ public class ErrorMessage extends MessagesPanel implements AnalysisResultRequest
 
         MessagesPanelCSS css = RESOURCES.getCSS();
         //Setting the legend style
-        addStyleName(css.analysisOverlayMessage());
+        addStyleName(css.errorMessage());
 
         FlowPanel fp = new FlowPanel();
         fp.add(new Image(RESOURCES.error()));
@@ -46,6 +48,11 @@ public class ErrorMessage extends MessagesPanel implements AnalysisResultRequest
     }
 
     @Override
+    public void onDiagramRequested(DiagramRequestedEvent event) {
+        this.setVisible(false);
+    }
+
+    @Override
     public void onDiagramInternalError(DiagramInternalErrorEvent event) {
         this.message.setText(event.getMessage());
         this.setVisible(true);
@@ -53,6 +60,7 @@ public class ErrorMessage extends MessagesPanel implements AnalysisResultRequest
 
     private void initHandlers() {
         this.eventBus.addHandler(DiagramInternalErrorEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
     }

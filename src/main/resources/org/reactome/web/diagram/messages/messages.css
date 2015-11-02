@@ -1,28 +1,45 @@
 .messagesPanel{
-    background-color: rgba(240, 240, 240, 0.9);
-    border: 1px solid lightgray;
-    border-radius: 15px;
+    /*background-color: rgba(240, 240, 240, 0.9);*/
+    /*border: 1px solid lightgray;*/
+    border-radius: 12px;
     position: absolute;
+
+    background-color: rgb(27, 135, 197);
+    border: 1px solid rgb(42, 147, 189);
+    color: white;
+    opacity: 0.85;
+    display: block;
+
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
     box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: medium !important;
+}
+
+.messagesPanel img {
+    width: auto;
+    height:32px;
+    vertical-align: middle;
 }
 
 .loadingMessage { /*centers in the middle*/
-    width: 170px;
-    margin-right: -85px; /* width and margin-right are related, please change both if needed */
+    width: 190px;
+    margin-right: -95px; /* width and margin-right are related, please change both if needed */
     right: 50%;
 
-    height: 30px;
-    margin-top: -15px; /* height and margin-top are related, please change both if needed */
+    height: 40px;
+    margin-top: -20px; /* height and margin-top are related, please change both if needed */
     top: 50%;
 
-    padding: 15px 0 0 20px;
+    padding: 5px 10px 0px 15px;
 }
 
 .loadingMessage span {
     margin-left: 15px;
+    vertical-align: middle;
 }
 
 .analysisOverlayMessage {
@@ -30,13 +47,39 @@
     margin-right: -100px; /* width and margin-right are related, please change both if needed */
     right: 50%;
 
-    height: 30px;
-    margin-top: -15px; /* height and margin-top are related, please change both if needed */
+    height: 40px;
+    margin-top: -20px; /* height and margin-top are related, please change both if needed */
     top: 50%;
 
-    padding: 15px 0 0 20px;
+    padding: 10px 10px 0 15px;
 }
 
 .analysisOverlayMessage span {
     margin-left: 15px;
+}
+
+.errorMessage {
+    width: 190px;
+    margin-right: -95px; /* width and margin-right are related, please change both if needed */
+    right: 50%;
+
+    height: 40px;
+    margin-top: -20px; /* height and margin-top are related, please change both if needed */
+    top: 50%;
+
+    padding: 5px 10px 0 15px;
+
+    background-color: rgb(197, 91, 88);
+    border: 1px solid rgb(197, 39, 34);
+}
+
+.errorMessage span {
+    margin-left: 15px;
+    vertical-align: middle;
+}
+
+.errorMessage img {
+    width: auto;
+    height:32px;
+    vertical-align: middle;
 }
