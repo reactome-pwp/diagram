@@ -4,7 +4,6 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
-import org.reactome.web.diagram.data.loader.AnalysisDataLoader;
 import org.reactome.web.diagram.events.AnalysisResultLoadedEvent;
 import org.reactome.web.diagram.events.AnalysisResultRequestedEvent;
 import org.reactome.web.diagram.events.DiagramInternalErrorEvent;
@@ -15,10 +14,12 @@ import org.reactome.web.diagram.handlers.DiagramInternalErrorHandler;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class AnalysisMessage extends MessagesPanel implements AnalysisResultRequestedHandler, AnalysisResultLoadedHandler,
+public class ErrorMessage extends MessagesPanel implements AnalysisResultRequestedHandler, AnalysisResultLoadedHandler,
         DiagramInternalErrorHandler {
 
-    public AnalysisMessage(EventBus eventBus) {
+    private InlineLabel message;
+
+    public ErrorMessage(EventBus eventBus) {
         super(eventBus);
 
         MessagesPanelCSS css = RESOURCES.getCSS();
@@ -26,8 +27,8 @@ public class AnalysisMessage extends MessagesPanel implements AnalysisResultRequ
         addStyleName(css.analysisOverlayMessage());
 
         FlowPanel fp = new FlowPanel();
-        fp.add(new Image(RESOURCES.loader()));
-        fp.add(new InlineLabel("Loading analysis overlay..."));
+        fp.add(new Image(RESOURCES.error()));
+        fp.add(message = new InlineLabel("Error holder"));
         this.add(fp);
         setVisible(false);
 
@@ -35,23 +36,22 @@ public class AnalysisMessage extends MessagesPanel implements AnalysisResultRequ
     }
 
     @Override
-    public void onDiagramInternalError(DiagramInternalErrorEvent event) {
-        if(event.getSource().getClass().equals(AnalysisDataLoader.class)) {
-            this.setVisible(false);
-        }
-    }
-
-    @Override
-    public void onAnalysisResultRequested(AnalysisResultRequestedEvent event) {
-        this.setVisible(true);
-    }
-
-    @Override
     public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
         this.setVisible(false);
     }
 
-    private void initHandlers(){
+    @Override
+    public void onAnalysisResultRequested(AnalysisResultRequestedEvent event) {
+        this.setVisible(false);
+    }
+
+    @Override
+    public void onDiagramInternalError(DiagramInternalErrorEvent event) {
+        this.message.setText(event.getMessage());
+        this.setVisible(true);
+    }
+
+    private void initHandlers() {
         this.eventBus.addHandler(DiagramInternalErrorEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);

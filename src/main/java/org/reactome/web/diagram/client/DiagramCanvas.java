@@ -28,6 +28,7 @@ import org.reactome.web.diagram.legends.ExpressionControl;
 import org.reactome.web.diagram.legends.ExpressionLegend;
 import org.reactome.web.diagram.legends.FlaggedItemsControl;
 import org.reactome.web.diagram.messages.AnalysisMessage;
+import org.reactome.web.diagram.messages.ErrorMessage;
 import org.reactome.web.diagram.messages.LoadingMessage;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
@@ -585,6 +586,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         //DO NOT CHANGE THE ORDER OF THE FOLLOWING TWO LINES
         this.add(new LoadingMessage(eventBus));                 //Loading message panel
         this.add(new AnalysisMessage(eventBus));                //Analysis overlay message panel
+        this.add(new ErrorMessage(eventBus));                   //Error message panel
         this.tooltipContainer = createToolTipContainer(width, height);
 
         this.buffer = createCanvas(width, height);  //Top-level canvas (mouse ctrl and buffer)
