@@ -17,8 +17,7 @@ public class WidgetTest implements EntryPoint {
     private final DiagramViewer diagram;
 
     public WidgetTest() {
-        DiagramFactory.SERVER = "nothing";
-
+//        DiagramFactory.SERVER = "fakeserver.com";
         DiagramFactory.CONSOLE_VERBOSE = true;
         DiagramFactory.EVENT_BUS_VERBOSE = true;
 //                DiagramFactory.SHOW_INFO = true;
