@@ -146,7 +146,7 @@ public class TextRenderer {
         for (int i = longWord.length() - 1; i >= 0; i--) {
             char letter = longWord.charAt(i);
             // The word can be spitted in the following points
-            if(letter == ':' || letter == '.' || letter == '-' || letter == ',' || letter == ')' || letter == '/'){
+            if(letter == ':' || letter == '.' || letter == '-' || letter == ',' || letter == ')' || letter == '/' || letter == '+'){
                 // Split at this position
                 String firstPart = longWord.substring(0, i+1);
                 String secondPart = longWord.substring(i+1);
