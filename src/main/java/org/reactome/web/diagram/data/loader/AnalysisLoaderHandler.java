@@ -16,18 +16,18 @@ interface AnalysisLoaderHandler {
 
     void onResultSummaryNotFound(long time);
 
-    void onResultSummaryError();
+    void onResultSummaryError(Throwable e);
 
     void onPathwayIdentifiersLoaded(PathwayIdentifiers identifiers, long time);
 
     void onPathwayIdentifiersNotFound(long time);
 
-    void onPathwayIdentifiersError();
+    void onPathwayIdentifiersError(Throwable e);
 
     void onPathwaySummariesLoaded(List<PathwaySummary> pathwaySummaries, long time);
 
     void onPathwaySummariesNotFound(long time);
 
-    void onPathwaySummariesError();
+    void onPathwaySummariesError(Throwable e);
 
 }

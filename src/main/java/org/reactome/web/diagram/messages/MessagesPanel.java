@@ -30,7 +30,13 @@ public abstract class MessagesPanel extends AbsolutePanel {
         MessagesPanelCSS getCSS();
 
         @Source("images/loader.gif")
+        ImageResource error();
+
+        @Source("images/loader.gif")
         ImageResource loader();
+
+//        @Source("images/loader.gif")
+//        ImageResource warning();
     }
 
     /**

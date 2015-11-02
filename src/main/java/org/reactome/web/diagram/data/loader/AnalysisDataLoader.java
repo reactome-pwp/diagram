@@ -12,6 +12,7 @@ import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.events.AnalysisResultErrorEvent;
 import org.reactome.web.diagram.events.AnalysisResultLoadedEvent;
 import org.reactome.web.diagram.events.AnalysisResultRequestedEvent;
+import org.reactome.web.diagram.events.DiagramInternalErrorEvent;
 import org.reactome.web.diagram.util.Console;
 
 import java.util.List;
@@ -97,8 +98,8 @@ public class AnalysisDataLoader implements AnalysisLoaderHandler {
     }
 
     @Override
-    public void onResultSummaryError() {
-
+    public void onResultSummaryError(Throwable e) {
+        this.eventBus.fireEventFromSource(new DiagramInternalErrorEvent(e.getMessage()), this);
     }
 
     @Override
@@ -122,8 +123,8 @@ public class AnalysisDataLoader implements AnalysisLoaderHandler {
     }
 
     @Override
-    public void onPathwayIdentifiersError() {
-        //TODO
+    public void onPathwayIdentifiersError(Throwable e) {
+        this.eventBus.fireEventFromSource(new DiagramInternalErrorEvent(e.getMessage()), this);
     }
 
     @Override
@@ -137,8 +138,8 @@ public class AnalysisDataLoader implements AnalysisLoaderHandler {
     }
 
     @Override
-    public void onPathwaySummariesError() {
-
+    public void onPathwaySummariesError(Throwable e) {
+        this.eventBus.fireEventFromSource(new DiagramInternalErrorEvent(e.getMessage()), this);
     }
 
     class ResultSummaryLoader implements RequestCallback {
@@ -153,8 +154,7 @@ public class AnalysisDataLoader implements AnalysisLoaderHandler {
             try {
                 this.request = requestBuilder.sendRequest(null, this);
             } catch (RequestException e) {
-                e.printStackTrace();
-                handler.onResultSummaryError();
+                handler.onResultSummaryError(e);
             }
         }
 
@@ -170,8 +170,7 @@ public class AnalysisDataLoader implements AnalysisLoaderHandler {
                         time = System.currentTimeMillis() - start;
                         handler.onResultSummaryLoaded(summary, expressionSummary, time);
                     } catch (AnalysisModelException e) {
-                        e.printStackTrace();
-                        handler.onResultSummaryError();
+                        handler.onResultSummaryError(e);
                     }
                     break;
                 case Response.SC_NOT_FOUND:
@@ -182,15 +181,13 @@ public class AnalysisDataLoader implements AnalysisLoaderHandler {
                     Console.error("Your result may have been deleted due to a new content release. " +
                             "Please submit your data again to obtain results for the latest version of our database");
                 default:
-                    Console.error(response.getStatusText());
-                    handler.onResultSummaryError();
+                    handler.onResultSummaryError(new Exception(response.getStatusText()));
             }
         }
 
         @Override
         public void onError(Request request, Throwable exception) {
-            exception.printStackTrace();
-            handler.onResultSummaryError();
+            handler.onResultSummaryError(exception);
         }
     }
 
@@ -221,8 +218,7 @@ public class AnalysisDataLoader implements AnalysisLoaderHandler {
                         time = System.currentTimeMillis() - start;
                         handler.onPathwayIdentifiersLoaded(pathwayIdentifiers, time);
                     } catch (AnalysisModelException e) {
-                        e.printStackTrace();
-                        handler.onPathwayIdentifiersError();
+                        handler.onPathwayIdentifiersError(e);
                     }
                     break;
                 case Response.SC_NOT_FOUND:
@@ -233,15 +229,13 @@ public class AnalysisDataLoader implements AnalysisLoaderHandler {
                     Console.error("Your result may have been deleted due to a new content release. " +
                             "Please submit your data again to obtain results for the latest version of our database");
                 default:
-                    Console.error(response.getStatusText());
-                    handler.onPathwayIdentifiersError();
+                    handler.onPathwayIdentifiersError(new Exception(response.getStatusText()));
             }
         }
 
         @Override
         public void onError(Request request, Throwable exception) {
-            exception.printStackTrace();
-            handler.onPathwayIdentifiersError();
+            handler.onPathwayIdentifiersError(exception);
         }
     }
 
@@ -263,8 +257,7 @@ public class AnalysisDataLoader implements AnalysisLoaderHandler {
             try {
                 this.request = requestBuilder.sendRequest(postData.toString(), this);
             } catch (RequestException e) {
-                e.printStackTrace();
-                handler.onPathwaySummariesError();
+                handler.onPathwaySummariesError(e);
             }
         }
 
@@ -290,15 +283,13 @@ public class AnalysisDataLoader implements AnalysisLoaderHandler {
                     Console.error("Your result may have been deleted due to a new content release. " +
                             "Please submit your data again to obtain results for the latest version of our database");
                 default:
-                    Console.error(response.getStatusText());
-                    handler.onPathwaySummariesError();
+                    handler.onPathwaySummariesError(new Exception(response.getStatusText()));
             }
         }
 
         @Override
         public void onError(Request request, Throwable exception) {
-            exception.printStackTrace();
-            handler.onPathwaySummariesError();
+            handler.onPathwaySummariesError(exception);
         }
     }
 }

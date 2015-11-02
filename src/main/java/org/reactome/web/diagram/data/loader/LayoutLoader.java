@@ -43,14 +43,20 @@ public class LayoutLoader implements RequestCallback {
 
     @Override
     public void onResponseReceived(Request request, Response response) {
-        try {
-            long start = System.currentTimeMillis();
-            //Creates the rawmodel
-            Diagram diagram = DiagramObjectsFactory.getModelObject(Diagram.class, response.getText());
-            long time = System.currentTimeMillis() - start;
-            this.handler.layoutLoaded(diagram, time);
-        } catch (DiagramObjectException e) {
-            this.handler.onLayoutLoaderError(e);
+        switch (response.getStatusCode()) {
+            case Response.SC_OK:
+                try {
+                    long start = System.currentTimeMillis();
+                    //Creates the rawmodel
+                    Diagram diagram = DiagramObjectsFactory.getModelObject(Diagram.class, response.getText());
+                    long time = System.currentTimeMillis() - start;
+                    this.handler.layoutLoaded(diagram, time);
+                } catch (DiagramObjectException e) {
+                    this.handler.onLayoutLoaderError(e);
+                }
+                break;
+            default:
+                this.handler.onLayoutLoaderError(new Exception(response.getStatusText()));
         }
     }
 

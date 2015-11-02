@@ -6,9 +6,9 @@ import org.reactome.web.diagram.data.DiagramContentFactory;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.layout.Diagram;
+import org.reactome.web.diagram.events.DiagramInternalErrorEvent;
 import org.reactome.web.diagram.events.GraphLoadedEvent;
 import org.reactome.web.diagram.events.LayoutLoadedEvent;
-import org.reactome.web.diagram.util.Console;
 
 /**
  * Implements a two step loading strategy
@@ -57,8 +57,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler 
 
     @Override
     public void onLayoutLoaderError(Throwable exception) {
-        //TODO
-        Console.error("TODO: Treating exception " +  exception.getMessage(), this);
+        eventBus.fireEventFromSource(new DiagramInternalErrorEvent(exception.getMessage()), this);
     }
 
     @Override
@@ -71,8 +70,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler 
 
     @Override
     public void onGraphLoaderError(Throwable exception) {
-        //TODO
-        Console.error("TODO: Treating exception " +  exception.getMessage(), this);
+        eventBus.fireEventFromSource(new DiagramInternalErrorEvent(exception.getMessage()), this);
     }
 }
 
