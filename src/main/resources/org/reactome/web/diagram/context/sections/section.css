@@ -45,8 +45,14 @@
     background-color: rgb(7, 133, 171);
 }
 
+.dataTable tbody tr:hover {
+    color: black;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+
 .dataTable tbody tr td {
-    font: bold 9px arial;
+    font: 9px arial;
     cursor: pointer;
 
     overflow: hidden;

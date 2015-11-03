@@ -1,7 +1,13 @@
 package org.reactome.web.diagram.context.dialogs;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.context.dialogs.molecules.ChangeLabelsEvent;
+import org.reactome.web.diagram.context.dialogs.molecules.ChangeLabelsHandler;
 import org.reactome.web.diagram.context.sections.Section;
 import org.reactome.web.diagram.context.sections.SectionCellSelectedEvent;
 import org.reactome.web.diagram.context.sections.SectionCellSelectedHandler;
@@ -30,7 +36,7 @@ import java.util.*;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class PathwaysDialogPanel extends Composite implements DatabaseObjectCreatedHandler, PathwaysForEntitiesLoadedHandler,
-        SectionCellSelectedHandler, AncestorsCreatedHandler {
+        SectionCellSelectedHandler, AncestorsCreatedHandler, ChangeLabelsHandler {
 
     private EventBus eventBus;
     private DiagramContext context;
@@ -42,6 +48,9 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
         this.eventBus = eventBus;
         this.context = context;
         this.container = new FlowPanel();
+        Image loadingIcon =new Image(RESOURCES.loader());
+        loadingIcon.setStyleName(RESOURCES.getCSS().loaderIcon());
+        this.container.add(loadingIcon);
         this.container.add(new InlineLabel("Loading pathways dialog content..."));
         initWidget(new ScrollPanel(this.container));
         this.graphObject = diagramObject.getGraphObject();
@@ -71,7 +80,8 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
         for (Pathway path : pathways) {
             rtn.add(path);
         }
-        populatePathwaysTable(rtn);
+        filterPathways(rtn);
+        populatePathwaysTable(pathwaysIndex, false);
     }
 
     @Override
@@ -86,7 +96,8 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
         for (Path ancestor : ancestors) {
             rtn.add(ancestor.getLastPathwayWithDiagram()); //We do not include subpathways in the list
         }
-        populatePathwaysTable(rtn);
+        filterPathways(rtn);
+        populatePathwaysTable(pathwaysIndex, false);
     }
 
     @Override
@@ -95,21 +106,62 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
         this.container.add(new Label("An error has occurred. ERROR: " + throwable.getMessage()));
     }
 
-    private void populatePathwaysTable(Collection<Pathway> pathways){
-        this.container.clear();
+    @Override
+    public void onCellSelected(SectionCellSelectedEvent event) {
+        SelectionSummary selection = event.getSelection();
+        final Pathway pathway = pathwaysIndex.get(selection.getRowIndex());
+        if (pathway == null){
+            Console.error("No pathway associated with " + selection.getRowIndex(), this);
+        } else if (pathway.getHasDiagram()) {
+            eventBus.fireEventFromSource(new DiagramLoadRequestEvent(pathway), this);
+        } else {
+            Console.error("No diagram for " + pathway.toString(), this);
+//                RESTFulClient.getAncestors(pathway, new AncestorsCreatedHandler() {
+//                    @Override
+//                    public void onAncestorsLoaded(Ancestors ancestors) {
+//                        Pathway aux = ancestors.get(0).getLastPathwayWithDiagram();
+//                        eventBus.fireEventFromSource(new DiagramLoadRequestEvent(aux, pathway), PathwaysDialogPanel.this);
+//                    }
+//
+//                    @Override
+//                    public void onAncestorsError(Throwable exception) {
+//                        Console.error("No pathway with diagram found for " + pathway);
+//                    }
+//                });
+        }
+    }
+
+    @Override
+    public void onChangeLabels(ChangeLabelsEvent event) {
+        populatePathwaysTable(pathwaysIndex, event.getShowIds());
+    }
+
+    private void filterPathways(Collection<Pathway> pathways){
         Long dbId = context.getContent().getDbId();
-        List<List<String>> tableContents = new LinkedList<>();
         if (pathways != null && !pathways.isEmpty()) {
             for (Pathway pathway : pathways) {
                 if (pathway.getDbId().equals(dbId)) continue;
                 if (pathway.getHasDiagram()) { // We do not include subpathways in the list
                     if (pathwaysIndex.contains(pathway)) continue;
                     pathwaysIndex.add(pathway);
-                    List<String> row = new LinkedList<>();
-                    row.add(pathway.getDisplayName() + " [" + pathway.getSpecies().get(0).getDisplayName() + "]");
-                    row.add("\u25b6");
-                    tableContents.add(row);
                 }
+            }
+        }
+    }
+
+    private void populatePathwaysTable(Collection<Pathway> pathways, boolean showIds){
+        this.container.clear();
+        List<List<String>> tableContents = new LinkedList<>();
+        if (pathways != null && !pathways.isEmpty()) {
+            for (Pathway pathway : pathways) {
+                List<String> row = new LinkedList<>();
+                if(showIds){
+                    row.add(pathway.getIdentifier() + " [" + pathway.getSpecies().get(0).getDisplayName() + "]");
+                } else {
+                    row.add(pathway.getDisplayName() + " [" + pathway.getSpecies().get(0).getDisplayName() + "]");
+                }
+                row.add("\u25b6");
+                tableContents.add(row);
             }
         }
         if (tableContents.size() > 0) {
@@ -125,30 +177,24 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
         }
     }
 
-    @Override
-    public void onCellSelected(SectionCellSelectedEvent event) {
-        SelectionSummary selection = event.getSelection();
-        if(selection.getColIndex()==1) {
-            final Pathway pathway = pathwaysIndex.get(selection.getRowIndex());
-            if (pathway == null){
-                Console.error("No pathway associated with " + selection.getRowIndex(), this);
-            } else if (pathway.getHasDiagram()) {
-                eventBus.fireEventFromSource(new DiagramLoadRequestEvent(pathway), this);
-            } else {
-                Console.error("No diagram for " + pathway.toString(), this);
-//                RESTFulClient.getAncestors(pathway, new AncestorsCreatedHandler() {
-//                    @Override
-//                    public void onAncestorsLoaded(Ancestors ancestors) {
-//                        Pathway aux = ancestors.get(0).getLastPathwayWithDiagram();
-//                        eventBus.fireEventFromSource(new DiagramLoadRequestEvent(aux, pathway), PathwaysDialogPanel.this);
-//                    }
-//
-//                    @Override
-//                    public void onAncestorsError(Throwable exception) {
-//                        Console.error("No pathway with diagram found for " + pathway);
-//                    }
-//                });
-            }
-        }
+    public static Resources RESOURCES;
+    static {
+        RESOURCES = GWT.create(Resources.class);
+        RESOURCES.getCSS().ensureInjected();
+    }
+
+    public interface Resources extends ClientBundle {
+        @Source(ResourceCSS.CSS)
+        ResourceCSS getCSS();
+
+        @Source("../images/loader.gif")
+        ImageResource loader();
+    }
+
+    @CssResource.ImportedWithPrefix("diagram-PathwaysDialogPanel")
+    public interface ResourceCSS extends CssResource {
+        String CSS = "org/reactome/web/diagram/context/dialogs/PathwaysDialogPanel.css";
+
+        String loaderIcon();
     }
 }
