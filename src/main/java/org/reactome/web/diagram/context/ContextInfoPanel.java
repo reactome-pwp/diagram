@@ -30,7 +30,7 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
 
     private DeckLayoutPanel container;
 
-    public ContextInfoPanel(EventBus eventBus, DiagramObject diagramObject, DiagramContext context) {
+    public ContextInfoPanel(ContextDialogPanel parent, EventBus eventBus, DiagramObject diagramObject, DiagramContext context) {
         FlowPanel buttonsPanel = new FlowPanel();
         buttonsPanel.setStyleName(RESOURCES.getCSS().buttonsPanel());
         buttonsPanel.add(this.molecules = getButton("Molecules", RESOURCES.molecules()));
@@ -40,9 +40,12 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
 
         this.container = new DeckLayoutPanel();
         this.container.setStyleName(RESOURCES.getCSS().container());
-        this.container.add(new MoleculesDialogPanel(eventBus, diagramObject, context.getAnalysisStatus()));
-        this.container.add(new PathwaysDialogPanel(eventBus, diagramObject, context));
-//        this.container.add(new InteractorsDialogPanel(eventBus, diagramObject)); // Uncomment to include interactors
+        MoleculesDialogPanel moleculesDialogPanel = new MoleculesDialogPanel(eventBus, diagramObject, context.getAnalysisStatus());
+        PathwaysDialogPanel pathwaysDialogPanel = new PathwaysDialogPanel(eventBus, diagramObject, context);
+//        InteractorsDialogPanel interactorsDialogPanel = new InteractorsDialogPanel(eventBus, diagramObject);
+        this.container.add(moleculesDialogPanel);
+        this.container.add(pathwaysDialogPanel);
+//        this.container.add(interactorsDialogPanel); // Uncomment to include interactors
         this.container.showWidget(0);
         this.container.setAnimationVertical(true);
         this.container.setAnimationDuration(500);
@@ -51,6 +54,9 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
         outerPanel.setStyleName(RESOURCES.getCSS().outerPanel());
         outerPanel.add(buttonsPanel);
         outerPanel.add(this.container);
+
+        // add handlers
+        parent.addChangeLabelsEventHandler(moleculesDialogPanel);
 
         initWidget(outerPanel);
     }

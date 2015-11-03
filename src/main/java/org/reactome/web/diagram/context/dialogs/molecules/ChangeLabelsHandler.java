@@ -5,7 +5,7 @@ import com.google.gwt.event.shared.EventHandler;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public interface MoleculeSelectedHandler extends EventHandler {
-    void onMoleculeSelected(MoleculeSelectedEvent event);
+public interface ChangeLabelsHandler extends EventHandler {
+    void onChangeLabels(ChangeLabelsEvent event);
 }
 

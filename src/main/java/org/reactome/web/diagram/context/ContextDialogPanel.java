@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
@@ -11,6 +12,8 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.context.dialogs.molecules.ChangeLabelsEvent;
+import org.reactome.web.diagram.context.dialogs.molecules.ChangeLabelsHandler;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.*;
@@ -31,6 +34,9 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
     private Widget canvas;
 
     private boolean pinned = false;
+    private boolean displayIds = false;
+
+    private Button changeLabels;
     private Button pin;
     private Button close;
 
@@ -46,9 +52,10 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
         this.canvas = canvas;
 
         FlowPanel fp = new FlowPanel();
+        fp.add(this.changeLabels = new PwpButton("Show/hide Identifiers", RESOURCES.getCSS().labels(), this));
         fp.add(this.pin = new PwpButton("Keeps the panel visible", RESOURCES.getCSS().pin(), this));
         fp.add(this.close = new PwpButton("Close", RESOURCES.getCSS().close(), this));
-        fp.add(new ContextInfoPanel(eventBus, item, context));
+        fp.add(new ContextInfoPanel(this, eventBus, item, context));
 
         setTitlePanel();
         setWidget(fp);
@@ -56,6 +63,10 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
         eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
 
         show(true);
+    }
+
+    public HandlerRegistration addChangeLabelsEventHandler(ChangeLabelsHandler handler){
+        return addHandler(handler, ChangeLabelsEvent.TYPE);
     }
 
     @Override
@@ -79,12 +90,21 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
             hide();
         }else if(btn.equals(pin)){
             this.pinned = !this.pinned;
-        }
-        //Apply the right style here
-        if(this.pinned) {
-            pin.setStyleName(RESOURCES.getCSS().pinActive());
-        }else {
-            pin.setStyleName(RESOURCES.getCSS().pin());
+            //Apply the right style here
+            if(this.pinned) {
+                pin.setStyleName(RESOURCES.getCSS().pinActive());
+            }else {
+                pin.setStyleName(RESOURCES.getCSS().pin());
+            }
+        }else if(btn.equals(changeLabels)){
+            this.displayIds = !this.displayIds;
+            //Apply the right style here
+            if(this.displayIds) {
+                changeLabels.setStyleName(RESOURCES.getCSS().labelsActive());
+            }else {
+                changeLabels.setStyleName(RESOURCES.getCSS().labels());
+            }
+            fireEvent(new ChangeLabelsEvent(displayIds));
         }
     }
 
@@ -155,6 +175,15 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
         ResourceCSS getCSS();
 
 
+        @Source("images/id_clicked.png")
+        ImageResource idClicked();
+
+        @Source("images/id_normal.png")
+        ImageResource idNormal();
+
+        @Source("images/id_hovered.png")
+        ImageResource idHovered();
+
         @Source("images/pin_clicked.png")
         ImageResource pinClicked();
 
@@ -185,6 +214,10 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
         String popupSelected();
 
         String header();
+
+        String labels();
+
+        String labelsActive();
 
         String pin();
 

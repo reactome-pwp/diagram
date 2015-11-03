@@ -48,7 +48,7 @@
     overflow:hidden;
     white-space:nowrap;
     text-overflow:ellipsis;
-    width: 250px;
+    width: 242px;
 }
 
 .header img {
@@ -56,6 +56,34 @@
     margin: 0 5px 0 2px;
 }
 
+@sprite .labels {
+    float: right;
+    gwt-image: 'idNormal';
+    outline: none;
+    background-repeat: no-repeat;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 50px;
+}
+
+@sprite .labels:hover {
+    gwt-image: 'idHovered';
+}
+
+@sprite .labelsActive, .labels:active:hover {
+    gwt-image: 'idClicked' !important;
+    outline: none;
+    background-repeat: no-repeat;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 50px;
+}
 
 @sprite .pin {
     float: right;

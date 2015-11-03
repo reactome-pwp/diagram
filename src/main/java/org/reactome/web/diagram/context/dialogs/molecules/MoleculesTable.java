@@ -45,7 +45,7 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
         List<T> list = sortMolecules(molecules, analysisType);
         dataProvider = new ListDataProvider<>(list);
         dataProvider.addDataDisplay(this);
-        setMoleculesLabels(false); // Show identifiers by default
+        setMoleculesLabels(false); // Show names by default
 
         addExpressionColumns(expression, min, max, sel);
 
@@ -75,9 +75,9 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
         }
     }
 
-    public void setMoleculesLabels(boolean displayNames){
+    public void setMoleculesLabels(boolean showIds){
         if(type!=null) { removeColumn(type); }
-        type = buildColumnTitle(displayNames);
+        type = buildColumnTitle(showIds);
         insertColumn(0, type, name);
         redraw();
     }
@@ -151,14 +151,14 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
         }
     }
 
-    private Column<T, String> buildColumnTitle(final boolean displayNames) {
+    private Column<T, String> buildColumnTitle(final boolean showIds) {
         Column<T, String> columnTitle = new Column<T, String>(new ClickableTextCell()) {
             @Override
             public String getValue(T object) {
-                if(displayNames){
-                    return object.getDisplayName();
-                }else{
+                if(showIds){
                     return object.getIdentifier() != null && !object.getIdentifier().isEmpty() ? object.getIdentifier() : object.getStId();
+                }else{
+                    return object.getDisplayName();
                 }
             }
         };
