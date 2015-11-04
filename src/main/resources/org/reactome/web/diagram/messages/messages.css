@@ -43,8 +43,8 @@
 }
 
 .analysisOverlayMessage {
-    width: 200px;
-    margin-right: -100px; /* width and margin-right are related, please change both if needed */
+    width: 240px;
+    margin-right: -120px; /* width and margin-right are related, please change both if needed */
     right: 50%;
 
     height: 40px;
