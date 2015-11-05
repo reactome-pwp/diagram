@@ -504,6 +504,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
             fireEvent(event);
         }
         this.resetAnalysis();
+        this.canvas.setWatermarkURL(this.context, this.selected);
     }
 
     @Override
