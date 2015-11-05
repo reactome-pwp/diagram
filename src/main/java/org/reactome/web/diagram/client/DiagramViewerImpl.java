@@ -511,6 +511,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.analysisStatus.setAnalysisSummary(event.getSummary());
         this.analysisStatus.setExpressionSummary(event.getExpressionSummary());
         this.context.setAnalysisOverlay(analysisStatus, event.getPathwayIdentifiers(), event.getPathwaySummaries());
+        this.canvas.setWatermarkURL(this.context, this.selected);
         forceDraw = true;
     }
 
@@ -544,6 +545,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
                     }
                 }
             }
+            this.canvas.setWatermarkURL(this.context, this.selected);
             if(event.getZoom()) {
                 this.diagramManager.displayDiagramObjects(this.halo);
             }
@@ -630,6 +632,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onDiagramLoaded(DiagramLoadedEvent event) {
+        this.canvas.setWatermarkURL(event.getContext(), null);
         fireEvent(event);
     }
 

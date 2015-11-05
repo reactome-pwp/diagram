@@ -14,6 +14,9 @@ public abstract class DiagramFactory {
     public static boolean SHOW_INFO = false;
     public static boolean SHOW_FIREWORKS_BTN = true;
 
+    public static boolean WATERMARK = true;
+    public static String WATERMARK_BASE_URL = "http://www.reactome.org/PathwayBrowser/";
+
     //Added for testing
     public static DiagramViewer createDiagramViewer() {
         return new DiagramViewerImpl();

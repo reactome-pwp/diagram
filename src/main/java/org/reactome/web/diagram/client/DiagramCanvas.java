@@ -2,13 +2,19 @@ package org.reactome.web.diagram.client;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RequiresResize;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
@@ -19,6 +25,7 @@ import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
 import org.reactome.web.diagram.events.ExpressionValueHoveredEvent;
@@ -99,6 +106,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
     private int column = 0;
     private Double hoveredExpression = null;
+
+    private Anchor watermark;
 
     public DiagramCanvas(EventBus eventBus) {
         this.getElement().addClassName("pwp-DiagramCanvas");
@@ -342,6 +351,24 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.column = e.getColumn();
     }
 
+    public void setWatermarkURL(DiagramContext context, GraphObject selection) {
+        StringBuilder href = new StringBuilder(DiagramFactory.WATERMARK_BASE_URL);
+        String pathwayStId = context == null ? null : context.getContent().getStableId();
+        if (pathwayStId != null && !pathwayStId.isEmpty()) {
+            href.append("#/").append(pathwayStId);
+            if (selection != null) {
+                if (selection.getStId() != null && !selection.getStId().isEmpty()) {
+                    href.append("&SEL=").append(selection.getStId());
+                }
+            }
+            AnalysisStatus analysisStatus = context.getAnalysisStatus();
+            if (analysisStatus != null) {
+                href.append("&DTAB=AN").append("&ANALYSIS=").append(analysisStatus.getToken()).append("&RESOURCE=").append(analysisStatus.getResource());
+            }
+        }
+        watermark.setHref(href.toString());
+    }
+
     public void render(Collection<DiagramObject> items, DiagramContext context) {
         ColourProfileType colourProfileType = context.getColourProfileType();
         AnalysisStatus analysisStatus = context.getAnalysisStatus();
@@ -556,7 +583,20 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.reactionsHighlight.setStrokeStyle(profileProperties.getHighlight());
     }
 
-    public void initialise() {
+    private void addWatermark(){
+        if(DiagramFactory.WATERMARK) {
+            Image img = new Image(RESOURCES.logo());
+            SafeHtml image = SafeHtmlUtils.fromSafeConstant(img.toString());
+            watermark = new Anchor(image, DiagramFactory.WATERMARK_BASE_URL, "_blank");
+            watermark.setTitle("Open this pathway in Reactome Pathway Browser");
+            watermark.getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
+            watermark.getElement().getStyle().setBottom(10, Style.Unit.PX);
+            watermark.getElement().getStyle().setRight(80, Style.Unit.PX);
+            add(watermark);
+        }
+    }
+
+    protected void initialise() {
         int width = this.getOffsetWidth();
         int height = this.getOffsetHeight();
 
@@ -593,6 +633,10 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         //Thumbnail
         this.add(this.thumbnail);
+
+        //Watermark
+        this.addWatermark();
+
         //Control panel
         this.add(new NavigationControlPanel(eventBus));
 
@@ -672,5 +716,15 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                 break;
         }
         return rtn;
+    }
+
+    public static Resources RESOURCES;
+    static {
+        RESOURCES = GWT.create(Resources.class);
+    }
+
+    public interface Resources extends ClientBundle {
+        @Source("images/logo.png")
+        ImageResource logo();
     }
 }
