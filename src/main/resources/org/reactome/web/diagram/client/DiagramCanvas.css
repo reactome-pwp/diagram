@@ -1,0 +1,20 @@
+.watermark {
+    position: absolute;
+    bottom: 5px;
+    right: 80px;
+}
+
+.watermark img{
+    width: auto;
+    height: 25px;
+    opacity: 0.5;
+
+    -webkit-transition: height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    -moz-transition: height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    transition: height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.watermark:hover img{
+    height: 32px;
+    opacity: 0.9;
+}

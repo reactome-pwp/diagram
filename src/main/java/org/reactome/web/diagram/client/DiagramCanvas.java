@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -586,14 +587,10 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private void addWatermark(){
         if(DiagramFactory.WATERMARK) {
             Image img = new Image(RESOURCES.logo());
-            img.getElement().getStyle().setProperty("width", "auto");
-            img.getElement().getStyle().setHeight(25, Style.Unit.PX);
             SafeHtml image = SafeHtmlUtils.fromSafeConstant(img.toString());
             watermark = new Anchor(image, DiagramFactory.WATERMARK_BASE_URL, "_blank");
             watermark.setTitle("Open this pathway in Reactome Pathway Browser");
-            watermark.getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
-            watermark.getElement().getStyle().setBottom(5, Style.Unit.PX);
-            watermark.getElement().getStyle().setRight(80, Style.Unit.PX);
+            watermark.setStyleName(RESOURCES.getCSS().watermark());
             add(watermark);
         }
     }
@@ -723,10 +720,22 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     public static Resources RESOURCES;
     static {
         RESOURCES = GWT.create(Resources.class);
+        RESOURCES.getCSS().ensureInjected();
     }
 
     public interface Resources extends ClientBundle {
-        @Source("images/logo.png")
+        @Source(ResourceCSS.CSS)
+        ResourceCSS getCSS();
+
+        @Source("images/watermark.png")
         ImageResource logo();
+    }
+
+    @CssResource.ImportedWithPrefix("diagram-DiagramCanvas")
+    public interface ResourceCSS extends CssResource {
+        String CSS = "org/reactome/web/diagram/client/DiagramCanvas.css";
+
+        String watermark();
+
     }
 }
