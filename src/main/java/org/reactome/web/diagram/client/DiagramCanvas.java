@@ -586,11 +586,13 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private void addWatermark(){
         if(DiagramFactory.WATERMARK) {
             Image img = new Image(RESOURCES.logo());
+            img.getElement().getStyle().setProperty("width", "auto");
+            img.getElement().getStyle().setHeight(25, Style.Unit.PX);
             SafeHtml image = SafeHtmlUtils.fromSafeConstant(img.toString());
             watermark = new Anchor(image, DiagramFactory.WATERMARK_BASE_URL, "_blank");
             watermark.setTitle("Open this pathway in Reactome Pathway Browser");
             watermark.getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
-            watermark.getElement().getStyle().setBottom(10, Style.Unit.PX);
+            watermark.getElement().getStyle().setBottom(5, Style.Unit.PX);
             watermark.getElement().getStyle().setRight(80, Style.Unit.PX);
             add(watermark);
         }
