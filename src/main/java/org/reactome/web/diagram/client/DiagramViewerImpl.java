@@ -636,12 +636,14 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onDiagramLoaded(DiagramLoadedEvent event) {
+        this.canvas.setWatermarkVisible(true);
         this.canvas.setWatermarkURL(event.getContext(), null, this.flagTerm);
         fireEvent(event);
     }
 
     @Override
     public void onDiagramLoadRequest(DiagramLoadRequestEvent event) {
+        this.canvas.setWatermarkVisible(false);
         final Pathway diagram = event.getPathway();
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override

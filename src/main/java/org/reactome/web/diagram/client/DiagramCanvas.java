@@ -353,24 +353,32 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     }
 
     public void setWatermarkURL(DiagramContext context, GraphObject selection, String flag) {
-        StringBuilder href = new StringBuilder(DiagramFactory.WATERMARK_BASE_URL);
-        String pathwayStId = context == null ? null : context.getContent().getStableId();
-        if (pathwayStId != null && !pathwayStId.isEmpty()) {
-            href.append("#/").append(pathwayStId);
-            if (selection != null) {
-                if (selection.getStId() != null && !selection.getStId().isEmpty()) {
-                    href.append("&SEL=").append(selection.getStId());
+        if(watermark!=null) {
+            StringBuilder href = new StringBuilder(DiagramFactory.WATERMARK_BASE_URL);
+            String pathwayStId = context == null ? null : context.getContent().getStableId();
+            if (pathwayStId != null && !pathwayStId.isEmpty()) {
+                href.append("#/").append(pathwayStId);
+                if (selection != null) {
+                    if (selection.getStId() != null && !selection.getStId().isEmpty()) {
+                        href.append("&SEL=").append(selection.getStId());
+                    }
+                }
+                AnalysisStatus analysisStatus = context.getAnalysisStatus();
+                if (analysisStatus != null) {
+                    href.append("&DTAB=AN").append("&ANALYSIS=").append(analysisStatus.getToken()).append("&RESOURCE=").append(analysisStatus.getResource());
+                }
+                if (flag != null && !flag.isEmpty()) {
+                    href.append("&FLG=").append(flag);
                 }
             }
-            AnalysisStatus analysisStatus = context.getAnalysisStatus();
-            if (analysisStatus != null) {
-                href.append("&DTAB=AN").append("&ANALYSIS=").append(analysisStatus.getToken()).append("&RESOURCE=").append(analysisStatus.getResource());
-            }
-            if (flag != null && !flag.isEmpty()) {
-                href.append("&FLG=").append(flag);
-            }
+            watermark.setHref(href.toString());
         }
-        watermark.setHref(href.toString());
+    }
+
+    public void setWatermarkVisible(boolean visible){
+        if(watermark!=null) {
+            watermark.setVisible(visible);
+        }
     }
 
     public void render(Collection<DiagramObject> items, DiagramContext context) {
@@ -594,6 +602,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             watermark = new Anchor(image, DiagramFactory.WATERMARK_BASE_URL, "_blank");
             watermark.setTitle("Open this pathway in Reactome Pathway Browser");
             watermark.setStyleName(RESOURCES.getCSS().watermark());
+            watermark.setVisible(false);
             add(watermark);
         }
     }
