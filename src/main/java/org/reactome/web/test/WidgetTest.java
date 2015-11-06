@@ -37,6 +37,12 @@ public class WidgetTest implements EntryPoint {
                         diagram.loadDiagram("R-HSA-1181150");
                     }
                 });
+//                diagram.addDiagramLoadedHandler(new DiagramLoadedHandler() {
+//                    @Override
+//                    public void onDiagramLoaded(DiagramLoadedEvent event) {
+//                        diagram.flagItems("NODAL");
+//                    }
+//                });
             }
         });
     }
