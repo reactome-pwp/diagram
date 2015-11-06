@@ -352,7 +352,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.column = e.getColumn();
     }
 
-    public void setWatermarkURL(DiagramContext context, GraphObject selection) {
+    public void setWatermarkURL(DiagramContext context, GraphObject selection, String flag) {
         StringBuilder href = new StringBuilder(DiagramFactory.WATERMARK_BASE_URL);
         String pathwayStId = context == null ? null : context.getContent().getStableId();
         if (pathwayStId != null && !pathwayStId.isEmpty()) {
@@ -365,6 +365,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             AnalysisStatus analysisStatus = context.getAnalysisStatus();
             if (analysisStatus != null) {
                 href.append("&DTAB=AN").append("&ANALYSIS=").append(analysisStatus.getToken()).append("&RESOURCE=").append(analysisStatus.getResource());
+            }
+            if (flag != null && !flag.isEmpty()) {
+                href.append("&FLG=").append(flag);
             }
         }
         watermark.setHref(href.toString());

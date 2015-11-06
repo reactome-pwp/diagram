@@ -78,6 +78,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     private boolean forceDraw = false;
     private Double fingerDistance;
 
+    private String flagTerm;
     private AnalysisStatus analysisStatus;
 
     public DiagramViewerImpl() {
@@ -504,7 +505,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
             fireEvent(event);
         }
         this.resetAnalysis();
-        this.canvas.setWatermarkURL(this.context, this.selected);
+        this.canvas.setWatermarkURL(this.context, this.selected, this.flagTerm);
     }
 
     @Override
@@ -512,7 +513,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.analysisStatus.setAnalysisSummary(event.getSummary());
         this.analysisStatus.setExpressionSummary(event.getExpressionSummary());
         this.context.setAnalysisOverlay(analysisStatus, event.getPathwayIdentifiers(), event.getPathwaySummaries());
-        this.canvas.setWatermarkURL(this.context, this.selected);
+        this.canvas.setWatermarkURL(this.context, this.selected, this.flagTerm);
         forceDraw = true;
     }
 
@@ -546,7 +547,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
                     }
                 }
             }
-            this.canvas.setWatermarkURL(this.context, this.selected);
+            this.canvas.setWatermarkURL(this.context, this.selected, this.flagTerm);
             if(event.getZoom()) {
                 this.diagramManager.displayDiagramObjects(this.halo);
             }
@@ -593,6 +594,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onDiagramObjectsFlagged(DiagramObjectsFlaggedEvent event) {
+        this.canvas.setWatermarkURL(context, this.selected, this.flagTerm = event.getTerm());
         this.flagged = event.getFlaggedItems();
         this.canvas.flag(this.flagged, this.context);
         if(event.getNotify()){
@@ -622,6 +624,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onDiagramObjectsFlagReset(DiagramObjectsFlagResetEvent event) {
+        this.canvas.setWatermarkURL(context, this.selected, this.flagTerm = null);
         if(this.flagged != null){
             this.flagged = new HashSet<>();
             this.canvas.flag(this.flagged, this.context);
@@ -633,7 +636,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onDiagramLoaded(DiagramLoadedEvent event) {
-        this.canvas.setWatermarkURL(event.getContext(), null);
+        this.canvas.setWatermarkURL(event.getContext(), null, this.flagTerm);
         fireEvent(event);
     }
 
