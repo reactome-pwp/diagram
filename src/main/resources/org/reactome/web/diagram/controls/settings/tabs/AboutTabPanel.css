@@ -1,0 +1,26 @@
+.aboutPanel {
+    padding: 0 10px 0 10px;
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: small !important;
+    overflow: hidden;
+}
+
+.htmlPanel {
+    height: 242px;
+    overflow: auto;
+    margin-top: 5px;
+}
+
+.htmlPanel p{
+    margin: 0 0 0 10px;
+}
+
+.tabHeader {
+    margin-top: 5px;
+    font-weight: bold;
+    background-color: rgb(30, 148, 208);
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    padding-bottom: 2px;
+}

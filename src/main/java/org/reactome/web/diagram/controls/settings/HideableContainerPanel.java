@@ -7,6 +7,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.*;
@@ -46,8 +47,8 @@ public class HideableContainerPanel extends FlowPanel implements ClickHandler {
         this.container.setStyleName(RESOURCES.getCSS().container());
 
         ProfilesTabPanel profilesTabPanel = new ProfilesTabPanel(eventBus);
-        InteractorsTabPanel interactorsTabPanel= new InteractorsTabPanel();
-        AboutTabPanel aboutTabPanel = new AboutTabPanel();
+        InteractorsTabPanel interactorsTabPanel= new InteractorsTabPanel(eventBus);
+        AboutTabPanel aboutTabPanel = new AboutTabPanel("About the Pathway Diagram",RESOURCES.aboutThis());
         this.container.add(profilesTabPanel);
         this.container.add(interactorsTabPanel);
         this.container.add(aboutTabPanel);
@@ -143,6 +144,9 @@ public class HideableContainerPanel extends FlowPanel implements ClickHandler {
     public interface Resources extends ClientBundle {
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
+
+        @Source("tabs/aboutDiagram.html")
+        TextResource aboutThis();
 
         @Source("images/profiles.png")
         ImageResource profilesTab();

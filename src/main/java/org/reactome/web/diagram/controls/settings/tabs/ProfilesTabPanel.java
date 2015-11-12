@@ -90,6 +90,7 @@ public class ProfilesTabPanel extends Composite implements ChangeHandler {
         analysisProfiles.addChangeHandler(this);
     }
 
+
     public static Resources RESOURCES;
 
     static {
