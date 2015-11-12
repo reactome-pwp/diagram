@@ -17,6 +17,8 @@
     float:left;
     overflow: visible;
 
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+
     /* Used to animate the width of panel */
     -webkit-transition: width 0.3s ease-in-out;
     -moz-transition: width 0.3s ease-in-out;
@@ -118,10 +120,12 @@
 }
 
 .showHideRight {
-    -webkit-transform: rotate(180deg);
+    -ms-transform: rotate(180deg); /* IE 9 */
+    -webkit-transform: rotate(180deg);/* Chrome, Safari, Opera */
+    transform: rotate(180deg);
 }
 
 .headerLabel{
-    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    /*font-family: Arial Unicode MS, Arial, sans-serif !important;*/
     font-size: medium !important;
 }

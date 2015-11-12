@@ -1,19 +1,23 @@
 .aboutPanel {
     padding: 0 10px 0 10px;
-    font-family: Arial Unicode MS, Arial, sans-serif !important;
-    font-size: small !important;
+    font-size: medium !important;
     overflow: hidden;
 }
 
 .htmlPanel {
     height: 242px;
-    overflow: auto;
     margin-top: 5px;
+    font-size: small !important;
+    overflow: auto;
+    -ms-overflow-style: none;
+    /*padding-right: 25px;*/
 }
 
 .htmlPanel p{
-    margin: 0 0 0 10px;
+    margin: 0 0 10px 0;
 }
+
+.htmlPanel::-webkit-scrollbar { width: 0 !important }
 
 .tabHeader {
     margin-top: 5px;
