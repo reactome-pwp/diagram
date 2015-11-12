@@ -2,7 +2,7 @@
     background-color: rgba(240, 240, 240, 0.9);
     border: 1px solid lightgray;
     border-radius: 15px;
-    position: absolute;
+    position: relative;
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
@@ -11,7 +11,8 @@
 
 .analysisControl{
     border-radius: 5px;
-    bottom: 10px;
+    margin-bottom: 10px;
+    /*bottom: 10px;*/
     height: 28px;
 
     /* Used to animate the positioning of the flaggedItems panel */
@@ -189,14 +190,16 @@
 }
 
 .expressionLegend {
-    bottom: 30%;
-    right: 10px;
+    /*bottom: 30%;*/
+    /*right: 10px;*/
     width: 50px;
     /*centers in the middle*/
     height: 280px;
-    margin-top: -125px; /* height and margin-top are related, please change both if needed */
-    top: 50%;
+    /*margin-top: -125px; /!* height and margin-top are related, please change both if needed *!/*/
+    /*top: 50%;*/
     overflow: visible !important;
+    float: left;
+    margin-right: 5px;
 }
 
 .expressionLegendHelp {

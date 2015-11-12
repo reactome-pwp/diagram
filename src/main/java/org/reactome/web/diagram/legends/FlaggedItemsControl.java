@@ -80,7 +80,7 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler,
     private void initHandlers() {
         this.eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
+//        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
+//        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
     }
 }

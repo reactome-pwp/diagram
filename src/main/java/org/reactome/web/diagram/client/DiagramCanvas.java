@@ -20,6 +20,8 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RequiresResize;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
 import org.reactome.web.diagram.controls.navigation.NavigationControlPanel;
+import org.reactome.web.diagram.controls.settings.HideableContainerPanel;
+import org.reactome.web.diagram.controls.settings.RightContainerPanel;
 import org.reactome.web.diagram.controls.top.LeftTopLauncherPanel;
 import org.reactome.web.diagram.controls.top.RightTopLauncherPanel;
 import org.reactome.web.diagram.data.AnalysisStatus;
@@ -31,10 +33,7 @@ import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
 import org.reactome.web.diagram.events.ExpressionValueHoveredEvent;
 import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
-import org.reactome.web.diagram.legends.EnrichmentControl;
-import org.reactome.web.diagram.legends.ExpressionControl;
-import org.reactome.web.diagram.legends.ExpressionLegend;
-import org.reactome.web.diagram.legends.FlaggedItemsControl;
+import org.reactome.web.diagram.legends.*;
 import org.reactome.web.diagram.messages.AnalysisMessage;
 import org.reactome.web.diagram.messages.ErrorMessage;
 import org.reactome.web.diagram.messages.LoadingMessage;
@@ -648,18 +647,26 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         //Watermark
         this.addWatermark();
 
+        //Bottom Controls container
+        BottomContainerPanel bottomContainerPanel = new BottomContainerPanel();
+        this.add(bottomContainerPanel);
+
+        //Right container
+        RightContainerPanel rightContainerPanel = new RightContainerPanel();
+        this.add(rightContainerPanel);
+
         //Control panel
         this.add(new NavigationControlPanel(eventBus));
 
         //Enrichment legend and control panels
-        this.add(new EnrichmentControl(eventBus));
+        bottomContainerPanel.add(new EnrichmentControl(eventBus));
 
         //Expression legend and control panels
-        this.add(new ExpressionLegend(eventBus));
-        this.add(new ExpressionControl(eventBus));
+        rightContainerPanel.add(new ExpressionLegend(eventBus));
+        bottomContainerPanel.add(new ExpressionControl(eventBus));
 
         //Flagged Objects control panel
-        this.add(new FlaggedItemsControl(eventBus));
+        bottomContainerPanel.add(new FlaggedItemsControl(eventBus));
 
         //Info panel
         if (DiagramFactory.SHOW_INFO) {
@@ -669,6 +676,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         //Launcher panels
         this.add(new LeftTopLauncherPanel(eventBus));
         this.add(new RightTopLauncherPanel(eventBus));
+
+        //Settings panel
+        rightContainerPanel.add(new HideableContainerPanel(eventBus));
 
         //Illustration panel
         this.add(this.illustration = new IllustrationPanel(), 0 , 0);
