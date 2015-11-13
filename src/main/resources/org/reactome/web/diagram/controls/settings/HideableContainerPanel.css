@@ -20,10 +20,10 @@
     font-family: Arial Unicode MS, Arial, sans-serif !important;
 
     /* Used to animate the width of panel */
-    -webkit-transition: width 0.3s ease-in-out;
-    -moz-transition: width 0.3s ease-in-out;
-    -o-transition: width 0.3s ease-in-out;
-    transition: width 0.3s ease-in-out;
+    -webkit-transition: width 0.3s ease;
+    -moz-transition: width 0.3s ease;
+    -o-transition: width 0.3s ease;
+    transition: width 0.3s ease;
 }
 
 .wrapper:hover {
