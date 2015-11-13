@@ -7,23 +7,43 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class InteractorsTabPanel extends Composite {
     private EventBus eventBus;
+    private ListBox resourcesLB;
 
     public InteractorsTabPanel(EventBus eventBus) {
         this.eventBus = eventBus;
-        FlowPanel main = new FlowPanel();
-        main.setStyleName(RESOURCES.getCSS().interactorsPanel());
 
         Label tabHeader = new Label("Interactor Overlays");
         tabHeader.setStyleName(RESOURCES.getCSS().tabHeader());
-        main.add(tabHeader);
 
+        Label lb = new Label("Existing resources:");
+        lb.setStyleName(RESOURCES.getCSS().interactorLabel());
+
+        resourcesLB = new ListBox();
+        resourcesLB.setMultipleSelect(false);
+        setResourcesList(Arrays.asList("Resource 1", "Resource 2", "Resource 3"));
+
+        FlowPanel main = new FlowPanel();
+        main.setStyleName(RESOURCES.getCSS().interactorsPanel());
+        main.add(tabHeader);
+        main.add(lb);
+        main.add(resourcesLB);
         initWidget(main);
+    }
+
+    private void setResourcesList(List<String> resourcesList){
+        for(String name : resourcesList){
+            resourcesLB.addItem(name);
+        }
     }
 
 
