@@ -69,9 +69,9 @@ public class AnalysisColours implements AnalysisProfileChangedHandler {
         //The strategy is to remove the cookie when the standard is selected so in case
         //we decide to change the standard profile in the future, that will propagate
         //automatically for those who have not changed to a different profile
-        if(ProfileType.getStandard().getAnalysisProfile().equals(analysisProfile)){
+        if (ProfileType.getStandard().getAnalysisProfile().equals(analysisProfile)) {
             Cookies.removeCookie(PROFILE_COOKIE);
-        }else {
+        } else {
             Date expires = new Date();
             Long nowLong = expires.getTime();
             nowLong = nowLong + (1000 * 60 * 60 * 24 * 365L); //One year time
@@ -81,7 +81,8 @@ public class AnalysisColours implements AnalysisProfileChangedHandler {
     }
 
     public String getSelectedProfileName(){
-        return Cookies.getCookie(PROFILE_COOKIE);
+        String sel = Cookies.getCookie(PROFILE_COOKIE);
+        return sel != null ? sel : ProfileType.getStandard().analysisProfile.getName();
     }
 
     private void initHandlers(){
@@ -111,7 +112,7 @@ public class AnalysisColours implements AnalysisProfileChangedHandler {
         }
 
         public static List<String> getProfiles() {
-            List<String> rtn = new ArrayList<String>();
+            List<String> rtn = new ArrayList<>();
             for (ProfileType value : values()) {
                 rtn.add(value.analysisProfile.getName());
             }

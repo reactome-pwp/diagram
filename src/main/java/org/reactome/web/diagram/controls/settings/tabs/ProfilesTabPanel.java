@@ -35,8 +35,8 @@ public class ProfilesTabPanel extends Composite implements ChangeHandler {
         Label tabHeader = new Label("Colour Profiles");
         tabHeader.setStyleName(RESOURCES.getCSS().tabHeader());
         main.add(tabHeader);
-        main.add(getProfilesWidget("Diagram Colour Profile:", colourProfiles, DiagramColours.ProfileType.getProfiles(), DiagramColours.get().getSelectedProfileName()));
-        main.add(getProfilesWidget("Analysis Overlay Colour Profile:", analysisProfiles, AnalysisColours.ProfileType.getProfiles(), AnalysisColours.get().getSelectedProfileName()));
+        main.add(getProfilesWidget("Diagram Colour Profile:", colourProfiles, DiagramColours.ProfileType.getProfiles()));
+        main.add(getProfilesWidget("Analysis Overlay Colour Profile:", analysisProfiles, AnalysisColours.ProfileType.getProfiles()));
 
         setSelection(colourProfiles, DiagramColours.get().getSelectedProfileName());
         setSelection(analysisProfiles, AnalysisColours.get().getSelectedProfileName());
@@ -59,7 +59,7 @@ public class ProfilesTabPanel extends Composite implements ChangeHandler {
     }
 
 
-    private Widget getProfilesWidget(String title, ListBox profileListBox, List<String> profileNames, String selection){
+    private Widget getProfilesWidget(String title, ListBox profileListBox, List<String> profileNames){
         profileListBox.setMultipleSelect(false);
         for(String name : profileNames){
             profileListBox.addItem(name);
