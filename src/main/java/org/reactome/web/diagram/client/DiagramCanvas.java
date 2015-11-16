@@ -646,17 +646,20 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         //Watermark
         this.addWatermark();
-
-        //Bottom Controls container
-        BottomContainerPanel bottomContainerPanel = new BottomContainerPanel();
-        this.add(bottomContainerPanel);
-
+        
         //Right container
         RightContainerPanel rightContainerPanel = new RightContainerPanel();
         this.add(rightContainerPanel);
 
         //Control panel
         this.add(new NavigationControlPanel(eventBus));
+
+        //Bottom Controls container
+        BottomContainerPanel bottomContainerPanel = new BottomContainerPanel();
+        this.add(bottomContainerPanel);
+
+        //Flagged Objects control panel
+        bottomContainerPanel.add(new FlaggedItemsControl(eventBus));
 
         //Enrichment legend and control panels
         bottomContainerPanel.add(new EnrichmentControl(eventBus));
@@ -665,8 +668,6 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         rightContainerPanel.add(new ExpressionLegend(eventBus));
         bottomContainerPanel.add(new ExpressionControl(eventBus));
 
-        //Flagged Objects control panel
-        bottomContainerPanel.add(new FlaggedItemsControl(eventBus));
 
         //Info panel
         if (DiagramFactory.SHOW_INFO) {

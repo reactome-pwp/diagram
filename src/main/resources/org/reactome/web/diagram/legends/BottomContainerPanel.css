@@ -2,11 +2,9 @@
     position: absolute;
     bottom: 1px;
 
-    width: 440px;
-    margin-left:-220px; /* width and margin-left are related, please change both if needed */
+    width: 0;
     left: 50%;
 
-    min-height: 40px;
-    max-height: 100px;
-    background-color: crimson;
+    height: auto;
+    /*background-color: crimson;*/
 }
