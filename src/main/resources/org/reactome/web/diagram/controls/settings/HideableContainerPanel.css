@@ -105,7 +105,6 @@
     height: 276px;
     overflow: hidden;
     padding: 3px;
-    /*border-radius: 0 10px 10px 10px;*/
     /*background-color: #9d97e5;*/
 }
 
@@ -126,6 +125,5 @@
 }
 
 .headerLabel{
-    /*font-family: Arial Unicode MS, Arial, sans-serif !important;*/
     font-size: medium !important;
 }

@@ -167,6 +167,8 @@ public abstract class LegendPanel extends AbsolutePanel {
         String flaggedItemsLabel();
 
         String flaggedItemsControlMovedUp();
+
+        String interactorsControl();
     }
 
     protected EventBus eventBus;

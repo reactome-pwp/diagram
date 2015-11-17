@@ -38,9 +38,9 @@ public class HideableContainerPanel extends FlowPanel implements ClickHandler {
         FlowPanel buttonsPanel = new FlowPanel();               // Tab buttons panel
         buttonsPanel.setStyleName(RESOURCES.getCSS().buttonsPanel());
         buttonsPanel.addStyleName(RESOURCES.getCSS().unselectable());
-        buttonsPanel.add(this.profilesBtn = getButton("Colour Profiles", RESOURCES.profilesTabSmall()));
-        buttonsPanel.add(this.interactorsBtn = getButton("Interactors", RESOURCES.interactorsTabSmall()));
-        buttonsPanel.add(this.aboutBtn = getButton("About Reactome", RESOURCES.aboutTabSmall()));
+        buttonsPanel.add(this.profilesBtn = getButton("Colour Profiles", RESOURCES.profilesTabIcon()));
+        buttonsPanel.add(this.interactorsBtn = getButton("Interactors", RESOURCES.interactorsTabIcon()));
+        buttonsPanel.add(this.aboutBtn = getButton("About Reactome", RESOURCES.aboutTabIcon()));
         this.profilesBtn.addStyleName(RESOURCES.getCSS().buttonSelected());
 
         this.container = new DeckLayoutPanel();                 // Main tab container
@@ -148,23 +148,14 @@ public class HideableContainerPanel extends FlowPanel implements ClickHandler {
         @Source("tabs/aboutDiagram.html")
         TextResource aboutThis();
 
-        @Source("images/profiles.png")
-        ImageResource profilesTab();
-
         @Source("images/profiles_s.png")
-        ImageResource profilesTabSmall();
-
-        @Source("images/interactors.png")
-        ImageResource interactorsTab();
+        ImageResource profilesTabIcon();
 
         @Source("images/interactors_s.png")
-        ImageResource interactorsTabSmall();
-
-        @Source("images/about.png")
-        ImageResource aboutTab();
+        ImageResource interactorsTabIcon();
 
         @Source("images/about_s.png")
-        ImageResource aboutTabSmall();
+        ImageResource aboutTabIcon();
 
         @Source("images/showHide.png")
         ImageResource showHideIcon();

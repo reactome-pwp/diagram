@@ -271,3 +271,21 @@
 .flaggedItemsControlMovedUp {
     bottom: 45px;
 }
+
+.interactorsControl {
+    /*centers in the middle*/
+    width: 400px;
+    margin-left:-200px; /* width and margin-left are related, please change both if needed */
+    left:50%;
+}
+
+.interactorsControl span {
+    margin: 5px 0 0 20px;
+    float: left;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    white-space: nowrap;
+    max-width: 225px;
+}
