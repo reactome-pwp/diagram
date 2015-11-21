@@ -11,6 +11,11 @@
     margin: 5px 0;
 }
 
+.menuDialog table,tbody,th,tr,td {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
 .header {
     margin: 0 0 2px 4px;
     font-family: Arial Unicode MS, Arial, sans-serif !important;

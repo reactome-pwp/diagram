@@ -17,6 +17,11 @@
     font-size: small !important;
 }
 
+.popup table,tbody,th,tr,td {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
 .popupSelected {
     border: solid 3px rgb(7, 114, 149);
 }

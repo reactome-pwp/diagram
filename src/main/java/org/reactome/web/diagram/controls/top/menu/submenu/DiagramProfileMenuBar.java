@@ -11,7 +11,7 @@ import org.reactome.web.diagram.profiles.diagram.model.DiagramProfile;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class DiagramProfileMenuBar extends SubMenuBar{
+public class DiagramProfileMenuBar extends SubMenuBar {
 
     public interface DiagramProfileColourChangedHandler {
         void onDiagramProfileColourChanged(DiagramProfile profile);

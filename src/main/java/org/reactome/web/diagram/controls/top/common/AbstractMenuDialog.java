@@ -88,7 +88,7 @@ public abstract class AbstractMenuDialog extends DialogBox implements ClickHandl
         ImageResource closeNormal();
     }
 
-    @CssResource.ImportedWithPrefix("diagram-DiagramKey")
+    @CssResource.ImportedWithPrefix("diagram-abstractMenuDialog")
     public interface ResourceCSS extends CssResource {
         /**
          * The path to the default CSS styles used by this resource.

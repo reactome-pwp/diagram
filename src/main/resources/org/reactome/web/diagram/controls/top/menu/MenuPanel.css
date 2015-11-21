@@ -26,3 +26,8 @@
     margin-top: 5px;
 }
 
+.dropDownMenu table,tbody,th,tr,td {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
