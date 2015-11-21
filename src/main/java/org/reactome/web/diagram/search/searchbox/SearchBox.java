@@ -4,7 +4,6 @@ import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.TextBox;
-import org.reactome.web.diagram.util.Console;
 
 /**
  * A common TextBox with an extra event (SearchBoxUpdatedEvent) that
@@ -52,17 +51,10 @@ public class SearchBox extends TextBox implements KeyUpHandler, KeyDownHandler {
         int keyCode = event.getNativeKeyCode();
         switch (keyCode){
             case KeyCodes.KEY_UP:
-                event.stopPropagation(); event.preventDefault();
-                fireEvent(new SearchBoxArrowKeysEvent(keyCode));
-                break;
             case KeyCodes.KEY_DOWN:
-                event.stopPropagation(); event.preventDefault();
-                fireEvent(new SearchBoxArrowKeysEvent(keyCode));
-                break;
             case KeyCodes.KEY_ESCAPE:
                 event.stopPropagation(); event.preventDefault();
                 fireEvent(new SearchBoxArrowKeysEvent(keyCode));
-                break;
         }
     }
 
@@ -72,6 +64,12 @@ public class SearchBox extends TextBox implements KeyUpHandler, KeyDownHandler {
             timer.cancel();
         }
         timer.schedule(this.searchDelay);
+        switch (event.getNativeEvent().getKeyCode()) {
+            case KeyCodes.KEY_UP:
+            case KeyCodes.KEY_DOWN:
+            case KeyCodes.KEY_ESCAPE:
+                event.stopPropagation(); event.preventDefault();
+        }
     }
 
     @Override
