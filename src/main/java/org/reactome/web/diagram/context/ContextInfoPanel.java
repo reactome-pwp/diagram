@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.context;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -63,9 +64,14 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
     }
 
     public Button getButton(String text, ImageResource imageResource){
+        Image buttonImg = new Image(imageResource);
+        Label buttonLbl = new Label(text);
+        buttonLbl.getElement().getStyle().setTextAlign(Style.TextAlign.CENTER);
+
         FlowPanel fp = new FlowPanel();
-        fp.add(new Image(imageResource));
-        fp.add(new Label(text));
+        fp.getElement().getStyle().setTextAlign(Style.TextAlign.CENTER);
+        fp.add(buttonImg);
+        fp.add(buttonLbl);
 
         SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(fp.toString());
         Button btn = new Button(safeHtml, this);
