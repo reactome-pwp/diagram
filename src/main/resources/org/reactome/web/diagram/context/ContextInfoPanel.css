@@ -20,11 +20,14 @@
     outline: none;
     width: 65px;
     height: 50px;
-
 }
 
 .buttonsPanel button:hover {
     background: none rgb(30, 148, 208);
+}
+
+.buttonsPanel button div{
+    text-align: center !important;
 }
 
 .buttonSelected {

@@ -63,9 +63,12 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
     }
 
     public Button getButton(String text, ImageResource imageResource){
+        Image buttonImg = new Image(imageResource);
+        Label buttonLbl = new Label(text);
+
         FlowPanel fp = new FlowPanel();
-        fp.add(new Image(imageResource));
-        fp.add(new Label(text));
+        fp.add(buttonImg);
+        fp.add(buttonLbl);
 
         SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(fp.toString());
         Button btn = new Button(safeHtml, this);
