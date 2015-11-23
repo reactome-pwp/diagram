@@ -11,7 +11,7 @@
     margin: 5px 0;
 }
 
-.menuDialog table,tbody,th,tr,td {
+.menuDialog table, .menuDialog tbody, .menuDialog th, .menuDialog tr, .menuDialog td {
     margin: 0 !important;
     padding: 0 !important;
 }

@@ -259,6 +259,10 @@
 .gwt-MenuBar-vertical .subMenuIcon-selected {
     background: #E0EDFE;
 }
+.gwt-MenuBarPopup table, .gwt-MenuBarPopup tbody, .gwt-MenuBarPopup th, .gwt-MenuBarPopup tr, .gwt-MenuBarPopup td {
+    margin: 0 !important;
+    padding: 0 !important;
+}
 .gwt-MenuBarPopup .menuPopupTopCenter {
     background: url(images/hborder.png) 0px -12px repeat-x;
 }
