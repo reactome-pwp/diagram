@@ -26,7 +26,7 @@
     background: none rgb(30, 148, 208);
 }
 
-.buttonsPanel button div{
+.buttonsPanel div {
     text-align: center !important;
 }
 
