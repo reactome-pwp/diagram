@@ -189,6 +189,9 @@ public class TextRenderer {
                 allLines.add(currentLine.toString());
                 currentLine.setLength(0);
                 splitLongWord(ctx, allLines, currentLine, longWord, availableWidth);
+            } else if(i==0 && currentLine.length()==0) {
+                //It is impossible to split the word so just show it in new line
+                allLines.add(longWord);
             }
         }
     }
