@@ -140,22 +140,15 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     }
 
     public void flag(Collection<DiagramObject> items, DiagramContext context) {
-        cleanCanvas(this.flag);
-        if (items == null || items.isEmpty()) return;
-        DiagramStatus status = context.getDiagramStatus();
-        double factor = status.getFactor();
-        Coordinate offset = status.getOffset();
-        for (DiagramObject item : items) {
-            if (item.getIsFadeOut() != null) continue;
-            Renderer renderer = this.rendererManager.getRenderer(item);
-            if (renderer != null) {
-                renderer.highlight(this.flag, item, factor, offset);
-            }
-        }
+        highlight(items, context, this.flag);
     }
 
     public void halo(Collection<DiagramObject> items, DiagramContext context) {
-        cleanCanvas(this.halo);
+        highlight(items, context, this.halo);
+    }
+
+    private void highlight(Collection<DiagramObject> items, DiagramContext context, AdvancedContext2d ctx){
+        cleanCanvas(ctx);
         if (items == null || items.isEmpty()) return;
 
         DiagramStatus status = context.getDiagramStatus();
@@ -165,7 +158,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             if (item.getIsFadeOut() != null) continue;
             Renderer renderer = this.rendererManager.getRenderer(item);
             if (renderer != null) {
-                renderer.highlight(this.halo, item, factor, offset);
+                renderer.highlight(ctx, item, factor, offset);
             }
         }
     }
