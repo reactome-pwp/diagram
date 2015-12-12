@@ -71,7 +71,6 @@ public abstract class GeneAbstractRenderer extends NodeAbstractRenderer{
                 prop.getX(),
                 prop.getY(),
                 prop.getWidth(),
-                prop.getHeight(),
                 RendererProperties.GENE_SYMBOL_PAD,
                 RendererProperties.GENE_SYMBOL_WIDTH,
                 RendererProperties.ARROW_LENGTH,
