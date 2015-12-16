@@ -77,8 +77,11 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
     @Override
     public void onPathwaysForEntitiesLoaded(List<Pathway> pathways) {
         Set<Pathway> rtn = new HashSet<>();
-        for (Pathway path : pathways) {
-            rtn.add(path);
+        for (Pathway pathway : pathways) {
+            // Keep only those pathways belonging to the same species as the displayed diagram
+            if(context.getContent().getStableId().substring(0, 5).equals(pathway.getIdentifier().substring(0,5))) {
+                rtn.add(pathway);
+            }
         }
         filterPathways(rtn);
         populatePathwaysTable(pathwaysIndex, false);
@@ -116,18 +119,6 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
             eventBus.fireEventFromSource(new DiagramLoadRequestEvent(pathway), this);
         } else {
             Console.error("No diagram for " + pathway.toString(), this);
-//                RESTFulClient.getAncestors(pathway, new AncestorsCreatedHandler() {
-//                    @Override
-//                    public void onAncestorsLoaded(Ancestors ancestors) {
-//                        Pathway aux = ancestors.get(0).getLastPathwayWithDiagram();
-//                        eventBus.fireEventFromSource(new DiagramLoadRequestEvent(aux, pathway), PathwaysDialogPanel.this);
-//                    }
-//
-//                    @Override
-//                    public void onAncestorsError(Throwable exception) {
-//                        Console.error("No pathway with diagram found for " + pathway);
-//                    }
-//                });
         }
     }
 
