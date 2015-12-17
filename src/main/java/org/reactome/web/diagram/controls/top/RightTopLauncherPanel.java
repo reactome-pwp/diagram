@@ -48,8 +48,8 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
         this.diagramKeyBtn = new PwpButton("Diagram key", RESOURCES.getCSS().key(), this);
         this.add(this.diagramKeyBtn);
 
-        this.settingBtn = new PwpButton("Settings", RESOURCES.getCSS().settings(), this);
-        this.add(this.settingBtn);
+//        this.settingBtn = new PwpButton("Settings", RESOURCES.getCSS().settings(), this);
+//        this.add(this.settingBtn);
 
         this.setVisible(true);
     }

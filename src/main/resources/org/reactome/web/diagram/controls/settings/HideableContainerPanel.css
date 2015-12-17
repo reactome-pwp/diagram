@@ -1,0 +1,129 @@
+.wrapper {
+    width: 300px;
+    height: 300px;
+    border: 2px solid #1e95cf;
+
+    background-color: #58c3e5;
+    background: -webkit-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* Standard syntax */
+    opacity: 0.95;
+    color: white;
+
+    position: relative;
+    border-radius: 15px 0 0 15px;
+
+    float:left;
+    overflow: visible;
+
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+
+    /* Used to animate the width of panel */
+    -webkit-transition: width 0.3s ease;
+    -moz-transition: width 0.3s ease;
+    -o-transition: width 0.3s ease;
+    transition: width 0.3s ease;
+}
+
+.wrapper:hover {
+    width: 310px;
+}
+
+.wrapperExpanded {
+    width: 590px !important;
+}
+
+.outerPanel {
+    float: left;
+    width: 100%;
+    height: 100%;
+}
+
+.buttonsPanel {
+    float: left;
+    width: 24px;
+    /*overflow: visible;*/
+    /*min-width: 80px;*/
+}
+
+.buttonsPanel button {
+    color: white;
+    /*border-top: solid 1px white;*/
+    /*border-left: solid 2px white;*/
+    /*border-bottom: solid 1px white;*/
+    border-radius: 10px 0 0 10px;
+    background: none rgb(88, 195, 229);
+    font-size: medium;
+    padding: 0 2px 0 2px !important;
+    outline: none;
+    width: 100%;
+    height: 80px;
+    float:right;
+
+    /* Used to animate the width of panel */
+    -webkit-transition: width 0.2s ease-in-out;
+    -moz-transition: width 0.2s ease-in-out;
+    -o-transition: width 0.2s ease-in-out;
+    transition: width 0.2s ease-in-out;
+}
+
+.buttonsPanel button:hover {
+    color: white;
+    background: none rgb(88, 195, 229);
+    font-size: medium;
+    padding: 0 2px 0 2px !important;
+    outline: none;
+    width: 140%;
+
+}
+
+.unselectable {
+    -webkit-touch-callout: none; /* Prevents selection */
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.undraggable {
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+}
+
+.buttonsPanel button:hover {
+    background: none rgb(30, 148, 208);
+}
+
+.buttonSelected {
+    background: none rgb(6, 107, 158) !important;
+}
+
+.container {
+    float: left;
+    width: 270px;
+    height: 276px;
+    overflow: hidden;
+    padding: 3px;
+    /*background-color: #9d97e5;*/
+}
+
+@sprite .showHide {
+    gwt-image:'showHideIcon';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: left;
+    margin: 2px 8px;
+}
+
+.showHideRight {
+    -ms-transform: rotate(180deg); /* IE 9 */
+    -webkit-transform: rotate(180deg);/* Chrome, Safari, Opera */
+    transform: rotate(180deg);
+}
+
+.headerLabel{
+    font-size: medium !important;
+}

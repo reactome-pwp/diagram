@@ -8,7 +8,7 @@ import org.reactome.web.diagram.profiles.diagram.model.DiagramProfile;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class DiagramProfileChangedEvent extends GwtEvent<DiagramProfileChangedHandler> {
-    public static Type<DiagramProfileChangedHandler> TYPE = new Type<DiagramProfileChangedHandler>();
+    public static Type<DiagramProfileChangedHandler> TYPE = new Type<>();
 
     private DiagramProfile profile;
 

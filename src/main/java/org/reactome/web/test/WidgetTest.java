@@ -7,6 +7,8 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.client.DiagramViewer;
+import org.reactome.web.diagram.events.DiagramLoadedEvent;
+import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
 import org.reactome.web.diagram.util.Console;
 
 /**
@@ -38,19 +40,19 @@ public class WidgetTest implements EntryPoint {
 //                        diagram.loadDiagram("R-HSA-1181150");
                     }
                 });
-//                diagram.addDiagramLoadedHandler(new DiagramLoadedHandler() {
-//                    @Override
-//                    public void onDiagramLoaded(DiagramLoadedEvent event) {
-//                        diagram.flagItems("NODAL");
-//                    }
-//                });
+                diagram.addDiagramLoadedHandler(new DiagramLoadedHandler() {
+                    @Override
+                    public void onDiagramLoaded(DiagramLoadedEvent event) {
+                        diagram.flagItems("NODAL");
+                    }
+                });
             }
         });
     }
 
     public void initialise() {
         SplitLayoutPanel slp = new SplitLayoutPanel(10);
-        slp.addWest(getDemoLeftPanel(), 83);
+        slp.addEast(getDemoLeftPanel(), 83);
         slp.addNorth(getDemoTopPanel(), 25);
 //        slp.addNorth(getDiseasePanel(), 50);
         slp.add(diagram);
@@ -118,7 +120,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("ORA 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNTA1MjgwODM1NTRfOTE3","TOTAL");
+                diagram.setAnalysisToken("MjAxNTExMDkwOTQ2NDJfMTc%3D","TOTAL");
             }
         }));
 
@@ -130,7 +132,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("Exp 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNTA2MTAxNDQ4MTJfNzk4","TOTAL");
+                diagram.setAnalysisToken("MjAxNTExMDQxOTQzNDhfNA==","TOTAL");
             }
         }));
 

@@ -167,6 +167,8 @@ public abstract class LegendPanel extends AbsolutePanel {
         String flaggedItemsLabel();
 
         String flaggedItemsControlMovedUp();
+
+        String interactorsControl();
     }
 
     protected EventBus eventBus;
@@ -175,7 +177,6 @@ public abstract class LegendPanel extends AbsolutePanel {
     public LegendPanel(EventBus eventBus) {
         this.eventBus = eventBus;
         //Setting the legend style
-        getElement().getStyle().setPosition(com.google.gwt.dom.client.Style.Position.ABSOLUTE);
         setStyleName(RESOURCES.getCSS().legendPanel());
 
         fadeInTimer = new Timer() {

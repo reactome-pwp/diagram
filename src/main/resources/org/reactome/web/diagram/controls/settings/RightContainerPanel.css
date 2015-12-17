@@ -1,0 +1,7 @@
+.container {
+    position: absolute;
+    right: -290px;
+    border-radius: 15px;
+    margin-top: -150px; /* height of the contained panel and margin-top are related, please change both if needed */
+    top: 50%;
+}

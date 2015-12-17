@@ -76,7 +76,8 @@ public class DiagramColours implements DiagramProfileChangedHandler {
     }
 
     public String getSelectedProfileName(){
-        return Cookies.getCookie(PROFILE_COOKIE);
+        String sel = Cookies.getCookie(PROFILE_COOKIE);
+        return sel != null ? sel : ProfileType.getStandard().diagramProfile.getName();
     }
 
     private void initHandlers(){

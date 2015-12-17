@@ -1,0 +1,30 @@
+.aboutPanel {
+    padding: 0 10px 0 10px;
+    font-size: medium !important;
+    overflow: hidden;
+}
+
+.htmlPanel {
+    height: 242px;
+    margin-top: 5px;
+    font-size: small !important;
+    overflow: auto;
+    -ms-overflow-style: none;
+    /*padding-right: 25px;*/
+}
+
+.htmlPanel p{
+    margin: 0 0 10px 0;
+}
+
+.htmlPanel::-webkit-scrollbar { width: 0 !important }
+
+.tabHeader {
+    margin-top: 5px;
+    font-weight: bold;
+    background-color: rgb(30, 148, 208);
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    padding-bottom: 2px;
+}
