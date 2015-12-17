@@ -34,7 +34,8 @@ public class WidgetTest implements EntryPoint {
                 Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                     @Override
                     public void execute() {
-                        diagram.loadDiagram("R-HSA-1181150");
+                        diagram.loadDiagram("R-HSA-5205647");
+//                        diagram.loadDiagram("R-HSA-1181150");
                     }
                 });
 //                diagram.addDiagramLoadedHandler(new DiagramLoadedHandler() {

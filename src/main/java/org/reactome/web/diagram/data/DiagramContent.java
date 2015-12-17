@@ -5,6 +5,9 @@ import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.graph.model.GraphSubpathway;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.SummaryItem;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 
 import java.util.*;
@@ -82,6 +85,34 @@ public class DiagramContent {
         }
     }
 
+    public void clearInteractors(){
+        for (DiagramObject diagramObject : diagramObjectMap.values()) {
+            if(diagramObject instanceof Node){
+                Node node = (Node) diagramObject;
+                SummaryItem interactorsSummary = node.getInteractorsSummary();
+                if(interactorsSummary!=null) {
+                    interactorsSummary.setNumber(null);
+                }
+            }
+        }
+    }
+
+    public void setInteractors(String acc, Integer number){
+        Console.info(acc);
+        Set<GraphObject> elements = identifierMap.getElements(acc);
+        if(elements!=null) {
+            for (GraphObject graphObject : elements) {
+                if (graphObject instanceof GraphPhysicalEntity) {
+                    GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+                    for (DiagramObject diagramObject : pe.getDiagramObjects()) {
+                        Node node = (Node) diagramObject;
+                        node.getInteractorsSummary().setNumber(number);
+                    }
+                }
+            }
+        }
+    }
+
     public boolean containsOnlyEncapsulatedPathways(){
         return (getDatabaseObjects().size() == encapsulatedPathways.size());
     }
@@ -134,8 +165,8 @@ public class DiagramContent {
         return lofNodes;
     }
 
-    public GraphObject getDatabaseObject(String stId){
-        return this.graphObjectCache.get(stId);
+    public GraphObject getDatabaseObject(String identifier){
+        return this.graphObjectCache.get(identifier);
     }
 
     public GraphObject getDatabaseObject(Long dbId){

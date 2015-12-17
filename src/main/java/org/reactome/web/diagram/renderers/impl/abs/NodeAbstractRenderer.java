@@ -50,6 +50,7 @@ public abstract class NodeAbstractRenderer extends AbstractRenderer {
     }
 
     @Override
+    @SuppressWarnings("Duplicates")
     public void highlight(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         if (!isVisible(item)) return;
         Node node = (Node) item;
@@ -130,12 +131,10 @@ public abstract class NodeAbstractRenderer extends AbstractRenderer {
         }
     }
 
-    protected void drawSummaryItems(AdvancedContext2d ctx, NodeCommon node, Double factor, Coordinate offset){
-        List<SummaryItem> list = node.getSummaryItems();
-        if(list!=null){
-            for (SummaryItem summaryItem : list) {
-                SummaryItemAbstractRenderer.draw(ctx, summaryItem, factor, offset);
-            }
+    protected void drawSummaryItems(AdvancedContext2d ctx, Node node, Double factor, Coordinate offset){
+        SummaryItem interactorsSummary = node.getInteractorsSummary();
+        if (interactorsSummary != null) {
+            SummaryItemAbstractRenderer.draw(ctx, interactorsSummary, factor, offset);
         }
     }
 

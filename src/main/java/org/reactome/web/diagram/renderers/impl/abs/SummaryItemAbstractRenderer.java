@@ -28,9 +28,9 @@ public abstract class SummaryItemAbstractRenderer {
             this.selColour = selColour;
         }
 
-        static Type getType(String type){
+        static Type getType(String type) {
             for (Type t : values()) {
-                if(t.toString().equals(type.toUpperCase())){
+                if (t.toString().equals(type.toUpperCase())) {
                     return t;
                 }
             }
@@ -43,16 +43,17 @@ public abstract class SummaryItemAbstractRenderer {
     }
 
     public static void draw(AdvancedContext2d ctx, SummaryItem summaryItem, Double factor, Coordinate offset, boolean highlight) {
-        if (summaryItem == null) return;
+        if (summaryItem == null || summaryItem.getNumber() == null) return;
         Type type = Type.getType(summaryItem.getType());
-        if(type==null) return;
-        Shape shape =  summaryItem.getShape();
-        if(shape == null) return;
+        if (type == null) return;
+        Shape shape = summaryItem.getShape();
+        if (shape == null) return;
         shape = ShapeFactory.transform(shape, factor, offset);
         double x, y;
         switch (shape.getType()) {
             case "CIRCLE":
-                x = shape.getC().getX(); y = shape.getC().getY();
+                x = shape.getC().getX();
+                y = shape.getC().getY();
                 ctx.beginPath();
                 ctx.arc(
                         shape.getC().getX(),
@@ -66,15 +67,15 @@ public abstract class SummaryItemAbstractRenderer {
                 //The only way we have for the time being to distinguish between selection or any other action is
                 //by checking whether the background colour is the standard one
                 boolean isSelection = ctx.getFillStyle().toString().equals("#000000");
-                if(isSelection){
+                if (isSelection) {
                     double r = shape.getR();
                     ctx.save();         //Here we need to apply a small trick to clear the inside of the summary item
                     ctx.arc(x, y, r, 0, 2 * Math.PI);   //First we set the arc defining the inside of the summary item
                     ctx.clip();         //Clipping forces all future drawing to be limited to the clipped region
                     ctx.clearRect(x - r, y - r, r * 2, r * 2);  //Clear rect will actually clear ONLY the circle
                     ctx.restore();      //Restoring brings all future actions to "normal" :)
-                }else{
-                    if(highlight) {
+                } else {
+                    if (highlight) {
                         ctx.fill();
                     } else {
                         ctx.save();
@@ -92,13 +93,13 @@ public abstract class SummaryItemAbstractRenderer {
                 throw new RuntimeException("Do not know how to draw summary item for " + shape.getType());
         }
 
-        if(!highlight && shape.getS()!=null){
+        if (!highlight && summaryItem.getNumber() != null) {
             ctx.save();
             ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
             ctx.setTextAlign(Context2d.TextAlign.CENTER);
             ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
             ctx.setFillStyle(type.txtColour);
-            ctx.fillText(shape.getS(),x, y);
+            ctx.fillText(summaryItem.getNumber() + "", x, y);
             ctx.restore();
         }
     }

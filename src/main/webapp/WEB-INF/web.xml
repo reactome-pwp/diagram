@@ -81,6 +81,21 @@
         <url-pattern>/download/current/diagram/*</url-pattern>
     </servlet-mapping>
 
+    <!-- static files local server (ONLY USED IN DEV MODE) -->
+    <!-- Please note a "reactome" user (or a symlink) needs to be set up -->
+    <servlet>
+        <servlet-name>InteractorsProxy</servlet-name>
+        <servlet-class>uk.ac.ebi.pride.web.util.servlet.proxy.StaticFilesProxyServlet</servlet-class>
+        <init-param>
+            <param-name>proxyFilePath</param-name>
+            <param-value>/Users/reactome/diagram/interactors</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InteractorsProxy</servlet-name>
+        <url-pattern>/ContentService/interactors/*</url-pattern>
+    </servlet-mapping>
+
     <!-- Reactome IMAGES (ONLY USED IN DEV MODE) -->
     <servlet>
         <servlet-name>FiguresProxy</servlet-name>

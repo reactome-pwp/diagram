@@ -13,4 +13,5 @@ public interface Node extends NodeCommon {
 
     Boolean getTrivial();
 
+    SummaryItem getInteractorsSummary();
 }

@@ -12,4 +12,8 @@ public interface SummaryItem {
     Boolean getPressed();
 
     void setPressed(boolean pressed);
+
+    Integer getNumber();
+
+    void setNumber(Integer number);
 }

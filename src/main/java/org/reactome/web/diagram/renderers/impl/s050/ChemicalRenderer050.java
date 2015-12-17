@@ -15,15 +15,16 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
  */
 public class ChemicalRenderer050 extends ChemicalAbstractRenderer {
     @Override
+    @SuppressWarnings("Duplicates")
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         Node node = (Node) item;
-        if(node.getTrivial()==null || !node.getTrivial()){
+        if (node.getTrivial() == null || !node.getTrivial()) {
             super.draw(ctx, item, factor, offset);
             ctx.save();
             ctx.setGlobalAlpha((factor - 0.5) * 2);
             drawSummaryItems(ctx, (Node) item, factor, offset);
             ctx.restore();
-        }else{
+        } else {
             ctx.save();
             ctx.setGlobalAlpha((factor - 0.5) * 2);
             super.draw(ctx, node, factor, offset);
@@ -35,9 +36,9 @@ public class ChemicalRenderer050 extends ChemicalAbstractRenderer {
     @Override
     public void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         Node node = (Node) item;
-        if(node.getTrivial()==null || !node.getTrivial()){
+        if (node.getTrivial() == null || !node.getTrivial()) {
             super.drawText(ctx, item, factor, offset);
-        }else{
+        } else {
             double alpha = ctx.getGlobalAlpha();
             ctx.save();
             ctx.setGlobalAlpha((factor - 0.5) * alpha * 2);
@@ -49,11 +50,10 @@ public class ChemicalRenderer050 extends ChemicalAbstractRenderer {
     @Override
     public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
         Node node = (Node) item;
-        if(node.getSummaryItems()!=null){
-            for (SummaryItem summaryItem : node.getSummaryItems()) {
-                if(ShapeCategory.isHovered(summaryItem.getShape(), pos)){
-                    return new HoveredItem(node.getId(), summaryItem);
-                }
+        SummaryItem interactorsSummary = node.getInteractorsSummary();
+        if (interactorsSummary != null) {
+            if (ShapeCategory.isHovered(interactorsSummary.getShape(), pos)) {
+                return new HoveredItem(node.getId(), interactorsSummary);
             }
         }
         return super.getHovered(item, pos);
@@ -62,12 +62,12 @@ public class ChemicalRenderer050 extends ChemicalAbstractRenderer {
     @Override
     public void highlight(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         Node node = (Node) item;
-        if(node.getTrivial()==null || !node.getTrivial()){
+        if (node.getTrivial() == null || !node.getTrivial()) {
             super.highlight(ctx, item, factor, offset);
-        }else{
+        } else {
             double alpha = ctx.getGlobalAlpha();
             ctx.save();
-            ctx.setGlobalAlpha((factor-0.5) * alpha * 2);
+            ctx.setGlobalAlpha((factor - 0.5) * alpha * 2);
             super.highlight(ctx, item, factor, offset);
             drawSummaryItems(ctx, node, factor, offset);
             ctx.restore();

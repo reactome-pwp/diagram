@@ -13,6 +13,7 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
 public class ProteinRenderer050 extends ProteinAbstractRenderer {
 
     @Override
+    @SuppressWarnings("Duplicates")
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         super.draw(ctx, item, factor, offset);
         ctx.save();
@@ -28,20 +29,21 @@ public class ProteinRenderer050 extends ProteinAbstractRenderer {
     }
 
     @Override
+    @SuppressWarnings("Duplicates")
     public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
         Node node = (Node) item;
-        if(node.getNodeAttachments()!=null) {
+        if (node.getNodeAttachments() != null) {
             for (NodeAttachment attachment : node.getNodeAttachments()) {
                 if (ShapeCategory.isHovered(attachment.getShape(), pos)) {
                     return new HoveredItem(node.getId(), attachment);
                 }
             }
         }
-        if(node.getSummaryItems()!=null){
-            for (SummaryItem summaryItem : node.getSummaryItems()) {
-                if(ShapeCategory.isHovered(summaryItem.getShape(), pos)){
-                    return new HoveredItem(node.getId(), summaryItem);
-                }
+
+        SummaryItem interactorsSummary = node.getInteractorsSummary();
+        if (interactorsSummary != null) {
+            if (ShapeCategory.isHovered(interactorsSummary.getShape(), pos)) {
+                return new HoveredItem(node.getId(), interactorsSummary);
             }
         }
         return super.getHovered(item, pos);

@@ -21,6 +21,7 @@ import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.interactors.raw.EntityInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
@@ -31,10 +32,10 @@ import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.util.DiagramEventBus;
-import org.reactome.web.diagram.util.LruCache;
 import org.reactome.web.diagram.util.ViewportUtils;
 import org.reactome.web.diagram.util.actions.UserActionsHandlers;
 import org.reactome.web.pwp.model.classes.Pathway;
+import org.reactome.web.pwp.model.util.LruCache;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.*;
@@ -43,7 +44,7 @@ import java.util.*;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserActionsHandlers,
-        LayoutLoadedHandler, GraphLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
+        LayoutLoadedHandler, GraphLoadedHandler, InteractorsLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, CanvasExportRequestedHandler,
@@ -130,6 +131,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
         this.eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         this.eventBus.addHandler(GraphLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
         this.eventBus.addHandler(ThumbnailAreaMovedEvent.TYPE, this);
         this.eventBus.addHandler(ControlActionEvent.TYPE, this);
     }
@@ -142,6 +144,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         if (this.forceDraw) {
             this.forceDraw = false;
             this.draw();
+            this.drawInteractors();
             return;
         }
         if (force || !mouseCurrent.equals(mousePrevious)) {
@@ -156,7 +159,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     private void draw() {
-        if (context == null)  return;
+        if (context == null) return;
         long start = System.currentTimeMillis();
         List<DiagramObject> selected = this.selected != null ? this.selected.getDiagramObjects() : new LinkedList<DiagramObject>();
         canvas.clear();
@@ -170,6 +173,10 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
         long time = System.currentTimeMillis() - start;
         this.eventBus.fireEventFromSource(new DiagramRenderedEvent(context.getContent(), visibleArea, items.size(), time), this);
+    }
+
+    private void drawInteractors() {
+        // A list of visible interactors is needed
     }
 
     @Override
@@ -235,7 +242,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void transform(Coordinate offset, double factor) {
         //An animation can be working and a new pathway might be requested :(
-        if(this.context==null) return;
+        if (this.context == null) return;
         DiagramStatus status = this.context.getDiagramStatus();
         status.setOffset(offset);
         status.setFactor(factor);
@@ -283,7 +290,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         //object is actually different, so we do not take into account attachments or entities summary.
         DiagramObject prev = this.hovered != null ? this.hovered.getHoveredObject() : null;
         this.hovered = hovered;
-        if(!Objects.equals(prev, item)) {
+        if (!Objects.equals(prev, item)) {
             //we don't rely on the listener of the following event because finer grain of the hovering is lost
             GraphObjectHoveredEvent event = new GraphObjectHoveredEvent(graphObject, item);
             this.eventBus.fireEventFromSource(event, this);
@@ -539,7 +546,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
                 if (!fadeOut) {
                     this.selected = graphObject;
                     this.halo = graphObject.getRelatedDiagramObjects();
-                    if(graphObject instanceof GraphPhysicalEntity){
+                    if (graphObject instanceof GraphPhysicalEntity) {
                         GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
                         for (GraphPhysicalEntity parent : pe.getParentLocations()) {
                             this.halo.addAll(parent.getDiagramObjects());   //halo its parents but not the reactions where they participate
@@ -548,10 +555,10 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
                 }
             }
             this.canvas.setWatermarkURL(this.context, this.selected, this.flagTerm);
-            if(event.getZoom()) {
+            if (event.getZoom()) {
                 this.diagramManager.displayDiagramObjects(this.halo);
             }
-            if(this.selected!=null) this.halo.removeAll(this.selected.getDiagramObjects());
+            if (this.selected != null) this.halo.removeAll(this.selected.getDiagramObjects());
             forceDraw = true;
             if (event.getFireExternally()) {
                 fireEvent(event);
@@ -564,7 +571,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         //In order to have fine grain hovering capabilities, this class is not taking actions for onGraphObjectHovered
         //when it is fired by its own, so we ONLY want to do the STANDARD action (highlight) when the event comes from
         //the outside. That is the reason of the next line of code
-        if(event.getSource().equals(this)) return;
+        if (event.getSource().equals(this)) return;
         if (context != null) {
             //this.hovered = new HoveredItem(event.getHoveredObjects()); // Don't do it here. Hovering can also be fired from the outside
             canvas.highlight(new HoveredItem(event.getGraphObject()), this.context);
@@ -586,7 +593,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onDiagramExportRequested(CanvasExportRequestedEvent event) {
-        if(context!=null) {
+        if (context != null) {
             this.canvas.exportImage(this.context.getContent().getStableId());
         }
     }
@@ -597,7 +604,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.canvas.setWatermarkURL(context, this.selected, this.flagTerm = event.getTerm());
         this.flagged = event.getFlaggedItems();
         this.canvas.flag(this.flagged, this.context);
-        if(event.getNotify()){
+        if (event.getNotify()) {
             this.fireEvent(event);
         }
     }
@@ -607,10 +614,10 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         String term = event.getTerm();
         Set<GraphObject> items = this.context.getContent().getIdentifierMap().getElements(term);
         Set<DiagramObject> flagged = new HashSet<>();
-        if(items!=null) {
+        if (items != null) {
             for (GraphObject item : items) {
                 flagged.addAll(item.getDiagramObjects());
-                if(item instanceof GraphPhysicalEntity){
+                if (item instanceof GraphPhysicalEntity) {
                     GraphPhysicalEntity pe = (GraphPhysicalEntity) item;
                     for (GraphPhysicalEntity entity : pe.getParentLocations()) {
                         flagged.addAll(entity.getDiagramObjects());
@@ -625,10 +632,10 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void onDiagramObjectsFlagReset(DiagramObjectsFlagResetEvent event) {
         this.canvas.setWatermarkURL(context, this.selected, this.flagTerm = null);
-        if(this.flagged != null){
+        if (this.flagged != null) {
             this.flagged = new HashSet<>();
             this.canvas.flag(this.flagged, this.context);
-            if(!event.getSource().equals(this)){
+            if (!event.getSource().equals(this)) {
                 this.fireEvent(event);
             }
         }
@@ -656,6 +663,15 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void onGraphLoaded(GraphLoadedEvent event) {
         this.eventBus.fireEventFromSource(new DiagramLoadedEvent(context), this);
+    }
+
+    @Override
+    public void onInteractorsLoaded(InteractorsLoadedEvent event) {
+        context.getContent().clearInteractors();
+        for (EntityInteractor interactor : event.getInteractors().getEntities()) {
+            context.getContent().setInteractors(interactor.getAcc(), interactor.getInteractors().size());
+        }
+        forceDraw = true;
     }
 
     @Override
@@ -721,7 +737,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         }
     }
 
-    public void resetIllustration(){
+    public void resetIllustration() {
         this.canvas.resetIllustration();
     }
 
@@ -785,7 +801,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void setVisible(boolean visible) {
         super.setVisible(visible);
-        if(visible) onResize();
+        if (visible) onResize();
         if (context != null) {
             if (visible) {
                 context.restoreDialogs();
@@ -872,17 +888,17 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     private void setSelection(HoveredItem hoveredItem, boolean zoom, boolean fireExternally) {
         GraphObject toSelect = hoveredItem != null ? hoveredItem.getGraphObject() : null;
-        if(toSelect!=null){
-            if(hoveredItem.getAttachment()!=null){
+        if (toSelect != null) {
+            if (hoveredItem.getAttachment() != null) {
                 this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getAttachment()), this);
             }
-            if(hoveredItem.getSummaryItem()!=null){
+            if (hoveredItem.getSummaryItem() != null) {
                 Boolean pressed = hovered.getSummaryItem().getPressed();
                 hovered.getSummaryItem().setPressed(pressed == null || !pressed);
                 forceDraw = true;
                 this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getSummaryItem()), this);
             }
-            if(hoveredItem.getContextMenuTrigger()!=null){
+            if (hoveredItem.getContextMenuTrigger() != null) {
                 this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getContextMenuTrigger()), this);
                 DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
                 this.context.showDialog(this.eventBus, item, this.canvas);

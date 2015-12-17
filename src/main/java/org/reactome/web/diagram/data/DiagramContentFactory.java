@@ -5,6 +5,7 @@ import org.reactome.web.diagram.data.graph.raw.EntityNode;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
 import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
+import org.reactome.web.diagram.data.interactors.raw.DiagramInteractors;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.util.Console;
@@ -17,7 +18,7 @@ import java.util.*;
  */
 public abstract class DiagramContentFactory {
 
-    public static DiagramContent getDiagramContent(Diagram diagram ) {
+    public static DiagramContent getDiagramContent(Diagram diagram) {
         DiagramContent content = new DiagramContent();
 
         //Read and set general pathway information
@@ -164,5 +165,9 @@ public abstract class DiagramContentFactory {
             }
         }
         return rtn;
+    }
+
+    public static void fillInteractorsContent(DiagramContent content, DiagramInteractors interactors){
+        //ToDo :(
     }
 }
