@@ -633,13 +633,14 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.entitiesSelection = createCanvas(width, height);
         this.shadowsText = createCanvas(width, height);
 
+        this.tooltipContainer = createToolTipContainer(width, height);
+
+        this.buffer = createCanvas(width, height);  //Top-level canvas (mouse ctrl and buffer)
+
         //DO NOT CHANGE THE ORDER OF THE FOLLOWING TWO LINES
         this.add(new LoadingMessage(eventBus));                 //Loading message panel
         this.add(new AnalysisMessage(eventBus));                //Analysis overlay message panel
         this.add(new ErrorMessage(eventBus));                   //Error message panel
-        this.tooltipContainer = createToolTipContainer(width, height);
-
-        this.buffer = createCanvas(width, height);  //Top-level canvas (mouse ctrl and buffer)
 
         //Thumbnail
         this.add(this.thumbnail);

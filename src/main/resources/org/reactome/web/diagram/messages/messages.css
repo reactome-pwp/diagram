@@ -10,7 +10,6 @@
     opacity: 0.85;
     display: block;
 
-
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
     box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
@@ -59,27 +58,29 @@
 }
 
 .errorMessage {
-    width: 190px;
-    margin-right: -95px; /* width and margin-right are related, please change both if needed */
+    width: 400px;
+    margin-right: -200px; /* width and margin-right are related, please change both if needed */
     right: 50%;
 
-    height: 40px;
-    margin-top: -20px; /* height and margin-top are related, please change both if needed */
+    height: 60px;
+    margin-top: -30px; /* height and margin-top are related, please change both if needed */
     top: 50%;
 
-    padding: 5px 10px 0 15px;
+    padding: 5px 10px 5px 15px;
 
     background-color: rgb(197, 91, 88);
     border: 1px solid rgb(197, 39, 34);
 }
 
 .errorMessage span {
+    display: block;
     margin-left: 15px;
     vertical-align: middle;
 }
 
 .errorMessage img {
+    float:left;
     width: auto;
-    height:32px;
+    height: 32px;
     vertical-align: middle;
 }
