@@ -43,7 +43,7 @@ public class WidgetTest implements EntryPoint {
                 diagram.addDiagramLoadedHandler(new DiagramLoadedHandler() {
                     @Override
                     public void onDiagramLoaded(DiagramLoadedEvent event) {
-                        diagram.flagItems("NODAL");
+//                        diagram.flagItems("NODAL");
                     }
                 });
             }
