@@ -7,10 +7,8 @@ import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.interactors.raw.DiagramInteractors;
 import org.reactome.web.diagram.data.layout.Diagram;
-import org.reactome.web.diagram.events.DiagramInternalErrorEvent;
-import org.reactome.web.diagram.events.GraphLoadedEvent;
-import org.reactome.web.diagram.events.InteractorsLoadedEvent;
-import org.reactome.web.diagram.events.LayoutLoadedEvent;
+import org.reactome.web.diagram.events.*;
+import org.reactome.web.diagram.handlers.InteractorResourceChangedHandler;
 
 /**
  * Implements a three step loading strategy
@@ -20,14 +18,15 @@ import org.reactome.web.diagram.events.LayoutLoadedEvent;
  *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler, InteractorsLoader.Handler {
+public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler, InteractorsLoader.Handler,
+        InteractorResourceChangedHandler {
 
     //Every time the diagram widget is loaded will retrieve new data from the sever
     public static String version = "" + System.currentTimeMillis(); //UNIQUE per session
 
     //It has a value by default but it can be set to a different one so in every load
     //the "user preferred" interactors resource will be selected
-    public static String INTERACTORS_RESOURCE = "IntAct"; // -> null here means DO NOT LOAD interactors
+    public static String INTERACTORS_RESOURCE = "Resource1"; // -> null here means DO NOT LOAD interactors
 
     private EventBus eventBus;
 
@@ -41,6 +40,9 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
         layoutLoader = new LayoutLoader(this);
         graphLoader = new GraphLoader(this);
         interactorsLoader = new InteractorsLoader(this);
+
+        //For the time being we only want to do something on demand for interactors
+        eventBus.addHandler(InteractorResourceChangedEvent.TYPE, this);
     }
 
     public void cancel() {
@@ -96,5 +98,11 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     @Override
     public void onInteractorsLoaderError(Throwable exception) {
         eventBus.fireEventFromSource(new DiagramInternalErrorEvent("Interactors for " + INTERACTORS_RESOURCE + ": " + exception.getMessage()), this);
+    }
+
+    //TODO: ADD COMMENT!
+    @Override
+    public void onInteractorResourceChanged(InteractorResourceChangedEvent event) {
+        interactorsLoader.load(content.getStableId(), event.getResource());
     }
 }
