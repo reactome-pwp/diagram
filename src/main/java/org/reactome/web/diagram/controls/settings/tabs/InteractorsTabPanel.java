@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import org.reactome.web.diagram.events.InteractorResourceChangedEvent;
+import org.reactome.web.diagram.events.InteractorsResourceChangedEvent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +46,7 @@ public class InteractorsTabPanel extends Composite implements ChangeHandler {
 
     @Override
     public void onChange(ChangeEvent event) {
-        eventBus.fireEventFromSource(new InteractorResourceChangedEvent(resourcesLB.getSelectedItemText()), this);
+        eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(resourcesLB.getSelectedItemText()), this);
     }
 
     private void setResourcesList(List<String> resourcesList){

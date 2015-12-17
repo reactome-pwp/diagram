@@ -8,7 +8,7 @@ import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.interactors.raw.DiagramInteractors;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.events.*;
-import org.reactome.web.diagram.handlers.InteractorResourceChangedHandler;
+import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 
 /**
  * Implements a three step loading strategy
@@ -19,7 +19,7 @@ import org.reactome.web.diagram.handlers.InteractorResourceChangedHandler;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler, InteractorsLoader.Handler,
-        InteractorResourceChangedHandler {
+        InteractorsResourceChangedHandler {
 
     //Every time the diagram widget is loaded will retrieve new data from the sever
     public static String version = "" + System.currentTimeMillis(); //UNIQUE per session
@@ -42,7 +42,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
         interactorsLoader = new InteractorsLoader(this);
 
         //For the time being we only want to do something on demand for interactors
-        eventBus.addHandler(InteractorResourceChangedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
     }
 
     public void cancel() {
@@ -102,7 +102,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
 
     //TODO: ADD COMMENT!
     @Override
-    public void onInteractorResourceChanged(InteractorResourceChangedEvent event) {
+    public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         interactorsLoader.load(content.getStableId(), event.getResource());
     }
 }

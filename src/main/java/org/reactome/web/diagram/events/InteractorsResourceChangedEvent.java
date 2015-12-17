@@ -1,29 +1,29 @@
 package org.reactome.web.diagram.events;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.reactome.web.diagram.handlers.InteractorResourceChangedHandler;
+import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class InteractorResourceChangedEvent extends GwtEvent<InteractorResourceChangedHandler> {
-    public static final Type<InteractorResourceChangedHandler> TYPE = new Type<>();
+public class InteractorsResourceChangedEvent extends GwtEvent<InteractorsResourceChangedHandler> {
+    public static final Type<InteractorsResourceChangedHandler> TYPE = new Type<>();
 
     String resource; //TODO: Change this for the proper InteractorResource object when it is created
 
 
-    public InteractorResourceChangedEvent(String resource) {
+    public InteractorsResourceChangedEvent(String resource) {
         this.resource = resource;
     }
 
     @Override
-    public Type<InteractorResourceChangedHandler> getAssociatedType() {
+    public Type<InteractorsResourceChangedHandler> getAssociatedType() {
         return TYPE;
     }
 
     @Override
-    protected void dispatch(InteractorResourceChangedHandler handler) {
-        handler.onInteractorResourceChanged(this);
+    protected void dispatch(InteractorsResourceChangedHandler handler) {
+        handler.onInteractorsResourceChanged(this);
     }
 
     public String getResource() {
