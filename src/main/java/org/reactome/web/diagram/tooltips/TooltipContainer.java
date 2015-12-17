@@ -199,7 +199,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
             } else if (hovered instanceof SummaryItem) {
                 SummaryItem summaryItem = (SummaryItem) hovered;
                 Shape shape = ShapeFactory.transform(summaryItem.getShape(), factor, offset);
-                tooltip.setText(shape.getS() + " interactions");
+                tooltip.setText(summaryItem.getNumber() + " interactions");
                 String type = shape.getType();
                 if (type.equals("CIRCLE")) {
                     tooltip.setPositionAndShow(
