@@ -669,7 +669,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
         context.getContent().clearInteractors();
         for (EntityInteractor interactor : event.getInteractors().getEntities()) {
-            context.getContent().setInteractors(interactor.getAcc(), interactor.getInteractors().size());
+            context.getContent().setInteractors(interactor.getAcc(), interactor.getCount());
         }
         forceDraw = true;
     }

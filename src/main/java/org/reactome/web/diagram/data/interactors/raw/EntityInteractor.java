@@ -13,6 +13,11 @@ public interface EntityInteractor {
     String getAcc();
 
     /**
+     * The total number of interactions for the given interactor
+     */
+    Integer getCount();
+
+    /**
      * List of interactors for a given resource (specified in DiagramInteractors interface)
      */
     List<Interactor> getInteractors();
