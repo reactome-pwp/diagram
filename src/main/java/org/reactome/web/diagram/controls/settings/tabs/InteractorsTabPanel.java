@@ -1,6 +1,8 @@
 package org.reactome.web.diagram.controls.settings.tabs;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
@@ -8,6 +10,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import org.reactome.web.diagram.events.InteractorResourceChangedEvent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +18,7 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class InteractorsTabPanel extends Composite {
+public class InteractorsTabPanel extends Composite implements ChangeHandler {
     private EventBus eventBus;
     private ListBox resourcesLB;
 
@@ -30,7 +33,8 @@ public class InteractorsTabPanel extends Composite {
 
         resourcesLB = new ListBox();
         resourcesLB.setMultipleSelect(false);
-        setResourcesList(Arrays.asList("Resource 1", "Resource 2", "Resource 3"));
+        setResourcesList(Arrays.asList("Resource1", "Resource2", "Resource3"));
+        resourcesLB.addChangeHandler(this);
 
         FlowPanel main = new FlowPanel();
         main.setStyleName(RESOURCES.getCSS().interactorsPanel());
@@ -40,15 +44,18 @@ public class InteractorsTabPanel extends Composite {
         initWidget(main);
     }
 
+    @Override
+    public void onChange(ChangeEvent event) {
+        eventBus.fireEventFromSource(new InteractorResourceChangedEvent(resourcesLB.getSelectedItemText()), this);
+    }
+
     private void setResourcesList(List<String> resourcesList){
         for(String name : resourcesList){
             resourcesLB.addItem(name);
         }
     }
 
-
     public static Resources RESOURCES;
-
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
