@@ -5,9 +5,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import org.reactome.web.diagram.common.PwpButton;
-import org.reactome.web.diagram.controls.top.common.AbstractMenuDialog;
 import org.reactome.web.diagram.events.AnalysisResultLoadedEvent;
 import org.reactome.web.diagram.events.AnalysisResultRequestedEvent;
 import org.reactome.web.diagram.events.DiagramInternalErrorEvent;
@@ -23,7 +22,7 @@ import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
 public class ErrorMessage extends MessagesPanel implements AnalysisResultRequestedHandler, AnalysisResultLoadedHandler,
         DiagramRequestedHandler, DiagramInternalErrorHandler, ClickHandler {
 
-    private InlineLabel message;
+    private Label message;
 
     public ErrorMessage(EventBus eventBus) {
         super(eventBus);
@@ -34,12 +33,16 @@ public class ErrorMessage extends MessagesPanel implements AnalysisResultRequest
 
         FlowPanel fp = new FlowPanel();
         fp.add(new Image(RESOURCES.error()));
-        PwpButton close = new PwpButton("close", AbstractMenuDialog.RESOURCES.getCSS().close(), this);
-        fp.add(close);
-        fp.add(message = new InlineLabel("Error holder"));
+
+        PwpButton closeBtn = new PwpButton("close", RESOURCES.getCSS().close(), this);
+        fp.add(closeBtn);
+
+        message = new Label("Error holder");
+        message.setStyleName(MessagesPanel.RESOURCES.getCSS().errorMessageText());
+        fp.add(message);
+
         this.add(fp);
         setVisible(false);
-
         this.initHandlers();
     }
 

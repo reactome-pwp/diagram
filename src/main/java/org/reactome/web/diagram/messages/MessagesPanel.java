@@ -33,6 +33,15 @@ public abstract class MessagesPanel extends SimplePanel {
 
         @Source("images/loader_lines.gif")
         ImageResource loader();
+
+        @Source("images/close_red_clicked.png")
+        ImageResource closeRedClicked();
+
+        @Source("images/close_red_hovered.png")
+        ImageResource closeRedHovered();
+
+        @Source("images/close_red_normal.png")
+        ImageResource closeRedNormal();
     }
 
     /**
@@ -52,6 +61,10 @@ public abstract class MessagesPanel extends SimplePanel {
         String analysisOverlayMessage();
 
         String errorMessage();
+
+        String errorMessageText();
+
+        String close();
     }
 
     protected EventBus eventBus;
