@@ -77,8 +77,11 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
     @Override
     public void onPathwaysForEntitiesLoaded(List<Pathway> pathways) {
         Set<Pathway> rtn = new HashSet<>();
-        for (Pathway path : pathways) {
-            rtn.add(path);
+        for (Pathway pathway : pathways) {
+            // Keep only those pathways belonging to the same species as the displayed diagram
+            if(context.getContent().getStableId().substring(0, 5).equals(pathway.getIdentifier().substring(0,5))) {
+                rtn.add(pathway);
+            }
         }
         filterPathways(rtn);
         populatePathwaysTable(pathwaysIndex, false);
