@@ -5,15 +5,29 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.data.interactors.raw.DiagramInteractors;
+import org.reactome.web.diagram.events.EntityDecoratorSelectedEvent;
+import org.reactome.web.diagram.events.InteractorsFilteredEvent;
+import org.reactome.web.diagram.events.InteractorsLoadedEvent;
+import org.reactome.web.diagram.events.InteractorsToggledEvent;
+import org.reactome.web.diagram.handlers.EntityDecoratorSelectedHandler;
+import org.reactome.web.diagram.handlers.InteractorsLoadedHandler;
+import org.reactome.web.diagram.util.slider.Slider;
+import org.reactome.web.diagram.util.slider.SliderValueChangedEvent;
+import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class InteractorsControl extends LegendPanel implements ClickHandler{
+public class InteractorsControl extends LegendPanel implements ClickHandler, SliderValueChangedHandler,
+        EntityDecoratorSelectedHandler, InteractorsLoadedHandler {
+    private DiagramInteractors interactors;
+    private boolean interactorsVisible = true;
+    private Double threshold = 0.5;
 
     private InlineLabel message;
-    private PwpButton displayAllBtn;
-    private PwpButton showDetailsBtn;
+    private PwpButton showBurstsBtn;
+    private Slider slider;
     private PwpButton closeBtn;
 
     public InteractorsControl(EventBus eventBus) {
@@ -23,23 +37,58 @@ public class InteractorsControl extends LegendPanel implements ClickHandler{
         addStyleName(RESOURCES.getCSS().interactorsControl());
 
         this.message = new InlineLabel("RESOURCE");
-        this.displayAllBtn = new PwpButton("Show/Hide All interactors", RESOURCES.getCSS().play(), this);
-        this.showDetailsBtn = new PwpButton("Show details", RESOURCES.getCSS().play(), this);
-        this.closeBtn = new PwpButton("Close", RESOURCES.getCSS().close(), this);
+        this.showBurstsBtn = new PwpButton("Show/Hide interactors", RESOURCES.getCSS().play(), this);
+        this.closeBtn = new PwpButton("Close and clear interactors", RESOURCES.getCSS().close(), this);
+
+        this.slider = new Slider(100, 24, threshold);
+        this.slider.addSliderValueChangedHandler(this);
+        this.slider.setVisible(true);
+//        this.slider.setStyleName(css.slide());
+        this.add(this.slider);
 
         this.add(this.message);
-        this.add(this.displayAllBtn);
-        this.add(this.showDetailsBtn);
+        this.add(this.showBurstsBtn);
         this.add(this.closeBtn);
-        this.setVisible(true);
+        this.setVisible(false);
+
+        this.initHandlers();
     }
 
     @Override
     public void onClick(ClickEvent event) {
         Object source = event.getSource();
-
-        if (source.equals(this.closeBtn))
+        if (source.equals(this.closeBtn)) {
             this.setVisible(false);
-//            eventBus.fireEventFromSource(new AnalysisResetEvent(), this);
+        } else if (source.equals(this.showBurstsBtn)) {
+            interactorsVisible = !interactorsVisible;
+            eventBus.fireEventFromSource(new InteractorsToggledEvent(interactorsVisible), this);
+        }
+    }
+
+    @Override
+    public void onEntityDecoratorSelected(EntityDecoratorSelectedEvent event) {
+        if(!isVisible()){
+            this.setVisible(true);
+        }
+    }
+
+    @Override
+    public void onInteractorsLoaded(InteractorsLoadedEvent event) {
+        if(event!=null){
+            interactorsVisible = true;
+            interactors = event.getInteractors();
+            message.setText(interactors.getResource()!=null ? interactors.getResource() : "");
+        }
+    }
+
+    @Override
+    public void onSliderValueChanged(SliderValueChangedEvent event) {
+        threshold = event.getPercentage();
+        eventBus.fireEventFromSource(new InteractorsFilteredEvent(threshold), this);
+    }
+
+    private void initHandlers(){
+        eventBus.addHandler(EntityDecoratorSelectedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
     }
 }
