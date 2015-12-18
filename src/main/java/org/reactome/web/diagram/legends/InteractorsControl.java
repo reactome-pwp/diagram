@@ -6,10 +6,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.interactors.raw.DiagramInteractors;
-import org.reactome.web.diagram.events.EntityDecoratorSelectedEvent;
-import org.reactome.web.diagram.events.InteractorsFilteredEvent;
-import org.reactome.web.diagram.events.InteractorsLoadedEvent;
-import org.reactome.web.diagram.events.InteractorsToggledEvent;
+import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.EntityDecoratorSelectedHandler;
 import org.reactome.web.diagram.handlers.InteractorsLoadedHandler;
 import org.reactome.web.diagram.util.slider.Slider;
@@ -58,6 +55,8 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     public void onClick(ClickEvent event) {
         Object source = event.getSource();
         if (source.equals(this.closeBtn)) {
+            //Is safe to do this here (even if there is not loading in progress because that scenario is checked by the loader)
+            eventBus.fireEventFromSource(new InteractorsRequestCanceledEvent(), this);
             this.setVisible(false);
         } else if (source.equals(this.showBurstsBtn)) {
             interactorsVisible = !interactorsVisible;

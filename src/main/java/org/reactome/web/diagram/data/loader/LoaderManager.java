@@ -8,6 +8,7 @@ import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.interactors.raw.DiagramInteractors;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.events.*;
+import org.reactome.web.diagram.handlers.InteractorsRequestCanceledHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 
 /**
@@ -19,7 +20,7 @@ import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler, InteractorsLoader.Handler,
-        InteractorsResourceChangedHandler {
+        InteractorsResourceChangedHandler, InteractorsRequestCanceledHandler {
 
     //Every time the diagram widget is loaded will retrieve new data from the sever
     public static String version = "" + System.currentTimeMillis(); //UNIQUE per session
@@ -43,6 +44,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
 
         //For the time being we only want to do something on demand for interactors
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsRequestCanceledEvent.TYPE, this);
     }
 
     public void cancel() {
@@ -105,5 +107,10 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         INTERACTORS_RESOURCE = event.getResource();
         interactorsLoader.load(content.getStableId(), INTERACTORS_RESOURCE);
+    }
+
+    @Override
+    public void onInteractorsRequestCanceled(InteractorsRequestCanceledEvent event) {
+        interactorsLoader.cancel();
     }
 }
