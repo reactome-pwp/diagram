@@ -45,6 +45,7 @@ import java.util.*;
  */
 class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserActionsHandlers,
         LayoutLoadedHandler, GraphLoadedHandler, InteractorsLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
+        InteractorsResourceChangedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, CanvasExportRequestedHandler,
@@ -128,6 +129,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
         this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
         this.eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
+
+        this.eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
 
         this.eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         this.eventBus.addHandler(GraphLoadedEvent.TYPE, this);
@@ -666,8 +669,14 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     @Override
-    public void onInteractorsLoaded(InteractorsLoadedEvent event) {
+    public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         context.getContent().clearInteractors();
+        forceDraw = true;
+    }
+
+    @Override
+    public void onInteractorsLoaded(InteractorsLoadedEvent event) {
+
         for (EntityInteractor interactor : event.getInteractors().getEntities()) {
             context.getContent().setInteractors(interactor.getAcc(), interactor.getCount());
         }
