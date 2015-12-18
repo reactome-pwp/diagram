@@ -100,9 +100,10 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
         eventBus.fireEventFromSource(new DiagramInternalErrorEvent("Interactors for " + INTERACTORS_RESOURCE + ": " + exception.getMessage()), this);
     }
 
-    //TODO: ADD COMMENT!
+    //The interactors loader is meant to be used not only when loading a new diagram but also on demand
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        interactorsLoader.load(content.getStableId(), event.getResource());
+        INTERACTORS_RESOURCE = event.getResource();
+        interactorsLoader.load(content.getStableId(), INTERACTORS_RESOURCE);
     }
 }
