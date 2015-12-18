@@ -116,6 +116,9 @@ public abstract class LegendPanel extends AbsolutePanel {
 
         @Source("help/expression.help.html")
         TextResource expressionLegendHelp();
+
+        @Source("images/loader.gif")
+        ImageResource loader();
     }
 
     /**
@@ -169,6 +172,18 @@ public abstract class LegendPanel extends AbsolutePanel {
         String flaggedItemsControlMovedUp();
 
         String interactorsControl();
+
+        String interactorsControlError();
+
+        String interactorsControlLoadingIcon();
+
+        String interactorsControlMessage();
+
+        String showBursts();
+
+        String interactorsControlSlider();
+
+        String interactorsControlControls();
     }
 
     protected EventBus eventBus;
