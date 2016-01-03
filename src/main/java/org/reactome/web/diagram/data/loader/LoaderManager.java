@@ -5,7 +5,7 @@ import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.DiagramContentFactory;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.raw.Graph;
-import org.reactome.web.diagram.data.interactors.raw.DiagramInteractors;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.InteractorsRequestCanceledHandler;
@@ -90,7 +90,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     }
 
     @Override
-    public void interactorsLoaded(DiagramInteractors interactors, long time) {
+    public void interactorsLoaded(RawInteractors interactors, long time) {
         long start = System.currentTimeMillis();
         DiagramContentFactory.fillInteractorsContent(content, interactors);
         time += System.currentTimeMillis() - start;

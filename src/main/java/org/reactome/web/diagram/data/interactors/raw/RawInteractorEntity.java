@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public interface EntityInteractor {
+public interface RawInteractorEntity {
 
     /**
      * Diagram entity identifier (UniProt, ChEBI)
@@ -20,5 +20,5 @@ public interface EntityInteractor {
     /**
      * List of interactors for a given resource (specified in DiagramInteractors interface)
      */
-    List<Interactor> getInteractors();
+    List<RawInteractor> getInteractors();
 }

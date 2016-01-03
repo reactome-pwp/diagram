@@ -13,7 +13,6 @@ import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.util.AdvancedContext2d;
-import org.reactome.web.diagram.util.Console;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
