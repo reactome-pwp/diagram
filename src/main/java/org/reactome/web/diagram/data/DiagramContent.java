@@ -7,7 +7,6 @@ import org.reactome.web.diagram.data.graph.model.GraphSubpathway;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.SummaryItem;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 
 import java.util.*;
@@ -97,8 +96,15 @@ public class DiagramContent {
         }
     }
 
+    public void initInteractors(){
+        for (GraphObject object : getDatabaseObjects()) {
+            if(object instanceof GraphPhysicalEntity){
+                ((GraphPhysicalEntity) object).initInteractors();
+            }
+        }
+    }
+
     public void setInteractors(String acc, Integer number){
-        Console.info(acc);
         Set<GraphObject> elements = identifierMap.getElements(acc);
         if(elements!=null) {
             for (GraphObject graphObject : elements) {

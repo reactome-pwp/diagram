@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public interface DiagramInteractors {
+public interface RawInteractors {
 
     /**
      * It is the PSICQUIC resource (e.g. IntAct, MINT, etc)
@@ -27,7 +27,7 @@ public interface DiagramInteractors {
     /**
      * The list of entities with their interactor for the diagram
      */
-    List<EntityInteractor> getEntities();
+    List<RawInteractorEntity> getEntities();
 
     /**
      * The list of synonyms for the interactors (to avoid data duplication)

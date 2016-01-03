@@ -3,7 +3,6 @@ package org.reactome.web.diagram.context.dialogs;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.context.sections.Section;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 

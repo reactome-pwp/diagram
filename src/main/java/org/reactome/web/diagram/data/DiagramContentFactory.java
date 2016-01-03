@@ -5,7 +5,10 @@ import org.reactome.web.diagram.data.graph.raw.EntityNode;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
 import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
-import org.reactome.web.diagram.data.interactors.raw.DiagramInteractors;
+import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractorEntity;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.util.Console;
@@ -167,7 +170,15 @@ public abstract class DiagramContentFactory {
         return rtn;
     }
 
-    public static void fillInteractorsContent(DiagramContent content, DiagramInteractors interactors){
-        //ToDo :(
+    public static void fillInteractorsContent(DiagramContent content, RawInteractors interactors){
+        for (RawInteractorEntity entityInteractor : interactors.getEntities()) {
+            GraphObject object = content.getDatabaseObject(entityInteractor.getAcc());
+            if(object instanceof GraphPhysicalEntity){
+                GraphPhysicalEntity pe = (GraphPhysicalEntity) object;
+                for (RawInteractor rawInteractor : entityInteractor.getInteractors()) {
+                    pe.addInteractor(new InteractorEntity(rawInteractor));
+                }
+            }
+        }
     }
 }

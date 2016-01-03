@@ -1,11 +1,9 @@
 package org.reactome.web.diagram.data.interactors.raw;
 
-import uk.ac.ebi.pwp.structures.quadtree.client.QuadTreeBox;
-
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public interface Interactor extends QuadTreeBox {
+public interface RawInteractor {
 
     /**
      * The accession (identifier) for the interactor (e.g. UniProt, ChEBI, etc.)

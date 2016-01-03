@@ -1,6 +1,6 @@
 package org.reactome.web.diagram.renderers.interactor;
 
-import org.reactome.web.diagram.data.interactors.raw.Interactor;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
@@ -9,7 +9,7 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
  */
 public interface InteractorRenderer {
 
-    void draw(AdvancedContext2d ctx, Interactor item, Double factor, Coordinate offset);
+    void draw(AdvancedContext2d ctx, RawInteractor item, Double factor, Coordinate offset);
 
-    void drawText(AdvancedContext2d ctx, Interactor item, Double factor, Coordinate offset);
+    void drawText(AdvancedContext2d ctx, RawInteractor item, Double factor, Coordinate offset);
 }

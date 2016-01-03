@@ -2,7 +2,7 @@ package org.reactome.web.diagram.data.loader;
 
 import com.google.gwt.http.client.*;
 import org.reactome.web.diagram.client.DiagramFactory;
-import org.reactome.web.diagram.data.interactors.raw.DiagramInteractors;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsException;
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsFactory;
 
@@ -12,7 +12,7 @@ import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsFactory;
 public class InteractorsLoader implements RequestCallback {
 
     public interface Handler {
-        void interactorsLoaded(DiagramInteractors interactors, long time);
+        void interactorsLoaded(RawInteractors interactors, long time);
         void onInteractorsLoaderError(Throwable exception);
     }
 
@@ -51,7 +51,7 @@ public class InteractorsLoader implements RequestCallback {
             case Response.SC_OK:
                 try {
                     long start = System.currentTimeMillis();
-                    DiagramInteractors interactors = InteractorsFactory.getInteractorObject(DiagramInteractors.class, response.getText());
+                    RawInteractors interactors = InteractorsFactory.getInteractorObject(RawInteractors.class, response.getText());
                     long time = System.currentTimeMillis() - start;
                     this.handler.interactorsLoaded(interactors, time);
                 } catch (InteractorsException e) {

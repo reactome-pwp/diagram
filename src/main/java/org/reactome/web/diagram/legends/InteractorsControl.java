@@ -5,7 +5,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.common.PwpButton;
-import org.reactome.web.diagram.data.interactors.raw.DiagramInteractors;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.EntityDecoratorSelectedHandler;
 import org.reactome.web.diagram.handlers.InteractorsLoadedHandler;
@@ -18,7 +18,7 @@ import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
  */
 public class InteractorsControl extends LegendPanel implements ClickHandler, SliderValueChangedHandler,
         EntityDecoratorSelectedHandler, InteractorsLoadedHandler {
-    private DiagramInteractors interactors;
+    private RawInteractors interactors;
     private boolean interactorsVisible = true;
     private Double threshold = 0.5;
 
