@@ -274,18 +274,66 @@
 
 .interactorsControl {
     /*centers in the middle*/
-    width: 400px;
-    margin-left:-200px; /* width and margin-left are related, please change both if needed */
+    width: 340px;
+    margin-left:-170px; /* width and margin-left are related, please change both if needed */
     left:50%;
 }
 
-.interactorsControl span {
-    margin: 5px 10px 0 5px;
-    float: left;
-    font-size: 14px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: inline-block;
-    white-space: nowrap;
-    max-width: 225px;
+.interactorsControlError {
+    background-color: rgb(197, 91, 88);
 }
+
+.interactorsControlLoadingIcon {
+    float: left;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.interactorsControlMessage {
+    float: left;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+@sprite .showBursts {
+    gwt-image:'playNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: left;
+    margin: 2px;
+}
+
+@sprite .showBursts:hover {
+    gwt-image:'playHovered';
+}
+
+@sprite .showBursts:enabled:active:hover {
+    margin-left: 3px;
+    margin-right: 1px;
+    gwt-image: 'playClicked';
+}
+
+.interactorsControlSlider {
+    float: left;
+    margin-left: 5px;
+}
+
+.interactorsControlControls {
+    float: left;
+    overflow: visible;
+    margin-left: 5px;
+}
+
+
+/*.interactorsControl span {*/
+    /*margin: 5px 10px 0 5px;*/
+    /*float: left;*/
+    /*font-size: 14px;*/
+    /*overflow: hidden;*/
+    /*text-overflow: ellipsis;*/
+    /*display: inline-block;*/
+    /*white-space: nowrap;*/
+    /*max-width: 225px;*/
+/*}*/
