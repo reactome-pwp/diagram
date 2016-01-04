@@ -7,6 +7,8 @@ import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * A basic implementation for a progress slider based on canvas
@@ -15,6 +17,7 @@ import com.google.gwt.user.client.ui.Composite;
  */
 public class Slider extends Composite implements HasHandlers, MouseMoveHandler, MouseDownHandler, MouseOutHandler, MouseUpHandler {
     private Canvas canvas;
+    private TextBox valueTb;
     private SliderBar bar;
     private SliderPin pin;
     private PinStatus pinStatus = PinStatus.STD;
@@ -28,7 +31,20 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
             this.canvas.setCoordinateSpaceWidth(width);
             this.canvas.setCoordinateSpaceHeight(height);
 
-            this.initWidget(this.canvas);
+            this.valueTb = new TextBox();
+            Style style = this.valueTb.getElement().getStyle();
+            style.setWidth(15, Style.Unit.PX);
+            style.setHeight(17, Style.Unit.PX);
+            style.setMarginTop(3, Style.Unit.PX);
+            style.setFloat(Style.Float.RIGHT);
+            style.setBackgroundColor("#6E6E6E");
+            style.setColor("#FFFFFF");
+            style.setBorderWidth(0, Style.Unit.PX);
+
+            FlowPanel fp = new FlowPanel();
+            fp.add(this.canvas);
+            fp.add(this.valueTb);
+            this.initWidget(fp);
             this.initialise(width, height, initialPercentage);
         }
     }
@@ -81,6 +97,7 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
         double percentage = Math.round( (x / w) * 100) / 100.0;
         if(this.percentage!=percentage){
             this.percentage = percentage;
+            valueTb.setText("" + percentage);
             fireEvent(new SliderValueChangedEvent(percentage));
         }
     }
@@ -107,6 +124,7 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
 
     private void initialise(double width, double height, double percentage){
         this.percentage = percentage;
+        valueTb.setText("" + percentage);
         initHandlers();
 
         double tick = height / 7.0;
