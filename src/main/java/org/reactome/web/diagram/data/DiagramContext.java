@@ -7,7 +7,7 @@ import org.reactome.web.diagram.data.analysis.*;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
-import org.reactome.web.diagram.data.interactors.raw.Interactor;
+import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
@@ -34,7 +34,7 @@ public class DiagramContext {
     private DiagramContent content;
     private DiagramStatus diagramStatus;
     private QuadTree<DiagramObject> diagramObjects;
-    private LruCache<String, QuadTree<Interactor>> interactors;
+    private LruCache<String, QuadTree<DiagramInteractor>> interactors;
     private AnalysisStatus analysisStatus;
 
     private Map<GraphObject, ContextDialogPanel> dialogMap = new HashMap<>();
@@ -57,7 +57,7 @@ public class DiagramContext {
     //This method is not checking whether the interactors where previously put in place since
     //when it is called, the interactors have probably been retrieved "again" from the server
     //IMPORTANT: To avoid loading data that already exists -> CHECK BEFORE RETRIEVING :)
-    public void addInteractors(String resource, Collection<Interactor> interactors){
+    public void addInteractors(String resource, Collection<DiagramInteractor> interactors){
         this.interactors.put(resource, createInteractorTree(interactors, NUMBER_OF_ELEMENTS, INC_STEP));
     }
 
@@ -183,10 +183,10 @@ public class DiagramContext {
         }
     }
 
-    private QuadTree<Interactor> createInteractorTree(Collection<Interactor> interactors, int elements, int step) {
+    private QuadTree<DiagramInteractor> createInteractorTree(Collection<DiagramInteractor> interactors, int elements, int step) {
         try {
-            QuadTree<Interactor> quadTree = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, elements);
-            for (Interactor interactor : interactors) {
+            QuadTree<DiagramInteractor> quadTree = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, elements);
+            for (DiagramInteractor interactor : interactors) {
                 quadTree.add(interactor);
             }
             if (elements > NUMBER_OF_ELEMENTS) {

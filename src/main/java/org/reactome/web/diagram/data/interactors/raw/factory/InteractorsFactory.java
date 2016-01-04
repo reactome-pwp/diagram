@@ -4,9 +4,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanFactory;
-import org.reactome.web.diagram.data.interactors.raw.DiagramInteractors;
-import org.reactome.web.diagram.data.interactors.raw.EntityInteractor;
-import org.reactome.web.diagram.data.interactors.raw.Interactor;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractorEntity;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.data.interactors.raw.Synonym;
 
 /**
@@ -17,9 +17,9 @@ public abstract class InteractorsFactory {
     @SuppressWarnings("UnusedDeclaration")
     interface ModelAutoBeanFactory extends AutoBeanFactory {
         AutoBean<Synonym> synonyms();
-        AutoBean<Interactor> interactor();
-        AutoBean<EntityInteractor> entityInteractors();
-        AutoBean<DiagramInteractors> diagramInteractors();
+        AutoBean<RawInteractor> interactor();
+        AutoBean<RawInteractorEntity> entityInteractors();
+        AutoBean<RawInteractors> diagramInteractors();
     }
 
     public static <T> T getInteractorObject(Class<T> cls, String json) throws InteractorsException {
