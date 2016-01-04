@@ -281,6 +281,7 @@
 
 .interactorsControlError {
     background-color: rgb(197, 91, 88);
+    color: white;
 }
 
 .interactorsControlLoadingIcon {

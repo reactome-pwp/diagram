@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.common.PwpButton;
-import org.reactome.web.diagram.data.interactors.raw.DiagramInteractors;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.EntityDecoratorSelectedHandler;
 import org.reactome.web.diagram.handlers.InteractorsErrorHandler;
@@ -25,7 +25,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         EntityDecoratorSelectedHandler, InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler {
     private static String LOADING_MSG = "Loading interactors...";
 
-    private DiagramInteractors interactors;
+    private RawInteractors interactors;
     private boolean interactorsVisible = true;
     private Double threshold = 0.5;
 
@@ -74,6 +74,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         if(!isVisible()){
             this.setVisible(true);
         }
+        loadingIcon.setVisible(false);
         message.setText(event.getMessage());
         this.addStyleName(RESOURCES.getCSS().interactorsControlError());
     }
