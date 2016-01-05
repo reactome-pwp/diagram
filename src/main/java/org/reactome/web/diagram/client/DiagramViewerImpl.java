@@ -88,7 +88,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.canvas = new DiagramCanvas(this.eventBus);
         this.contextMap = new LruCache<>(DIAGRAM_CONTEXT_CACHE_SIZE);
         this.loaderManager = new LoaderManager(this.eventBus);
-        InteractorsManager.initalise(this.eventBus);
+        InteractorsManager.initialise(this.eventBus);
         AnalysisDataLoader.initialise(this.eventBus);
 
         this.diagramManager = new DiagramManager(new DisplayManager(this));

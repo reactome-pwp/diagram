@@ -22,7 +22,7 @@ public class InteractorsManager implements DiagramRequestedHandler, DiagramLoade
     private EventBus eventBus;
     private InteractorsStatus status;
 
-    public static void initalise(EventBus eventBus) {
+    public static void initialise(EventBus eventBus) {
         if (interactorsManager != null) {
             throw new RuntimeException("Interactors Manager has already been initialised. " +
                     "Only one initialisation is permitted.");

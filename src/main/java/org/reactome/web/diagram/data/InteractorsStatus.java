@@ -10,6 +10,8 @@ import java.util.Set;
  */
 public class InteractorsStatus {
     private Set<String> burstEntities;
+    private Double threshold = 0.5;
+    private String serverMesg;
 
     public InteractorsStatus() {
         this.burstEntities = new HashSet<>();
@@ -27,5 +29,21 @@ public class InteractorsStatus {
 
     public boolean isVisible() {
         return !this.burstEntities.isEmpty();
+    }
+
+    public Double getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(Double threshold) {
+        this.threshold = threshold;
+    }
+
+    public String getServerMesg() {
+        return serverMesg;
+    }
+
+    public void setServerMesg(String serverMesg) {
+        this.serverMesg = serverMesg;
     }
 }

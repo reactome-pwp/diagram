@@ -35,6 +35,7 @@ public class DiagramContext {
     private QuadTree<DiagramObject> diagramObjects;
     private LruCache<String, QuadTree<DiagramInteractor>> interactors;
     private AnalysisStatus analysisStatus;
+    private InteractorsStatus interactorsStatus;
 
     private Map<GraphObject, ContextDialogPanel> dialogMap = new HashMap<>();
 
@@ -50,6 +51,8 @@ public class DiagramContext {
 
         //Status needs to be created every time we load a new content
         this.diagramStatus = new DiagramStatus();
+
+        this.interactorsStatus = new InteractorsStatus();
     }
 
     //This method is not checking whether the interactors where previously put in place since
@@ -122,6 +125,10 @@ public class DiagramContext {
 
     public DiagramStatus getDiagramStatus() {
         return diagramStatus;
+    }
+
+    public InteractorsStatus getInteractorsStatus() {
+        return interactorsStatus;
     }
 
     public Collection<DiagramObject> getVisibleElements(int width, int height) {
