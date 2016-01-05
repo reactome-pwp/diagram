@@ -123,7 +123,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         this.showBurstsBtn = new PwpButton("Show/Hide interactors", RESOURCES.getCSS().showBursts(), this);
         this.closeBtn = new PwpButton("Close and clear interactors", RESOURCES.getCSS().close(), this);
 
-        this.slider = new Slider(100, 24, threshold);
+        this.slider = new Slider(100, 24, threshold, true);
         this.slider.addSliderValueChangedHandler(this);
         this.slider.setVisible(true);
         this.slider.setStyleName(RESOURCES.getCSS().interactorsControlSlider());

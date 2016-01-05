@@ -41,4 +41,8 @@ class SliderPin {
         }
         this.pos = new Point(dX, this.pos.y);
     }
+
+    public void setNewPos(Point pos){
+        this.pos = pos;
+    }
 }

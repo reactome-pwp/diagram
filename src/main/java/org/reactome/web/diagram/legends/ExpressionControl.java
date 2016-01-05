@@ -73,7 +73,7 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
         this.speedBtn.disable();
         this.add(this.speedBtn);
 
-        this.slider = new Slider(100, 24, 0.5);
+        this.slider = new Slider(100, 24, 0.5, false);
         this.slider.addSliderValueChangedHandler(this);
         this.slider.setVisible(false);
         this.slider.setStyleName(css.slide());
