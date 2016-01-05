@@ -21,7 +21,6 @@ import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
-import org.reactome.web.diagram.data.interactors.raw.RawInteractorEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
@@ -677,10 +676,6 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
-
-        for (RawInteractorEntity interactor : event.getInteractors().getEntities()) {
-            context.getContent().setInteractors(interactor.getAcc(), interactor.getCount());
-        }
         forceDraw = true;
     }
 
