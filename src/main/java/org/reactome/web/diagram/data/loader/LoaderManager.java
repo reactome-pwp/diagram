@@ -35,6 +35,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     private GraphLoader graphLoader;
     private InteractorsLoader interactorsLoader;
     private DiagramContent content;
+    private DiagramContext context;
 
     public LoaderManager(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -52,6 +53,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
         graphLoader.cancel();
         interactorsLoader.cancel();
         content = null;
+        context = null;
     }
 
     public void load(String stId) {
@@ -65,8 +67,9 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
         long start = System.currentTimeMillis();
         graphLoader.load(diagram.getStableId());
         content = DiagramContentFactory.getDiagramContent(diagram);
+        context = new DiagramContext(content);
         time += System.currentTimeMillis() - start;
-        eventBus.fireEventFromSource(new LayoutLoadedEvent(new DiagramContext(content), time), this);
+        eventBus.fireEventFromSource(new LayoutLoadedEvent(context, time), this);
     }
 
     @Override
@@ -92,7 +95,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     @Override
     public void interactorsLoaded(RawInteractors interactors, long time) {
         long start = System.currentTimeMillis();
-        DiagramContentFactory.fillInteractorsContent(content, interactors);
+        DiagramContentFactory.fillInteractorsContent(context, interactors);
         time += System.currentTimeMillis() - start;
         eventBus.fireEventFromSource(new InteractorsLoadedEvent(interactors, time), this);
     }
