@@ -53,9 +53,9 @@ public abstract class DiagramContentFactory {
         return content;
     }
 
-    private static Set<DiagramObject> getDiagramObjectSet(Map<Long, DiagramObject> map, Set<Long> list){
+    private static Set<DiagramObject> getDiagramObjectSet(Map<Long, DiagramObject> map, Set<Long> list) {
         Set<DiagramObject> rtn = new HashSet<>();
-        if(list!=null) {
+        if (list != null) {
             for (Long id : list) {
                 DiagramObject diagramObject = map.get(id);
                 if (diagramObject != null) {
@@ -66,7 +66,7 @@ public abstract class DiagramContentFactory {
         return rtn;
     }
 
-    public static void fillGraphContent(DiagramContent content, Graph graph){
+    public static void fillGraphContent(DiagramContent content, Graph graph) {
         GraphObjectFactory.content = content;
 
         for (EntityNode node : graph.getNodes()) {
@@ -78,7 +78,7 @@ public abstract class DiagramContentFactory {
 
         for (EntityNode node : graph.getNodes()) {
             GraphObject obj = content.getDatabaseObject(node.getDbId());
-            if(obj instanceof GraphPhysicalEntity) {
+            if (obj instanceof GraphPhysicalEntity) {
                 GraphPhysicalEntity pe = (GraphPhysicalEntity) obj;
                 for (DiagramObject diagramObject : getDiagramObjects(node.getDiagramIds())) {
                     pe.addDiagramObject(diagramObject);
@@ -90,7 +90,7 @@ public abstract class DiagramContentFactory {
 
                 List<GraphPhysicalEntity> children = getDatabaseObjects(node.getChildren());
                 pe.addChildren(children);
-            }else if(obj instanceof GraphPathway){
+            } else if (obj instanceof GraphPathway) {
                 GraphPathway pathway = (GraphPathway) obj;
                 for (DiagramObject diagramObject : getDiagramObjects(node.getDiagramIds())) {
                     pathway.addDiagramObject(diagramObject);
@@ -134,7 +134,7 @@ public abstract class DiagramContentFactory {
             event.setFollowingEvents(following);
         }
 
-        if(graph.getSubpathways()!=null) {
+        if (graph.getSubpathways() != null) {
             for (SubpathwayNode subpathway : graph.getSubpathways()) {
                 GraphSubpathway sp = GraphObjectFactory.getOrCreateDatabaseObject(subpathway);
                 for (Long event : subpathway.getEvents()) {
@@ -144,9 +144,9 @@ public abstract class DiagramContentFactory {
         }
     }
 
-    private static List<DiagramObject> getDiagramObjects(List<Long> ids){
+    private static List<DiagramObject> getDiagramObjects(List<Long> ids) {
         List<DiagramObject> rtn = new ArrayList<>();
-        if(ids!=null){
+        if (ids != null) {
             for (Long id : ids) {
                 rtn.add(GraphObjectFactory.content.getDiagramObject(id));
             }
@@ -154,9 +154,9 @@ public abstract class DiagramContentFactory {
         return rtn;
     }
 
-    private static  <T extends GraphObject> List<T> getDatabaseObjects(List<Long> dbIds){
+    private static <T extends GraphObject> List<T> getDatabaseObjects(List<Long> dbIds) {
         List<T> rtn = new ArrayList<>();
-        if(dbIds!=null) {
+        if (dbIds != null) {
             for (Long dbId : dbIds) {
                 //noinspection unchecked
                 T t = (T) GraphObjectFactory.content.getDatabaseObject(dbId);
@@ -170,15 +170,23 @@ public abstract class DiagramContentFactory {
         return rtn;
     }
 
-    public static void fillInteractorsContent(DiagramContent content, RawInteractors interactors){
-        for (RawInteractorEntity entityInteractor : interactors.getEntities()) {
-            GraphObject object = content.getDatabaseObject(entityInteractor.getAcc());
-            if(object instanceof GraphPhysicalEntity){
+    public static void fillInteractorsContent(DiagramContext context, RawInteractors interactors) {
+        DiagramContent content = context.getContent();
+        for (RawInteractorEntity interactorEntity : interactors.getEntities()) {
+            content.setInteractors(interactorEntity.getAcc(), interactorEntity.getCount());
+            GraphObject object = content.getDatabaseObject(interactorEntity.getAcc());
+            if (object instanceof GraphPhysicalEntity) {
                 GraphPhysicalEntity pe = (GraphPhysicalEntity) object;
-                for (RawInteractor rawInteractor : entityInteractor.getInteractors()) {
-                    pe.addInteractor(new InteractorEntity(rawInteractor));
+                for (RawInteractor rawInteractor : interactorEntity.getInteractors()) {
+                    InteractorEntity interactor = new InteractorEntity(rawInteractor.getAcc());
+                    pe.addInteractor(interactor);
+                    content.cache(interactor);
                 }
             }
         }
+
+        //It needs to be done at the end of the loop because the QuadTree needs to be created once with all the data
+        String resource = interactors.getResource();
+        context.addInteractors(resource, content.getDiagramInteractors(resource));
     }
 }
