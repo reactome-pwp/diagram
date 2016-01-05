@@ -7,13 +7,12 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import org.reactome.web.diagram.client.InteractorsManager;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
+import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.events.*;
-import org.reactome.web.diagram.handlers.EntityDecoratorSelectedHandler;
-import org.reactome.web.diagram.handlers.InteractorsErrorHandler;
-import org.reactome.web.diagram.handlers.InteractorsLoadedHandler;
-import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
+import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.slider.Slider;
 import org.reactome.web.diagram.util.slider.SliderValueChangedEvent;
 import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
@@ -22,8 +21,9 @@ import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class InteractorsControl extends LegendPanel implements ClickHandler, SliderValueChangedHandler,
-        EntityDecoratorSelectedHandler, InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler {
-    private static String LOADING_MSG = "Loading interactors...";
+        EntityDecoratorSelectedHandler, InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler, InteractorsRequestCanceledHandler {
+    private static String MSG_LOADING = "Loading interactors...";
+    private static String MSG_NOT_LOADED = "Interactors not loaded for";
 
     private RawInteractors interactors;
     private boolean interactorsVisible = true;
@@ -51,8 +51,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         Object source = event.getSource();
         if (source.equals(this.closeBtn)) {
             //Is safe to do this here (even if there is not loading in progress because that scenario is checked by the loader)
-            eventBus.fireEventFromSource(new InteractorsRequestCanceledEvent(), this);
-            this.setVisible(false);
+            InteractorsManager.get().close();
         } else if (source.equals(this.showBurstsBtn)) {
             interactorsVisible = !interactorsVisible;
             eventBus.fireEventFromSource(new InteractorsToggledEvent(interactorsVisible), this);
@@ -61,16 +60,15 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
     @Override
     public void onEntityDecoratorSelected(EntityDecoratorSelectedEvent event) {
-        if(event.getSummaryItem()==null || !event.getSummaryItem().getType().equals("TR")) {
-            return;
-        }
-        if(!isVisible()){
+        SummaryItem summaryItem = event.getSummaryItem();
+        if(summaryItem!=null && summaryItem.getType().equals("TR") && summaryItem.getPressed()) {
             this.setVisible(true);
         }
     }
 
     @Override
     public void onInteractorsError(InteractorsErrorEvent event) {
+        this.displayLoader(true);
         if(!isVisible()){
             this.setVisible(true);
         }
@@ -125,7 +123,6 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
         this.slider = new Slider(100, 24, threshold, true);
         this.slider.addSliderValueChangedHandler(this);
-        this.slider.setVisible(true);
         this.slider.setStyleName(RESOURCES.getCSS().interactorsControlSlider());
 
         this.controlsFP = new FlowPanel();
@@ -144,13 +141,19 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
         eventBus.addHandler(InteractorsErrorEvent.TYPE, this);
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsRequestCanceledEvent.TYPE, this);
     }
 
     private void displayLoader(boolean visible){
         loadingIcon.setVisible(visible);
         controlsFP.setVisible(!visible);
         if(visible){
-           message.setText(LOADING_MSG);
+           message.setText(MSG_LOADING);
         }
+    }
+
+    @Override
+    public void onInteractorsRequestCanceled(InteractorsRequestCanceledEvent event) {
+        this.setVisible(false);
     }
 }
