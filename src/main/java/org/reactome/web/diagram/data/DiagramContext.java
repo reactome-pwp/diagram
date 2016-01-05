@@ -11,7 +11,6 @@ import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.pwp.model.util.LruCache;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
@@ -27,7 +26,7 @@ public class DiagramContext {
 
     //The number of elements for every QuadTree quadrant node
     static final int NUMBER_OF_ELEMENTS = 15;
-    static final int INC_STEP = 10;
+    static final int DEPTH = 5;
 
     static final int INTERACTORS_RESOURCE_CACHE_SIZE = 5;
 
@@ -42,11 +41,10 @@ public class DiagramContext {
     public DiagramContext(DiagramContent content) {
         this.content = content;
 
-        //It will create a QuadTree with the minimum elements per quadrant starting with
-        //NUMBER_OF_ELEMENTS and increasing by steps of INC_STEP (Even though it could
-        //penalise the loading time a little bit, this strategy improves the user experience
-        //for pathways with few overlap and does its best for the others
-        this.diagramObjects = createDiagramObjectTree(content.getDiagramObjects(), NUMBER_OF_ELEMENTS, INC_STEP);
+        this.diagramObjects = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, NUMBER_OF_ELEMENTS, DEPTH);
+        for (DiagramObject diagramObject : content.getDiagramObjects()) {
+            this.diagramObjects.add(diagramObject);
+        }
 
         this.interactors = new LruCache<>(INTERACTORS_RESOURCE_CACHE_SIZE);
 
@@ -58,7 +56,11 @@ public class DiagramContext {
     //when it is called, the interactors have probably been retrieved "again" from the server
     //IMPORTANT: To avoid loading data that already exists -> CHECK BEFORE RETRIEVING :)
     public void addInteractors(String resource, Collection<DiagramInteractor> interactors){
-        this.interactors.put(resource, createInteractorTree(interactors, NUMBER_OF_ELEMENTS, INC_STEP));
+        QuadTree<DiagramInteractor> tree = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, NUMBER_OF_ELEMENTS, DEPTH);
+        for (DiagramInteractor interactor : interactors) {
+            tree.add(interactor);
+        }
+        this.interactors.put(resource, tree);
     }
 
     public void clearAnalysisOverlay() {
@@ -127,6 +129,15 @@ public class DiagramContext {
         return this.diagramObjects.getItems(visibleArea);
     }
 
+    public Collection<DiagramInteractor> getVisibleInteractors(String resource, int width, int height) {
+        Box visibleArea = this.diagramStatus.getVisibleModelArea(width, height);
+        QuadTree<DiagramInteractor> quadTree = this.interactors.get(resource);
+        if (quadTree != null) {
+            quadTree.getItems(visibleArea);
+        }
+        return new HashSet<>();
+    }
+
     public Box getVisibleModelArea(int width, int height) {
         return this.diagramStatus.getVisibleModelArea(width, height);
     }
@@ -166,35 +177,5 @@ public class DiagramContext {
                 "content=" + content +
                 ", status=" + diagramStatus +
                 '}';
-    }
-
-    private QuadTree<DiagramObject> createDiagramObjectTree(Collection<DiagramObject> diagramObjects, int elements, int step) {
-        try {
-            QuadTree<DiagramObject> quadTree = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, elements);
-            for (DiagramObject node : diagramObjects) {
-                quadTree.add(node);
-            }
-            if (elements > NUMBER_OF_ELEMENTS) {
-                Console.warn(this.content.getStableId() + " >> QuadTree for diagram objects created with quadrants of " + elements + " elements.");
-            }
-            return quadTree;
-        } catch (RuntimeException e) {
-            return createDiagramObjectTree(diagramObjects, elements + step, step);
-        }
-    }
-
-    private QuadTree<DiagramInteractor> createInteractorTree(Collection<DiagramInteractor> interactors, int elements, int step) {
-        try {
-            QuadTree<DiagramInteractor> quadTree = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, elements);
-            for (DiagramInteractor interactor : interactors) {
-                quadTree.add(interactor);
-            }
-            if (elements > NUMBER_OF_ELEMENTS) {
-                Console.warn(this.content.getStableId() + " >> QuadTree for interactors created with quadrants of " + elements + " elements.");
-            }
-            return quadTree;
-        } catch (RuntimeException e) {
-            return this.createInteractorTree(interactors, elements + step, step);
-        }
     }
 }
