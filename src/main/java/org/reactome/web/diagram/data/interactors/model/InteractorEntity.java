@@ -1,7 +1,6 @@
 package org.reactome.web.diagram.data.interactors.model;
 
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
-import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 
@@ -14,41 +13,34 @@ import java.util.Set;
 public class InteractorEntity extends DiagramInteractor implements Draggable {
 
     private String accession;
-    private String id;
-    private double score;
 
     Set<GraphPhysicalEntity> interactsWith = new HashSet<>();
 
-
-    public InteractorEntity(RawInteractor interactor) {
-        this.accession = interactor.getAcc();
-        this.id = interactor.getId();
-        this.score = interactor.getScore();
+    public InteractorEntity(String accession) {
+        this.accession = accession;
     }
 
-    public Set<InteractorLink> addInteraction(GraphPhysicalEntity pe) {
+    public Set<InteractorLink> addInteraction(GraphPhysicalEntity pe, String id, double score) {
         pe.addInteractor(this);
+        interactsWith.add(pe);
 
+        //TODO: Move this to a better location
         //Bad idea doing this here since we don't yet know where is going to be placed in the viewport (no layout data)
         Set<InteractorLink> interactors = new HashSet<>();
         for (DiagramObject diagramObject : pe.getDiagramObjects()) {
             if (diagramObject instanceof Node) {
-                interactors.add(new DynamicLink((Node) diagramObject, this));
+                interactors.add(new DynamicLink((Node) diagramObject, this, id, score));
             }
         }
         return interactors;
     }
 
+    public Set<GraphPhysicalEntity> getInteractsWith() {
+        return interactsWith;
+    }
+
     public String getAccession() {
         return accession;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public double getScore() {
-        return score;
     }
 
     @Override
