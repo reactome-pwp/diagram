@@ -81,7 +81,7 @@ public class InteractorsManager implements DiagramRequestedHandler, DiagramLoade
         if (graphObject instanceof GraphPhysicalEntity) {
             GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
             if (pe.getIdentifier() != null) {
-                status.onBurstToggle(event.getSummaryItem(), pe.getIdentifier());
+                status.onBurstToggle(event.getSummaryItem(), currentResource,  pe.getIdentifier());
                 notifyStatusChanged();
             }
         }
@@ -89,6 +89,7 @@ public class InteractorsManager implements DiagramRequestedHandler, DiagramLoade
 
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
+        currentResource = event.getInteractors().getResource();
         status.setLoading(false);
         status.setResource(event.getInteractors().getResource());
         status.setServerMsg(null);
