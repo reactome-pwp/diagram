@@ -5,8 +5,6 @@ import org.reactome.web.diagram.data.graph.raw.EntityNode;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
 import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
-import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
-import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractorEntity;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.data.layout.Diagram;
@@ -173,20 +171,20 @@ public abstract class DiagramContentFactory {
     public static void fillInteractorsContent(DiagramContext context, RawInteractors interactors) {
         DiagramContent content = context.getContent();
         for (RawInteractorEntity interactorEntity : interactors.getEntities()) {
-            content.setInteractors(interactorEntity.getAcc(), interactorEntity.getCount());
-            GraphObject object = content.getDatabaseObject(interactorEntity.getAcc());
-            if (object instanceof GraphPhysicalEntity) {
-                GraphPhysicalEntity pe = (GraphPhysicalEntity) object;
-                for (RawInteractor rawInteractor : interactorEntity.getInteractors()) {
-                    InteractorEntity interactor = new InteractorEntity(rawInteractor.getAcc());
-                    pe.addInteractor(interactor);
-                    content.cache(interactor);
-                }
-            }
+            content.cacheInteractors(interactors.getResource(), interactorEntity.getAcc(), interactorEntity.getCount());
+//            GraphObject object = content.getDatabaseObject(interactorEntity.getAcc());
+//            if (object instanceof GraphPhysicalEntity) {
+//                GraphPhysicalEntity pe = (GraphPhysicalEntity) object;
+//                for (RawInteractor rawInteractor : interactorEntity.getInteractors()) {
+//                    InteractorEntity interactor = new InteractorEntity(rawInteractor.getAcc());
+//                    pe.addInteractor(interactor);
+//                    content.cache(interactor);
+//                }
+//            }
         }
 
         //It needs to be done at the end of the loop because the QuadTree needs to be created once with all the data
-        String resource = interactors.getResource();
-        context.addInteractors(resource, content.getDiagramInteractors(resource));
+//        String resource = interactors.getResource();
+//        context.addInteractors(resource, content.getDiagramInteractors());
     }
 }
