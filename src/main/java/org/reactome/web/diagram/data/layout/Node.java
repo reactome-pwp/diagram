@@ -1,5 +1,7 @@
 package org.reactome.web.diagram.data.layout;
 
+import org.reactome.web.diagram.data.interactors.common.InteractorsSummary;
+
 import java.util.List;
 
 /**
@@ -14,4 +16,10 @@ public interface Node extends NodeCommon {
     Boolean getTrivial();
 
     SummaryItem getInteractorsSummary();
+
+    //Keeping a pointer the the cached object improves performance avoiding searching for it every time it gets toggled
+
+    InteractorsSummary getDiagramEntityInteractorsSummary();
+
+    void setDiagramEntityInteractorsSummary(InteractorsSummary interactorsSummary);
 }
