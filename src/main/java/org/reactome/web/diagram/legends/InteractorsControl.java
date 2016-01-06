@@ -85,25 +85,24 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     }
 
     private void displayLoader(boolean visible){
+        this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
         loadingIcon.setVisible(visible);
+        controlsFP.setVisible(!visible);
         if(visible){
            message.setText(MSG_LOADING);
         }
     }
 
     private void displayError(String serverMsg){
-        if (serverMsg == null)
+        if (serverMsg == null) {
             displayError(false);
-        else
+        }else
             displayError(true);
     }
 
     private void displayError(boolean visible){
         if(visible) {
             this.addStyleName(RESOURCES.getCSS().interactorsControlError());
-        }
-        else{
-            this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
         }
         controlsFP.setVisible(!visible);
     }
@@ -126,9 +125,11 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         } else {
             setVisible(status.isVisible());
             displayLoader(status.isLoading());
-            displayError(status.getServerMsg());
-            setMessage(status.getResource(), status.getServerMsg());
-            slider.setValue(status.getThreshold());
+            if(!status.isLoading()) {
+                displayError(status.getServerMsg());
+                setMessage(status.getResource(), status.getServerMsg());
+                slider.setValue(status.getThreshold());
+            }
         }
     }
 }

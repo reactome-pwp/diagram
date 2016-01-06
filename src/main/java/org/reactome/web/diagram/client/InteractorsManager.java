@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.client;
 
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.Timer;
 import org.reactome.web.diagram.data.InteractorsStatus;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
@@ -44,8 +45,9 @@ public class InteractorsManager implements DiagramRequestedHandler, DiagramLoade
         eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
         eventBus.addHandler(EntityDecoratorSelectedEvent.TYPE, this);
-        eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
         eventBus.addHandler(InteractorsErrorEvent.TYPE, this);
+        eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
     }
 
     public void close() {
@@ -91,7 +93,13 @@ public class InteractorsManager implements DiagramRequestedHandler, DiagramLoade
         status.setLoading(false);
         status.setResource(event.getInteractors().getResource());
         status.setServerMsg(null);
-        notifyStatusChanged();
+        Timer t = new Timer() { //ONLY for debugging
+            @Override
+            public void run() {
+                notifyStatusChanged();
+            }
+        };
+        t.schedule(1000);
     }
 
     @Override
