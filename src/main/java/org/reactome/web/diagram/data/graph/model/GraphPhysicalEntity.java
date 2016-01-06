@@ -174,10 +174,6 @@ public abstract class GraphPhysicalEntity extends GraphObject {
         };
     }
 
-    public void initInteractors(){
-        this.interactors = new HashSet<>();
-    }
-
     public void addInteractor(InteractorEntity interactor) {
         this.interactors.add(interactor);
     }
