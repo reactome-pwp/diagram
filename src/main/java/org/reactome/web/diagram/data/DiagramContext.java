@@ -26,7 +26,7 @@ public class DiagramContext {
 
     //The number of elements for every QuadTree quadrant node
     static final int NUMBER_OF_ELEMENTS = 15;
-    static final int DEPTH = 5;
+    static final int MIN_AREA = 25;
 
     static final int INTERACTORS_RESOURCE_CACHE_SIZE = 5;
 
@@ -42,7 +42,7 @@ public class DiagramContext {
     public DiagramContext(DiagramContent content) {
         this.content = content;
 
-        this.diagramObjects = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, NUMBER_OF_ELEMENTS, DEPTH);
+        this.diagramObjects = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, NUMBER_OF_ELEMENTS, MIN_AREA);
         for (DiagramObject diagramObject : content.getDiagramObjects()) {
             this.diagramObjects.add(diagramObject);
         }
@@ -59,7 +59,7 @@ public class DiagramContext {
     //when it is called, the interactors have probably been retrieved "again" from the server
     //IMPORTANT: To avoid loading data that already exists -> CHECK BEFORE RETRIEVING :)
     public void addInteractors(String resource, Collection<DiagramInteractor> interactors){
-        QuadTree<DiagramInteractor> tree = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, NUMBER_OF_ELEMENTS, DEPTH);
+        QuadTree<DiagramInteractor> tree = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, NUMBER_OF_ELEMENTS, MIN_AREA);
         for (DiagramInteractor interactor : interactors) {
             tree.add(interactor);
         }
