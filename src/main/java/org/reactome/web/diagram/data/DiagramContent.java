@@ -99,22 +99,6 @@ public class DiagramContent {
         }
     }
 
-    //TODO: needs a different name since we WILL KEEP the loaded interactors...
-    public void clearInteractors() {
-        for (DiagramObject diagramObject : diagramObjectMap.values()) {
-            if (diagramObject instanceof Node) {
-                Node node = (Node) diagramObject;
-                SummaryItem interactorsSummary = node.getInteractorsSummary();
-                if (interactorsSummary != null) {
-                    interactorsSummary.setNumber(null);
-                    interactorsSummary.setPressed(null);
-                }
-                node.setDiagramEntityInteractorsSummary(null);
-            }
-        }
-    }
-
-
     public boolean containsOnlyEncapsulatedPathways() {
         return (getDatabaseObjects().size() == encapsulatedPathways.size());
     }
@@ -248,6 +232,21 @@ public class DiagramContent {
         this.interactorsSummaryMap.add(resource.toLowerCase(), summary);
         setInteractors(summary);
     }
+
+    public void clearDisplayedInteractors() {
+        for (DiagramObject diagramObject : getDiagramObjects()) {
+            if (diagramObject instanceof Node) {
+                Node node = (Node) diagramObject;
+                SummaryItem interactorsSummary = node.getInteractorsSummary();
+                if (interactorsSummary != null) {
+                    interactorsSummary.setNumber(null);
+                    interactorsSummary.setPressed(null);
+                }
+                node.setDiagramEntityInteractorsSummary(null);
+            }
+        }
+    }
+
 
     public boolean isInteractorResourceCached(String resource) {
         return interactorsSummaryMap.keySet().contains(resource.toLowerCase());
