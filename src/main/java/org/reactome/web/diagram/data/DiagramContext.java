@@ -10,6 +10,7 @@ import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.pwp.model.util.LruCache;
@@ -52,13 +53,13 @@ public class DiagramContext {
         //Status needs to be created every time we load a new content
         this.diagramStatus = new DiagramStatus();
 
-        this.interactorsStatus = new InteractorsStatus();
+        this.interactorsStatus = new InteractorsStatus(LoaderManager.INTERACTORS_RESOURCE);
     }
 
     //This method is not checking whether the interactors where previously put in place since
     //when it is called, the interactors have probably been retrieved "again" from the server
     //IMPORTANT: To avoid loading data that already exists -> CHECK BEFORE RETRIEVING :)
-    public void addInteractors(String resource, Collection<DiagramInteractor> interactors){
+    public void addInteractors(String resource, Collection<DiagramInteractor> interactors) {
         QuadTree<DiagramInteractor> tree = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, NUMBER_OF_ELEMENTS, MIN_AREA);
         for (DiagramInteractor interactor : interactors) {
             tree.add(interactor);
