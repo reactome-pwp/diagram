@@ -1,7 +1,6 @@
 package org.reactome.web.diagram.data.graph.model;
 
 import org.reactome.web.diagram.data.graph.raw.EntityNode;
-import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 
 import java.util.*;
 
@@ -20,8 +19,6 @@ public abstract class GraphPhysicalEntity extends GraphObject {
     private List<GraphReactionLikeEvent> isCatalystIn = new ArrayList<>();
     private List<GraphReactionLikeEvent> isActivatorIn = new ArrayList<>();
     private List<GraphReactionLikeEvent> isInhibitorIn = new ArrayList<>();
-
-    private Set<InteractorEntity> interactors = new HashSet<>();
 
     public GraphPhysicalEntity(EntityNode node) {
         super(node);
@@ -102,10 +99,6 @@ public abstract class GraphPhysicalEntity extends GraphObject {
         return rtn;
     }
 
-    public Set<InteractorEntity> getInteractors() {
-        return interactors;
-    }
-
     public Set<GraphPhysicalEntity> getParentLocations() {
         Set<GraphPhysicalEntity> rtn = new HashSet<>();
         for (GraphPhysicalEntity parent : parents) {
@@ -172,9 +165,5 @@ public abstract class GraphPhysicalEntity extends GraphObject {
                 return o1.getIdentifier().compareTo(o2.getIdentifier());
             }
         };
-    }
-
-    public void addInteractor(InteractorEntity interactor) {
-        this.interactors.add(interactor);
     }
 }
