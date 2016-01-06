@@ -4,7 +4,7 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.graph.model.GraphSubpathway;
-import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.common.InteractorsSummary;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -32,7 +32,10 @@ public class DiagramContent {
     Map<String, GraphSubpathway> subpathwaysCache;
     MapSet<String, GraphObject> identifierMap;
     Set<GraphPathway> encapsulatedPathways;
-    Map<String, DiagramInteractor> interactorMap;
+
+    //INTERACTORS
+    MapSet<String, InteractorsSummary> interactorsSummaryMap;
+//    Map<String, DiagramInteractor> interactorMap;
 
     Set<DiagramObject> diseaseComponents;
     Set<DiagramObject> lofNodes;
@@ -48,7 +51,9 @@ public class DiagramContent {
         this.identifierMap = new MapSet<>();
         this.encapsulatedPathways = new HashSet<>();
         this.subpathwaysCache = new HashMap<>();
-        this.interactorMap = new HashMap<>();
+
+        this.interactorsSummaryMap = new MapSet<>();
+//        this.interactorMap = new HashMap<>();
     }
 
     public void cache(GraphObject dbObject) {
@@ -90,45 +95,25 @@ public class DiagramContent {
 
     public void cache(InteractorEntity interactor) {
         if (interactor.getAccession() != null) {
-            this.interactorMap.put(interactor.getAccession(), interactor);
+//            this.interactorMap.put(interactor.getAccession(), interactor);
         }
     }
 
+    //TODO: needs a different name since we WILL KEEP the loaded interactors...
     public void clearInteractors() {
-        for (DiagramInteractor diagramInteractor : interactorMap.values()) {
-            if(diagramInteractor instanceof InteractorEntity){
-                InteractorEntity interactor = (InteractorEntity) diagramInteractor;
-                for (GraphPhysicalEntity pe : interactor.getInteractsWith()) {
-                    pe.initInteractors(); //It could happen that the same pe is called more than once -> not a problem
-                }
-            }
-        }
         for (DiagramObject diagramObject : diagramObjectMap.values()) {
             if (diagramObject instanceof Node) {
                 Node node = (Node) diagramObject;
                 SummaryItem interactorsSummary = node.getInteractorsSummary();
                 if (interactorsSummary != null) {
                     interactorsSummary.setNumber(null);
+                    interactorsSummary.setPressed(null);
                 }
+                node.setDiagramEntityInteractorsSummary(null);
             }
         }
-        this.interactorMap = new HashMap<>();
     }
 
-    public void setInteractors(String acc, Integer number) {
-        Set<GraphObject> elements = identifierMap.getElements(acc);
-        if (elements != null) {
-            for (GraphObject graphObject : elements) {
-                if (graphObject instanceof GraphPhysicalEntity) {
-                    GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
-                    for (DiagramObject diagramObject : pe.getDiagramObjects()) {
-                        Node node = (Node) diagramObject;
-                        node.getInteractorsSummary().setNumber(number);
-                    }
-                }
-            }
-        }
-    }
 
     public boolean containsOnlyEncapsulatedPathways() {
         return (getDatabaseObjects().size() == encapsulatedPathways.size());
@@ -210,12 +195,20 @@ public class DiagramContent {
         return this.diagramObjectMap.values();
     }
 
-    public Collection<DiagramInteractor> getDiagramInteractors(String resource) {
-        return this.interactorMap.values();
-    }
-
     public MapSet<String, GraphObject> getIdentifierMap() {
         return identifierMap;
+    }
+
+    public Collection<DiagramObject> getDiagramObjectsWithCommonIdentifier(DiagramObject diagramObject){
+        Set<DiagramObject> rtn = new HashSet<>();
+        GraphObject graphObject = diagramObject.getGraphObject();
+        if(graphObject instanceof GraphPhysicalEntity){
+            GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+            for (GraphObject object : identifierMap.getElements(pe.getIdentifier())) {
+                rtn.addAll(object.getDiagramObjects());
+            }
+        }
+        return rtn;
     }
 
     public double getMinX() {
@@ -241,6 +234,78 @@ public class DiagramContent {
     public double getHeight() {
         return maxY - minY;
     }
+
+//    public Collection<DiagramInteractor> getDiagramInteractors() {
+//        return this.interactorMap.values();
+//    }
+
+//    public DiagramInteractor getDiagramInteractor(String acc){
+//        return this.interactorMap.get(acc);
+//    }
+
+    public void cacheInteractors(String resource, String acc, Integer number) {
+        InteractorsSummary summary = new InteractorsSummary(acc, number);
+        this.interactorsSummaryMap.add(resource.toLowerCase(), summary);
+        setInteractors(summary);
+    }
+
+    public boolean isInteractorResourceCached(String resource) {
+        return interactorsSummaryMap.keySet().contains(resource.toLowerCase());
+    }
+
+    public int getNumberOfBustEntities(String resource){
+        int rtn = 0;
+        if (resource != null) {
+            Set<InteractorsSummary> set = interactorsSummaryMap.getElements(resource.toLowerCase());
+            if (set != null) {
+                for (InteractorsSummary summary : set) {
+                    if (summary.isPressed()) rtn++;
+                }
+            }
+        }
+        return rtn;
+    }
+
+    public void resetBurstInteractors(){
+        for (String resource : interactorsSummaryMap.keySet()) {
+            for (InteractorsSummary summary : interactorsSummaryMap.getElements(resource)) {
+                summary.setPressed(false);
+            }
+        }
+        for (DiagramObject diagramObject : getDiagramObjects()) {
+            if(diagramObject instanceof Node){
+                Node node = (Node) diagramObject;
+                node.getInteractorsSummary().setPressed(null);
+            }
+        }
+    }
+
+    public void restoreInteractors(String resource){
+        Set<InteractorsSummary> items = interactorsSummaryMap.getElements(resource.toLowerCase());
+        if(items==null) return;
+        for (InteractorsSummary summary : items) {
+            setInteractors(summary);
+        }
+    }
+
+    private void setInteractors(InteractorsSummary summary) {
+        Set<GraphObject> elements = identifierMap.getElements(summary.getAccession());
+        if (elements != null) {
+            for (GraphObject graphObject : elements) {
+                if (graphObject instanceof GraphPhysicalEntity) {
+                    GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+                    for (DiagramObject diagramObject : pe.getDiagramObjects()) {
+                        Node node = (Node) diagramObject;
+                        node.getInteractorsSummary().setNumber(summary.getNumber());
+                        node.getInteractorsSummary().setPressed(summary.isPressed());
+                        //The changes need to be updated in the cache, so when restoring, the pressed ones are known
+                        node.setDiagramEntityInteractorsSummary(summary);
+                    }
+                }
+            }
+        }
+    }
+
 
     @Override
     public String toString() {
