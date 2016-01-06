@@ -23,6 +23,7 @@ import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.loader.AnalysisDataLoader;
 import org.reactome.web.diagram.data.loader.AnalysisTokenValidator;
@@ -670,7 +671,10 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        context.getContent().clearInteractors();
+        context.getContent().clearDisplayedInteractors();
+        if(context.getContent().isInteractorResourceCached(event.getResource())) {
+            context.getContent().restoreInteractors(event.getResource());
+        }
         forceDraw = true;
     }
 
@@ -898,9 +902,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
                 this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getAttachment()), this);
             }
             if (hoveredItem.getSummaryItem() != null) {
-                Boolean pressed = hovered.getSummaryItem().getPressed();
-                hovered.getSummaryItem().setPressed(pressed == null || !pressed);
-                forceDraw = true;
+                updateSummaryItem(hoveredItem.getHoveredObject());
                 this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getSummaryItem()), this);
             }
             if (hoveredItem.getContextMenuTrigger() != null) {
@@ -913,6 +915,18 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
             this.resetIllustration();
             this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(toSelect, zoom, fireExternally), this);
         }
+    }
+
+    private void updateSummaryItem(DiagramObject hovered){
+        for (DiagramObject diagramObject : context.getContent().getDiagramObjectsWithCommonIdentifier(hovered)) {
+            if(diagramObject instanceof Node){
+                Node node = (Node) diagramObject;
+                Boolean pressed = node.getInteractorsSummary().getPressed();
+                node.getInteractorsSummary().setPressed(pressed == null || !pressed);
+                node.getDiagramEntityInteractorsSummary().setPressed(pressed == null || !pressed);
+            }
+        }
+        forceDraw = true;
     }
 
     private void fitDiagram(boolean animation) {
