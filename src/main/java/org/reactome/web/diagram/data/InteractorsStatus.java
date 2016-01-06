@@ -1,8 +1,8 @@
 package org.reactome.web.diagram.data;
 
 import org.reactome.web.diagram.data.layout.SummaryItem;
+import org.reactome.web.diagram.util.MapSet;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -11,20 +11,22 @@ import java.util.Set;
 public class InteractorsStatus {
     private boolean loading = true;
     private String resource;
-    private Set<String> burstEntities;
+    private MapSet<String, String> burstEntities;
     private double threshold = 0.5;
     private String serverMsg;
 
-    public InteractorsStatus() {
-        this.burstEntities = new HashSet<>();
+    public InteractorsStatus(String resource) {
+        setResource(resource);
+        this.burstEntities = new MapSet<>();
     }
 
-    public void onBurstToggle(SummaryItem summaryItem, String identifier) {
+    public void onBurstToggle(SummaryItem summaryItem, String resource, String identifier) {
+        resource = resource.toLowerCase();
         if (summaryItem!=null && summaryItem.getType().equals("TR")) {
             if (summaryItem.getPressed()) {
-                burstEntities.add(identifier);
+                burstEntities.add(resource, identifier);
             } else {
-                burstEntities.remove(identifier);
+                burstEntities.remove(resource, identifier);
             }
         }
     }
@@ -42,7 +44,9 @@ public class InteractorsStatus {
     }
 
     public boolean isVisible() {
-        return !this.burstEntities.isEmpty();
+        String resource = this.resource.toLowerCase();
+        Set<String> elems = this.burstEntities.getElements(resource);
+        return elems!=null && !elems.isEmpty();
     }
 
     public double getThreshold() {
