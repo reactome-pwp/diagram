@@ -3,16 +3,16 @@ package org.reactome.web.diagram.legends;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.client.InteractorsManager;
 import org.reactome.web.diagram.common.PwpButton;
-import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
-import org.reactome.web.diagram.data.layout.SummaryItem;
-import org.reactome.web.diagram.events.*;
-import org.reactome.web.diagram.handlers.*;
+import org.reactome.web.diagram.data.InteractorsStatus;
+import org.reactome.web.diagram.events.InteractorsRequestCanceledEvent;
+import org.reactome.web.diagram.events.InteractorsStatusChangedEvent;
+import org.reactome.web.diagram.handlers.InteractorsRequestCanceledHandler;
+import org.reactome.web.diagram.handlers.InteractorsStatusChangedHandler;
 import org.reactome.web.diagram.util.slider.Slider;
 import org.reactome.web.diagram.util.slider.SliderValueChangedEvent;
 import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
@@ -21,18 +21,13 @@ import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class InteractorsControl extends LegendPanel implements ClickHandler, SliderValueChangedHandler,
-        EntityDecoratorSelectedHandler, InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler, InteractorsRequestCanceledHandler {
+        InteractorsStatusChangedHandler, InteractorsRequestCanceledHandler {
     private static String MSG_LOADING = "Loading interactors...";
     private static String MSG_NOT_LOADED = "Interactors not loaded for";
-
-    private RawInteractors interactors;
-    private boolean interactorsVisible = true;
-    private Double threshold = 0.5;
 
     private Image loadingIcon;
     private InlineLabel message;
     private FlowPanel controlsFP;
-    private PwpButton showBurstsBtn;
     private Slider slider;
     private PwpButton closeBtn;
 
@@ -40,7 +35,6 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         super(eventBus);
 
         this.initUI();
-        this.displayLoader(true);
         this.setVisible(false);
 
         this.initHandlers();
@@ -52,61 +46,13 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         if (source.equals(this.closeBtn)) {
             //Is safe to do this here (even if there is not loading in progress because that scenario is checked by the loader)
             InteractorsManager.get().close();
-        } else if (source.equals(this.showBurstsBtn)) {
-            interactorsVisible = !interactorsVisible;
-            eventBus.fireEventFromSource(new InteractorsToggledEvent(interactorsVisible), this);
         }
-    }
-
-    @Override
-    public void onEntityDecoratorSelected(EntityDecoratorSelectedEvent event) {
-        SummaryItem summaryItem = event.getSummaryItem();
-        if(summaryItem!=null && summaryItem.getType().equals("TR") && summaryItem.getPressed()) {
-            this.setVisible(true);
-        }
-    }
-
-    @Override
-    public void onInteractorsError(InteractorsErrorEvent event) {
-        this.displayLoader(true);
-        if(!isVisible()){
-            this.setVisible(true);
-        }
-        loadingIcon.setVisible(false);
-        message.setText(event.getMessage());
-        this.addStyleName(RESOURCES.getCSS().interactorsControlError());
-    }
-
-    @Override
-    public void onInteractorsLoaded(InteractorsLoadedEvent event) {
-        if(event!=null){
-            this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
-            interactorsVisible = true;
-            interactors = event.getInteractors();
-            //TODO A timer is used only for debug reasons
-            Timer t = new Timer() {
-                @Override
-                public void run() {
-                    InteractorsControl.this.displayLoader(false);
-                    message.setText(interactors.getResource()!=null ? interactors.getResource() : "");
-                }
-            };
-            t.schedule(1000);
-        }
-    }
-
-    @Override
-    public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        if(!isVisible()){
-            this.setVisible(true);
-        }
-        this.displayLoader(true);
     }
 
     @Override
     public void onSliderValueChanged(SliderValueChangedEvent event) {
-        threshold = event.getPercentage();
-        eventBus.fireEventFromSource(new InteractorsFilteredEvent(threshold), this);
+//        threshold = event.getPercentage();
+//        eventBus.fireEventFromSource(new InteractorsFilteredEvent(threshold), this);
     }
 
     private void initUI(){
@@ -118,16 +64,14 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
         this.message = new InlineLabel("");
         this.message.setStyleName(RESOURCES.getCSS().interactorsControlMessage());
-        this.showBurstsBtn = new PwpButton("Show/Hide interactors", RESOURCES.getCSS().showBursts(), this);
         this.closeBtn = new PwpButton("Close and clear interactors", RESOURCES.getCSS().close(), this);
 
-        this.slider = new Slider(100, 24, threshold, true);
+        this.slider = new Slider(100, 24, 0.5, true);
         this.slider.addSliderValueChangedHandler(this);
         this.slider.setStyleName(RESOURCES.getCSS().interactorsControlSlider());
 
         this.controlsFP = new FlowPanel();
         this.controlsFP.setStyleName(RESOURCES.getCSS().interactorsControlControls());
-        this.controlsFP.add(this.showBurstsBtn);
         this.controlsFP.add(this.slider);
 
         this.add(this.loadingIcon);
@@ -137,23 +81,54 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     }
 
     private void initHandlers(){
-        eventBus.addHandler(EntityDecoratorSelectedEvent.TYPE, this);
-        eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
-        eventBus.addHandler(InteractorsErrorEvent.TYPE, this);
-        eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
-        eventBus.addHandler(InteractorsRequestCanceledEvent.TYPE, this);
+        eventBus.addHandler(InteractorsStatusChangedEvent.TYPE, this);
     }
 
     private void displayLoader(boolean visible){
         loadingIcon.setVisible(visible);
-        controlsFP.setVisible(!visible);
         if(visible){
            message.setText(MSG_LOADING);
         }
     }
 
+    private void displayError(String serverMsg){
+        if (serverMsg == null)
+            displayError(false);
+        else
+            displayError(true);
+    }
+
+    private void displayError(boolean visible){
+        if(visible) {
+            this.addStyleName(RESOURCES.getCSS().interactorsControlError());
+        }
+        else{
+            this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
+        }
+        controlsFP.setVisible(!visible);
+    }
+
+    private void setMessage(String resource, String serverMsg){
+        String msg = serverMsg != null ?  serverMsg : resource;
+        message.setText(msg);
+    }
+
     @Override
     public void onInteractorsRequestCanceled(InteractorsRequestCanceledEvent event) {
         this.setVisible(false);
+    }
+
+    @Override
+    public void onInteractorsStatusChangedEvent(InteractorsStatusChangedEvent event) {
+        InteractorsStatus status = event.getInteractorsStatus();
+        if (status == null) {
+            setVisible(false);
+        } else {
+            setVisible(status.isVisible());
+            displayLoader(status.isLoading());
+            displayError(status.getServerMsg());
+            setMessage(status.getResource(), status.getServerMsg());
+            slider.setValue(status.getThreshold());
+        }
     }
 }

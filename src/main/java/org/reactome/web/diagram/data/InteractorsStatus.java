@@ -9,9 +9,11 @@ import java.util.Set;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class InteractorsStatus {
+    private boolean loading = true;
+    private String resource;
     private Set<String> burstEntities;
-    private Double threshold = 0.5;
-    private String serverMesg;
+    private double threshold = 0.5;
+    private String serverMsg;
 
     public InteractorsStatus() {
         this.burstEntities = new HashSet<>();
@@ -27,23 +29,54 @@ public class InteractorsStatus {
         }
     }
 
+    public void clearBurstEntities(){
+        this.burstEntities.clear();
+    }
+
+    public boolean isLoading() {
+        return loading;
+    }
+
+    public void setLoading(boolean loading) {
+        this.loading = loading;
+    }
+
     public boolean isVisible() {
         return !this.burstEntities.isEmpty();
     }
 
-    public Double getThreshold() {
+    public double getThreshold() {
         return threshold;
     }
 
-    public void setThreshold(Double threshold) {
+    public void setThreshold(double threshold) {
         this.threshold = threshold;
     }
 
-    public String getServerMesg() {
-        return serverMesg;
+    public String getServerMsg() {
+        return serverMsg;
     }
 
-    public void setServerMesg(String serverMesg) {
-        this.serverMesg = serverMesg;
+    public void setServerMsg(String serverMsg) {
+        this.serverMsg = serverMsg;
+    }
+
+    public String getResource() {
+        return resource;
+    }
+
+    public void setResource(String resource) {
+        this.resource = resource;
+    }
+
+    @Override
+    public String toString() {
+        return "InteractorsStatus{" +
+                "resource='" + resource + '\'' +
+                ", serverMsg='" + serverMsg + '\'' +
+                ", loading=" + loading +
+                ", threshold=" + threshold +
+                ", isVisible=" + isVisible() +
+                '}';
     }
 }
