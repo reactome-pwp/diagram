@@ -9,7 +9,7 @@ import java.util.*;
 @SuppressWarnings("UnusedDeclaration")
 public class MapSet<S,T> implements Serializable {
 
-    protected Map<S, Set<T>> map = new HashMap<S, Set<T>>();
+    protected Map<S, Set<T>> map = new HashMap<>();
 
     public void add(S identifier, T elem){
         Set<T> aux = getOrCreate(identifier);
@@ -32,6 +32,10 @@ public class MapSet<S,T> implements Serializable {
         }
     }
 
+    public void clear(){
+        map.clear();
+    }
+
     public Set<T> getElements(S identifier){
         return map.get(identifier);
     }
@@ -39,7 +43,7 @@ public class MapSet<S,T> implements Serializable {
     private Set<T> getOrCreate(S identifier){
         Set<T> set = map.get(identifier);
         if(set==null){
-            set = new HashSet<T>();
+            set = new HashSet<>();
             map.put(identifier, set);
         }
         return set;
@@ -56,5 +60,9 @@ public class MapSet<S,T> implements Serializable {
 
     public Set<T> remove(S key){
         return this.map.remove(key);
+    }
+
+    public boolean remove(S key, T elem) {
+        return map.containsKey(key) && map.get(key).remove(elem);
     }
 }
