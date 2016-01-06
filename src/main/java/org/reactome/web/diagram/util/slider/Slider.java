@@ -4,24 +4,20 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.FlowPanel;
-
-import java.text.ParseException;
 
 /**
  * A basic implementation for a progress slider based on canvas
  *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class Slider extends Composite implements HasHandlers, MouseMoveHandler, MouseDownHandler, MouseOutHandler, MouseUpHandler, ValueChangeHandler {
+public class Slider extends Composite implements HasHandlers, MouseMoveHandler, MouseDownHandler, MouseOutHandler, MouseUpHandler,
+        ValueBoxUpdatedHandler {
     private Canvas canvas;
-    private DoubleBox valueTb;
+    private ValueBox valueTb;
     private SliderBar bar;
     private SliderPin pin;
     private PinStatus pinStatus = PinStatus.STD;
@@ -35,23 +31,14 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
             this.canvas.setCoordinateSpaceWidth(width);
             this.canvas.setCoordinateSpaceHeight(height);
 
-            if(includeTextBox) {
-                this.valueTb = new DoubleBox();
-                Style style = this.valueTb.getElement().getStyle();
-                style.setWidth(23, Style.Unit.PX);
-                style.setHeight(17, Style.Unit.PX);
-                style.setMarginTop(3, Style.Unit.PX);
-                style.setFloat(Style.Float.RIGHT);
-                style.setBackgroundColor("#6E6E6E");
-                style.setColor("#FFFFFF");
-                style.setBorderWidth(0, Style.Unit.PX);
-            }
-
             FlowPanel fp = new FlowPanel();
             fp.add(this.canvas);
-            if(valueTb!=null) {
+
+            if(includeTextBox) {
+                this.valueTb = new ValueBox(initialPercentage);
                 fp.add(this.valueTb);
             }
+
             this.initWidget(fp);
             this.initialise(width, height, initialPercentage);
         }
@@ -80,6 +67,7 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
             this.pinStatus = pinHovered(event) ? PinStatus.HOVERED : PinStatus.STD;
         }else{
             this.pin.setPos(getMousePosition(event), this.canvas.getOffsetWidth(), (int) this.pin.r);
+            updateValueBox(getPercentageFromPinPosition());
         }
         draw();
     }
@@ -99,15 +87,24 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
         draw();
     }
 
+    @Override
+    public void onValueUpdated(ValueBoxUpdatedEvent event) {
+        setValue(event.getValue());
+    }
+
+    public void setValue(double value){
+        int cX = (int) (Math.round((this.canvas.getOffsetWidth() - (2 * this.pin.r)) * value) + this.pin.r);
+        Point pos = new Point(cX, this.pin.pos.y);
+        this.pin.setNewPos(pos);
+        this.draw();
+        checkPinMoved();
+    }
+
     private void checkPinMoved(){
-        int x = this.pin.pos.x - (int) this.pin.r;
-        double w = this.canvas.getOffsetWidth() - 2 * this.pin.r;
-        double percentage = Math.round( (x / w) * 100) / 100.0;
+        double percentage = getPercentageFromPinPosition();
         if(this.percentage!=percentage){
             this.percentage = percentage;
-            if(valueTb!=null) {
-                valueTb.setText("" + percentage);
-            }
+            updateValueBox(percentage);
             fireEvent(new SliderValueChangedEvent(percentage));
         }
     }
@@ -131,15 +128,13 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
         this.canvas.addMouseOutHandler(this);
         this.canvas.addMouseUpHandler(this);
         if(valueTb!=null) {
-            this.valueTb.addValueChangeHandler(this);
+            this.valueTb.addValueBoxUpdatedHandler(this);
         }
     }
 
     private void initialise(double width, double height, double percentage){
         this.percentage = percentage;
-        if(valueTb!=null) {
-            valueTb.setText("" + percentage);
-        }
+        updateValueBox(percentage);
         initHandlers();
 
         double tick = height / 7.0;
@@ -159,23 +154,15 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
         return this.pin.isPointInside(getMousePosition(event));
     }
 
-    @Override
-    public void onValueChange(ValueChangeEvent event) {
-        double percentage = 0;
-        try {
-            percentage = this.valueTb.getValueOrThrow();
-            if(percentage < 0){
-                percentage = 0.0;
-            }else if(percentage > 1.0){
-                percentage = 1.0;
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
+    private double getPercentageFromPinPosition(){
+        int x = this.pin.pos.x - (int) this.pin.r;
+        double w = this.canvas.getOffsetWidth() - 2 * this.pin.r;
+        return Math.round( (x / w) * 100) / 100.0;
+    }
+
+    private void updateValueBox(Double percentage){
+        if(valueTb!=null) {
+            valueTb.setText("" + percentage);
         }
-        int cX = (int) (Math.round((this.canvas.getOffsetWidth() - (2 * this.pin.r)) * percentage) + this.pin.r);
-        Point pos = new Point(cX, this.pin.pos.y);
-        this.pin.setNewPos(pos);
-        this.draw();
-        checkPinMoved();
     }
 }

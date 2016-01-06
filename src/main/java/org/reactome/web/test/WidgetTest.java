@@ -178,6 +178,9 @@ public class WidgetTest implements EntryPoint {
         fp.add(getLoadButton("R-HSA-5467345", ""));
         fp.add(getLoadButton("R-HSA-166658", ""));
         fp.add(getLoadButton("R-HSA-391160", ""));
+        fp.add(getLoadButton("R-HSA-5693567", ""));
+        fp.add(getLoadButton("R-HSA-5205647", ""));
+
         return fp;
     }
 

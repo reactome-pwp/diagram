@@ -296,26 +296,6 @@
     margin-top: 5px;
 }
 
-@sprite .showBursts {
-    gwt-image:'playNormal';
-    outline: none;
-    background-repeat:no-repeat;
-    border: 0;
-    cursor: pointer;
-    float: left;
-    margin: 2px;
-}
-
-@sprite .showBursts:hover {
-    gwt-image:'playHovered';
-}
-
-@sprite .showBursts:enabled:active:hover {
-    margin-left: 3px;
-    margin-right: 1px;
-    gwt-image: 'playClicked';
-}
-
 .interactorsControlSlider {
     float: left;
     margin-left: 5px;
