@@ -108,8 +108,10 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     //The interactors loader is meant to be used not only when loading a new diagram but also on demand
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        INTERACTORS_RESOURCE = event.getResource();
-        interactorsLoader.load(content.getStableId(), INTERACTORS_RESOURCE);
+        if(!context.getContent().isInteractorResourceCached(event.getResource())) {
+            INTERACTORS_RESOURCE = event.getResource();
+            interactorsLoader.load(content.getStableId(), INTERACTORS_RESOURCE);
+        }
     }
 
     @Override
