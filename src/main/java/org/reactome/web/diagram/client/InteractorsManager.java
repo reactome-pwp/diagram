@@ -1,9 +1,9 @@
 package org.reactome.web.diagram.client;
 
 import com.google.gwt.event.shared.EventBus;
+import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.InteractorsStatus;
-import org.reactome.web.diagram.data.graph.model.GraphObject;
-import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 
@@ -18,6 +18,8 @@ public class InteractorsManager implements DiagramRequestedHandler, DiagramLoade
     private EventBus eventBus;
     private InteractorsStatus status;
     private String currentResource;
+
+    private DiagramContent content;
 
     public static void initialise(EventBus eventBus) {
         if (interactorsManager != null) {
@@ -37,6 +39,8 @@ public class InteractorsManager implements DiagramRequestedHandler, DiagramLoade
 
     InteractorsManager(EventBus eventBus) {
         this.eventBus = eventBus;
+        this.currentResource = LoaderManager.INTERACTORS_RESOURCE;
+        this.status = new InteractorsStatus(currentResource);
         addHandlers();
     }
 
@@ -50,19 +54,21 @@ public class InteractorsManager implements DiagramRequestedHandler, DiagramLoade
     }
 
     public void close() {
-        status.clearBurstEntities();
+        content.resetBurstInteractors();
         notifyStatusChanged();
-        if(status!=null && !status.isVisible()) {
+        if (status != null && !status.isVisible()) {
             eventBus.fireEventFromSource(new InteractorsRequestCanceledEvent(), this);
         }
     }
 
     @Override
     public void onDiagramLoaded(DiagramLoadedEvent event) {
-        status = event.getContext().getInteractorsStatus();
-        if(!status.isLoading()){
-            if(!currentResource.equals(status.getResource())){
-               eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(currentResource), this);
+        content = event.getContext().getContent();
+        status = new InteractorsStatus(LoaderManager.INTERACTORS_RESOURCE);
+        status.setVisible(content.getNumberOfBustEntities(currentResource) > 0);
+        if (!status.isLoading()) {
+            if (!currentResource.equals(status.getResource())) {
+                eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(currentResource), this);
             }
         } else {
             notifyStatusChanged();
@@ -77,14 +83,8 @@ public class InteractorsManager implements DiagramRequestedHandler, DiagramLoade
 
     @Override
     public void onEntityDecoratorSelected(EntityDecoratorSelectedEvent event) {
-        GraphObject graphObject = event.getGraphObject();
-        if (graphObject instanceof GraphPhysicalEntity) {
-            GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
-            if (pe.getIdentifier() != null) {
-                status.onBurstToggle(event.getSummaryItem(), currentResource,  pe.getIdentifier());
-                notifyStatusChanged();
-            }
-        }
+        status.setVisible(content.getNumberOfBustEntities(currentResource) > 0);
+        notifyStatusChanged();
     }
 
     @Override
@@ -106,7 +106,9 @@ public class InteractorsManager implements DiagramRequestedHandler, DiagramLoade
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         currentResource = event.getResource();
-        status.setLoading(true);
+        status.setResource(currentResource);
+        status.setLoading(!content.isInteractorResourceCached(currentResource));
+        status.setVisible(content.getNumberOfBustEntities(currentResource) > 0);
         status.setServerMsg(null);
         notifyStatusChanged();
     }
@@ -116,7 +118,7 @@ public class InteractorsManager implements DiagramRequestedHandler, DiagramLoade
         status.setThreshold(event.getScore());
     }
 
-    private void notifyStatusChanged(){
+    private void notifyStatusChanged() {
         eventBus.fireEventFromSource(new InteractorsStatusChangedEvent(status), this);
     }
 }
