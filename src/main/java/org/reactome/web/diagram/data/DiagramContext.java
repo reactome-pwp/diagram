@@ -10,7 +10,6 @@ import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.pwp.model.util.LruCache;
@@ -36,7 +35,6 @@ public class DiagramContext {
     private QuadTree<DiagramObject> diagramObjects;
     private LruCache<String, QuadTree<DiagramInteractor>> interactors;
     private AnalysisStatus analysisStatus;
-    private InteractorsStatus interactorsStatus;
 
     private Map<GraphObject, ContextDialogPanel> dialogMap = new HashMap<>();
 
@@ -52,8 +50,6 @@ public class DiagramContext {
 
         //Status needs to be created every time we load a new content
         this.diagramStatus = new DiagramStatus();
-
-        this.interactorsStatus = new InteractorsStatus(LoaderManager.INTERACTORS_RESOURCE);
     }
 
     //This method is not checking whether the interactors where previously put in place since
@@ -126,10 +122,6 @@ public class DiagramContext {
 
     public DiagramStatus getDiagramStatus() {
         return diagramStatus;
-    }
-
-    public InteractorsStatus getInteractorsStatus() {
-        return interactorsStatus;
     }
 
     public Collection<DiagramObject> getVisibleElements(int width, int height) {
