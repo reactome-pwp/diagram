@@ -1,39 +1,19 @@
 package org.reactome.web.diagram.data;
 
-import org.reactome.web.diagram.data.layout.SummaryItem;
-import org.reactome.web.diagram.util.MapSet;
-
-import java.util.Set;
-
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class InteractorsStatus {
     private boolean loading = true;
     private String resource;
-    private MapSet<String, String> burstEntities;
     private double threshold = 0.5;
     private String serverMsg;
+    private boolean visible;
 
     public InteractorsStatus(String resource) {
         setResource(resource);
-        this.burstEntities = new MapSet<>();
     }
 
-    public void onBurstToggle(SummaryItem summaryItem, String resource, String identifier) {
-        resource = resource.toLowerCase();
-        if (summaryItem!=null && summaryItem.getType().equals("TR")) {
-            if (summaryItem.getPressed()) {
-                burstEntities.add(resource, identifier);
-            } else {
-                burstEntities.remove(resource, identifier);
-            }
-        }
-    }
-
-    public void clearBurstEntities(){
-        this.burstEntities.clear();
-    }
 
     public boolean isLoading() {
         return loading;
@@ -41,12 +21,6 @@ public class InteractorsStatus {
 
     public void setLoading(boolean loading) {
         this.loading = loading;
-    }
-
-    public boolean isVisible() {
-        String resource = this.resource.toLowerCase();
-        Set<String> elems = this.burstEntities.getElements(resource);
-        return elems!=null && !elems.isEmpty();
     }
 
     public double getThreshold() {
@@ -73,6 +47,14 @@ public class InteractorsStatus {
         this.resource = resource;
     }
 
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
     @Override
     public String toString() {
         return "InteractorsStatus{" +
@@ -80,7 +62,7 @@ public class InteractorsStatus {
                 ", serverMsg='" + serverMsg + '\'' +
                 ", loading=" + loading +
                 ", threshold=" + threshold +
-                ", isVisible=" + isVisible() +
+                ", isVisible=" + visible +
                 '}';
     }
 }
