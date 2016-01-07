@@ -45,7 +45,7 @@ import java.util.*;
  */
 class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserActionsHandlers,
         LayoutLoadedHandler, GraphLoadedHandler, InteractorsLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
-        InteractorsResourceChangedHandler,
+        InteractorsResourceChangedHandler, InteractorsCollapsedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, CanvasExportRequestedHandler,
@@ -88,7 +88,6 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.canvas = new DiagramCanvas(this.eventBus);
         this.contextMap = new LruCache<>(DIAGRAM_CONTEXT_CACHE_SIZE);
         this.loaderManager = new LoaderManager(this.eventBus);
-        InteractorsManager.initialise(this.eventBus);
         AnalysisDataLoader.initialise(this.eventBus);
 
         this.diagramManager = new DiagramManager(new DisplayManager(this));
@@ -131,6 +130,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
         this.eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
 
+        this.eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
         this.eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
 
         this.eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
@@ -667,6 +667,12 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     @Override
     public void onGraphLoaded(GraphLoadedEvent event) {
         this.eventBus.fireEventFromSource(new DiagramLoadedEvent(context), this);
+    }
+
+    @Override
+    public void onInteractorsCollapsed(InteractorsCollapsedEvent event) {
+        context.getContent().resetBurstInteractors(event.getResource());
+        forceDraw = true;
     }
 
     @Override
