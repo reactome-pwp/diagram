@@ -274,7 +274,10 @@ public class DiagramContent {
         for (DiagramObject diagramObject : getDiagramObjects()) {
             if(diagramObject instanceof Node){
                 Node node = (Node) diagramObject;
-                node.getInteractorsSummary().setPressed(null);
+                SummaryItem summaryItem = node.getInteractorsSummary();
+                if(summaryItem!=null){
+                    summaryItem.setPressed(null);
+                }
             }
         }
     }
