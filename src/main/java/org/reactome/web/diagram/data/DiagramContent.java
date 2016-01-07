@@ -34,6 +34,7 @@ public class DiagramContent {
     Set<GraphPathway> encapsulatedPathways;
 
     //INTERACTORS
+    static Map<String, Double> interactorsThreshold = new HashMap<>();
     MapSet<String, InteractorsSummary> interactorsSummaryMap;
 //    Map<String, DiagramInteractor> interactorMap;
 
@@ -265,11 +266,9 @@ public class DiagramContent {
         return rtn;
     }
 
-    public void resetBurstInteractors(){
-        for (String resource : interactorsSummaryMap.keySet()) {
-            for (InteractorsSummary summary : interactorsSummaryMap.getElements(resource)) {
-                summary.setPressed(false);
-            }
+    public void resetBurstInteractors(String resource){
+        for (InteractorsSummary summary : interactorsSummaryMap.getElements(resource.toLowerCase())) {
+            summary.setPressed(false);
         }
         for (DiagramObject diagramObject : getDiagramObjects()) {
             if(diagramObject instanceof Node){
@@ -306,6 +305,19 @@ public class DiagramContent {
                 }
             }
         }
+    }
+
+    public static double getInteractorsThreshold(String resource){
+        Double threshold = interactorsThreshold.get(resource);
+        if (threshold == null) {
+            threshold = 0.5;
+            setInteractorsThreshold(resource, threshold);
+        }
+        return threshold;
+    }
+
+    public static void setInteractorsThreshold(String resource, double threshold){
+        interactorsThreshold.put(resource, threshold);
     }
 
 
