@@ -80,8 +80,11 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     @Override
     public void graphLoaded(Graph graph, long time) {
         long start = System.currentTimeMillis();
-        if (INTERACTORS_RESOURCE != null)   //Checking here so no error message is displayed in this case
-            interactorsLoader.load(graph.getStId(), INTERACTORS_RESOURCE);
+        if (INTERACTORS_RESOURCE != null) {   //Checking here so no error message is displayed in this case
+            //This fakes a resource changed so the control will show the loading message
+            //The behaviour of the three steps loading continues as expected
+            eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(INTERACTORS_RESOURCE), this);
+        }
         DiagramContentFactory.fillGraphContent(content, graph);
         time += System.currentTimeMillis() - start;
         eventBus.fireEventFromSource(new GraphLoadedEvent(content, time), this);
@@ -107,8 +110,8 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
 
     //The interactors loader is meant to be used not only when loading a new diagram but also on demand
     @Override
-    public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        if(!context.getContent().isInteractorResourceCached(event.getResource())) {
+    public void onInteractorsResourceChanged(final InteractorsResourceChangedEvent event) {
+        if (!context.getContent().isInteractorResourceCached(event.getResource())) {
             INTERACTORS_RESOURCE = event.getResource();
             interactorsLoader.load(content.getStableId(), INTERACTORS_RESOURCE);
         }
