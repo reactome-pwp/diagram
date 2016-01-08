@@ -19,7 +19,7 @@ import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
  *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler, InteractorsLoader.Handler,
+public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler, InteractorsSummaryLoader.Handler,
         InteractorsResourceChangedHandler, InteractorsRequestCanceledHandler {
 
     //Every time the diagram widget is loaded will retrieve new data from the sever
@@ -33,7 +33,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
 
     private LayoutLoader layoutLoader;
     private GraphLoader graphLoader;
-    private InteractorsLoader interactorsLoader;
+    private InteractorsSummaryLoader interactorsSummaryLoader;
     private DiagramContent content;
     private DiagramContext context;
 
@@ -41,7 +41,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
         this.eventBus = eventBus;
         layoutLoader = new LayoutLoader(this);
         graphLoader = new GraphLoader(this);
-        interactorsLoader = new InteractorsLoader(this);
+        interactorsSummaryLoader = new InteractorsSummaryLoader(this);
 
         //For the time being we only want to do something on demand for interactors
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
@@ -51,7 +51,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     public void cancel() {
         layoutLoader.cancel();
         graphLoader.cancel();
-        interactorsLoader.cancel();
+        interactorsSummaryLoader.cancel();
         content = null;
         context = null;
     }
@@ -113,12 +113,12 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     public void onInteractorsResourceChanged(final InteractorsResourceChangedEvent event) {
         if (!context.getContent().isInteractorResourceCached(event.getResource())) {
             INTERACTORS_RESOURCE = event.getResource();
-            interactorsLoader.load(content.getStableId(), INTERACTORS_RESOURCE);
+            interactorsSummaryLoader.load(content.getStableId(), INTERACTORS_RESOURCE);
         }
     }
 
     @Override
     public void onInteractorsRequestCanceled(InteractorsRequestCanceledEvent event) {
-        interactorsLoader.cancel();
+        interactorsSummaryLoader.cancel();
     }
 }

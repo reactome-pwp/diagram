@@ -9,17 +9,17 @@ import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsFactory;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class InteractorsLoader implements RequestCallback {
+public abstract class InteractorsLoader implements RequestCallback {
 
     public interface Handler {
         void interactorsLoaded(RawInteractors interactors, long time);
         void onInteractorsLoaderError(Throwable exception);
     }
 
-    private final static String PREFIX = DiagramFactory.SERVER + "/ContentService/interactors/";
+    final static String PREFIX = DiagramFactory.SERVER + "/ContentService/interactors/";
 
-    private Handler handler;
-    private Request request;
+    Handler handler;
+    Request request;
 
     InteractorsLoader(Handler handler) {
         this.handler = handler;
