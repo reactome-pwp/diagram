@@ -2,10 +2,13 @@ package org.reactome.web.diagram.util.slider;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.event.shared.HasHandlers;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -24,13 +27,14 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
     private double percentage = 0.0;
 
     public Slider(int width, int height, double initialPercentage, boolean includeTextBox) {
+        this.percentage = initialPercentage;
         this.canvas = Canvas.createIfSupported();
         if(this.canvas !=null){
             this.canvas.setWidth(width + "px");
             this.canvas.setHeight(height + "px");
             this.canvas.setCoordinateSpaceWidth(width);
             this.canvas.setCoordinateSpaceHeight(height);
-
+            this.canvas.setStyleName(RESOURCES.getCSS().slider());
             FlowPanel fp = new FlowPanel();
             fp.add(this.canvas);
 
@@ -88,7 +92,7 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
     }
 
     @Override
-    public void onValueUpdated(ValueBoxUpdatedEvent event) {
+    public void onValueBoxUpdated(ValueBoxUpdatedEvent event) {
         setValue(event.getValue());
     }
 
@@ -164,5 +168,26 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
         if(valueTb!=null) {
             valueTb.setText("" + percentage);
         }
+    }
+
+
+    public static Resources RESOURCES;
+    static {
+        RESOURCES = GWT.create(Resources.class);
+        RESOURCES.getCSS().ensureInjected();
+    }
+
+    public interface Resources extends ClientBundle {
+        @Source(ResourceCSS.CSS)
+        ResourceCSS getCSS();
+    }
+
+    @CssResource.ImportedWithPrefix("diagram-slider")
+    public interface ResourceCSS extends CssResource {
+        String CSS = "org/reactome/web/diagram/util/Slider.css";
+
+        String slider();
+
+        String sliderValueBox();
     }
 }
