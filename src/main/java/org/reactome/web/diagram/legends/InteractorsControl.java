@@ -115,6 +115,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         if (burstEntities == 0) {
             setVisible(false);
         } else {
+            this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
             setVisible(true);
             setMessage(currentResource);
             controlsFP.setVisible(true);
