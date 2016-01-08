@@ -6,5 +6,5 @@ import com.google.gwt.event.shared.EventHandler;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public interface ValueBoxUpdatedHandler extends EventHandler {
-    void onValueUpdated(ValueBoxUpdatedEvent event);
+    void onValueBoxUpdated(ValueBoxUpdatedEvent event);
 }

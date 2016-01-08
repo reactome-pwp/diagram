@@ -21,7 +21,7 @@ public class ValueBoxUpdatedEvent extends GwtEvent<ValueBoxUpdatedHandler> {
 
     @Override
     protected void dispatch(ValueBoxUpdatedHandler handler) {
-        handler.onValueUpdated(this);
+        handler.onValueBoxUpdated(this);
     }
 
     public Double getValue() {

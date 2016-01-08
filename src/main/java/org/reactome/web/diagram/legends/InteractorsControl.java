@@ -25,7 +25,6 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         EntityDecoratorSelectedHandler {
 
     private static String MSG_LOADING = "Loading interactors for ";
-    private static String MSG_NOT_LOADED = "Interactors not loaded for ";
 
     private String currentResource;
 
@@ -107,6 +106,8 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     public void onSliderValueChanged(SliderValueChangedEvent event) {
         double threshold = event.getPercentage();
         DiagramContent.setInteractorsThreshold(currentResource, threshold);
+        //TODO: Consider removing the event
+        eventBus.fireEventFromSource(new InteractorsFilteredEvent(threshold), this);
     }
 
     private void update() {
@@ -116,8 +117,8 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         } else {
             setVisible(true);
             setMessage(currentResource);
-            this.slider.setValue(DiagramContent.getInteractorsThreshold(currentResource));
             controlsFP.setVisible(true);
+            this.slider.setValue(DiagramContent.getInteractorsThreshold(currentResource));
         }
     }
 
