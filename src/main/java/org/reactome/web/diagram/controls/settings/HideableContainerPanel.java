@@ -118,7 +118,6 @@ public class HideableContainerPanel extends FlowPanel implements ClickHandler {
     @Override
     public void onClick(ClickEvent event) {
         Button selectedBtn = (Button) event.getSource();
-
         for (Button btn : btns) {
             btn.removeStyleName(RESOURCES.getCSS().buttonSelected());
         }
@@ -126,9 +125,9 @@ public class HideableContainerPanel extends FlowPanel implements ClickHandler {
         if(!isExpanded) {
             expand();
             container.showWidget(btns.indexOf(selectedBtn));
-        }else if(btns.indexOf(selectedBtn) != container.getVisibleWidgetIndex()){
+        } else if (btns.indexOf(selectedBtn) != container.getVisibleWidgetIndex()) {
             container.showWidget(btns.indexOf(selectedBtn));
-        }else{
+        } else {
             // The user has clicked on the already selected tab button
             collapse();
         }
