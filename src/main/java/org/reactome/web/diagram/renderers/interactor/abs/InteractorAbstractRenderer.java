@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.renderers.interactor.impl;
+package org.reactome.web.diagram.renderers.interactor.abs;
 
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
