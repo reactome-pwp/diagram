@@ -3,21 +3,6 @@
     font-size: medium !important;
 }
 
-.interactorsPanel select {
-    background-color: transparent;
-    color: white;
-    border: solid 1px white;
-    width: 100%;
-    margin-top: 4px;
-    /*font-weight: bold;*/
-    outline: none;
-    font-size: medium !important;
-}
-
-.interactorsPanel select option {
-    color: black;
-}
-
 .tabHeader {
     margin-top: 5px;
     font-weight: bold;
@@ -31,4 +16,26 @@
 .interactorLabel {
     margin-top: 5px;
     color: rgb(0, 90, 117);
+}
+
+.interactorResourceBtn {
+    margin-left: 10px;
+    display: block;
+}
+
+.interactorResourceBtn label{
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.interactorResourceList{
+    background-color: transparent;
+    color: white;
+    border: solid 1px white;
+    width: 94%;
+    float: right;
+    margin-top: 4px;
+    /*font-weight: bold;*/
+    outline: none;
+    font-size: medium !important;
 }
