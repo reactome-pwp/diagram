@@ -11,10 +11,7 @@ import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.loader.InteractorsDetailsLoader;
 import org.reactome.web.diagram.data.loader.InteractorsLoader;
 import org.reactome.web.diagram.events.*;
-import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
-import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
-import org.reactome.web.diagram.handlers.InteractorsRequestCanceledHandler;
-import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
+import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
 import java.util.HashSet;
@@ -25,7 +22,7 @@ import java.util.Set;
  */
 public class InteractorsManager implements InteractorsLoader.Handler,
         DiagramLoadedHandler, DiagramRequestedHandler,
-        InteractorsRequestCanceledHandler, InteractorsResourceChangedHandler {
+        InteractorsCollapsedHandler, InteractorsRequestCanceledHandler, InteractorsResourceChangedHandler {
 
     private EventBus eventBus;
 
@@ -41,9 +38,11 @@ public class InteractorsManager implements InteractorsLoader.Handler,
         addHandlers();
     }
 
+    @SuppressWarnings("Duplicates")
     private void addHandlers() {
         this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
         this.eventBus.addHandler(InteractorsRequestCanceledEvent.TYPE, this);
         this.eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
     }
@@ -119,6 +118,16 @@ public class InteractorsManager implements InteractorsLoader.Handler,
     @Override
     public void onDiagramRequested(DiagramRequestedEvent event) {
         context = null;
+    }
+
+    @Override
+    public void onInteractorsCollapsed(InteractorsCollapsedEvent event) {
+        for (InteractorEntity entity : context.getContent().getDiagramInteractors(currentResource)) {
+            for (InteractorLink link : entity.getLinks()) {
+                link.setVisible(false);
+            }
+        }
+        eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
     }
 
     @Override
