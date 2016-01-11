@@ -29,6 +29,7 @@ public class DiagramContext {
     static final int MIN_AREA = 25;
 
     static final int INTERACTORS_RESOURCE_CACHE_SIZE = 5;
+    static final int INTERACTORS_FRAME_OFFSET = 500;
 
     private DiagramContent content;
     private DiagramStatus diagramStatus;
@@ -58,7 +59,8 @@ public class DiagramContext {
     public void addInteractor(String resource, DiagramInteractor interactor) {
         QuadTree<DiagramInteractor> tree = interactors.get(resource.toLowerCase());
         if(tree==null) {
-            tree = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, NUMBER_OF_ELEMENTS, MIN_AREA);
+            int o = INTERACTORS_FRAME_OFFSET;
+            tree = new QuadTree<>(content.minX - o, content.minY - o, content.maxX + o, content.maxY + o, NUMBER_OF_ELEMENTS, MIN_AREA);
             interactors.put(resource.toLowerCase(), tree);
         }
         tree.add(interactor);
