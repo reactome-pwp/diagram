@@ -5,6 +5,7 @@ import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.graph.model.GraphSubpathway;
 import org.reactome.web.diagram.data.interactors.common.InteractorsSummary;
+import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -36,8 +37,9 @@ public class DiagramContent {
     //INTERACTORS
     static Map<String, Double> interactorsThreshold = new HashMap<>();
     MapSet<String, InteractorsSummary> interactorsSummaryMap; //resource -> InteractorsSummary
-    Map<String, Map<String, InteractorEntity>> interactorsCache; //resource -> acc -> interactor
-    Map<String, MapSet<Node, InteractorEntity>> interactorsPerNode; //resource -> layout node -> interactor
+    Map<String, Map<String, InteractorEntity>> interactorsCache; //resource -> acc -> interactors
+
+    Map<String, MapSet<Node, DiagramInteractor>> interactorsPerNode; //resource -> layout node -> interactor
 
     Set<DiagramObject> diseaseComponents;
     Set<DiagramObject> lofNodes;
@@ -105,6 +107,15 @@ public class DiagramContent {
             }
             map.put(interactor.getAccession(), interactor);
         }
+    }
+
+    public void cache(String resource, Node node, DiagramInteractor interactorEntity){
+        MapSet<Node, DiagramInteractor> cache = interactorsPerNode.get(resource);
+        if(cache == null){
+            cache = new MapSet<>();
+            interactorsPerNode.put(resource, cache);
+        }
+        cache.add(node, interactorEntity);
     }
 
     public boolean containsOnlyEncapsulatedPathways() {
@@ -191,20 +202,20 @@ public class DiagramContent {
         return identifierMap;
     }
 
-    public Collection<DiagramObject> getDiagramObjectsWithCommonIdentifier(DiagramObject diagramObject){
-        return getDiagramObjectsWithCommonIdentifier(diagramObject.getGraphObject());
-    }
-
-    public Collection<DiagramObject> getDiagramObjectsWithCommonIdentifier(GraphObject graphObject){
-        Set<DiagramObject> rtn = new HashSet<>();
-        if(graphObject instanceof GraphPhysicalEntity){
-            GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
-            for (GraphObject object : identifierMap.getElements(pe.getIdentifier())) {
-                rtn.addAll(object.getDiagramObjects());
-            }
-        }
-        return rtn;
-    }
+//    public Collection<DiagramObject> getDiagramObjectsWithCommonIdentifier(DiagramObject diagramObject){
+//        return getDiagramObjectsWithCommonIdentifier(diagramObject.getGraphObject());
+//    }
+//
+//    public Collection<DiagramObject> getDiagramObjectsWithCommonIdentifier(GraphObject graphObject){
+//        Set<DiagramObject> rtn = new HashSet<>();
+//        if(graphObject instanceof GraphPhysicalEntity){
+//            GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+//            for (GraphObject object : identifierMap.getElements(pe.getIdentifier())) {
+//                rtn.addAll(object.getDiagramObjects());
+//            }
+//        }
+//        return rtn;
+//    }
 
     public double getMinX() {
         return minX;
@@ -233,6 +244,12 @@ public class DiagramContent {
     public Collection<InteractorEntity> getDiagramInteractors(String resource) {
         Map<String, InteractorEntity> cache = interactorsCache.get(resource);
         if(cache!=null)  return cache.values();
+        return new HashSet<>();
+    }
+
+    public Collection<DiagramInteractor> getDiagramInteractors(String resource, Node node) {
+        MapSet<Node, DiagramInteractor> cache = interactorsPerNode.get(resource);
+        if(cache!=null)  return cache.getElements(node);
         return new HashSet<>();
     }
 
@@ -269,20 +286,18 @@ public class DiagramContent {
 
     public int getNumberOfBustEntities(String resource){
         int rtn = 0;
-        if (resource != null) {
-            Set<InteractorsSummary> set = interactorsSummaryMap.getElements(resource.toLowerCase());
-            if (set != null) {
-                for (InteractorsSummary summary : set) {
-                    if (summary.isPressed()) rtn++;
-                }
-            }
+        for (InteractorEntity entity : getDiagramInteractors(resource)) {
+            if(entity.isVisible()) rtn++;
         }
         return rtn;
     }
 
     public void resetBurstInteractors(String resource){
-        for (InteractorsSummary summary : interactorsSummaryMap.getElements(resource.toLowerCase())) {
-            summary.setPressed(false);
+        Set<InteractorsSummary> summaries = interactorsSummaryMap.getElements(resource.toLowerCase());
+        if(summaries!=null) {
+            for (InteractorsSummary summary : summaries) {
+                summary.setPressed(false);
+            }
         }
         for (DiagramObject diagramObject : getDiagramObjects()) {
             if(diagramObject instanceof Node){
