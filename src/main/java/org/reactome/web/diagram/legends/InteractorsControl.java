@@ -9,7 +9,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.DiagramContext;
-import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.Console;
@@ -22,10 +21,11 @@ import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
  */
 public class InteractorsControl extends LegendPanel implements ClickHandler, SliderValueChangedHandler,
         DiagramRequestedHandler, DiagramLoadedHandler,
-        InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler,
-        EntityDecoratorSelectedHandler {
+        InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler, InteractorsLayoutUpdatedHandler {
 
+    @SuppressWarnings("FieldCanBeLocal")
     private static String MSG_LOADING = "Loading interactors for ";
+    @SuppressWarnings("FieldCanBeLocal")
     private static String MSG_NO_INTERACTORS_FOUND = "No interactors found in ";
 
     private String currentResource;
@@ -73,11 +73,8 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     }
 
     @Override
-    public void onEntityDecoratorSelected(EntityDecoratorSelectedEvent event) {
-        SummaryItem summary = event.getSummaryItem();
-        if (summary != null && summary.getType().equals("TR")) {
-            update();
-        }
+    public void onInteractorsLayoutUpdated(InteractorsLayoutUpdatedEvent event) {
+        update();
     }
 
     @Override
@@ -161,9 +158,9 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsLayoutUpdatedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
         eventBus.addHandler(InteractorsErrorEvent.TYPE, this);
-        eventBus.addHandler(EntityDecoratorSelectedEvent.TYPE, this);
     }
 
     private void displayLoader(boolean visible, String resource) {

@@ -22,6 +22,7 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -33,7 +34,6 @@ import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.DiagramEventBus;
 import org.reactome.web.diagram.util.ViewportUtils;
 import org.reactome.web.diagram.util.actions.UserActionsHandlers;
@@ -192,7 +192,6 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         Collection<DiagramInteractor> items = context.getVisibleInteractors(resource, viewportWidth, viewportHeight);
         canvas.renderInteractors(items, context);
         long time = System.currentTimeMillis() - start;
-        Console.log(items.size() + " interactors rendered in " + time + " ms");
 //        this.eventBus.fireEventFromSource(new DiagramRenderedEvent(context.getContent(), visibleArea, items.size(), time), this);
     }
 
@@ -946,21 +945,40 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     private void manageInteractors(SummaryItem summaryItem, Node hovered){
         updateSummaryItem(hovered);
-        if (summaryItem.getPressed() != null && summaryItem.getPressed()) {
-            interactorsManager.loadInteractors(hovered);
+        String resource = interactorsManager.getCurrentResource();
+        Collection<DiagramInteractor> interactors = context.getContent().getDiagramInteractors(resource, hovered);
+        boolean pressed = summaryItem.getPressed() != null && summaryItem.getPressed();
+        if (pressed) {
+            if(interactors == null || interactors.isEmpty()) {
+                interactorsManager.loadInteractors(hovered);
+            } else {
+                setInteractorVisibility(resource, hovered, true);
+                eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
+            }
+        } else {
+            setInteractorVisibility(resource, hovered, false);
+            eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
         }
     }
 
     private void updateSummaryItem(DiagramObject hovered){
-        for (DiagramObject diagramObject : context.getContent().getDiagramObjectsWithCommonIdentifier(hovered)) {
-            if(diagramObject instanceof Node){
-                Node node = (Node) diagramObject;
-                Boolean pressed = node.getInteractorsSummary().getPressed();
-                node.getInteractorsSummary().setPressed(pressed == null || !pressed);
-                node.getDiagramEntityInteractorsSummary().setPressed(pressed == null || !pressed);
-            }
+        if(hovered instanceof Node){
+            Node node = (Node) hovered;
+            Boolean pressed = node.getInteractorsSummary().getPressed();
+            node.getInteractorsSummary().setPressed(pressed == null || !pressed);
+            node.getDiagramEntityInteractorsSummary().setPressed(pressed == null || !pressed);
         }
         forceDraw = true;
+    }
+
+    private void setInteractorVisibility(String resource, Node node, boolean visible){
+        Collection<DiagramInteractor> interactors = context.getContent().getDiagramInteractors(resource, node);
+        for (DiagramInteractor interactor : interactors) {
+            if(interactor instanceof InteractorLink){
+                InteractorLink link = (InteractorLink) interactor;
+                link.setVisible(visible);
+            }
+        }
     }
 
     private void fitDiagram(boolean animation) {
