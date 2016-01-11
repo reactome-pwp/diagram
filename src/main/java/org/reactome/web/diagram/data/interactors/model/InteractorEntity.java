@@ -6,7 +6,6 @@ import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,17 +23,15 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
         this.accession = accession;
     }
 
-    public Set<InteractorLink> addInteraction(Collection<DiagramObject> items, String id, double score) {
+    public Set<InteractorLink> addInteraction(DiagramObject item, String id, double score) {
         //IMPORTANT: local set is meant to return ONLY the new ones
         Set<InteractorLink> interactors = new HashSet<>();
-        for (DiagramObject item : items) {
-            GraphPhysicalEntity pe = item.getGraphObject();
-            interactsWith.add(pe);
+        GraphPhysicalEntity pe = item.getGraphObject();
+        interactsWith.add(pe);
 
-            DynamicLink link = new DynamicLink((Node) item, this, id, score);
-            interactors.add(link);
-            this.links.add(link);
-        }
+        DynamicLink link = new DynamicLink((Node) item, this, id, score);
+        interactors.add(link);
+        this.links.add(link);
         return interactors;
     }
 
@@ -55,6 +52,14 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
 
     public boolean isLaidOut(){
         return minX != null && maxX != null && minY != null && maxY !=null;
+    }
+
+    @Override
+    public boolean isVisible() {
+        for (InteractorLink link : links) {
+            if(link.isVisible()) return true;
+        }
+        return false;
     }
 
     public Set<InteractorLink> getLinks() {
@@ -79,6 +84,11 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
     @Override
     public void setMaxY(double maxY) {
         this.maxY = maxY;
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        throw new RuntimeException("Do not use this method. Please rely on the visibility of the links");
     }
 
     @Override

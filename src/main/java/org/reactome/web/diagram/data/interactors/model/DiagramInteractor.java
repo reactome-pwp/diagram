@@ -10,7 +10,6 @@ import uk.ac.ebi.pwp.structures.quadtree.client.QuadTreeBox;
 public abstract class DiagramInteractor implements QuadTreeBox {
 
     protected Double minX, minY, maxX, maxY;
-    private boolean visible = true;
 
     DiagramInteractor() {
     }
@@ -39,13 +38,9 @@ public abstract class DiagramInteractor implements QuadTreeBox {
         return new InteractorBox(this).transform(factor, delta);
     }
 
-    public boolean isVisible() {
-        return visible;
-    }
+    public abstract boolean isVisible();
 
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
+    public abstract void setVisible(boolean visible);
 
     @Override
     public String toString() {
@@ -54,7 +49,7 @@ public abstract class DiagramInteractor implements QuadTreeBox {
                 ", minY=" + minY +
                 ", maxX=" + maxX +
                 ", maxY=" + maxY +
-                ", visible=" + visible +
+                ", visible=" + isVisible() +
                 '}';
     }
 }

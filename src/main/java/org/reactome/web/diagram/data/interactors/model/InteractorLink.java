@@ -16,6 +16,7 @@ public abstract class InteractorLink extends DiagramInteractor {
 
     private String id;
     private double score;
+    private boolean visible = true;
 
     InteractorLink(Node from, String id, double score) {
         this.from = from;
@@ -65,5 +66,15 @@ public abstract class InteractorLink extends DiagramInteractor {
         int result = from != null ? from.hashCode() : 0;
         result = 31 * result + (id != null ? id.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return visible;
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }
