@@ -35,8 +35,9 @@ public class DiagramContent {
 
     //INTERACTORS
     static Map<String, Double> interactorsThreshold = new HashMap<>();
-    MapSet<String, InteractorsSummary> interactorsSummaryMap;
-//    Map<String, DiagramInteractor> interactorMap;
+    MapSet<String, InteractorsSummary> interactorsSummaryMap; //resource -> InteractorsSummary
+    Map<String, Map<String, InteractorEntity>> interactorsCache; //resource -> acc -> interactor
+    Map<String, MapSet<Node, InteractorEntity>> interactorsPerNode; //resource -> layout node -> interactor
 
     Set<DiagramObject> diseaseComponents;
     Set<DiagramObject> lofNodes;
@@ -54,7 +55,8 @@ public class DiagramContent {
         this.subpathwaysCache = new HashMap<>();
 
         this.interactorsSummaryMap = new MapSet<>();
-//        this.interactorMap = new HashMap<>();
+        this.interactorsCache = new HashMap<>();
+        this.interactorsPerNode = new HashMap<>();
     }
 
     public void cache(GraphObject dbObject) {
@@ -94,9 +96,14 @@ public class DiagramContent {
         }
     }
 
-    public void cache(InteractorEntity interactor) {
+    public void cache(String resource, InteractorEntity interactor) {
         if (interactor.getAccession() != null) {
-//            this.interactorMap.put(interactor.getAccession(), interactor);
+            Map<String, InteractorEntity> map = this.interactorsCache.get(resource);
+            if(map == null){
+                map = new HashMap<>();
+                this.interactorsCache.put(resource, map);
+            }
+            map.put(interactor.getAccession(), interactor);
         }
     }
 
@@ -185,8 +192,11 @@ public class DiagramContent {
     }
 
     public Collection<DiagramObject> getDiagramObjectsWithCommonIdentifier(DiagramObject diagramObject){
+        return getDiagramObjectsWithCommonIdentifier(diagramObject.getGraphObject());
+    }
+
+    public Collection<DiagramObject> getDiagramObjectsWithCommonIdentifier(GraphObject graphObject){
         Set<DiagramObject> rtn = new HashSet<>();
-        GraphObject graphObject = diagramObject.getGraphObject();
         if(graphObject instanceof GraphPhysicalEntity){
             GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
             for (GraphObject object : identifierMap.getElements(pe.getIdentifier())) {
@@ -220,18 +230,22 @@ public class DiagramContent {
         return maxY - minY;
     }
 
-//    public Collection<DiagramInteractor> getDiagramInteractors() {
-//        return this.interactorMap.values();
-//    }
+    public Collection<InteractorEntity> getDiagramInteractors(String resource) {
+        Map<String, InteractorEntity> cache = interactorsCache.get(resource);
+        if(cache!=null)  return cache.values();
+        return new HashSet<>();
+    }
 
-//    public DiagramInteractor getDiagramInteractor(String acc){
-//        return this.interactorMap.get(acc);
-//    }
+    public InteractorEntity getDiagramInteractor(String resource, String acc){
+        Map<String, InteractorEntity> cache = interactorsCache.get(resource);
+        if(cache!=null)  return cache.get(acc);
+        return null;
+    }
 
     public void cacheInteractors(String resource, String acc, Integer number) {
         InteractorsSummary summary = new InteractorsSummary(acc, number);
         this.interactorsSummaryMap.add(resource.toLowerCase(), summary);
-        setInteractors(summary);
+        setInteractorsSummary(summary);
     }
 
     public void clearDisplayedInteractors() {
@@ -281,15 +295,15 @@ public class DiagramContent {
         }
     }
 
-    public void restoreInteractors(String resource){
+    public void restoreInteractorsSummary(String resource){
         Set<InteractorsSummary> items = interactorsSummaryMap.getElements(resource.toLowerCase());
         if(items==null) return;
         for (InteractorsSummary summary : items) {
-            setInteractors(summary);
+            setInteractorsSummary(summary);
         }
     }
 
-    private void setInteractors(InteractorsSummary summary) {
+    private void setInteractorsSummary(InteractorsSummary summary) {
         Set<GraphObject> elements = identifierMap.getElements(summary.getAccession());
         if (elements != null) {
             for (GraphObject graphObject : elements) {

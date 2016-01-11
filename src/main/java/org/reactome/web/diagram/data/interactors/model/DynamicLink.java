@@ -9,27 +9,15 @@ import org.reactome.web.diagram.data.layout.Node;
 public class DynamicLink extends InteractorLink {
 
     private InteractorEntity to;
-    private String id;
-    private double score;
 
     public DynamicLink(Node from, InteractorEntity to, String id, double score) {
-        super(from);
+        super(from, id, score);
         this.to = to;
-        this.id = id;
-        this.score = score;
-        setBoundaries(from, to);
+        setBoundaries(to.getCentre());
     }
 
     @Override
     public Coordinate getTo() {
-        return getCentre(to); //This needs to be calculated every time since InteractorEntity is Draggable
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public double getScore() {
-        return score;
+        return to.getCentre(); //This needs to be calculated every time since InteractorEntity is Draggable
     }
 }

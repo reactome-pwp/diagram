@@ -1,9 +1,12 @@
 package org.reactome.web.diagram.data.interactors.model;
 
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,22 +18,22 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
     private String accession;
 
     Set<GraphPhysicalEntity> interactsWith = new HashSet<>();
+    Set<InteractorLink> links = new HashSet<>();
 
     public InteractorEntity(String accession) {
         this.accession = accession;
     }
 
-    public Set<InteractorLink> addInteraction(GraphPhysicalEntity pe, String id, double score) {
-        pe.addInteractor(this);
-        interactsWith.add(pe);
-
-        //TODO: Move this to a better location
-        //Bad idea doing this here since we don't yet know where is going to be placed in the viewport (no layout data)
+    public Set<InteractorLink> addInteraction(Collection<DiagramObject> items, String id, double score) {
+        //IMPORTANT: local set is meant to return ONLY the new ones
         Set<InteractorLink> interactors = new HashSet<>();
-        for (DiagramObject diagramObject : pe.getDiagramObjects()) {
-            if (diagramObject instanceof Node) {
-                interactors.add(new DynamicLink((Node) diagramObject, this, id, score));
-            }
+        for (DiagramObject item : items) {
+            GraphPhysicalEntity pe = item.getGraphObject();
+            interactsWith.add(pe);
+
+            DynamicLink link = new DynamicLink((Node) item, this, id, score);
+            interactors.add(link);
+            this.links.add(link);
         }
         return interactors;
     }
@@ -41,6 +44,21 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
 
     public String getAccession() {
         return accession;
+    }
+
+    public Coordinate getCentre(){
+        return CoordinateFactory.get(
+                minX + (maxX - minX) / 2.0,
+                minY + (maxY - minY) / 2.0
+        );
+    }
+
+    public boolean isLaidOut(){
+        return minX != null && maxX != null && minY != null && maxY !=null;
+    }
+
+    public Set<InteractorLink> getLinks() {
+        return links;
     }
 
     @Override
@@ -61,5 +79,21 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
     @Override
     public void setMaxY(double maxY) {
         this.maxY = maxY;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        InteractorEntity entity = (InteractorEntity) o;
+
+        return accession != null ? accession.equals(entity.accession) : entity.accession == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return accession != null ? accession.hashCode() : 0;
     }
 }

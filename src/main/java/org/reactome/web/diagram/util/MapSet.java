@@ -65,4 +65,12 @@ public class MapSet<S,T> implements Serializable {
     public boolean remove(S key, T elem) {
         return map.containsKey(key) && map.get(key).remove(elem);
     }
+
+    public Set<T> values(){
+        Set<T> rtn = new HashSet<>();
+        for (S s : map.keySet()) {
+            rtn.addAll(map.get(s));
+        }
+        return rtn;
+    }
 }

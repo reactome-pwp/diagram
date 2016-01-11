@@ -21,9 +21,11 @@ import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.loader.AnalysisDataLoader;
 import org.reactome.web.diagram.data.loader.AnalysisTokenValidator;
@@ -31,6 +33,7 @@ import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.DiagramEventBus;
 import org.reactome.web.diagram.util.ViewportUtils;
 import org.reactome.web.diagram.util.actions.UserActionsHandlers;
@@ -45,7 +48,7 @@ import java.util.*;
  */
 class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserActionsHandlers,
         LayoutLoadedHandler, GraphLoadedHandler, InteractorsLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
-        InteractorsResourceChangedHandler, InteractorsCollapsedHandler,
+        InteractorsResourceChangedHandler, InteractorsCollapsedHandler,  InteractorsLayoutUpdatedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         GraphObjectHoveredHandler, GraphObjectSelectedHandler, DiagramLoadedHandler, CanvasExportRequestedHandler,
@@ -83,12 +86,15 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     private String flagTerm;
     private AnalysisStatus analysisStatus;
 
+    private InteractorsManager interactorsManager;
+
     public DiagramViewerImpl() {
         this.eventBus = new DiagramEventBus();
         this.canvas = new DiagramCanvas(this.eventBus);
         this.contextMap = new LruCache<>(DIAGRAM_CONTEXT_CACHE_SIZE);
         this.loaderManager = new LoaderManager(this.eventBus);
         AnalysisDataLoader.initialise(this.eventBus);
+        this.interactorsManager = new InteractorsManager(eventBus);
 
         this.diagramManager = new DiagramManager(new DisplayManager(this));
         this.initWidget(this.canvas);
@@ -180,7 +186,14 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     private void drawInteractors() {
-        // A list of visible interactors is needed
+        if (context == null) return;
+        long start = System.currentTimeMillis();
+        String resource = interactorsManager.getCurrentResource();
+        Collection<DiagramInteractor> items = context.getVisibleInteractors(resource, viewportWidth, viewportHeight);
+        canvas.renderInteractors(items, context);
+        long time = System.currentTimeMillis() - start;
+        Console.log(items.size() + " interactors rendered in " + time + " ms");
+//        this.eventBus.fireEventFromSource(new DiagramRenderedEvent(context.getContent(), visibleArea, items.size(), time), this);
     }
 
     @Override
@@ -679,9 +692,14 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         context.getContent().clearDisplayedInteractors();
         if(context.getContent().isInteractorResourceCached(event.getResource())) {
-            context.getContent().restoreInteractors(event.getResource());
+            context.getContent().restoreInteractorsSummary(event.getResource());
         }
         forceDraw = true;
+    }
+
+    @Override
+    public void onInteractorsLayoutUpdated(InteractorsLayoutUpdatedEvent event) {
+        drawInteractors();
     }
 
     @Override
@@ -908,7 +926,10 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
                 this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getAttachment()), this);
             }
             if (hoveredItem.getSummaryItem() != null) {
-                updateSummaryItem(hoveredItem.getHoveredObject());
+                SummaryItem summaryItem = hoveredItem.getSummaryItem();
+                if(summaryItem.getType().equals("TR")){
+                    manageInteractors(summaryItem, (Node) hoveredItem.getHoveredObject());
+                }
                 this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getSummaryItem()), this);
             }
             if (hoveredItem.getContextMenuTrigger() != null) {
@@ -920,6 +941,13 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         if (!Objects.equals(this.selected, toSelect)) {
             this.resetIllustration();
             this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(toSelect, zoom, fireExternally), this);
+        }
+    }
+
+    private void manageInteractors(SummaryItem summaryItem, Node hovered){
+        updateSummaryItem(hovered);
+        if (summaryItem.getPressed() != null && summaryItem.getPressed()) {
+            interactorsManager.loadInteractors(hovered);
         }
     }
 

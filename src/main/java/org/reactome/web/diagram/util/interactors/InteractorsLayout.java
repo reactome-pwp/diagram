@@ -4,13 +4,24 @@ import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.NodeProperties;
+import org.reactome.web.diagram.data.layout.Segment;
+import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
+import org.reactome.web.diagram.data.layout.impl.SegmentFactory;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class InteractorsLayout {
 
-    private static final int RADIUS = 100;
+    private static final double L = 2 * Math.PI;
+    private static final double OFFSET = Math.PI / 4.0;
+
+    private static final int BOX = 35;
+    private static final int RADIUS = 150;
 
     private String acc;
     private Node node;
@@ -29,18 +40,82 @@ public class InteractorsLayout {
         return node;
     }
 
-    public void doLayout(InteractorEntity entity, int i, int n){
+    public void doLayout(InteractorEntity entity, int i, int n) {
         if (entity == null || entity.isLaidOut() || n == 0) return;
 
-        double delta = 360 / (double) n;
-        double angle = delta * i;
-        Coordinate center = node.getPosition();
+        double delta = L / (double) n;
+        double angle = delta * i + OFFSET;
+        Coordinate center = getCentre(node.getProp());
+
         double x = center.getX() + RADIUS * Math.cos(angle);
         double y = center.getY() + RADIUS * Math.sin(angle);
 
-        entity.setMinX(x - 15);
-        entity.setMaxX(x + 15);
-        entity.setMinY(y - 10);
-        entity.setMaxY(y + 10);
+        entity.setMinX(x - BOX);
+        entity.setMaxX(x + BOX);
+        entity.setMinY(y - BOX);
+        entity.setMaxY(y + BOX);
+    }
+
+    public static Coordinate getCentre(NodeProperties prop) {
+        return CoordinateFactory.get(
+                prop.getX() + prop.getWidth() / 2.0,
+                prop.getY() + prop.getHeight() / 2.0
+        );
+    }
+
+    public static Coordinate getSegmentsIntersection(Segment interactor, Node node) {
+        NodeProperties prop = node.getProp();
+        Coordinate a = CoordinateFactory.get(prop.getX(), prop.getY());
+        Coordinate b = CoordinateFactory.get(prop.getX() + prop.getWidth(), prop.getY());
+        Coordinate c = CoordinateFactory.get(prop.getX() + prop.getWidth(), prop.getY() + prop.getHeight());
+        Coordinate d = CoordinateFactory.get(prop.getX(), prop.getY() + prop.getHeight());
+
+        List<Segment> segments = new LinkedList<>();
+        segments.add(SegmentFactory.get(a, b));
+        segments.add(SegmentFactory.get(b, c));
+        segments.add(SegmentFactory.get(c, d));
+        segments.add(SegmentFactory.get(d, a));
+
+        for (Segment segment : segments) {
+            Coordinate point = getSegmentsIntersection(segment, interactor);
+            if (point != null) return point;
+        }
+        //By default the centre is retrieved...
+        return getCentre(node.getProp());
+    }
+
+    private static Coordinate getSegmentsIntersection(Segment s1, Segment s2) {
+        Coordinate from1 = s1.getFrom();
+        Coordinate to1 = s1.getTo();
+        Coordinate from2 = s2.getFrom();
+        Coordinate to2 = s2.getTo();
+        return intersection(from1.getX(), from1.getY(), to1.getX(), to1.getY(), from2.getX(), from2.getY(), to2.getX(), to2.getY());
+    }
+
+    private static Coordinate intersection(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
+        double d = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+        if (d == 0) return null;
+
+        double xi = ((x3 - x4) * (x1 * y2 - y1 * x2) - (x1 - x2) * (x3 * y4 - y3 * x4)) / d;
+        double yi = ((y3 - y4) * (x1 * y2 - y1 * x2) - (y1 - y2) * (x3 * y4 - y3 * x4)) / d;
+
+        Coordinate p = CoordinateFactory.get(xi, yi);
+        if(!doesIntersect(x1, y1, x2, y2, x3, y3, x4, y4)) return null;
+
+        return p;
+    }
+
+    public static boolean doesIntersect(double l1x1, double l1y1, double l1x2, double l1y2, double l2x1, double l2y1, double l2x2,
+                                        double l2y2) {
+        double denom = ((l2y2 - l2y1) * (l1x2 - l1x1)) - ((l2x2 - l2x1) * (l1y2 - l1y1));
+
+        if (denom == 0.0f) {
+            return false;
+        }
+
+        double ua = (((l2x2 - l2x1) * (l1y1 - l2y1)) - ((l2y2 - l2y1) * (l1x1 - l2x1))) / denom;
+        double ub = (((l1x2 - l1x1) * (l1y1 - l2y1)) - ((l1y2 - l1y1) * (l1x1 - l2x1))) / denom;
+
+        return ((ua >= 0.0d) && (ua <= 1.0d) && (ub >= 0.0d) && (ub <= 1.0d));
     }
 }

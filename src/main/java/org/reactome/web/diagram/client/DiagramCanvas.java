@@ -29,6 +29,7 @@ import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
 import org.reactome.web.diagram.events.ExpressionValueHoveredEvent;
@@ -40,17 +41,19 @@ import org.reactome.web.diagram.messages.LoadingMessage;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.profiles.diagram.model.DiagramProfileProperties;
-import org.reactome.web.diagram.renderers.ConnectorRenderer;
-import org.reactome.web.diagram.renderers.Renderer;
-import org.reactome.web.diagram.renderers.RendererManager;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.helper.ItemsDistribution;
 import org.reactome.web.diagram.renderers.helper.RenderType;
-import org.reactome.web.diagram.renderers.impl.abs.AttachmentAbstractRenderer;
-import org.reactome.web.diagram.renderers.impl.abs.SummaryItemAbstractRenderer;
+import org.reactome.web.diagram.renderers.interactor.InteractorRenderer;
+import org.reactome.web.diagram.renderers.interactor.InteractorRendererManager;
+import org.reactome.web.diagram.renderers.layout.ConnectorRenderer;
+import org.reactome.web.diagram.renderers.layout.Renderer;
+import org.reactome.web.diagram.renderers.layout.RendererManager;
+import org.reactome.web.diagram.renderers.layout.abs.AttachmentAbstractRenderer;
+import org.reactome.web.diagram.renderers.layout.abs.SummaryItemAbstractRenderer;
 import org.reactome.web.diagram.thumbnail.DiagramThumbnail;
 import org.reactome.web.diagram.tooltips.TooltipContainer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
@@ -70,6 +73,7 @@ import java.util.Set;
 class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionColumnChangedHandler {
 
     private final RendererManager rendererManager;
+    private final InteractorRendererManager interactorRendererManager;
     private EventBus eventBus;
 
     private AdvancedContext2d compartments;
@@ -96,6 +100,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private AdvancedContext2d entitiesSelection;
     private AdvancedContext2d shadowsText;
 
+    private AdvancedContext2d interactors;
+
     private AdvancedContext2d buffer;
 
     private TooltipContainer tooltipContainer;
@@ -116,6 +122,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         //This is MANDATORY
         RendererManager.initialise(eventBus);
         this.rendererManager = RendererManager.get();
+        InteractorRendererManager.initialise(eventBus);
+        this.interactorRendererManager = InteractorRendererManager.get();
 
         //This is MANDATORY
         DiagramColours.initialise(eventBus);
@@ -373,6 +381,17 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         }
     }
 
+    public void renderInteractors(Collection<DiagramInteractor> items, DiagramContext context){
+        Double factor = context.getDiagramStatus().getFactor();
+        Coordinate offset = context.getDiagramStatus().getOffset();
+        for (DiagramInteractor item : items) {
+            InteractorRenderer renderer = interactorRendererManager.getRenderer(item);
+            if(renderer!=null){
+                renderer.draw(interactors, item, factor, offset);
+            }
+        }
+    }
+
     public void render(Collection<DiagramObject> items, DiagramContext context) {
         ColourProfileType colourProfileType = context.getColourProfileType();
         AnalysisStatus analysisStatus = context.getAnalysisStatus();
@@ -625,6 +644,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.overlay = createCanvas(width, height);
         this.entitiesSelection = createCanvas(width, height);
         this.shadowsText = createCanvas(width, height);
+
+        this.interactors = createCanvas(width, height);
 
         this.tooltipContainer = createToolTipContainer(width, height);
 

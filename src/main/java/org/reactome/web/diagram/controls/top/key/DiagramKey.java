@@ -21,10 +21,10 @@ import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
-import org.reactome.web.diagram.renderers.Renderer;
-import org.reactome.web.diagram.renderers.RendererManager;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
+import org.reactome.web.diagram.renderers.layout.Renderer;
+import org.reactome.web.diagram.renderers.layout.RendererManager;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 import org.reactome.web.diagram.util.Console;
 

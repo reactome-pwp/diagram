@@ -55,12 +55,13 @@ public class DiagramContext {
     //This method is not checking whether the interactors where previously put in place since
     //when it is called, the interactors have probably been retrieved "again" from the server
     //IMPORTANT: To avoid loading data that already exists -> CHECK BEFORE RETRIEVING :)
-    public void addInteractors(String resource, Collection<DiagramInteractor> interactors) {
-        QuadTree<DiagramInteractor> tree = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, NUMBER_OF_ELEMENTS, MIN_AREA);
-        for (DiagramInteractor interactor : interactors) {
-            tree.add(interactor);
+    public void addInteractor(String resource, DiagramInteractor interactor) {
+        QuadTree<DiagramInteractor> tree = interactors.get(resource.toLowerCase());
+        if(tree==null) {
+            tree = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, NUMBER_OF_ELEMENTS, MIN_AREA);
+            interactors.put(resource.toLowerCase(), tree);
         }
-        this.interactors.put(resource, tree);
+        tree.add(interactor);
     }
 
     public void clearAnalysisOverlay() {
@@ -130,10 +131,12 @@ public class DiagramContext {
     }
 
     public Collection<DiagramInteractor> getVisibleInteractors(String resource, int width, int height) {
-        Box visibleArea = this.diagramStatus.getVisibleModelArea(width, height);
-        QuadTree<DiagramInteractor> quadTree = this.interactors.get(resource);
-        if (quadTree != null) {
-            quadTree.getItems(visibleArea);
+        if(resource!=null) {
+            Box visibleArea = this.diagramStatus.getVisibleModelArea(width, height);
+            QuadTree<DiagramInteractor> quadTree = this.interactors.get(resource.toLowerCase());
+            if (quadTree != null) {
+                return quadTree.getItems(visibleArea);
+            }
         }
         return new HashSet<>();
     }

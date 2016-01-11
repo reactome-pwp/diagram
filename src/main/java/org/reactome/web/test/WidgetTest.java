@@ -38,6 +38,7 @@ public class WidgetTest implements EntryPoint {
                     public void execute() {
                         diagram.loadDiagram("R-HSA-5205647");
 //                        diagram.loadDiagram("R-HSA-1181150");
+//                        diagram.loadDiagram("R-HSA-5693567"); //Big one with plenty of overlap
                     }
                 });
                 diagram.addDiagramLoadedHandler(new DiagramLoadedHandler() {
@@ -84,7 +85,6 @@ public class WidgetTest implements EntryPoint {
 
     private Widget getDemoLeftPanel(){
         FlowPanel fp = new FlowPanel();
-
 
         fp.add(new Label("R-HSA-1181150"));
         fp.add(new Label("Reactions"));
