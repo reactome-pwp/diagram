@@ -6,7 +6,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.events.InteractorsResourceChangedEvent;
 
@@ -108,12 +107,6 @@ public class InteractorsTabPanel extends Composite implements ValueChangeHandler
     public interface Resources extends ClientBundle {
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
-
-        @Source("../images/active.gif")
-        ImageResource active();
-
-        @Source("../images/inactive.png")
-        ImageResource inActive();
     }
 
     @CssResource.ImportedWithPrefix("diagram-InteractorsTabPanel")
