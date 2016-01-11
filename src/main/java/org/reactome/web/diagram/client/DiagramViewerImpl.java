@@ -138,6 +138,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
         this.eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
         this.eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
+        this.eventBus.addHandler(InteractorsLayoutUpdatedEvent.TYPE, this);
 
         this.eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         this.eventBus.addHandler(GraphLoadedEvent.TYPE, this);
