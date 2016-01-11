@@ -28,14 +28,37 @@
     cursor: pointer;
 }
 
-.interactorResourceList{
+.liveResourcesOuterPanel {
+    height: 153px;
+    width: 245px;
+    margin-left: 10px;
     background-color: transparent;
+    overflow: hidden;
+}
+
+.liveResourcesInnerPanel {
+    /*background-color: transparent;*/
     color: white;
-    border: solid 1px white;
-    width: 94%;
-    float: right;
-    margin-top: 4px;
-    /*font-weight: bold;*/
-    outline: none;
-    font-size: medium !important;
+    height: 100%;
+    width: 280px;
+    overflow: scroll;
+}
+
+.interactorResourceListBtn{
+    display: block;
+}
+
+.interactorResourceListBtn label{
+    margin-left: 5px;
+    cursor: pointer;
+    color: white;
+}
+
+.interactorResourceListBtnDisabled{
+    display: block;
+}
+
+.interactorResourceListBtnDisabled label{
+    margin-left: 5px;
+    color: dimgray;
 }
