@@ -281,6 +281,13 @@
 
 .interactorsControlError {
     background-color: rgb(197, 91, 88);
+    border: 1px solid rgb(197, 56, 57);
+    color: white;
+}
+
+.interactorsControlWarning {
+    background-color: rgb(249, 161, 35);
+    border: 1px solid rgb(249, 157, 11);
     color: white;
 }
 

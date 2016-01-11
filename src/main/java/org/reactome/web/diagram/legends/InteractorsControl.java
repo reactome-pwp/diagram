@@ -12,6 +12,7 @@ import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.slider.Slider;
 import org.reactome.web.diagram.util.slider.SliderValueChangedEvent;
 import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
@@ -25,6 +26,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         EntityDecoratorSelectedHandler {
 
     private static String MSG_LOADING = "Loading interactors for ";
+    private static String MSG_NO_INTERACTORS_FOUND = "No interactors found in ";
 
     private String currentResource;
 
@@ -93,7 +95,13 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
         currentResource = event.getInteractors().getResource();
-        update();
+        int totalInteractorsLoaded = event.getInteractors().getEntities().size();
+        if(totalInteractorsLoaded==0) {
+            Console.warn(">> No interactors present <<");
+            displayWarning(true);
+        }else {
+            update();
+        }
     }
 
     @Override
@@ -116,6 +124,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             setVisible(false);
         } else {
             this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
+            this.removeStyleName(RESOURCES.getCSS().interactorsControlWarning());
             setVisible(true);
             setMessage(currentResource);
             controlsFP.setVisible(true);
@@ -159,6 +168,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
     private void displayLoader(boolean visible, String resource) {
         this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
+        this.removeStyleName(RESOURCES.getCSS().interactorsControlWarning());
         loadingIcon.setVisible(visible);
         controlsFP.setVisible(!visible);
         if (visible) {
@@ -178,7 +188,17 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     private void displayError(boolean visible) {
         if (visible) {
             this.addStyleName(RESOURCES.getCSS().interactorsControlError());
+            this.removeStyleName(RESOURCES.getCSS().interactorsControlWarning());
         }
+        controlsFP.setVisible(!visible);
+    }
+
+    private void displayWarning(boolean visible) {
+        if (visible) {
+            this.addStyleName(RESOURCES.getCSS().interactorsControlWarning());
+            this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
+        }
+        setMessage(MSG_NO_INTERACTORS_FOUND+ currentResource);
         controlsFP.setVisible(!visible);
     }
 
