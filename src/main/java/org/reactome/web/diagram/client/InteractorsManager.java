@@ -2,13 +2,11 @@ package org.reactome.web.diagram.client;
 
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.data.DiagramContext;
-import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractorEntity;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
-import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.loader.InteractorsDetailsLoader;
 import org.reactome.web.diagram.data.loader.InteractorsLoader;
@@ -19,7 +17,7 @@ import org.reactome.web.diagram.handlers.InteractorsRequestCanceledHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -67,7 +65,6 @@ public class InteractorsManager implements InteractorsLoader.Handler,
             String fromAcc = rawInteractorEntity.getAcc();
             if (!layoutBuilder.getAcc().equals(fromAcc)) continue;
 
-            GraphPhysicalEntity pe = layoutBuilder.getNode().getGraphObject();
             int n = rawInteractorEntity.getInteractors().size();
             int i = 0;
             for (RawInteractor rawInteractor : rawInteractorEntity.getInteractors()) {
@@ -75,13 +72,17 @@ public class InteractorsManager implements InteractorsLoader.Handler,
                 //TODO: Cover the case when an entity in the diagram interacts with another one in the diagram (Static link)
 
                 InteractorEntity interactor = getOrCreateInteractorEntity(rawInteractor.getAcc());
-                pe.addInteractor(interactor);
 
                 layoutBuilder.doLayout(interactor, i++, n);
 
-                //next one needs to be done after the doLayout
-                Collection<DiagramObject> items = context.getContent().getDiagramObjectsWithCommonIdentifier(pe);
-                Set<InteractorLink> links = interactor.addInteraction(items, rawInteractor.getId(), rawInteractor.getScore());
+                Set<InteractorLink> links = new HashSet<>();
+
+                Node node = layoutBuilder.getNode();
+                context.getContent().cache(currentResource, node, interactor);
+                for (InteractorLink link : interactor.addInteraction(node, rawInteractor.getId(), rawInteractor.getScore())) {
+                    context.getContent().cache(currentResource, node, link);
+                    links.add(link);
+                }
 
                 //next block (adding to the QuadTree) also needs to be done after the doLayout
                 context.addInteractor(currentResource, interactor);
