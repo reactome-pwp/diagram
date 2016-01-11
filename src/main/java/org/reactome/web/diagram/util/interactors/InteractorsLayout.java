@@ -18,7 +18,7 @@ import java.util.List;
 public class InteractorsLayout {
 
     private static final double L = 2 * Math.PI;
-    private static final double OFFSET = Math.PI / 4.0;
+    private static final double OFFSET = Math.PI / 2.0;
 
     private static final int BOX = 35;
     private static final int RADIUS = 150;
@@ -93,28 +93,25 @@ public class InteractorsLayout {
     }
 
     private static Coordinate intersection(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
+        if (!doesIntersect(x1, y1, x2, y2, x3, y3, x4, y4)) return null;
+
         double d = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
         if (d == 0) return null;
 
         double xi = ((x3 - x4) * (x1 * y2 - y1 * x2) - (x1 - x2) * (x3 * y4 - y3 * x4)) / d;
         double yi = ((y3 - y4) * (x1 * y2 - y1 * x2) - (y1 - y2) * (x3 * y4 - y3 * x4)) / d;
 
-        Coordinate p = CoordinateFactory.get(xi, yi);
-        if(!doesIntersect(x1, y1, x2, y2, x3, y3, x4, y4)) return null;
-
-        return p;
+        return CoordinateFactory.get(xi, yi);
     }
 
-    public static boolean doesIntersect(double l1x1, double l1y1, double l1x2, double l1y2, double l2x1, double l2y1, double l2x2,
-                                        double l2y2) {
-        double denom = ((l2y2 - l2y1) * (l1x2 - l1x1)) - ((l2x2 - l2x1) * (l1y2 - l1y1));
+    //Code adapted from http://www.java-gaming.org/index.php?topic=22590.0
+    public static boolean doesIntersect(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
+        double d = ((y4 - y3) * (x2 - x1)) - ((x4 - x3) * (y2 - y1));
 
-        if (denom == 0.0f) {
-            return false;
-        }
+        if (d == 0.0f) return false;
 
-        double ua = (((l2x2 - l2x1) * (l1y1 - l2y1)) - ((l2y2 - l2y1) * (l1x1 - l2x1))) / denom;
-        double ub = (((l1x2 - l1x1) * (l1y1 - l2y1)) - ((l1y2 - l1y1) * (l1x1 - l2x1))) / denom;
+        double ua = (((x4 - x3) * (y1 - y3)) - ((y4 - y3) * (x1 - x3))) / d;
+        double ub = (((x2 - x1) * (y1 - y3)) - ((y2 - y1) * (x1 - x3))) / d;
 
         return ((ua >= 0.0d) && (ua <= 1.0d) && (ub >= 0.0d) && (ub <= 1.0d));
     }
