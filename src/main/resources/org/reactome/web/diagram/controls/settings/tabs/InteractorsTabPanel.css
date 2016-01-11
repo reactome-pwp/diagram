@@ -33,15 +33,13 @@
     width: 245px;
     margin-left: 10px;
     background-color: transparent;
-    overflow: hidden;
+    overflow: scroll;
 }
 
 .liveResourcesInnerPanel {
-    /*background-color: transparent;*/
     color: white;
-    height: 100%;
-    width: 280px;
-    overflow: scroll;
+    height: auto;
+    width: 245px;
 }
 
 .interactorResourceListBtn{
