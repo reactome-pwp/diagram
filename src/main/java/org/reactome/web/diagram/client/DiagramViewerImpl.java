@@ -947,18 +947,14 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     private void manageInteractors(SummaryItem summaryItem, Node hovered){
         updateSummaryItem(hovered);
         String resource = interactorsManager.getCurrentResource();
-        Collection<DiagramInteractor> interactors = context.getContent().getDiagramInteractors(resource, hovered);
+        GraphPhysicalEntity pe = hovered.getGraphObject();
+        Collection<DiagramInteractor> interactors = context.getContent().getDiagramInteractors(resource, pe.getIdentifier());
         boolean pressed = summaryItem.getPressed() != null && summaryItem.getPressed();
-        if (pressed) {
-            if(interactors == null || interactors.isEmpty()) {
-                interactorsManager.loadInteractors(hovered);
-            } else {
-                setInteractorVisibility(resource, hovered, true);
-                eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
-            }
+        boolean previouslyLoaded = interactors != null && !interactors.isEmpty();
+        if (pressed && !previouslyLoaded) {
+            interactorsManager.loadInteractors(hovered);
         } else {
-            setInteractorVisibility(resource, hovered, false);
-            eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
+            setInteractorVisibility(resource, hovered, pressed);
         }
     }
 
@@ -973,13 +969,16 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     private void setInteractorVisibility(String resource, Node node, boolean visible){
-        Collection<DiagramInteractor> interactors = context.getContent().getDiagramInteractors(resource, node);
-        for (DiagramInteractor interactor : interactors) {
-            if(interactor instanceof InteractorLink){
-                InteractorLink link = (InteractorLink) interactor;
-                link.setVisible(visible);
-            }
+        Collection<InteractorLink> interactions = context.getContent().getDiagramInteractions(resource, node);
+
+        if (interactions != null) {
+            interactorsManager.recalculateLayoutIfNeededAndSetVisibility(node, interactions, visible);
+        } else {
+            GraphPhysicalEntity pe = node.getGraphObject();
+            Collection<DiagramInteractor> interactors = context.getContent().getDiagramInteractors(resource, pe.getIdentifier());
+            interactorsManager.createNewLinksForExistingInteractors(node, new HashSet<>(interactors));
         }
+        eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
     }
 
     private void fitDiagram(boolean animation) {

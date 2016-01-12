@@ -1,10 +1,11 @@
 package org.reactome.web.diagram.data.interactors.model;
 
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.interactors.common.LinkCommon;
 import org.reactome.web.diagram.data.layout.Coordinate;
-import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
+import org.reactome.web.diagram.util.MapSet;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,21 +18,21 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
     private String accession;
 
     Set<GraphPhysicalEntity> interactsWith = new HashSet<>();
-    Set<InteractorLink> links = new HashSet<>();
+    MapSet<Node, InteractorLink> links = new MapSet<>();
 
     public InteractorEntity(String accession) {
         this.accession = accession;
     }
 
-    public Set<InteractorLink> addInteraction(DiagramObject item, String id, double score) {
+    public Set<InteractorLink> addInteraction(Node node, String id, double score) {
         //IMPORTANT: local set is meant to return ONLY the new ones
         Set<InteractorLink> interactors = new HashSet<>();
-        GraphPhysicalEntity pe = item.getGraphObject();
+        GraphPhysicalEntity pe = node.getGraphObject();
         interactsWith.add(pe);
 
-        DynamicLink link = new DynamicLink((Node) item, this, id, score);
+        DynamicLink link = new DynamicLink(node, this, id, score);
         interactors.add(link);
-        this.links.add(link);
+        links.add(node, link);
         return interactors;
     }
 
@@ -56,14 +57,28 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
 
     @Override
     public boolean isVisible() {
-        for (InteractorLink link : links) {
+        for (InteractorLink link : links.values()) {
             if(link.isVisible()) return true;
         }
         return false;
     }
 
+    public Set<LinkCommon> getUniqueLinks(){
+        Set<LinkCommon> rtn = new HashSet<>();
+        for (InteractorLink link : links.values()) {
+            rtn.add(new LinkCommon(link.getId(), link.getScore()));
+        }
+        return rtn;
+    }
+
     public Set<InteractorLink> getLinks() {
-        return links;
+        return links.values();
+    }
+
+    public Set<InteractorLink> getLinks(Node node){
+        Set<InteractorLink> rtn = links.getElements(node);
+        if(rtn!=null) return rtn;
+        return new HashSet<>();
     }
 
     @Override
@@ -99,7 +114,6 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
         InteractorEntity entity = (InteractorEntity) o;
 
         return accession != null ? accession.equals(entity.accession) : entity.accession == null;
-
     }
 
     @Override

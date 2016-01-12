@@ -7,6 +7,7 @@ import org.reactome.web.diagram.data.graph.model.GraphSubpathway;
 import org.reactome.web.diagram.data.interactors.common.InteractorsSummary;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
+import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.SummaryItem;
@@ -38,8 +39,8 @@ public class DiagramContent {
     static Map<String, Double> interactorsThreshold = new HashMap<>();
     MapSet<String, InteractorsSummary> interactorsSummaryMap; //resource -> InteractorsSummary
     Map<String, Map<String, InteractorEntity>> interactorsCache; //resource -> acc -> interactors
-
-    Map<String, MapSet<Node, DiagramInteractor>> interactorsPerNode; //resource -> layout node -> interactor
+    Map<String, MapSet<String, DiagramInteractor>> interactorsPerAcc; //resource -> node acc -> interactors
+    Map<String, MapSet<Node, InteractorLink>> interactionsPerNode; //resource -> layout node -> interaction
 
     Set<DiagramObject> diseaseComponents;
     Set<DiagramObject> lofNodes;
@@ -58,7 +59,8 @@ public class DiagramContent {
 
         this.interactorsSummaryMap = new MapSet<>();
         this.interactorsCache = new HashMap<>();
-        this.interactorsPerNode = new HashMap<>();
+        this.interactorsPerAcc = new HashMap<>();
+        this.interactionsPerNode = new HashMap<>();
     }
 
     public void cache(GraphObject dbObject) {
@@ -109,13 +111,23 @@ public class DiagramContent {
         }
     }
 
-    public void cache(String resource, Node node, DiagramInteractor interactorEntity){
-        MapSet<Node, DiagramInteractor> cache = interactorsPerNode.get(resource);
-        if(cache == null){
-            cache = new MapSet<>();
-            interactorsPerNode.put(resource, cache);
+    public void cache(String resource, Node node, DiagramInteractor diagramInteractor){
+        if(diagramInteractor instanceof InteractorLink) {
+            MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource);
+            if (cache == null) {
+                cache = new MapSet<>();
+                interactionsPerNode.put(resource, cache);
+            }
+            cache.add(node, (InteractorLink) diagramInteractor);
         }
-        cache.add(node, interactorEntity);
+
+        MapSet<String, DiagramInteractor> aux = interactorsPerAcc.get(resource);
+        if (aux == null) {
+            aux = new MapSet<>();
+            interactorsPerAcc.put(resource, aux);
+        }
+        GraphPhysicalEntity pe = node.getGraphObject();
+        aux.add(pe.getIdentifier(), diagramInteractor);
     }
 
     public boolean containsOnlyEncapsulatedPathways() {
@@ -243,19 +255,33 @@ public class DiagramContent {
 
     public Collection<InteractorEntity> getDiagramInteractors(String resource) {
         Map<String, InteractorEntity> cache = interactorsCache.get(resource);
-        if(cache!=null)  return cache.values();
+        if (cache != null) return cache.values();
         return new HashSet<>();
     }
 
-    public Collection<DiagramInteractor> getDiagramInteractors(String resource, Node node) {
-        MapSet<Node, DiagramInteractor> cache = interactorsPerNode.get(resource);
-        if(cache!=null)  return cache.getElements(node);
+    public Collection<DiagramInteractor> getDiagramInteractors(String resource, String acc) {
+        MapSet<String, DiagramInteractor> cache = interactorsPerAcc.get(resource);
+        if (cache != null) {
+            return cache.getElements(acc);
+        }
         return new HashSet<>();
     }
 
-    public InteractorEntity getDiagramInteractor(String resource, String acc){
+    public Collection<InteractorLink> getDiagramInteractions(String resource) {
+        MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource);
+        if (cache != null) return cache.values();
+        return new HashSet<>();
+    }
+
+    public Collection<InteractorLink> getDiagramInteractions(String resource, Node node) {
+        MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource);
+        if (cache != null) return cache.getElements(node);
+        return new HashSet<>();
+    }
+
+    public InteractorEntity getDiagramInteractor(String resource, String acc) {
         Map<String, InteractorEntity> cache = interactorsCache.get(resource);
-        if(cache!=null)  return cache.get(acc);
+        if (cache != null) return cache.get(acc);
         return null;
     }
 
@@ -348,7 +374,6 @@ public class DiagramContent {
     public static void setInteractorsThreshold(String resource, double threshold){
         interactorsThreshold.put(resource, threshold);
     }
-
 
     @Override
     public String toString() {

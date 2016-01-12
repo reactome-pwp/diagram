@@ -66,6 +66,14 @@ public class DiagramContext {
         tree.add(interactor);
     }
 
+    public void updateInteractor(String resource, DiagramInteractor interactor) {
+        QuadTree<DiagramInteractor> tree = interactors.get(resource.toLowerCase());
+        if (tree != null){
+            tree.remove(interactor);
+            tree.add(interactor);
+        }
+    }
+
     public void clearAnalysisOverlay() {
         this.analysisStatus = null;
         for (GraphObject graphObject : this.content.getDatabaseObjects()) {

@@ -11,7 +11,7 @@ import org.reactome.web.diagram.util.interactors.InteractorsLayout;
  */
 public abstract class InteractorLink extends DiagramInteractor {
 
-    Node from;
+    final Node from;
     Coordinate fromCentre;
 
     private String id;
@@ -20,7 +20,6 @@ public abstract class InteractorLink extends DiagramInteractor {
 
     InteractorLink(Node from, String id, double score) {
         this.from = from;
-        fromCentre = InteractorsLayout.getCentre(from.getProp());
         this.id = id;
         this.score = score;
     }
@@ -39,8 +38,8 @@ public abstract class InteractorLink extends DiagramInteractor {
         return score;
     }
 
-    void setBoundaries(Coordinate to) {
-        Segment link = SegmentFactory.get(fromCentre, to);
+    public void setBoundaries(Coordinate to) {
+        Segment link = SegmentFactory.get(InteractorsLayout.getCentre(from.getProp()), to);
         fromCentre = InteractorsLayout.getSegmentsIntersection(link, from);
 
         minX = Math.min(fromCentre.getX(), to.getX());

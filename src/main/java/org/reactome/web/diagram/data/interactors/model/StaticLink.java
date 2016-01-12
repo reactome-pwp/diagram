@@ -23,4 +23,8 @@ public class StaticLink extends InteractorLink {
     public Coordinate getTo() {
         return toCentre;
     }
+
+    public Node getNode(){
+        return to;
+    }
 }

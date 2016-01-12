@@ -2,6 +2,9 @@ package org.reactome.web.diagram.client;
 
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.interactors.common.LinkCommon;
+import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.model.DynamicLink;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
@@ -14,8 +17,7 @@ import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -94,7 +96,53 @@ public class InteractorsManager implements InteractorsLoader.Handler,
         eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
     }
 
-    private InteractorEntity getOrCreateInteractorEntity(String acc){
+    public void createNewLinksForExistingInteractors(Node node, Collection<DiagramInteractor> interactors) {
+        //TODO: Cover the case when an entity in the diagram interacts with another one in the diagram (Static link)
+
+        List<InteractorEntity> entities = new LinkedList<>();
+        for (DiagramInteractor interactor : interactors) {
+            if (interactor instanceof InteractorEntity) {
+                entities.add((InteractorEntity) interactor);
+            }
+        }
+
+        int n = entities.size(), i = 0;
+        for (InteractorEntity entity : entities) {
+            recalculateLayoutIfNeeded(node, entity, i++, n);
+            for (LinkCommon linkCommon : entity.getUniqueLinks()) {
+                for (InteractorLink link : entity.addInteraction(node, linkCommon.getId(), linkCommon.getScore())) {
+                    context.getContent().cache(currentResource, node, link);
+                    context.addInteractor(currentResource, link);
+                }
+            }
+        }
+    }
+
+    public void recalculateLayoutIfNeededAndSetVisibility(Node node, Collection<InteractorLink> links, boolean visible) {
+        int n = links.size(), i = 0;
+        for (InteractorLink link : links) {
+            if (link instanceof DynamicLink) {
+                InteractorEntity entity = ((DynamicLink) link).getInteractorEntity();
+                recalculateLayoutIfNeeded(node, entity, i++, n);
+            }
+        }
+        for (InteractorLink link : links) {
+            link.setVisible(visible);
+        }
+    }
+
+    private void recalculateLayoutIfNeeded(Node node, InteractorEntity entity, int i, int n) {
+        if (InteractorsLayout.doLayout(node, entity, i, n, !entity.isVisible())) {
+            context.updateInteractor(currentResource, entity);
+            for (InteractorLink link : entity.getLinks()) {
+                //When the entity has been moved, all the links boundaries need to be updated
+                link.setBoundaries(entity.getCentre());
+                context.updateInteractor(currentResource, link);
+            }
+        }
+    }
+
+    private InteractorEntity getOrCreateInteractorEntity(String acc) {
         InteractorEntity interactor = context.getContent().getDiagramInteractor(currentResource, acc);
         if (interactor == null) {
             interactor = new InteractorEntity(acc);
@@ -122,10 +170,8 @@ public class InteractorsManager implements InteractorsLoader.Handler,
 
     @Override
     public void onInteractorsCollapsed(InteractorsCollapsedEvent event) {
-        for (InteractorEntity entity : context.getContent().getDiagramInteractors(currentResource)) {
-            for (InteractorLink link : entity.getLinks()) {
-                link.setVisible(false);
-            }
+        for (InteractorLink link : context.getContent().getDiagramInteractions(currentResource)) {
+            link.setVisible(false);
         }
         eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
     }

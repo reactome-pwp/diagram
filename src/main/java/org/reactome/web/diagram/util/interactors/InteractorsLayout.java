@@ -40,20 +40,28 @@ public class InteractorsLayout {
         return node;
     }
 
-    public void doLayout(InteractorEntity entity, int i, int n) {
-        if (entity == null || entity.isLaidOut() || n == 0) return;
+    public boolean doLayout(InteractorEntity entity, int i, int n) {
+        return doLayout(node, entity, i, n, false);
+    }
 
-        double delta = L / (double) n;
-        double angle = delta * i + OFFSET;
-        Coordinate center = getCentre(node.getProp());
+    public static boolean doLayout(Node node, InteractorEntity entity, int i, int n, boolean force) {
+        if (entity == null || n == 0) return false;
 
-        double x = center.getX() + RADIUS * Math.cos(angle);
-        double y = center.getY() + RADIUS * Math.sin(angle);
+        if (force || !entity.isLaidOut()) {
+            double delta = L / (double) n;
+            double angle = delta * i + OFFSET;
+            Coordinate center = getCentre(node.getProp());
 
-        entity.setMinX(x - BOX);
-        entity.setMaxX(x + BOX);
-        entity.setMinY(y - BOX);
-        entity.setMaxY(y + BOX);
+            double x = center.getX() + RADIUS * Math.cos(angle);
+            double y = center.getY() + RADIUS * Math.sin(angle);
+
+            entity.setMinX(x - BOX);
+            entity.setMaxX(x + BOX);
+            entity.setMinY(y - BOX);
+            entity.setMaxY(y + BOX);
+            return true;
+        }
+        return false;
     }
 
     public static Coordinate getCentre(NodeProperties prop) {

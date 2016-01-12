@@ -185,6 +185,6 @@ public abstract class DiagramContentFactory {
 
         //It needs to be done at the end of the loop because the QuadTree needs to be created once with all the data
 //        String resource = interactors.getResource();
-//        context.addInteractors(resource, content.getDiagramInteractors());
+//        context.addInteractors(resource, content.getDiagramInteractions());
     }
 }
