@@ -35,6 +35,7 @@ import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.util.DiagramEventBus;
+import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.ViewportUtils;
 import org.reactome.web.diagram.util.actions.UserActionsHandlers;
 import org.reactome.web.pwp.model.classes.Pathway;
@@ -684,15 +685,17 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onInteractorsCollapsed(InteractorsCollapsedEvent event) {
-        context.getContent().resetBurstInteractors(event.getResource());
+        Collection<DiagramObject> diagramObjects = context.getContent().getDiagramObjects();
+        context.getInteractors().resetBurstInteractors(event.getResource(), diagramObjects);
         forceDraw = true;
     }
 
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         context.getContent().clearDisplayedInteractors();
-        if(context.getContent().isInteractorResourceCached(event.getResource())) {
-            context.getContent().restoreInteractorsSummary(event.getResource());
+        if(context.getInteractors().isInteractorResourceCached(event.getResource())) {
+            MapSet<String, GraphObject> identifiersMap = context.getContent().getIdentifierMap();
+            context.getInteractors().restoreInteractorsSummary(event.getResource(), identifiersMap);
         }
         forceDraw = true;
     }
@@ -948,7 +951,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         updateSummaryItem(hovered);
         String resource = interactorsManager.getCurrentResource();
         GraphPhysicalEntity pe = hovered.getGraphObject();
-        Collection<DiagramInteractor> interactors = context.getContent().getDiagramInteractors(resource, pe.getIdentifier());
+        Collection<DiagramInteractor> interactors = context.getInteractors().getDiagramInteractors(resource, pe.getIdentifier());
         boolean pressed = summaryItem.getPressed() != null && summaryItem.getPressed();
         boolean previouslyLoaded = interactors != null && !interactors.isEmpty();
         if (pressed && !previouslyLoaded) {
@@ -969,13 +972,13 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     private void setInteractorVisibility(String resource, Node node, boolean visible){
-        Collection<InteractorLink> interactions = context.getContent().getDiagramInteractions(resource, node);
+        Collection<InteractorLink> interactions = context.getInteractors().getDiagramInteractions(resource, node);
 
         if (interactions != null) {
             interactorsManager.recalculateLayoutIfNeededAndSetVisibility(node, interactions, visible);
         } else {
             GraphPhysicalEntity pe = node.getGraphObject();
-            Collection<DiagramInteractor> interactors = context.getContent().getDiagramInteractors(resource, pe.getIdentifier());
+            Collection<DiagramInteractor> interactors = context.getInteractors().getDiagramInteractors(resource, pe.getIdentifier());
             interactorsManager.createNewLinksForExistingInteractors(node, new HashSet<>(interactors));
         }
         eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);

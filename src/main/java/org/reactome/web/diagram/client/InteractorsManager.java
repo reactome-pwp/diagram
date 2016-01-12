@@ -79,9 +79,9 @@ public class InteractorsManager implements InteractorsLoader.Handler,
                 Set<InteractorLink> links = new HashSet<>();
 
                 Node node = layoutBuilder.getNode();
-                context.getContent().cache(currentResource, node, interactor);
+                context.getInteractors().cache(currentResource, node, interactor);
                 for (InteractorLink link : interactor.addInteraction(node, rawInteractor.getId(), rawInteractor.getScore())) {
-                    context.getContent().cache(currentResource, node, link);
+                    context.getInteractors().cache(currentResource, node, link);
                     links.add(link);
                 }
 
@@ -111,7 +111,7 @@ public class InteractorsManager implements InteractorsLoader.Handler,
             recalculateLayoutIfNeeded(node, entity, i++, n);
             for (LinkCommon linkCommon : entity.getUniqueLinks()) {
                 for (InteractorLink link : entity.addInteraction(node, linkCommon.getId(), linkCommon.getScore())) {
-                    context.getContent().cache(currentResource, node, link);
+                    context.getInteractors().cache(currentResource, node, link);
                     context.addInteractor(currentResource, link);
                 }
             }
@@ -143,10 +143,10 @@ public class InteractorsManager implements InteractorsLoader.Handler,
     }
 
     private InteractorEntity getOrCreateInteractorEntity(String acc) {
-        InteractorEntity interactor = context.getContent().getDiagramInteractor(currentResource, acc);
+        InteractorEntity interactor = context.getInteractors().getDiagramInteractor(currentResource, acc);
         if (interactor == null) {
             interactor = new InteractorEntity(acc);
-            context.getContent().cache(currentResource, interactor);
+            context.getInteractors().cache(currentResource, interactor);
         }
         return interactor;
     }
@@ -170,7 +170,7 @@ public class InteractorsManager implements InteractorsLoader.Handler,
 
     @Override
     public void onInteractorsCollapsed(InteractorsCollapsedEvent event) {
-        for (InteractorLink link : context.getContent().getDiagramInteractions(currentResource)) {
+        for (InteractorLink link : context.getInteractors().getDiagramInteractions(currentResource)) {
             link.setVisible(false);
         }
         eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);

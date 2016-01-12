@@ -7,8 +7,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.common.PwpButton;
-import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.Console;
@@ -81,7 +81,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         currentResource = event.getResource();
         //context is null when the diagram is in the process of loading (loading message is meant to be displayed)
-        if (context == null || !context.getContent().isInteractorResourceCached(event.getResource())) {
+        if (context == null || !context.getInteractors().isInteractorResourceCached(event.getResource())) {
             setVisible(true);
             displayLoader(true, event.getResource());
         } else {
@@ -110,13 +110,13 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     @Override
     public void onSliderValueChanged(SliderValueChangedEvent event) {
         double threshold = event.getPercentage();
-        DiagramContent.setInteractorsThreshold(currentResource, threshold);
+        InteractorsContent.setInteractorsThreshold(currentResource, threshold);
         //TODO: Consider removing the event
         eventBus.fireEventFromSource(new InteractorsFilteredEvent(threshold), this);
     }
 
     private void update() {
-        int burstEntities = context.getContent().getNumberOfBustEntities(currentResource);
+        int burstEntities = context.getInteractors().getNumberOfBustEntities(currentResource);
         if (burstEntities == 0) {
             setVisible(false);
         } else {
@@ -125,7 +125,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             setVisible(true);
             setMessage(currentResource);
             controlsFP.setVisible(true);
-            this.slider.setValue(DiagramContent.getInteractorsThreshold(currentResource));
+            this.slider.setValue(InteractorsContent.getInteractorsThreshold(currentResource));
         }
     }
 

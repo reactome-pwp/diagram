@@ -32,22 +32,24 @@ public class DiagramContext {
     static final int INTERACTORS_FRAME_OFFSET = 500;
 
     private DiagramContent content;
+    private InteractorsContent interactors;
     private DiagramStatus diagramStatus;
     private QuadTree<DiagramObject> diagramObjects;
-    private LruCache<String, QuadTree<DiagramInteractor>> interactors;
+    private LruCache<String, QuadTree<DiagramInteractor>> interactorsTreeCache;
     private AnalysisStatus analysisStatus;
 
     private Map<GraphObject, ContextDialogPanel> dialogMap = new HashMap<>();
 
     public DiagramContext(DiagramContent content) {
         this.content = content;
+        this.interactors = new InteractorsContent();
 
         this.diagramObjects = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, NUMBER_OF_ELEMENTS, MIN_AREA);
         for (DiagramObject diagramObject : content.getDiagramObjects()) {
             this.diagramObjects.add(diagramObject);
         }
 
-        this.interactors = new LruCache<>(INTERACTORS_RESOURCE_CACHE_SIZE);
+        this.interactorsTreeCache = new LruCache<>(INTERACTORS_RESOURCE_CACHE_SIZE);
 
         //Status needs to be created every time we load a new content
         this.diagramStatus = new DiagramStatus();
@@ -57,17 +59,17 @@ public class DiagramContext {
     //when it is called, the interactors have probably been retrieved "again" from the server
     //IMPORTANT: To avoid loading data that already exists -> CHECK BEFORE RETRIEVING :)
     public void addInteractor(String resource, DiagramInteractor interactor) {
-        QuadTree<DiagramInteractor> tree = interactors.get(resource.toLowerCase());
+        QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource.toLowerCase());
         if(tree==null) {
             int o = INTERACTORS_FRAME_OFFSET;
             tree = new QuadTree<>(content.minX - o, content.minY - o, content.maxX + o, content.maxY + o, NUMBER_OF_ELEMENTS, MIN_AREA);
-            interactors.put(resource.toLowerCase(), tree);
+            interactorsTreeCache.put(resource.toLowerCase(), tree);
         }
         tree.add(interactor);
     }
 
     public void updateInteractor(String resource, DiagramInteractor interactor) {
-        QuadTree<DiagramInteractor> tree = interactors.get(resource.toLowerCase());
+        QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource.toLowerCase());
         if (tree != null){
             tree.remove(interactor);
             tree.add(interactor);
@@ -131,6 +133,10 @@ public class DiagramContext {
         return content;
     }
 
+    public InteractorsContent getInteractors() {
+        return interactors;
+    }
+
     public DiagramStatus getDiagramStatus() {
         return diagramStatus;
     }
@@ -143,7 +149,7 @@ public class DiagramContext {
     public Collection<DiagramInteractor> getVisibleInteractors(String resource, int width, int height) {
         if(resource!=null) {
             Box visibleArea = this.diagramStatus.getVisibleModelArea(width, height);
-            QuadTree<DiagramInteractor> quadTree = this.interactors.get(resource.toLowerCase());
+            QuadTree<DiagramInteractor> quadTree = this.interactorsTreeCache.get(resource.toLowerCase());
             if (quadTree != null) {
                 return quadTree.getItems(visibleArea);
             }

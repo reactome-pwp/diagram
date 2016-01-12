@@ -10,6 +10,7 @@ import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.util.Console;
+import org.reactome.web.diagram.util.MapSet;
 
 import java.util.*;
 
@@ -168,23 +169,17 @@ public abstract class DiagramContentFactory {
         return rtn;
     }
 
-    public static void fillInteractorsContent(DiagramContext context, RawInteractors interactors) {
+    public static void fillInteractorsContent(DiagramContext context, RawInteractors rawInteractors) {
         DiagramContent content = context.getContent();
-        for (RawInteractorEntity interactorEntity : interactors.getEntities()) {
-            content.cacheInteractors(interactors.getResource(), interactorEntity.getAcc(), interactorEntity.getCount());
-//            GraphObject object = content.getDatabaseObject(interactorEntity.getAcc());
-//            if (object instanceof GraphPhysicalEntity) {
-//                GraphPhysicalEntity pe = (GraphPhysicalEntity) object;
-//                for (RawInteractor rawInteractor : interactorEntity.getInteractors()) {
-//                    InteractorEntity interactor = new InteractorEntity(rawInteractor.getAcc());
-//                    pe.addInteractor(interactor);
-//                    content.cache(interactor);
-//                }
-//            }
+        InteractorsContent interactors = context.getInteractors();
+        MapSet<String, GraphObject> identifierMap = content.getIdentifierMap();
+        for (RawInteractorEntity interactorEntity : rawInteractors.getEntities()) {
+            interactors.cacheInteractors(
+                    rawInteractors.getResource(),
+                    interactorEntity.getAcc(),
+                    interactorEntity.getCount(),
+                    identifierMap
+            );
         }
-
-        //It needs to be done at the end of the loop because the QuadTree needs to be created once with all the data
-//        String resource = interactors.getResource();
-//        context.addInteractors(resource, content.getDiagramInteractions());
     }
 }
