@@ -17,6 +17,10 @@ public abstract class DiagramFactory {
     public static boolean WATERMARK = true;
     public static String WATERMARK_BASE_URL = "http://www.reactome.org/PathwayBrowser/";
 
+    //It has a value by default but it can be set to a different one so in every load
+    //the "user preferred" interactors resource will be selected
+    public static String INTERACTORS_INITIAL_RESOURCE = "Resource1"; // -> null here means DO NOT LOAD interactors
+
     //Added for testing
     public static DiagramViewer createDiagramViewer() {
         return new DiagramViewerImpl();

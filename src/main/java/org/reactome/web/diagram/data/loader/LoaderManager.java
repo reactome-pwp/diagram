@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.data.loader;
 
 import com.google.gwt.event.shared.EventBus;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.DiagramContentFactory;
 import org.reactome.web.diagram.data.DiagramContext;
@@ -27,7 +28,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
 
     //It has a value by default but it can be set to a different one so in every load
     //the "user preferred" interactors resource will be selected
-    public static String INTERACTORS_RESOURCE = "Resource1"; // -> null here means DO NOT LOAD interactors
+    public static String INTERACTORS_RESOURCE = DiagramFactory.INTERACTORS_INITIAL_RESOURCE;
 
     private EventBus eventBus;
 
