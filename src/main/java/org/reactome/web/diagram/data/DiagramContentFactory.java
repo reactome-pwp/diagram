@@ -5,6 +5,7 @@ import org.reactome.web.diagram.data.graph.raw.EntityNode;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
 import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractorEntity;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.data.layout.Diagram;
@@ -173,13 +174,13 @@ public abstract class DiagramContentFactory {
         DiagramContent content = context.getContent();
         InteractorsContent interactors = context.getInteractors();
         MapSet<String, GraphObject> identifierMap = content.getIdentifierMap();
+        String resource = rawInteractors.getResource();
         for (RawInteractorEntity interactorEntity : rawInteractors.getEntities()) {
-            interactors.cacheInteractors(
-                    rawInteractors.getResource(),
-                    interactorEntity.getAcc(),
-                    interactorEntity.getCount(),
-                    identifierMap
-            );
+            String acc = interactorEntity.getAcc();
+            interactors.cacheInteractors(resource, acc, interactorEntity.getCount(), identifierMap);
+            for (RawInteractor rawInteractor : interactorEntity.getInteractors()) {
+                interactors.cache(resource, acc, rawInteractor);
+            }
         }
     }
 }

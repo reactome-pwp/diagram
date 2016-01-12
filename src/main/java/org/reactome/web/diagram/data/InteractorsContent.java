@@ -21,7 +21,7 @@ public class InteractorsContent {
 
     static Map<String, Double> interactorsThreshold = new HashMap<>();
 
-    Map<String, MapSet<String, RawInteractor>> rawInteractorsCache;
+    Map<String, MapSet<String, RawInteractor>> rawInteractorsCache; //resource -> node acc -> raw interactors
 
     MapSet<String, InteractorsSummary> interactorsSummaryMap; //resource -> InteractorsSummary
     Map<String, Map<String, InteractorEntity>> interactorsCache; //resource -> acc -> interactors
@@ -29,16 +29,26 @@ public class InteractorsContent {
     Map<String, MapSet<Node, InteractorLink>> interactionsPerNode; //resource -> layout node -> interaction
 
     public InteractorsContent() {
+        this.rawInteractorsCache = new HashMap<>();
         this.interactorsSummaryMap = new MapSet<>();
         this.interactorsCache = new HashMap<>();
         this.interactorsPerAcc = new HashMap<>();
         this.interactionsPerNode = new HashMap<>();
     }
 
+    public void cache(String resource, String acc, RawInteractor rawInteractor) {
+        MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.toLowerCase());
+        if (map == null) {
+            map = new MapSet<>();
+            rawInteractorsCache.put(resource.toLowerCase(), map);
+        }
+        map.add(acc, rawInteractor);
+    }
+
     public void cache(String resource, InteractorEntity interactor) {
         if (interactor.getAccession() != null) {
             Map<String, InteractorEntity> map = this.interactorsCache.get(resource);
-            if(map == null){
+            if (map == null) {
                 map = new HashMap<>();
                 this.interactorsCache.put(resource, map);
             }
@@ -46,8 +56,8 @@ public class InteractorsContent {
         }
     }
 
-    public void cache(String resource, Node node, DiagramInteractor diagramInteractor){
-        if(diagramInteractor instanceof InteractorLink) {
+    public void cache(String resource, Node node, DiagramInteractor diagramInteractor) {
+        if (diagramInteractor instanceof InteractorLink) {
             MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource);
             if (cache == null) {
                 cache = new MapSet<>();
@@ -63,6 +73,12 @@ public class InteractorsContent {
         }
         GraphPhysicalEntity pe = node.getGraphObject();
         aux.add(pe.getIdentifier(), diagramInteractor);
+    }
+
+    public void cacheInteractors(String resource, String acc, Integer number, MapSet<String, GraphObject> identifierMap) {
+        InteractorsSummary summary = new InteractorsSummary(acc, number);
+        this.interactorsSummaryMap.add(resource.toLowerCase(), summary);
+        setInteractorsSummary(summary, identifierMap);
     }
 
     public Collection<InteractorEntity> getDiagramInteractors(String resource) {
@@ -96,52 +112,53 @@ public class InteractorsContent {
         if (cache != null) return cache.get(acc);
         return null;
     }
-
-    public void cacheInteractors(String resource, String acc, Integer number, MapSet<String, GraphObject> identifierMap) {
-        InteractorsSummary summary = new InteractorsSummary(acc, number);
-        this.interactorsSummaryMap.add(resource.toLowerCase(), summary);
-        setInteractorsSummary(summary, identifierMap);
+    public Set<RawInteractor> getRawInteractors(String resource, String acc){
+        MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.toLowerCase());
+        if (map != null) {
+            return map.getElements(acc);
+        }
+        return null;
     }
 
     public boolean isInteractorResourceCached(String resource) {
         return interactorsSummaryMap.keySet().contains(resource.toLowerCase());
     }
 
-    public int getNumberOfBustEntities(String resource){
+    public int getNumberOfBustEntities(String resource) {
         int rtn = 0;
         for (InteractorEntity entity : getDiagramInteractors(resource)) {
-            if(entity.isVisible()) rtn++;
+            if (entity.isVisible()) rtn++;
         }
         return rtn;
     }
 
-    public void resetBurstInteractors(String resource, Collection<DiagramObject> diagramObjects){
+    public void resetBurstInteractors(String resource, Collection<DiagramObject> diagramObjects) {
         Set<InteractorsSummary> summaries = interactorsSummaryMap.getElements(resource.toLowerCase());
-        if(summaries!=null) {
+        if (summaries != null) {
             for (InteractorsSummary summary : summaries) {
                 summary.setPressed(false);
             }
         }
         for (DiagramObject diagramObject : diagramObjects) {
-            if(diagramObject instanceof Node){
+            if (diagramObject instanceof Node) {
                 Node node = (Node) diagramObject;
                 SummaryItem summaryItem = node.getInteractorsSummary();
-                if(summaryItem!=null){
+                if (summaryItem != null) {
                     summaryItem.setPressed(null);
                 }
             }
         }
     }
 
-    public void restoreInteractorsSummary(String resource, MapSet<String, GraphObject> identifierMap){
+    public void restoreInteractorsSummary(String resource, MapSet<String, GraphObject> identifierMap) {
         Set<InteractorsSummary> items = interactorsSummaryMap.getElements(resource.toLowerCase());
-        if(items==null) return;
+        if (items == null) return;
         for (InteractorsSummary summary : items) {
             setInteractorsSummary(summary, identifierMap);
         }
     }
 
-    public static double getInteractorsThreshold(String resource){
+    public static double getInteractorsThreshold(String resource) {
         Double threshold = interactorsThreshold.get(resource);
         if (threshold == null) {
             threshold = 0.5;
@@ -150,11 +167,11 @@ public class InteractorsContent {
         return threshold;
     }
 
-    public static void setInteractorsThreshold(String resource, double threshold){
+    public static void setInteractorsThreshold(String resource, double threshold) {
         interactorsThreshold.put(resource, threshold);
     }
 
-    private void setInteractorsSummary(InteractorsSummary summary, MapSet<String, GraphObject> identifierMap){
+    private void setInteractorsSummary(InteractorsSummary summary, MapSet<String, GraphObject> identifierMap) {
         Set<GraphObject> elements = identifierMap.getElements(summary.getAccession());
         if (elements != null) {
             for (GraphObject graphObject : elements) {

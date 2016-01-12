@@ -9,7 +9,7 @@ import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsFactory;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public abstract class InteractorsLoader implements RequestCallback {
+public class InteractorsLoader implements RequestCallback {
 
     public interface Handler {
         void interactorsLoaded(RawInteractors interactors, long time);
@@ -21,7 +21,7 @@ public abstract class InteractorsLoader implements RequestCallback {
     Handler handler;
     Request request;
 
-    InteractorsLoader(Handler handler) {
+    public InteractorsLoader(Handler handler) {
         this.handler = handler;
     }
 
@@ -36,7 +36,7 @@ public abstract class InteractorsLoader implements RequestCallback {
             this.handler.onInteractorsLoaderError(new InteractorsException("Resource not specified"));
             return;
         }
-        String url = PREFIX + resource + "/" + stId + ".json?v=" + LoaderManager.version;
+        String url = PREFIX + resource + "/" + stId + ".details.json?v=" + LoaderManager.version;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             this.request = requestBuilder.sendRequest(null, this);
