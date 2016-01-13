@@ -71,9 +71,9 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
                 }
 
                 //next block (adding to the QuadTree) also needs to be done after the doLayout
-                context.addInteractor(currentResource, interactor);
+                context.getInteractors().addInteractor(currentResource, interactor);
                 for (InteractorLink link : links) {
-                    context.addInteractor(currentResource, link);
+                    context.getInteractors().addInteractor(currentResource, link);
                 }
             }
         }
@@ -96,7 +96,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             for (LinkCommon linkCommon : entity.getUniqueLinks()) {
                 for (InteractorLink link : entity.addInteraction(node, linkCommon.getId(), linkCommon.getScore())) {
                     context.getInteractors().cache(currentResource, node, link);
-                    context.addInteractor(currentResource, link);
+                    context.getInteractors().addInteractor(currentResource, link);
                 }
             }
         }
@@ -117,11 +117,11 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
 
     private void recalculateLayoutIfNeeded(Node node, InteractorEntity entity, int i, int n) {
         if (InteractorsLayout.doLayout(node, entity, i, n, !entity.isVisible())) {
-            context.updateInteractor(currentResource, entity);
+            context.getInteractors().updateInteractor(currentResource, entity);
             for (InteractorLink link : entity.getLinks()) {
                 //When the entity has been moved, all the links boundaries need to be updated
                 link.setBoundaries(entity.getCentre());
-                context.updateInteractor(currentResource, link);
+                context.getInteractors().updateInteractor(currentResource, link);
             }
         }
     }
