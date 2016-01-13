@@ -1,19 +1,13 @@
 package org.reactome.web.diagram.data.layout;
 
 import java.util.List;
-import java.util.Set;
 
 /**
- * This relates to the root element of JSON (Name inherited from the
- * original XML)
+ * This relates to the root element of JSON (Name inherited from the original XML)
  *
  * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
  */
 public interface Diagram {
-    /**
-     * //TODO Ask what it means
-     */
-    Long getNextId();
 
     /**
      * Indicates whether the pathways is related to a disease (If false it is a normal pathway)
@@ -26,24 +20,9 @@ public interface Diagram {
     Boolean getForNormalDraw();
 
     /**
-     * If false, the names of the compartments will NOT be added in the nodes
-     */
-    Boolean getHideCompartmentInName();
-
-    /**
      * Returns the name of the pathway represented with the diagram (process)
      */
     String getDisplayName();
-
-    /**
-     * A list of diagram identifiers of the disease components (every kind of renderable object)
-     */
-    Set<Long> getDiseaseComponents();
-
-    /**
-     * A list of diagram identifiers which have a LoF (EDGES) //TODO: Check it out
-     */
-    Set<Long> getLofNodes();
 
     /**
      * The list of contained nodes
@@ -84,11 +63,6 @@ public interface Diagram {
      * Related pathway ST_ID
      */
     String getStableId();
-
-    /**
-     * //TODO: Ask what it means
-     */
-    Boolean getIsChanged();
 
     /**
      * Universal Min Max of X and Y for all diagram objects
