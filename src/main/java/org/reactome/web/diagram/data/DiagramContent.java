@@ -194,7 +194,7 @@ public class DiagramContent {
         return maxY - minY;
     }
 
-    public Collection<DiagramObject> getVisibleElements(Box visibleArea) {
+    public Collection<DiagramObject> getVisibleItems(Box visibleArea) {
         return this.diagramObjects.getItems(visibleArea);
     }
 
