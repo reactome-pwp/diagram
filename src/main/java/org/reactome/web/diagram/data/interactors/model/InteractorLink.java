@@ -30,6 +30,8 @@ public abstract class InteractorLink extends DiagramInteractor {
 
     public abstract Coordinate getTo();
 
+    public abstract String getToAccession();
+
     public String getId() {
         return id;
     }

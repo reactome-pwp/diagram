@@ -21,6 +21,11 @@ public class DynamicLink extends InteractorLink {
         return to.getCentre(); //This needs to be calculated every time since InteractorEntity is Draggable
     }
 
+    @Override
+    public String getToAccession() {
+        return to.getAccession();
+    }
+
     public InteractorEntity getInteractorEntity(){
         return to;
     }

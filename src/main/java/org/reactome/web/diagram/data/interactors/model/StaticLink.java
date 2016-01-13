@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.data.interactors.model;
 
+import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.util.interactors.InteractorsLayout;
@@ -22,6 +23,12 @@ public class StaticLink extends InteractorLink {
     @Override
     public Coordinate getTo() {
         return toCentre;
+    }
+
+    @Override
+    public String getToAccession() {
+        GraphPhysicalEntity pe = to.getGraphObject();
+        return pe.getIdentifier();
     }
 
     public Node getNode(){
