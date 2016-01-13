@@ -37,7 +37,7 @@ public class DiagramStatus {
         return viewport.minus(offset).divide(factor);
     }
 
-    protected Box getVisibleModelArea(double width, double height) {
+    public Box getVisibleModelArea(double width, double height) {
         Coordinate topLeft = this.getModelCoordinate(CoordinateFactory.get(0, 0));
         Coordinate bottomRight = this.getModelCoordinate(CoordinateFactory.get(width, height));
         return new Box(topLeft.getX(), topLeft.getY(), bottomRight.getX(), bottomRight.getY());
