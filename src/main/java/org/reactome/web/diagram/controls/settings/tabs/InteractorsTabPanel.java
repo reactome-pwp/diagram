@@ -78,10 +78,10 @@ public class InteractorsTabPanel extends Composite implements ValueChangeHandler
                 RadioButton radioBtn = new RadioButton("Resources", resource.getName());
                 radioBtn.addValueChangeHandler(this);
                 radioBtn.setStyleName(RESOURCES.getCSS().interactorResourceListBtn());
-                if(!resource.isStatus()){
-                    radioBtn.setEnabled(false);
-                    radioBtn.setStyleName(RESOURCES.getCSS().interactorResourceListBtnDisabled());
-                }
+//                if(!resource.isStatus()){
+//                    radioBtn.setEnabled(false);
+//                    radioBtn.setStyleName(RESOURCES.getCSS().interactorResourceListBtnDisabled());
+//                }
                 liveResourcesFP.add(radioBtn);
             }
         }

@@ -1,68 +1,138 @@
 package org.reactome.web.diagram.context.dialogs;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import org.reactome.web.diagram.context.sections.Section;
+import org.reactome.web.diagram.context.dialogs.interactors.InteractorSelectedEvent;
+import org.reactome.web.diagram.context.dialogs.interactors.InteractorSelectedHandler;
+import org.reactome.web.diagram.context.dialogs.interactors.InteractorsTable;
+import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.analysis.AnalysisType;
+import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.loader.LoaderManager;
+import org.reactome.web.diagram.events.*;
+import org.reactome.web.diagram.handlers.*;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class InteractorsDialogPanel extends Composite {
+public class InteractorsDialogPanel extends Composite implements  AnalysisResultLoadedHandler, AnalysisResetHandler,
+        ExpressionColumnChangedHandler, AnalysisProfileChangedHandler, InteractorSelectedHandler, InteractorsResourceChangedHandler {
 
-    public InteractorsDialogPanel(EventBus eventBus, DiagramObject diagramObject) {
-//        initWidget(new InlineLabel("Interactors dialog content"));
-        FlowPanel vp = new FlowPanel();
-        Section s1 = new Section("Interactors", 35);
-        ArrayList header = new ArrayList();
-//        header.add("Name");
-        header.add("1h" );
-        header.add("5h" );
-        header.add("10h");
-        header.add("15h");
-        header.add("25h");
-        header.add("30h");
-        header.add("35h");
-        header.add("48h");
+    private EventBus eventBus;
+    private DiagramContext context;
+    private GraphPhysicalEntity physicalEntity;
 
+    private AnalysisType analysisType;
+    private List<String> expColumns;
+    private Double min;
+    private Double max;
+    private int selectedExpCol = 0;
 
-        ArrayList contents = new ArrayList();
-        for(int i=0;i<10;i++){
-            ArrayList contentLine = new ArrayList();
-            contentLine.add("P123456");
-            contentLine.add("2.54" );
-            contentLine.add("3.01" );
-            contentLine.add("5.21" );
-            contentLine.add("3.0"  );
-            contentLine.add("2.1"  );
-            contentLine.add("3.434"); 
-            contentLine.add("2.12" );
-            contentLine.add("3.54" );
+    private String currentResource;
 
-            contents.add(contentLine);
+    private Set<RawInteractor> interactions;
+    private InteractorsTable<RawInteractor> interactorsTable;
+
+    public InteractorsDialogPanel(EventBus eventBus, DiagramObject diagramObject, DiagramContext context) {
+        this.eventBus = eventBus;
+        this.context = context;
+        this.physicalEntity = diagramObject.getGraphObject();
+        this.currentResource = LoaderManager.INTERACTORS_RESOURCE;
+        setInteractions();
+        initialiseWidget();
+        initHandlers();
+    }
+
+    @Override
+    public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
+
+    }
+
+    @Override
+    public void onAnalysisReset(AnalysisResetEvent event) {
+
+    }
+
+    @Override
+    public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
+
+    }
+
+    @Override
+    public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
+
+    }
+
+    @Override
+    public void onInteractorSelected(InteractorSelectedEvent event) {
+
+    }
+
+    @Override
+    public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
+        currentResource = event.getResource();
+    }
+
+    private void setInteractions() {
+        if (context != null) {
+            interactions = context.getInteractors().getRawInteractors(currentResource, physicalEntity.getIdentifier());
         }
+    }
 
+    private void initHandlers(){
+        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
+        this.eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
+        this.eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
+    }
 
-//        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.54" });
-//        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.54" });
-//        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.54" });
-//        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.54" });
-//        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.54" });
-//        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.53" });
-//        contents.add(new String[] {"P123456", "2.54", "3.01" , "5.21", "3.0", "2.1", "3.434", "2.12", "3.54" });
+    private void initialiseWidget(){
+        FlowPanel vp = new FlowPanel();
+        vp.setStyleName(RESOURCES.getCSS().container());
 
-        s1.setTableHeader(header);
-        s1.setTableContents(contents);
-
-        Section s2 = new Section("More Interactors", 35);
-        s2.setTableHeader(header);
-        s2.setTableContents(contents);
-        vp.add(s1);
-        vp.add(s2);
+        //There is a certain order in which we want the participating molecules to be listed
+        if (!interactions.isEmpty()){
+            interactorsTable = new InteractorsTable("Interactors", new LinkedList(interactions), analysisType, expColumns, min, max, selectedExpCol);
+            interactorsTable.setHeight("150px");
+            interactorsTable.addMoleculeSelectedHandler(this);
+            vp.add(interactorsTable);
+        }
         initWidget(vp);
+    }
 
+    public void forceDraw(){
+        if(interactorsTable!=null) interactorsTable.redraw();
+    }
+
+
+    public static Resources RESOURCES;
+    static {
+        RESOURCES = GWT.create(Resources.class);
+        RESOURCES.getCSS().ensureInjected();
+    }
+
+    public interface Resources extends ClientBundle {
+        @Source(ResourceCSS.CSS)
+        ResourceCSS getCSS();
+
+    }
+
+    @CssResource.ImportedWithPrefix("diagram-MoleculesDialogPanel")
+    public interface ResourceCSS extends CssResource {
+
+        String CSS = "org/reactome/web/diagram/context/DialogPanelsCommon.css";
+
+        String container();
     }
 }
