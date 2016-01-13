@@ -48,7 +48,7 @@ import java.util.*;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserActionsHandlers,
-        LayoutLoadedHandler, GraphLoadedHandler, InteractorsLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
+        LayoutLoadedHandler, InteractorsLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
         InteractorsResourceChangedHandler, InteractorsCollapsedHandler,  InteractorsLayoutUpdatedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramAnimationHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
@@ -142,7 +142,6 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         this.eventBus.addHandler(InteractorsLayoutUpdatedEvent.TYPE, this);
 
         this.eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
-        this.eventBus.addHandler(GraphLoadedEvent.TYPE, this);
         this.eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
         this.eventBus.addHandler(ThumbnailAreaMovedEvent.TYPE, this);
         this.eventBus.addHandler(ControlActionEvent.TYPE, this);
@@ -155,8 +154,9 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     private void doUpdate(boolean force) {
         if (this.forceDraw) {
             this.forceDraw = false;
-            this.draw();
-            this.drawInteractors();
+            Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
+            this.draw(visibleArea);
+            this.drawInteractors(visibleArea);
             return;
         }
         if (force || !mouseCurrent.equals(mousePrevious)) {
@@ -170,28 +170,28 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
         }
     }
 
-    private void draw() {
+    private void draw(Box visibleArea) {
         if (context == null) return;
         long start = System.currentTimeMillis();
         List<DiagramObject> selected = this.selected != null ? this.selected.getDiagramObjects() : new LinkedList<DiagramObject>();
         canvas.clear();
-        Collection<DiagramObject> items = context.getVisibleElements(viewportWidth, viewportHeight);
+        Collection<DiagramObject> items = context.getContent().getVisibleItems(visibleArea);
         canvas.render(items, context);
         canvas.select(selected, context);
         canvas.highlight(hovered, context);
         canvas.decorators(hovered, context);
         canvas.halo(halo, context);
         canvas.flag(flagged, context);
-        Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
+
         long time = System.currentTimeMillis() - start;
         this.eventBus.fireEventFromSource(new DiagramRenderedEvent(context.getContent(), visibleArea, items.size(), time), this);
     }
 
-    private void drawInteractors() {
+    private void drawInteractors(Box visibleArea) {
         if (context == null) return;
         long start = System.currentTimeMillis();
         String resource = interactorsManager.getCurrentResource();
-        Collection<DiagramInteractor> items = context.getVisibleInteractors(resource, viewportWidth, viewportHeight);
+        Collection<DiagramInteractor> items = context.getInteractors().getVisibleInteractors(resource, visibleArea);
         canvas.renderInteractors(items, context);
         long time = System.currentTimeMillis() - start;
 //        this.eventBus.fireEventFromSource(new DiagramRenderedEvent(context.getContent(), visibleArea, items.size(), time), this);
@@ -679,11 +679,6 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
     }
 
     @Override
-    public void onGraphLoaded(GraphLoadedEvent event) {
-        this.eventBus.fireEventFromSource(new DiagramLoadedEvent(context), this);
-    }
-
-    @Override
     public void onInteractorsCollapsed(InteractorsCollapsedEvent event) {
         Collection<DiagramObject> diagramObjects = context.getContent().getDiagramObjects();
         context.getInteractors().resetBurstInteractors(event.getResource(), diagramObjects);
@@ -702,7 +697,8 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     @Override
     public void onInteractorsLayoutUpdated(InteractorsLayoutUpdatedEvent event) {
-        drawInteractors();
+        Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
+        drawInteractors(visibleArea);
     }
 
     @Override
@@ -863,7 +859,7 @@ class DiagramViewerImpl extends ResizeComposite implements DiagramViewer, UserAc
 
     private HoveredItem getHovered(Coordinate mouse) {
         Coordinate model = context.getDiagramStatus().getModelCoordinate(mouse);
-        Collection<DiagramObject> target = this.context.getHoveredTarget(model);
+        Collection<DiagramObject> target = this.context.getContent().getHoveredTarget(model, context.getDiagramStatus().getFactor());
         Collection<HoveredItem> hoveredItems = this.canvas.getHovered(target, model);
         for (HoveredItem hovered : hoveredItems) {
             DiagramObject item = context.getContent().getDiagramObject(hovered.getDiagramId());
