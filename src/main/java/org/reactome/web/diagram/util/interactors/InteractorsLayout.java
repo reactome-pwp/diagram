@@ -29,7 +29,7 @@ public class InteractorsLayout {
     public InteractorsLayout(Node node) {
         this.node = node;
         GraphPhysicalEntity pe = node.getGraphObject();
-        this.acc = pe.getIdentifier(); //And that my soon is how we get the accession ;)
+        this.acc = pe.getIdentifier();
     }
 
     public String getAcc() {
