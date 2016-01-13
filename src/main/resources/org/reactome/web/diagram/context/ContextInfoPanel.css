@@ -26,6 +26,10 @@
     background: none rgb(30, 148, 208);
 }
 
+.buttonsPanel button:disabled {
+    background: none rgb(88, 195, 229);
+}
+
 .buttonsPanel div {
     text-align: center !important;
 }
