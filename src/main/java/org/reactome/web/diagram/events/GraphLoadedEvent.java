@@ -8,7 +8,7 @@ import org.reactome.web.diagram.handlers.GraphLoadedHandler;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class GraphLoadedEvent extends GwtEvent<GraphLoadedHandler> {
-    public static Type<GraphLoadedHandler> TYPE = new Type<GraphLoadedHandler>();
+    public static Type<GraphLoadedHandler> TYPE = new Type<>();
 
     private DiagramContent content;
     private long time;
