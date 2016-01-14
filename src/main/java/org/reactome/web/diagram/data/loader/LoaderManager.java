@@ -90,6 +90,8 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
         DiagramContentFactory.fillGraphContent(content, graph);
         time += System.currentTimeMillis() - start;
         eventBus.fireEventFromSource(new GraphLoadedEvent(content, time), this);
+        //Once the graph is loaded the DiagramLoadedEvent can be fired
+        eventBus.fireEventFromSource(new DiagramLoadedEvent(context), this);
     }
 
     @Override

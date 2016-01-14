@@ -13,7 +13,8 @@ import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
@@ -25,12 +26,10 @@ public abstract class DiagramContentFactory {
         DiagramContent content = new DiagramContent();
 
         //Read and set general pathway information
-        content.nextId = diagram.getNextId();
         content.stableId = diagram.getStableId();
         content.displayName = diagram.getDisplayName();
         content.dbId = diagram.getDbId();
         content.forNormalDraw = diagram.getForNormalDraw();
-        content.hideCompartmentInName = diagram.getHideCompartmentInName();
         content.isDisease = diagram.getIsDisease();
 
         content.cache(diagram.getNodes());
@@ -40,30 +39,12 @@ public abstract class DiagramContentFactory {
         content.cache(diagram.getCompartments());
         content.cache(diagram.getShadows());
 
-        //Get normal, diseased components etc.
-//        content.normalComponents = getDiagramObjectSet(content.diagramObjectMap, diagram.getNormalComponents());
-        content.diseaseComponents = getDiagramObjectSet(content.diagramObjectMap, diagram.getDiseaseComponents());
-        content.lofNodes = getDiagramObjectSet(content.diagramObjectMap, diagram.getLofNodes());
-
         content.minX = diagram.getMinX().doubleValue();
         content.maxX = diagram.getMaxX().doubleValue();
         content.minY = diagram.getMinY().doubleValue();
         content.maxY = diagram.getMaxY().doubleValue();
 
-        return content;
-    }
-
-    private static Set<DiagramObject> getDiagramObjectSet(Map<Long, DiagramObject> map, Set<Long> list) {
-        Set<DiagramObject> rtn = new HashSet<>();
-        if (list != null) {
-            for (Long id : list) {
-                DiagramObject diagramObject = map.get(id);
-                if (diagramObject != null) {
-                    rtn.add(diagramObject);
-                }
-            }
-        }
-        return rtn;
+        return content.init();
     }
 
     public static void fillGraphContent(DiagramContent content, Graph graph) {

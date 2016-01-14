@@ -11,6 +11,9 @@ import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.util.MapSet;
+import org.reactome.web.pwp.model.util.LruCache;
+import uk.ac.ebi.pwp.structures.quadtree.client.Box;
+import uk.ac.ebi.pwp.structures.quadtree.client.QuadTree;
 
 import java.util.*;
 
@@ -18,6 +21,13 @@ import java.util.*;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class InteractorsContent {
+
+    static final int INTERACTORS_RESOURCE_CACHE_SIZE = 5;
+    static final int INTERACTORS_FRAME_OFFSET = 500;
+
+    //The number of elements for every QuadTree quadrant node
+    static final int NUMBER_OF_ELEMENTS = 15;
+    static final int MIN_AREA = 25;
 
     static Map<String, Double> interactorsThreshold = new HashMap<>();
 
@@ -28,12 +38,21 @@ public class InteractorsContent {
     Map<String, MapSet<String, DiagramInteractor>> interactorsPerAcc; //resource -> node acc -> interactors
     Map<String, MapSet<Node, InteractorLink>> interactionsPerNode; //resource -> layout node -> interaction
 
-    public InteractorsContent() {
+    private LruCache<String, QuadTree<DiagramInteractor>> interactorsTreeCache;
+    private double minX, minY, maxX, maxY;
+
+    public InteractorsContent(double minX, double minY, double maxX, double maxY) {
         this.rawInteractorsCache = new HashMap<>();
         this.interactorsSummaryMap = new MapSet<>();
         this.interactorsCache = new HashMap<>();
         this.interactorsPerAcc = new HashMap<>();
         this.interactionsPerNode = new HashMap<>();
+
+        this.interactorsTreeCache = new LruCache<>(INTERACTORS_RESOURCE_CACHE_SIZE);
+        this.minX = minX - INTERACTORS_FRAME_OFFSET;
+        this.maxX = maxX + INTERACTORS_FRAME_OFFSET;
+        this.minY = minY - INTERACTORS_FRAME_OFFSET;
+        this.maxY = maxY + INTERACTORS_FRAME_OFFSET;
     }
 
     public void cache(String resource, String acc, RawInteractor rawInteractor) {
@@ -79,6 +98,37 @@ public class InteractorsContent {
         InteractorsSummary summary = new InteractorsSummary(acc, number);
         this.interactorsSummaryMap.add(resource.toLowerCase(), summary);
         setInteractorsSummary(summary, identifierMap);
+    }
+
+
+    //This method is not checking whether the interactors where previously put in place since
+    //when it is called, the interactors have probably been retrieved "again" from the server
+    //IMPORTANT: To avoid loading data that already exists -> CHECK BEFORE RETRIEVING :)
+    public void addInteractor(String resource, DiagramInteractor interactor) {
+        QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource.toLowerCase());
+        if(tree==null) {
+            tree = new QuadTree<>(minX, minY, maxX, maxY, NUMBER_OF_ELEMENTS, MIN_AREA);
+            interactorsTreeCache.put(resource.toLowerCase(), tree);
+        }
+        tree.add(interactor);
+    }
+
+    public void updateInteractor(String resource, DiagramInteractor interactor) {
+        QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource.toLowerCase());
+        if (tree != null){
+            tree.remove(interactor);
+            tree.add(interactor);
+        }
+    }
+
+    public Collection<DiagramInteractor> getVisibleInteractors(String resource, Box visibleArea) {
+        if(resource!=null) {
+            QuadTree<DiagramInteractor> quadTree = this.interactorsTreeCache.get(resource.toLowerCase());
+            if (quadTree != null) {
+                return quadTree.getItems(visibleArea);
+            }
+        }
+        return new HashSet<>();
     }
 
     public Collection<InteractorEntity> getDiagramInteractors(String resource) {

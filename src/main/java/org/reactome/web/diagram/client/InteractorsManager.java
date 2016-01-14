@@ -71,51 +71,14 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
                 }
 
                 //next block (adding to the QuadTree) also needs to be done after the doLayout
-                context.addInteractor(currentResource, interactor);
+                context.getInteractors().addInteractor(currentResource, interactor);
                 for (InteractorLink link : links) {
-                    context.addInteractor(currentResource, link);
+                    context.getInteractors().addInteractor(currentResource, link);
                 }
             }
         }
         eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
     }
-
-//    @Override
-//    public void interactorsLoaded(RawInteractors rawInteractors) {
-//        if (context == null || layoutBuilder == null) return;
-//        for (RawInteractorEntity rawInteractorEntity : rawInteractors.getEntities()) {
-//            String fromAcc = rawInteractorEntity.getAcc();
-//            if (!layoutBuilder.getAcc().equals(fromAcc)) continue;
-//
-//            int n = rawInteractorEntity.getInteractors().size();
-//            int i = 0;
-//            for (RawInteractor rawInteractor : rawInteractorEntity.getInteractors()) {
-//
-//                //TODO: Cover the case when an entity in the diagram interacts with another one in the diagram (Static link)
-//
-//                InteractorEntity interactor = getOrCreateInteractorEntity(rawInteractor.getAcc());
-//
-//                layoutBuilder.doLayout(interactor, i++, n);
-//
-//                Set<InteractorLink> links = new HashSet<>();
-//
-//                Node node = layoutBuilder.getNode();
-//                context.getInteractors().cache(currentResource, node, interactor);
-//                for (InteractorLink link : interactor.addInteraction(node, rawInteractor.getId(), rawInteractor.getScore())) {
-//                    context.getInteractors().cache(currentResource, node, link);
-//                    links.add(link);
-//                }
-//
-//                //next block (adding to the QuadTree) also needs to be done after the doLayout
-//                context.addInteractor(currentResource, interactor);
-//                for (InteractorLink link : links) {
-//                    context.addInteractor(currentResource, link);
-//                }
-//            }
-//        }
-//        layoutBuilder = null;
-//        eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
-//    }
 
     public void createNewLinksForExistingInteractors(Node node, Collection<DiagramInteractor> interactors) {
         //TODO: Cover the case when an entity in the diagram interacts with another one in the diagram (Static link)
@@ -133,7 +96,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             for (LinkCommon linkCommon : entity.getUniqueLinks()) {
                 for (InteractorLink link : entity.addInteraction(node, linkCommon.getId(), linkCommon.getScore())) {
                     context.getInteractors().cache(currentResource, node, link);
-                    context.addInteractor(currentResource, link);
+                    context.getInteractors().addInteractor(currentResource, link);
                 }
             }
         }
@@ -154,11 +117,11 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
 
     private void recalculateLayoutIfNeeded(Node node, InteractorEntity entity, int i, int n) {
         if (InteractorsLayout.doLayout(node, entity, i, n, !entity.isVisible())) {
-            context.updateInteractor(currentResource, entity);
+            context.getInteractors().updateInteractor(currentResource, entity);
             for (InteractorLink link : entity.getLinks()) {
                 //When the entity has been moved, all the links boundaries need to be updated
                 link.setBoundaries(entity.getCentre());
-                context.updateInteractor(currentResource, link);
+                context.getInteractors().updateInteractor(currentResource, link);
             }
         }
     }
