@@ -10,6 +10,7 @@ import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsException;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.events.*;
+import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
 import org.reactome.web.diagram.handlers.InteractorsRequestCanceledHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 
@@ -22,7 +23,8 @@ import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler, InteractorsLoader.Handler,
-        InteractorsResourceChangedHandler, InteractorsRequestCanceledHandler {
+        InteractorsResourceChangedHandler, InteractorsRequestCanceledHandler,
+        DiagramLoadedHandler {
 
     //Every time the diagram widget is loaded will retrieve new data from the sever
     public static String version = "" + System.currentTimeMillis(); //UNIQUE per session
@@ -48,6 +50,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
         //For the time being we only want to do something on demand for interactors
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
         eventBus.addHandler(InteractorsRequestCanceledEvent.TYPE, this);
+        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
     }
 
     public void cancel() {
@@ -82,11 +85,6 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     @Override
     public void graphLoaded(Graph graph, long time) {
         long start = System.currentTimeMillis();
-        if (INTERACTORS_RESOURCE != null) {   //Checking here so no error message is displayed in this case
-            //This fakes a resource changed so the control will show the loading message
-            //The behaviour of the three steps loading continues as expected
-            eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(INTERACTORS_RESOURCE), this);
-        }
         DiagramContentFactory.fillGraphContent(content, graph);
         time += System.currentTimeMillis() - start;
         eventBus.fireEventFromSource(new GraphLoadedEvent(content, time), this);
@@ -115,8 +113,8 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     //The interactors loader is meant to be used not only when loading a new diagram but also on demand
     @Override
     public void onInteractorsResourceChanged(final InteractorsResourceChangedEvent event) {
-        if (!context.getInteractors().isInteractorResourceCached(event.getResource())) {
-            INTERACTORS_RESOURCE = event.getResource();
+        INTERACTORS_RESOURCE = event.getResource();
+        if (INTERACTORS_RESOURCE != null && !context.getInteractors().isInteractorResourceCached(INTERACTORS_RESOURCE)) {
             interactorsLoader.load(content.getStableId(), INTERACTORS_RESOURCE);
         }
     }
@@ -124,5 +122,16 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     @Override
     public void onInteractorsRequestCanceled(InteractorsRequestCanceledEvent event) {
         interactorsLoader.cancel();
+    }
+
+    @Override
+    public void onDiagramLoaded(DiagramLoadedEvent event) {
+        context = event.getContext();
+        content = context.getContent();
+        if (INTERACTORS_RESOURCE != null) {   //Checking here so no error message is displayed in this case
+//            //This fakes a resource changed so the control will show the loading message
+//            //The behaviour of the three steps loading continues as expected
+            eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(INTERACTORS_RESOURCE), this);
+        }
     }
 }

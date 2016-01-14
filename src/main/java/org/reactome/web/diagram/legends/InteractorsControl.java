@@ -69,7 +69,6 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
     @Override
     public void onDiagramRequested(DiagramRequestedEvent event) {
-        currentResource = null;
         context = null;
     }
 
