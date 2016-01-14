@@ -7,6 +7,7 @@ import org.reactome.web.diagram.data.DiagramContentFactory;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
+import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsException;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.InteractorsRequestCanceledHandler;
@@ -105,8 +106,8 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     }
 
     @Override
-    public void onInteractorsLoaderError(Throwable exception) {
-        eventBus.fireEventFromSource(new InteractorsErrorEvent(INTERACTORS_RESOURCE + ": " + exception.getMessage()), this);
+    public void onInteractorsLoaderError(InteractorsException exception) {
+        eventBus.fireEventFromSource(new InteractorsErrorEvent(exception.getResource(), exception.getMessage()), this);
     }
 
     //The interactors loader is meant to be used not only when loading a new diagram but also on demand

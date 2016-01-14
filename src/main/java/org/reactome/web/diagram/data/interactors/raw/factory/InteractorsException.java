@@ -5,11 +5,16 @@ package org.reactome.web.diagram.data.interactors.raw.factory;
  */
 public class InteractorsException extends Exception {
 
-    public InteractorsException() {
-    }
+    private String resource;
 
-    public InteractorsException(String message) {
+    public InteractorsException() {}
+
+    public InteractorsException(String resource, String message) {
         super(message);
+        this.resource = resource;
     }
 
+    public String getResource() {
+        return resource;
+    }
 }

@@ -10,8 +10,10 @@ public class InteractorsErrorEvent extends GwtEvent<InteractorsErrorHandler> {
     public static final Type<InteractorsErrorHandler> TYPE = new Type<>();
 
     private String message;
+    private String resource;
 
-    public InteractorsErrorEvent(String message) {
+    public InteractorsErrorEvent(String resource, String message) {
+        this.resource = resource;
         this.message = message;
     }
 
@@ -29,10 +31,15 @@ public class InteractorsErrorEvent extends GwtEvent<InteractorsErrorHandler> {
         return message;
     }
 
+    public String getResource() {
+        return resource;
+    }
+
     @Override
     public String toString() {
         return "InteractorsErrorEvent{" +
-                "message='" + message + '\'' +
+                "resource='" + resource + '\'' +
+                ", message='" + message + '\'' +
                 '}';
     }
 }

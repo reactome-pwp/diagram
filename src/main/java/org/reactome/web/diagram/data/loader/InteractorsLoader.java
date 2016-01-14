@@ -13,13 +13,15 @@ public class InteractorsLoader implements RequestCallback {
 
     public interface Handler {
         void interactorsLoaded(RawInteractors interactors, long time);
-        void onInteractorsLoaderError(Throwable exception);
+        void onInteractorsLoaderError(InteractorsException exception);
     }
 
     final static String PREFIX = DiagramFactory.SERVER + "/ContentService/interactors/";
 
     Handler handler;
     Request request;
+
+    String resource;
 
     public InteractorsLoader(Handler handler) {
         this.handler = handler;
@@ -33,15 +35,16 @@ public class InteractorsLoader implements RequestCallback {
 
     public void load(String stId, String resource){
         if(resource==null){
-            this.handler.onInteractorsLoaderError(new InteractorsException("Resource not specified"));
+            this.handler.onInteractorsLoaderError(new InteractorsException(resource, "Resource not specified"));
             return;
         }
+        this.resource = resource;
         String url = PREFIX + resource + "/" + stId + ".details.json?v=" + LoaderManager.version;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             this.request = requestBuilder.sendRequest(null, this);
         } catch (RequestException e) {
-            this.handler.onInteractorsLoaderError(e);
+            this.handler.onInteractorsLoaderError(new InteractorsException(resource, e.getMessage()));
         }
     }
 
@@ -59,13 +62,13 @@ public class InteractorsLoader implements RequestCallback {
                 }
                 break;
             default:
-                this.handler.onInteractorsLoaderError(new Exception(response.getStatusText()));
+                this.handler.onInteractorsLoaderError(new InteractorsException(resource, response.getStatusText()));
         }
 
     }
 
     @Override
     public void onError(Request request, Throwable exception) {
-        this.handler.onInteractorsLoaderError(exception);
+        this.handler.onInteractorsLoaderError(new InteractorsException(resource, exception.getMessage()));
     }
 }
