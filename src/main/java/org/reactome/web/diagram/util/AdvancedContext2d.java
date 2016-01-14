@@ -2,7 +2,6 @@ package org.reactome.web.diagram.util;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import org.reactome.web.diagram.renderers.layout.abs.DashedLineAbstractRenderer;
-import uk.ac.ebi.pwp.structures.quadtree.client.QuadTreeBox;
 
 /**
  * This class extends the drawing functionality of the GWT Context2d.
@@ -290,10 +289,6 @@ public class AdvancedContext2d extends Context2d {
         bezierCurveTo(x, y, x1, y, x1, y1);
         bezierCurveTo(x + width, y + height, x, y + height, x, y1);
         closePath();
-    }
-
-    public final void bubble(QuadTreeBox box){
-        bubble(box.getMinX(), box.getMinY(), box.getMaxX(), box.getMaxY());
     }
 
     public final void bubble(double minX, double minY, double maxX, double maxY) {

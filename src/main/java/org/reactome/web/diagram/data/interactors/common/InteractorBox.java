@@ -7,13 +7,10 @@ import uk.ac.ebi.pwp.structures.quadtree.client.QuadTreeBox;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class InteractorBox implements QuadTreeBox {
-    protected double minX, minY, maxX, maxY;
+    protected double minX, minY, maxX, maxY, width, height;
 
     public InteractorBox(QuadTreeBox box) {
-        this.minX = box.getMinX();
-        this.minY = box.getMinY();
-        this.maxX = box.getMaxX();
-        this.maxY = box.getMaxY();
+        this(box.getMinX(), box.getMinY(), box.getMaxX(), box.getMaxY());;
     }
 
     public InteractorBox(double minX, double minY, double maxX, double maxY) {
@@ -21,6 +18,8 @@ public class InteractorBox implements QuadTreeBox {
         this.minY = minY;
         this.maxX = maxX;
         this.maxY = maxY;
+        this.width = Math.abs(maxX - minX);
+        this.height = Math.abs(maxY - minY);
     }
 
     public InteractorBox transform(double factor, Coordinate delta) {
@@ -50,5 +49,13 @@ public class InteractorBox implements QuadTreeBox {
     @Override
     public double getMaxY() {
         return maxY;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
     }
 }

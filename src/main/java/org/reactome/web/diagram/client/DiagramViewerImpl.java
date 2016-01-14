@@ -13,6 +13,7 @@ import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
@@ -50,7 +51,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     private static final int DIAGRAM_CONTEXT_CACHE_SIZE = 5;
     private final DiagramCanvas canvas; //Canvas only created once and reused every time a new diagram is loaded
     private final DiagramManager diagramManager;
-    private final UserActionsManager userActionsManager;
 
     private LruCache<String, DiagramContext> contextMap;
     private DiagramContext context;
@@ -65,6 +65,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     // Do not assign the same value at the beginning
     Coordinate mouseCurrent = CoordinateFactory.get(-100, -100);
     Coordinate mousePrevious = CoordinateFactory.get(-200, -200);
+
     private boolean forceDraw = false;
 
     public DiagramViewerImpl() {
@@ -77,7 +78,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         this.interactorsManager = new InteractorsManager(eventBus);
 
         this.diagramManager = new DiagramManager(new DisplayManager(this));
-        this.userActionsManager = new UserActionsManager(this, canvas);
         this.initWidget(this.canvas);
         this.getElement().addClassName("pwp-DiagramViewer"); //IMPORTANT!
     }
@@ -95,56 +95,56 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     private void initHandlers() {
-        this.canvas.addUserActionsHandlers(userActionsManager);
+        canvas.addUserActionsHandlers(new UserActionsManager(this, canvas));
 
-        this.eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
-        this.eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
+        eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
+        eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
+        eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
+        eventBus.addHandler(AnalysisResetEvent.TYPE, this);
+        eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
 
-        this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
-        this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
+        eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
+        eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
 
-        this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramLoadRequestEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
-        this.eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
+        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        eventBus.addHandler(DiagramLoadRequestEvent.TYPE, this);
+        eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
+        eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
+        eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
+        eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
 
-        this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
-        this.eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
+        eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
+        eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
 
-        this.eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
-        this.eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
-        this.eventBus.addHandler(InteractorsLayoutUpdatedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsLayoutUpdatedEvent.TYPE, this);
 
-        this.eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
-        this.eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
-        this.eventBus.addHandler(ThumbnailAreaMovedEvent.TYPE, this);
-        this.eventBus.addHandler(ControlActionEvent.TYPE, this);
+        eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
+        eventBus.addHandler(ThumbnailAreaMovedEvent.TYPE, this);
+        eventBus.addHandler(ControlActionEvent.TYPE, this);
     }
-
+    
     private void doUpdate() {
-        this.doUpdate(false);
-    }
-
-    private void doUpdate(boolean force) {
-        if (context!=null && this.forceDraw) {
-            this.forceDraw = false;
+        if (context == null) return;
+        if (forceDraw) {
+            forceDraw = false;
             Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
-            this.draw(visibleArea);
-            this.drawInteractors(visibleArea);
-            return;
-        }
-        if (force || !mouseCurrent.equals(mousePrevious)) {
-            if (this.context != null) {
-                HoveredItem hovered = this.getHovered();
+            draw(visibleArea);
+            drawInteractors(visibleArea);
+        }else if (!mouseCurrent.equals(mousePrevious)) {
+            mousePrevious = mouseCurrent;
+            DiagramInteractor hoveredInteractor = getHoveredInteractor();
+            highlightInteractor(hoveredInteractor); //if hovered interactor is null, calling highlightInteractor will clear the previous highlight
+            canvas.setCursor(hoveredInteractor == null ? Style.Cursor.DEFAULT : Style.Cursor.POINTER);
+            if (hoveredInteractor != null) {
+                resetHighlight(); // This resets the layout highlight -> please note that the method is defined in the DiagramViewer interface
+            } else { // It is needed otherwise the getHoveredDiagramObject will find a possible diagram layout object behind the interactor
+                HoveredItem hovered = getHoveredDiagramObject();
                 DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
-                this.canvas.setCursor(item == null ? Style.Cursor.DEFAULT : Style.Cursor.POINTER);
-                this.highlight(hovered);
-                this.mousePrevious = this.mouseCurrent;
+                canvas.setCursor(item == null ? Style.Cursor.DEFAULT : Style.Cursor.POINTER);
+                highlightHoveredItem(hovered);
             }
         }
     }
@@ -166,11 +166,12 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     private void drawInteractors(Box visibleArea) {
         if (context == null) return;
-        long start = System.currentTimeMillis();
+//        long start = System.currentTimeMillis();
         String resource = interactorsManager.getCurrentResource();
         Collection<DiagramInteractor> items = context.getInteractors().getVisibleInteractors(resource, visibleArea);
         canvas.renderInteractors(items, context);
-        long time = System.currentTimeMillis() - start;
+        canvas.highlightInteractor(interactorsManager.getHovered(), context);
+//        long time = System.currentTimeMillis() - start;
 //        this.eventBus.fireEventFromSource(new DiagramRenderedEvent(context.getContent(), visibleArea, items.size(), time), this);
     }
 
@@ -200,7 +201,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     public void highlightItem(String stableIdentifier) {
         try {
             GraphObject item = this.context.getContent().getDatabaseObject(stableIdentifier);
-            highlight(item);
+            highlightGraphObject(item);
         } catch (Exception e) {/*Nothing here*/}
     }
 
@@ -208,11 +209,11 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     public void highlightItem(Long dbIdentifier) {
         try {
             GraphObject item = this.context.getContent().getDatabaseObject(dbIdentifier);
-            highlight(item);
+            highlightGraphObject(item);
         } catch (Exception e) {/*Nothing here*/}
     }
 
-    private void highlight(HoveredItem hovered) {
+    private void highlightHoveredItem(HoveredItem hovered) {
         if (layoutManager.isHighlighted(hovered)) return;
         canvas.highlight(hovered, context);
         canvas.decorators(hovered, context);
@@ -223,7 +224,13 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         }
     }
 
-    private void highlight(GraphObject graphObject) {
+    private void highlightInteractor(DiagramInteractor hovered) {
+        if (interactorsManager.isHighlighted(hovered)) return;
+        interactorsManager.setHovered(hovered);
+        canvas.highlightInteractor(hovered, context);
+    }
+
+    private void highlightGraphObject(GraphObject graphObject) {
         HoveredItem hovered = new HoveredItem(graphObject);
         if (layoutManager.isHighlighted(hovered)) return;
         canvas.highlight(hovered, context);
@@ -603,10 +610,9 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     @Override
-    public HoveredItem getHovered() {
+    public HoveredItem getHoveredDiagramObject() {
         Coordinate model = context.getDiagramStatus().getModelCoordinate(mouseCurrent);
-        Collection<DiagramObject> target = this.context.getContent().getHoveredTarget(model, context.getDiagramStatus().getFactor());
-        Collection<HoveredItem> hoveredItems = this.canvas.getHovered(target, model);
+        Collection<HoveredItem> hoveredItems = layoutManager.getHovered(model);
         for (HoveredItem hovered : hoveredItems) {
             DiagramObject item = context.getContent().getDiagramObject(hovered.getDiagramId());
             hovered.setDiagramObject(item); //VERY IMPORTANT! Here we have access to the content and can transform diagramId to diagramObject
@@ -621,6 +627,23 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         }
         this.notifyHoveredExpression(null, model);
         return null;
+    }
+
+    @Override
+    public DiagramInteractor getHoveredInteractor(){
+        Coordinate model = context.getDiagramStatus().getModelCoordinate(mouseCurrent);
+        Collection<DiagramInteractor> hoveredItems = interactorsManager.getHovered(model);
+        DiagramInteractor rtn = null;
+        for (DiagramInteractor item : hoveredItems) {
+            if(item.isVisible()) {
+                if (item instanceof InteractorEntity) { //Preference to nodes
+                    return item;
+                } else if (rtn == null) {
+                    rtn = item; //In case there aren't nodes hovered, the "first" hovered link is returned
+                }
+            }
+        }
+        return rtn;
     }
 
     //Before notifying is good practise to check whether there is expression overlay or not
@@ -666,7 +689,9 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     @Override
     public void setSelection(boolean zoom, boolean fireExternally) {
-        setSelection(this.getHovered(), zoom, fireExternally);
+        DiagramInteractor interactor = getHoveredInteractor();
+        if (interactor != null) return;
+        setSelection(this.getHoveredDiagramObject(), zoom, fireExternally);
     }
 
     public void setSelection(HoveredItem hoveredItem, boolean zoom, boolean fireExternally) {
@@ -732,11 +757,11 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     private void fitDiagram(boolean animation) {
-        this.diagramManager.fitDiagram(this.context.getContent(), animation);
+        diagramManager.fitDiagram(context.getContent(), animation);
     }
 
     private void overview() {
-        fireEvent(new FireworksOpenedEvent(this.context.getContent().getDbId()));
+        fireEvent(new FireworksOpenedEvent(context.getContent().getDbId()));
     }
 
     private void padding(int dX, int dY) {
@@ -745,32 +770,32 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     @Override
     public void padding(Coordinate delta) {
-        this.context.getDiagramStatus().padding(delta);
-        this.forceDraw = true;
-        Box visibleArea = this.context.getVisibleModelArea(viewportWidth, viewportHeight);
-        this.eventBus.fireEventFromSource(new DiagramPanningEvent(visibleArea), this);
+        context.getDiagramStatus().padding(delta);
+        forceDraw = true;
+        Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
+        eventBus.fireEventFromSource(new DiagramPanningEvent(visibleArea), this);
     }
 
     private void zoomDelta(double deltaFactor) {
-        zoom(this.context.getDiagramStatus().getFactor() + deltaFactor);
+        zoom(context.getDiagramStatus().getFactor() + deltaFactor);
     }
 
     private void zoom(double factor) {
-        Coordinate viewportCentre = CoordinateFactory.get(this.viewportWidth / 2, this.viewportHeight / 2);
+        Coordinate viewportCentre = CoordinateFactory.get(viewportWidth / 2, viewportHeight / 2);
         factor = ViewportUtils.checkFactor(factor);
         zoom(factor, viewportCentre);
     }
 
     @Override
     public void mouseZoom(double delta){
-        if (this.context == null) return;
-        double factor = this.context.getDiagramStatus().getFactor();
+        if (context == null) return;
+        double factor = context.getDiagramStatus().getFactor();
         factor = ViewportUtils.checkFactor(factor  - delta);
-        zoom(factor, this.mouseCurrent);
+        zoom(factor, mouseCurrent);
     }
 
     public void zoom(double factor, Coordinate mouse) {
-        DiagramStatus status = this.context.getDiagramStatus();
+        DiagramStatus status = context.getDiagramStatus();
         if (factor == status.getFactor()) return;
 
         //current and new model positions are used to calculate the delta in order to perform
@@ -783,8 +808,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         Coordinate delta = new_model.minus(current_model).multiply(factor);
         status.padding(delta);
 
-        Box visibleArea = this.context.getVisibleModelArea(viewportWidth, viewportHeight);
-        this.eventBus.fireEventFromSource(new DiagramZoomEvent(factor, visibleArea), this);
-        this.forceDraw = true;  //IMPORTANT: Please leave it at the very end after the event firing
+        Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
+        eventBus.fireEventFromSource(new DiagramZoomEvent(factor, visibleArea), this);
+        forceDraw = true;  //IMPORTANT: Please leave it at the very end after the event firing
     }
 }

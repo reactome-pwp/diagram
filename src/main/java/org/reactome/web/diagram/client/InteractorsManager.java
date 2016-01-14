@@ -9,12 +9,15 @@ import org.reactome.web.diagram.data.interactors.model.DynamicLink;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
+import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
 import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
 import org.reactome.web.diagram.handlers.InteractorsCollapsedHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
+import org.reactome.web.diagram.renderers.interactor.InteractorRenderer;
+import org.reactome.web.diagram.renderers.interactor.InteractorRendererManager;
 import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
 import java.util.*;
@@ -25,10 +28,14 @@ import java.util.*;
 public class InteractorsManager implements DiagramLoadedHandler, DiagramRequestedHandler,
         InteractorsCollapsedHandler, InteractorsResourceChangedHandler {
 
+    private static final int MAX_INTERACTORS = 10;
+
     private EventBus eventBus;
 
     private DiagramContext context;
     private String currentResource;
+
+    private DiagramInteractor hovered;
 
     public InteractorsManager(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -47,13 +54,48 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         return currentResource;
     }
 
+    public DiagramInteractor getHovered() {
+        return hovered;
+    }
+
+    /**
+     * In every zoom step the way the elements are drawn (even if they are drawn or not) is defined by the
+     * renderer assigned. The most accurate and reliable way of finding out the hovered object by the mouse
+     * pointer is using the renderer isHovered method.
+     */
+    public Collection<DiagramInteractor> getHovered(Coordinate model){
+        Collection<DiagramInteractor> target = context.getInteractors().getHoveredTarget(currentResource, model,context.getDiagramStatus().getFactor());
+        List<DiagramInteractor> rtn = new LinkedList<>();
+        for (DiagramInteractor interactor : target) {
+            InteractorRenderer renderer = InteractorRendererManager.get().getRenderer(interactor);
+            if(renderer.isVisible(interactor) && interactor.isHovered(model)){
+                rtn.add(interactor);
+            }
+        }
+        return rtn;
+    }
+
+    private int getNumberOfInteractorsToDraw(Collection items){
+        if(items==null) return 0;
+        int n = items.size();
+        return n <= MAX_INTERACTORS ? n : MAX_INTERACTORS;
+    }
+
+    public boolean isHighlighted(DiagramInteractor item) {
+        return Objects.equals(hovered, item);
+    }
+
+    public boolean isHoveredVisible(){
+        return hovered != null && InteractorRendererManager.get().getRenderer(hovered).isVisible(hovered);
+    }
+
     //Why do we need a layout node? easy... layout! layout! layout! :D
     public void loadInteractors(Node node) {
         InteractorsLayout layoutBuilder = new InteractorsLayout(node);
         GraphPhysicalEntity p = node.getGraphObject();
         Set<RawInteractor> rawInteractors = context.getInteractors().getRawInteractors(currentResource, p.getIdentifier());
         if (rawInteractors != null) {
-            int n = rawInteractors.size();
+            int n = getNumberOfInteractorsToDraw(rawInteractors);
             int i = 0;
             for (RawInteractor rawInteractor : rawInteractors) {
 
@@ -75,6 +117,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
                 for (InteractorLink link : links) {
                     context.getInteractors().addInteractor(currentResource, link);
                 }
+                if(i == MAX_INTERACTORS) break; //No more than MAX_INTERACTORS elements can be visible
             }
         }
         eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
@@ -90,7 +133,8 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             }
         }
 
-        int n = entities.size(), i = 0;
+        int i = 0;
+        int n = getNumberOfInteractorsToDraw(entities);
         for (InteractorEntity entity : entities) {
             recalculateLayoutIfNeeded(node, entity, i++, n);
             for (LinkCommon linkCommon : entity.getUniqueLinks()) {
@@ -99,16 +143,19 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
                     context.getInteractors().addInteractor(currentResource, link);
                 }
             }
+            if(i == MAX_INTERACTORS) break; //No more than MAX_INTERACTORS elements can be visible
         }
     }
 
     public void recalculateLayoutIfNeededAndSetVisibility(Node node, Collection<InteractorLink> links, boolean visible) {
-        int n = links.size(), i = 0;
+        int i = 0;
+        int n = getNumberOfInteractorsToDraw(links);
         for (InteractorLink link : links) {
             if (link instanceof DynamicLink) {
                 InteractorEntity entity = ((DynamicLink) link).getInteractorEntity();
                 recalculateLayoutIfNeeded(node, entity, i++, n);
             }
+            if(i == MAX_INTERACTORS) break; //No more than MAX_INTERACTORS elements can be visible
         }
         for (InteractorLink link : links) {
             link.setVisible(visible);
@@ -156,5 +203,9 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         currentResource = event.getResource();
+    }
+
+    public void setHovered(DiagramInteractor hovered) {
+        this.hovered = hovered;
     }
 }

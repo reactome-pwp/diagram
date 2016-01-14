@@ -7,6 +7,7 @@ import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
+import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.SummaryItem;
@@ -167,6 +168,18 @@ public class InteractorsContent {
         return null;
     }
 
+
+    public Collection<DiagramInteractor> getHoveredTarget(String resource, Coordinate p, double factor) {
+        if(resource!=null) {
+            QuadTree<DiagramInteractor> quadTree = this.interactorsTreeCache.get(resource.toLowerCase());
+            if (quadTree != null) {
+                double f = 1 / factor;
+                return quadTree.getItems(new Box(p.getX() - f, p.getY() - f, p.getX() + f, p.getY() + f));
+            }
+        }
+        return new HashSet<>();
+    }
+
     public Set<RawInteractor> getRawInteractors(String resource, String acc){
         MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.toLowerCase());
         if (map != null) {
@@ -177,6 +190,16 @@ public class InteractorsContent {
 
     public boolean isResourceLoaded(String resource){
         return rawInteractorsCache.keySet().contains(resource.toLowerCase());
+    }
+
+    public Collection<DiagramInteractor> getVisibleInteractors(String resource, Box visibleArea) {
+        if(resource!=null) {
+            QuadTree<DiagramInteractor> quadTree = this.interactorsTreeCache.get(resource.toLowerCase());
+            if (quadTree != null) {
+                return quadTree.getItems(visibleArea);
+            }
+        }
+        return new HashSet<>();
     }
 
     public boolean isInteractorResourceCached(String resource) {

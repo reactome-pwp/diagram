@@ -3,6 +3,7 @@ package org.reactome.web.diagram.data.interactors.model;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.Segment;
+import org.reactome.web.diagram.data.layout.category.SegmentCategory;
 import org.reactome.web.diagram.data.layout.impl.SegmentFactory;
 import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
@@ -12,7 +13,7 @@ import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 public abstract class InteractorLink extends DiagramInteractor {
 
     final Node from;
-    Coordinate fromCentre;
+    Coordinate fromPoint;
 
     private String id;
     private double score;
@@ -25,7 +26,7 @@ public abstract class InteractorLink extends DiagramInteractor {
     }
 
     public Coordinate getFrom() {
-        return fromCentre;
+        return fromPoint;
     }
 
     public abstract Coordinate getTo();
@@ -42,12 +43,12 @@ public abstract class InteractorLink extends DiagramInteractor {
 
     public void setBoundaries(Coordinate to) {
         Segment link = SegmentFactory.get(InteractorsLayout.getCentre(from.getProp()), to);
-        fromCentre = InteractorsLayout.getSegmentsIntersection(link, from);
+        fromPoint = InteractorsLayout.getSegmentsIntersection(link, from);
 
-        minX = Math.min(fromCentre.getX(), to.getX());
-        maxX = Math.max(fromCentre.getX(), to.getX());
-        minY = Math.min(fromCentre.getY(), to.getY());
-        maxY = Math.max(fromCentre.getY(), to.getY());
+        minX = Math.min(fromPoint.getX(), to.getX());
+        maxX = Math.max(fromPoint.getX(), to.getX());
+        minY = Math.min(fromPoint.getY(), to.getY());
+        maxY = Math.max(fromPoint.getY(), to.getY());
     }
 
     @Override
@@ -67,6 +68,11 @@ public abstract class InteractorLink extends DiagramInteractor {
         int result = from != null ? from.hashCode() : 0;
         result = 31 * result + (id != null ? id.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public boolean isHovered(Coordinate pos) {
+        return SegmentCategory.isInSegment(SegmentFactory.get(fromPoint, getTo()), pos);
     }
 
     @Override
