@@ -112,12 +112,17 @@ public class InteractorsContent {
         if (cache != null) return cache.get(acc);
         return null;
     }
+
     public Set<RawInteractor> getRawInteractors(String resource, String acc){
         MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.toLowerCase());
         if (map != null) {
             return map.getElements(acc);
         }
         return null;
+    }
+
+    public boolean isResourceLoaded(String resource){
+        return rawInteractorsCache.keySet().contains(resource.toLowerCase());
     }
 
     public boolean isInteractorResourceCached(String resource) {
