@@ -50,7 +50,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     private static final int DIAGRAM_CONTEXT_CACHE_SIZE = 5;
     private final DiagramCanvas canvas; //Canvas only created once and reused every time a new diagram is loaded
     private final DiagramManager diagramManager;
-    private final UserActionsManager userActionsManager;
 
     private LruCache<String, DiagramContext> contextMap;
     private DiagramContext context;
@@ -77,7 +76,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         this.interactorsManager = new InteractorsManager(eventBus);
 
         this.diagramManager = new DiagramManager(new DisplayManager(this));
-        this.userActionsManager = new UserActionsManager(this, canvas);
         this.initWidget(this.canvas);
         this.getElement().addClassName("pwp-DiagramViewer"); //IMPORTANT!
     }
@@ -95,7 +93,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     private void initHandlers() {
-        this.canvas.addUserActionsHandlers(userActionsManager);
+        this.canvas.addUserActionsHandlers(new UserActionsManager(this, canvas));
 
         this.eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
@@ -166,11 +164,11 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     private void drawInteractors(Box visibleArea) {
         if (context == null) return;
-        long start = System.currentTimeMillis();
+//        long start = System.currentTimeMillis();
         String resource = interactorsManager.getCurrentResource();
         Collection<DiagramInteractor> items = context.getInteractors().getVisibleInteractors(resource, visibleArea);
         canvas.renderInteractors(items, context);
-        long time = System.currentTimeMillis() - start;
+//        long time = System.currentTimeMillis() - start;
 //        this.eventBus.fireEventFromSource(new DiagramRenderedEvent(context.getContent(), visibleArea, items.size(), time), this);
     }
 
