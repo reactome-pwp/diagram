@@ -38,6 +38,8 @@ public abstract class DiagramInteractor implements QuadTreeBox {
         return new InteractorBox(this).transform(factor, delta);
     }
 
+    public abstract boolean isHovered(Coordinate pos);
+
     public abstract boolean isVisible();
 
     public abstract void setVisible(boolean visible);

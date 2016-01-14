@@ -7,6 +7,7 @@ import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.*;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
+import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
@@ -19,7 +20,8 @@ import org.reactome.web.diagram.util.actions.MouseActionsHandlers;
 class UserActionsManager implements MouseActionsHandlers {
 
     interface Handler {
-        HoveredItem getHovered();
+        HoveredItem getHoveredDiagramObject();
+        DiagramInteractor getHoveredInteractor();
         void loadDiagram(String stId);
         void padding(Coordinate delta);
         void setMousePosition(Coordinate mouse);
@@ -57,7 +59,7 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onDoubleClick(DoubleClickEvent event) {
-        HoveredItem hovered = handler.getHovered();
+        HoveredItem hovered = handler.getHoveredDiagramObject();
         DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
         GraphObject toOpen = item != null ? item.getGraphObject() : null;
         if (toOpen instanceof GraphPathway) {
@@ -73,7 +75,7 @@ class UserActionsManager implements MouseActionsHandlers {
         int button = event.getNativeEvent().getButton();
         switch (button) {
             case NativeEvent.BUTTON_RIGHT:
-                HoveredItem hovered = handler.getHovered();
+                HoveredItem hovered = handler.getHoveredDiagramObject();
                 DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
                 handler.setSelection(false, true);
                 handler.showDialog(item);
@@ -87,30 +89,30 @@ class UserActionsManager implements MouseActionsHandlers {
     public void onMouseMove(MouseMoveEvent event) {
         setMousePosition(event.getRelativeElement(), event);
         if (mouseDown != null) {
-            this.diagramMoved = true;
-            this.canvas.setCursor(Style.Cursor.MOVE);
+            diagramMoved = true;
+            canvas.setCursor(Style.Cursor.MOVE);
             Element element =event.getRelativeElement();
             Coordinate mouse = CoordinateFactory.get(event.getRelativeX(element), event.getRelativeY(element));
-            Coordinate delta = mouse.minus(this.mouseDown);
+            Coordinate delta = mouse.minus(mouseDown);
             handler.padding(delta);
-            this.setMouseDownPosition(event.getRelativeElement(), event);
+            setMouseDownPosition(event.getRelativeElement(), event);
         }
     }
 
     @Override
     public void onMouseOut(MouseOutEvent event) {
-        this.diagramMoved = false;
-        this.mouseDown = null;
-        this.canvas.setCursor(Style.Cursor.DEFAULT);
+        diagramMoved = false;
+        mouseDown = null;
+        canvas.setCursor(Style.Cursor.DEFAULT);
     }
 
     @Override
     public void onMouseUp(MouseUpEvent event) {
         event.stopPropagation();
         event.preventDefault();
-        HoveredItem hovered = handler.getHovered();
-        this.canvas.setCursor(hovered == null ? Style.Cursor.DEFAULT : Style.Cursor.POINTER);
-        this.mouseDown = null;
+        HoveredItem hovered = handler.getHoveredDiagramObject();
+        canvas.setCursor(hovered == null ? Style.Cursor.DEFAULT : Style.Cursor.POINTER);
+        mouseDown = null;
     }
 
     @Override

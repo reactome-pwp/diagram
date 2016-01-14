@@ -100,6 +100,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private AdvancedContext2d entitiesSelection;
     private AdvancedContext2d shadowsText;
 
+    private AdvancedContext2d interactorsHighlight;
+    private AdvancedContext2d interactorsSelection;
     private AdvancedContext2d interactors;
 
     private AdvancedContext2d buffer;
@@ -185,6 +187,14 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                 renderer.highlight(reactionsHighlight, item, status.getFactor(), status.getOffset());
             }
         }
+    }
+
+    public void highlightInteractor(DiagramInteractor item, DiagramContext context){
+        cleanCanvas(this.interactorsHighlight);
+        if (item == null) return;
+        DiagramStatus status = context.getDiagramStatus();
+        InteractorRenderer renderer = interactorRendererManager.getRenderer(item);
+        if(renderer!=null) renderer.highlight(interactorsHighlight, item, status.getFactor(), status.getOffset());
     }
 
     public void decorators(HoveredItem hoveredItem, DiagramContext context) {
@@ -316,25 +326,6 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                 }
             }
         }).scheduleRepeating(20);
-    }
-
-    /**
-     * In every zoom step the way the elements are drawn (even if they are drawn or not) is defined by the
-     * renderer assigned. The most accurate and reliable way of finding out the hovered object by the mouse
-     * pointer is using the renderer isHovered method.
-     */
-    public Collection<HoveredItem> getHovered(Collection<DiagramObject> target, Coordinate model) {
-        List<HoveredItem> rtn = new LinkedList<>();
-        for (DiagramObject item : target) {
-            Renderer renderer = rendererManager.getRenderer(item);
-            if (renderer != null) {
-                HoveredItem hovered = renderer.getHovered(item, model);
-                if (hovered != null) {
-                    rtn.add(hovered);
-                }
-            }
-        }
-        return rtn;
     }
 
     public void notifyHoveredExpression(DiagramObject item, Coordinate model) {
@@ -604,6 +595,12 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         this.reactionsHighlight.setLineWidth(factor * 7);
         this.reactionsHighlight.setStrokeStyle(profileProperties.getHighlight());
+
+        this.interactorsSelection.setLineWidth(factor * 3);
+        this.interactorsSelection.setStrokeStyle(profileProperties.getSelection());
+
+        this.interactorsHighlight.setLineWidth(factor * 7);
+        this.interactorsHighlight.setStrokeStyle(profileProperties.getHighlight());
     }
 
     private void addWatermark(){
@@ -645,6 +642,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.entitiesSelection = createCanvas(width, height);
         this.shadowsText = createCanvas(width, height);
 
+        this.interactorsHighlight = createCanvas(width, height);
+        this.interactorsSelection = createCanvas(width, height);
         this.interactors = createCanvas(width, height);
 
         this.tooltipContainer = createToolTipContainer(width, height);

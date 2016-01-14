@@ -56,6 +56,11 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
     }
 
     @Override
+    public boolean isHovered(Coordinate pos) {
+        return pos.getX() >= minX && pos.getX() <= maxX && pos.getY() >= minY && pos.getY() <= maxY;
+    }
+
+    @Override
     public boolean isVisible() {
         for (InteractorLink link : links.values()) {
             if(link.isVisible()) return true;

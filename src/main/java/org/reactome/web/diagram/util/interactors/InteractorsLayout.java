@@ -20,8 +20,9 @@ public class InteractorsLayout {
     private static final double L = 2 * Math.PI;
     private static final double OFFSET = Math.PI / 2.0;
 
-    private static final int BOX = 35;
-    private static final int RADIUS = 150;
+    private static final int BOX_WIDTH = 50;
+    private static final int BOX_HEIGHT = 25;
+    private static final int RADIUS = 200;
 
     private String acc;
     private Node node;
@@ -45,7 +46,7 @@ public class InteractorsLayout {
     }
 
     public static boolean doLayout(Node node, InteractorEntity entity, int i, int n, boolean force) {
-        if (entity == null || n == 0) return false;
+        if (entity == null || n == 0 || i < 0 || i > n) return false;
 
         if (force || !entity.isLaidOut()) {
             double delta = L / (double) n;
@@ -55,10 +56,10 @@ public class InteractorsLayout {
             double x = center.getX() + RADIUS * Math.cos(angle);
             double y = center.getY() + RADIUS * Math.sin(angle);
 
-            entity.setMinX(x - BOX);
-            entity.setMaxX(x + BOX);
-            entity.setMinY(y - BOX);
-            entity.setMaxY(y + BOX);
+            entity.setMinX(x - BOX_WIDTH);
+            entity.setMaxX(x + BOX_WIDTH);
+            entity.setMinY(y - BOX_HEIGHT);
+            entity.setMaxY(y + BOX_HEIGHT);
             return true;
         }
         return false;

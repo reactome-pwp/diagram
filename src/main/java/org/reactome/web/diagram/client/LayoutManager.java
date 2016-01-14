@@ -4,6 +4,7 @@ import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.DiagramLoadedEvent;
 import org.reactome.web.diagram.events.DiagramRequestedEvent;
@@ -12,6 +13,8 @@ import org.reactome.web.diagram.events.GraphObjectHoveredEvent;
 import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
 import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
+import org.reactome.web.diagram.renderers.layout.Renderer;
+import org.reactome.web.diagram.renderers.layout.RendererManager;
 
 import java.util.*;
 
@@ -51,7 +54,27 @@ public class LayoutManager implements DiagramLoadedHandler, DiagramRequestedHand
         return hovered;
     }
 
-    public DiagramObject getHoveredDiagramObject(){
+    /**
+     * In every zoom step the way the elements are drawn (even if they are drawn or not) is defined by the
+     * renderer assigned. The most accurate and reliable way of finding out the hovered object by the mouse
+     * pointer is using the renderer isHovered method.
+     */
+    public Collection<HoveredItem> getHovered(Coordinate model) {
+        Collection<DiagramObject> target = this.context.getContent().getHoveredTarget(model, context.getDiagramStatus().getFactor());
+        List<HoveredItem> rtn = new LinkedList<>();
+        for (DiagramObject item : target) {
+            Renderer renderer = RendererManager.get().getRenderer(item);
+            if (renderer != null) {
+                HoveredItem hovered = renderer.getHovered(item, model);
+                if (hovered != null) {
+                    rtn.add(hovered);
+                }
+            }
+        }
+        return rtn;
+    }
+
+    public DiagramObject getHoveredDiagramObject() {
         return hovered == null ? null : hovered.getDiagramObjects().get(0);
     }
 
@@ -63,23 +86,27 @@ public class LayoutManager implements DiagramLoadedHandler, DiagramRequestedHand
         return selected != null ? selected.getDiagramObjects() : new LinkedList<DiagramObject>();
     }
 
-    public boolean isHighlighted(HoveredItem item){
+    public boolean isHighlighted(HoveredItem item) {
         return Objects.equals(hovered, item);
     }
 
-    public boolean isSelected(GraphObject graphObject){
+    public boolean isSelected(GraphObject graphObject) {
         return Objects.equals(graphObject, this.selected);
     }
 
-    public boolean resetHalo(){
-        if (selected != null){
+    public boolean isHoveredVisible() {
+        return hovered != null && RendererManager.get().getRenderer(hovered.getHoveredObject()).isVisible(hovered.getHoveredObject());
+    }
+
+    public boolean resetHalo() {
+        if (selected != null) {
             halo.removeAll(selected.getDiagramObjects());
             return true;
         }
         return false;
     }
 
-    public boolean resetHovered(){
+    public boolean resetHovered() {
         if (hovered != null) {
             hovered = null;
             return true;
@@ -87,7 +114,7 @@ public class LayoutManager implements DiagramLoadedHandler, DiagramRequestedHand
         return false;
     }
 
-    public boolean resetFlagged(){
+    public boolean resetFlagged() {
         if (this.flagged != null) {
             this.flagged = new HashSet<>();
             return true;
@@ -95,7 +122,7 @@ public class LayoutManager implements DiagramLoadedHandler, DiagramRequestedHand
         return false;
     }
 
-    public boolean resetSelected(){
+    public boolean resetSelected() {
         if (this.selected != null) {
             this.selected = null;
             return true;
@@ -107,7 +134,7 @@ public class LayoutManager implements DiagramLoadedHandler, DiagramRequestedHand
         this.flagged = flagged;
     }
 
-    public GraphObjectHoveredEvent setHovered(HoveredItem hovered){
+    public GraphObjectHoveredEvent setHovered(HoveredItem hovered) {
         DiagramObject item = null;
         if (hovered != null) {
             item = hovered.getHoveredObject();
