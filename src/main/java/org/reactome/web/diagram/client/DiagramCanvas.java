@@ -59,7 +59,7 @@ import org.reactome.web.diagram.tooltips.TooltipContainer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
-import org.reactome.web.diagram.util.actions.UserActionsHandlers;
+import org.reactome.web.diagram.util.actions.MouseActionsHandlers;
 import org.reactome.web.diagram.util.actions.UserActionsInstaller;
 
 import java.util.Collection;
@@ -138,7 +138,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
     }
 
-    public void addUserActionsHandlers(UserActionsHandlers handler) {
+    public void addUserActionsHandlers(MouseActionsHandlers handler) {
         if (this.canvases.isEmpty()) {
             throw new RuntimeException("Multilayer canvas has not been yet initialised.");
         }

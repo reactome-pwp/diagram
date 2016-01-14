@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.FocusWidget;
  */
 public abstract class UserActionsInstaller {
 
-    public static void addUserActionsHandlers(FocusWidget widget, UserActionsHandlers handler){
+    public static void addUserActionsHandlers(FocusWidget widget, MouseActionsHandlers handler){
         widget.addClickHandler(handler);
         widget.addDoubleClickHandler(handler);
 
