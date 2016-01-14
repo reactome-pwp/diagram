@@ -156,6 +156,7 @@ public abstract class DiagramContentFactory {
         InteractorsContent interactors = context.getInteractors();
         MapSet<String, GraphObject> identifierMap = content.getIdentifierMap();
         String resource = rawInteractors.getResource();
+        interactors.getOrCreateRawInteractorCachedResource(resource);
         for (RawInteractorEntity interactorEntity : rawInteractors.getEntities()) {
             String acc = interactorEntity.getAcc();
             interactors.cacheInteractors(resource, acc, interactorEntity.getCount(), identifierMap);

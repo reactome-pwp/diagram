@@ -56,12 +56,16 @@ public class InteractorsContent {
     }
 
     public void cache(String resource, String acc, RawInteractor rawInteractor) {
+        getOrCreateRawInteractorCachedResource(resource).add(acc, rawInteractor);
+    }
+
+    public MapSet<String, RawInteractor> getOrCreateRawInteractorCachedResource(String resource){
         MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.toLowerCase());
         if (map == null) {
             map = new MapSet<>();
             rawInteractorsCache.put(resource.toLowerCase(), map);
         }
-        map.add(acc, rawInteractor);
+        return map;
     }
 
     public void cache(String resource, InteractorEntity interactor) {
