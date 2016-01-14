@@ -126,16 +126,6 @@ public class InteractorsContent {
         }
     }
 
-    public Collection<DiagramInteractor> getVisibleInteractors(String resource, Box visibleArea) {
-        if(resource!=null) {
-            QuadTree<DiagramInteractor> quadTree = this.interactorsTreeCache.get(resource.toLowerCase());
-            if (quadTree != null) {
-                return quadTree.getItems(visibleArea);
-            }
-        }
-        return new HashSet<>();
-    }
-
     public Collection<InteractorEntity> getDiagramInteractors(String resource) {
         Map<String, InteractorEntity> cache = interactorsCache.get(resource);
         if (cache != null) return cache.values();
