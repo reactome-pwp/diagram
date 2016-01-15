@@ -98,14 +98,6 @@ public class LayoutManager implements DiagramLoadedHandler, DiagramRequestedHand
         return hovered != null && RendererManager.get().getRenderer(hovered.getHoveredObject()).isVisible(hovered.getHoveredObject());
     }
 
-    public boolean resetHalo() {
-        if (selected != null) {
-            halo.removeAll(selected.getDiagramObjects());
-            return true;
-        }
-        return false;
-    }
-
     public boolean resetHovered() {
         if (hovered != null) {
             hovered = null;
@@ -116,7 +108,7 @@ public class LayoutManager implements DiagramLoadedHandler, DiagramRequestedHand
 
     public boolean resetFlagged() {
         if (this.flagged != null) {
-            this.flagged = new HashSet<>();
+            this.flagged.clear();
             return true;
         }
         return false;
@@ -124,6 +116,7 @@ public class LayoutManager implements DiagramLoadedHandler, DiagramRequestedHand
 
     public boolean resetSelected() {
         if (this.selected != null) {
+            halo.clear();
             this.selected = null;
             return true;
         }
@@ -163,8 +156,7 @@ public class LayoutManager implements DiagramLoadedHandler, DiagramRequestedHand
 
     public void setSelected(GraphObject graphObject) {
         if (graphObject == null) {
-            this.halo = new HashSet<>();
-            this.selected = null;
+            resetSelected();
         } else {
             boolean fadeOut = !graphObject.getDiagramObjects().isEmpty();
             for (DiagramObject diagramObject : graphObject.getDiagramObjects()) {
