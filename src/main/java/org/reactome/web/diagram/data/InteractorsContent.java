@@ -161,8 +161,30 @@ public class InteractorsContent {
 
 
     public Collection<DiagramInteractor> getHoveredTarget(String resource, Coordinate p, double factor) {
-        double f = 1 / factor;
-        return getVisibleInteractors(resource, new Box(p.getX() - f, p.getY() - f, p.getX() + f, p.getY() + f));
+        Set<DiagramInteractor> rtn = new HashSet<>();
+        if(resource!=null) {
+            double threshold = getInteractorsThreshold(resource);
+            QuadTree<DiagramInteractor> quadTree = this.interactorsTreeCache.get(resource.toLowerCase());
+            if (quadTree != null) {
+                double f = 1 / factor;
+                Set<DiagramInteractor> items = quadTree.getItems(new Box(p.getX() - f, p.getY() - f, p.getX() + f, p.getY() + f));
+                for (DiagramInteractor item : items) {
+                    if(item instanceof InteractorLink){
+                        InteractorLink link = (InteractorLink) item;
+                        if(link.getScore() >= threshold) rtn.add(link);
+                    } else {
+                        InteractorEntity entity = (InteractorEntity) item;
+                        for (InteractorLink interactorLink : entity.getLinks()) {
+                            if(interactorLink.getScore() >= threshold){
+                                rtn.add(entity);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return rtn;
     }
 
     public Set<RawInteractor> getRawInteractors(String resource, String acc){
