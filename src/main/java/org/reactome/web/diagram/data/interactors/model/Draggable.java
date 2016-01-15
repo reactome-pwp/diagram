@@ -13,4 +13,5 @@ public interface Draggable {
 
     void setMaxY(double maxY);
 
+    void drag(double deltaX, double deltaY);
 }

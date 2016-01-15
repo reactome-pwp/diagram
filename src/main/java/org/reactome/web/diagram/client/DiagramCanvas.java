@@ -373,6 +373,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     }
 
     public void renderInteractors(Collection<DiagramInteractor> items, DiagramContext context){
+        cleanCanvas(interactors);
         Double factor = context.getDiagramStatus().getFactor();
         Coordinate offset = context.getDiagramStatus().getOffset();
         for (DiagramInteractor item : items) {

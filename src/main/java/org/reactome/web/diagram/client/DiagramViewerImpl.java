@@ -56,6 +56,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     private DiagramContext context;
     private LoaderManager loaderManager;
 
+    private UserActionsManager userActionsManager;
+
     private String flagTerm;
     private AnalysisStatus analysisStatus;
     private LayoutManager layoutManager;
@@ -77,6 +79,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         this.layoutManager = new LayoutManager(eventBus);
         this.interactorsManager = new InteractorsManager(eventBus);
 
+        this.userActionsManager = new UserActionsManager(this, canvas);
+
         this.diagramManager = new DiagramManager(new DisplayManager(this));
         this.initWidget(this.canvas);
         this.getElement().addClassName("pwp-DiagramViewer"); //IMPORTANT!
@@ -95,7 +99,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     private void initHandlers() {
-        canvas.addUserActionsHandlers(new UserActionsManager(this, canvas));
+        canvas.addUserActionsHandlers(userActionsManager);
 
         eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
         eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
@@ -226,11 +230,14 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     private void highlightInteractor(DiagramInteractor hovered) {
         if (interactorsManager.isHighlighted(hovered)) return;
-        canvas.highlightInteractor(hovered, context);
-        InteractorHoveredEvent event = interactorsManager.setHovered(hovered);
-        if (event != null) {
-            this.eventBus.fireEventFromSource(event, this);
-            fireEvent(event); //needs outside notification
+        // setInteractorHovered knows when an interactor is being dragged, so it won't set a new one if that case
+        if (userActionsManager.setInteractorHovered(hovered)) {
+            canvas.highlightInteractor(hovered, context);
+            InteractorHoveredEvent event = interactorsManager.setHovered(hovered);
+            if (event != null) {
+                this.eventBus.fireEventFromSource(event, this);
+                fireEvent(event); //needs outside notification
+            }
         }
     }
 
@@ -796,6 +803,15 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         double factor = context.getDiagramStatus().getFactor();
         factor = ViewportUtils.checkFactor(factor  - delta);
         zoom(factor, mouseCurrent);
+    }
+
+    @Override
+    public void dragInteractor(InteractorEntity interactor, Coordinate delta) {
+        delta = delta.divide(context.getDiagramStatus().getFactor());
+        interactor.drag(delta.getX(), delta.getY());
+        Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
+        drawInteractors(visibleArea);
+        interactorsManager.updateInteractor(interactor);
     }
 
     public void zoom(double factor, Coordinate mouse) {

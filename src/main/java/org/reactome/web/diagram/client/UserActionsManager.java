@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.*;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
@@ -22,17 +23,20 @@ class UserActionsManager implements MouseActionsHandlers {
     interface Handler {
         HoveredItem getHoveredDiagramObject();
         DiagramInteractor getHoveredInteractor();
+        void dragInteractor(InteractorEntity interactor, Coordinate delta);
         void loadDiagram(String stId);
+        void mouseZoom(double delta);
         void padding(Coordinate delta);
         void setMousePosition(Coordinate mouse);
         void setSelection(boolean zoom, boolean fireExternally);
         void showDialog(DiagramObject item);
-        void mouseZoom(double delta);
     }
 
     static final double ZOOM_FACTOR = 0.025;
     static final double ZOOM_DELTA = 0.25;
     static final double ZOOM_TOUCH_DELTA = 200;
+
+    InteractorEntity hoveredInteractor;
 
     Coordinate mouseDown = null;
 
@@ -89,12 +93,17 @@ class UserActionsManager implements MouseActionsHandlers {
     public void onMouseMove(MouseMoveEvent event) {
         setMousePosition(event.getRelativeElement(), event);
         if (mouseDown != null) {
-            diagramMoved = true;
             canvas.setCursor(Style.Cursor.MOVE);
-            Element element =event.getRelativeElement();
+            Element element = event.getRelativeElement();
             Coordinate mouse = CoordinateFactory.get(event.getRelativeX(element), event.getRelativeY(element));
             Coordinate delta = mouse.minus(mouseDown);
-            handler.padding(delta);
+            if(hoveredInteractor == null) {
+                diagramMoved = true;
+                handler.padding(delta);
+
+            } else {
+                handler.dragInteractor(hoveredInteractor, delta);
+            }
             setMouseDownPosition(event.getRelativeElement(), event);
         }
     }
@@ -176,6 +185,17 @@ class UserActionsManager implements MouseActionsHandlers {
             Coordinate delta = finger1.minus(finger2);
             fingerDistance = Math.sqrt(delta.getX() * delta.getX() + delta.getY() * delta.getY());
         }
+    }
+
+    public boolean setInteractorHovered(DiagramInteractor hovered){
+        if (mouseDown != null) return false;
+
+        if(hovered==null){
+            hoveredInteractor = null;
+        }else if(hovered instanceof InteractorEntity){
+            hoveredInteractor = (InteractorEntity) hovered;
+        }
+        return true;
     }
 
     protected void setMouseDownPosition(Element element, MouseEvent event) {

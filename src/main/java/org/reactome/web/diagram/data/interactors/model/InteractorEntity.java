@@ -107,6 +107,17 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
     }
 
     @Override
+    public void drag(double deltaX, double deltaY) {
+        minX += deltaX;
+        maxX += deltaX;
+        minY += deltaY;
+        maxY += deltaY;
+        for (InteractorLink interactorLink : links.values()) {
+            interactorLink.setBoundaries(getCentre());
+        }
+    }
+
+    @Override
     public void setVisible(boolean visible) {
         throw new RuntimeException("Do not use this method. Please rely on the visibility of the links");
     }

@@ -64,8 +64,9 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
      * pointer is using the renderer isHovered method.
      */
     public Collection<DiagramInteractor> getHovered(Coordinate model){
-        Collection<DiagramInteractor> target = context.getInteractors().getHoveredTarget(currentResource, model,context.getDiagramStatus().getFactor());
         List<DiagramInteractor> rtn = new LinkedList<>();
+        if(context==null) return rtn;
+        Collection<DiagramInteractor> target = context.getInteractors().getHoveredTarget(currentResource, model,context.getDiagramStatus().getFactor());
         for (DiagramInteractor interactor : target) {
             InteractorRenderer renderer = InteractorRendererManager.get().getRenderer(interactor);
             if(renderer.isVisible(interactor) && interactor.isHovered(model)){
@@ -211,5 +212,9 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             return new InteractorHoveredEvent(hovered);
         }
         return null;
+    }
+
+    public void updateInteractor(InteractorEntity entity){
+        context.getInteractors().updateInteractor(currentResource, entity);
     }
 }
