@@ -59,13 +59,18 @@ public abstract class AbstractDiagramViewer extends ResizeComposite implements D
     }
 
     @Override
-    public HandlerRegistration addFireworksOpenedHandler(FireworksOpenedHandler handler) {
-        return this.addHandler(handler, FireworksOpenedEvent.TYPE);
+    public HandlerRegistration addDiagramObjectsFlagResetHandler(DiagramObjectsFlagResetHandler handler) {
+        return this.addHandler(handler, DiagramObjectsFlagResetEvent.TYPE);
     }
 
     @Override
-    public HandlerRegistration addDiagramObjectsFlagResetHandler(DiagramObjectsFlagResetHandler handler) {
-        return this.addHandler(handler, DiagramObjectsFlagResetEvent.TYPE);
+    public HandlerRegistration addInteractorHoveredHandler(InteractorHoveredHandler handler){
+        return this.addHandler(handler, InteractorHoveredEvent.TYPE);
+    }
+
+    @Override
+    public HandlerRegistration addFireworksOpenedHandler(FireworksOpenedHandler handler) {
+        return this.addHandler(handler, FireworksOpenedEvent.TYPE);
     }
 
     @Override

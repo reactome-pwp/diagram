@@ -27,6 +27,8 @@ public interface DiagramViewer extends IsWidget, HasHandlers, RequiresResize {
 
     HandlerRegistration addFireworksOpenedHandler(FireworksOpenedHandler handler);
 
+    HandlerRegistration addInteractorHoveredHandler(InteractorHoveredHandler handler);
+
     void flagItems(String identifier);
 
     void highlightItem(String stableIdentifier);

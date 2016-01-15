@@ -218,7 +218,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         canvas.highlight(hovered, context);
         canvas.decorators(hovered, context);
         GraphObjectHoveredEvent event = layoutManager.setHovered(hovered);
-        if(event!=null){
+        if (event != null) {
             this.eventBus.fireEventFromSource(event, this);
             fireEvent(event); //needs outside notification
         }
@@ -226,8 +226,12 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     private void highlightInteractor(DiagramInteractor hovered) {
         if (interactorsManager.isHighlighted(hovered)) return;
-        interactorsManager.setHovered(hovered);
         canvas.highlightInteractor(hovered, context);
+        InteractorHoveredEvent event = interactorsManager.setHovered(hovered);
+        if (event != null) {
+            this.eventBus.fireEventFromSource(event, this);
+            fireEvent(event); //needs outside notification
+        }
     }
 
     private void highlightGraphObject(GraphObject graphObject) {

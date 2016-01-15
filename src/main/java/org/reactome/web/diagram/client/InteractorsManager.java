@@ -205,7 +205,11 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         currentResource = event.getResource();
     }
 
-    public void setHovered(DiagramInteractor hovered) {
-        this.hovered = hovered;
+    public InteractorHoveredEvent setHovered(DiagramInteractor hovered) {
+        if(!Objects.equals(this.hovered, hovered)) {
+            this.hovered = hovered;
+            return new InteractorHoveredEvent(hovered);
+        }
+        return null;
     }
 }
