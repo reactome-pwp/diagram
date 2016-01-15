@@ -190,10 +190,10 @@ class UserActionsManager implements MouseActionsHandlers {
     public boolean setInteractorHovered(DiagramInteractor hovered){
         if (mouseDown != null) return false;
 
-        if(hovered==null){
-            hoveredInteractor = null;
-        }else if(hovered instanceof InteractorEntity){
+        if (hovered != null && hovered instanceof InteractorEntity) {
             hoveredInteractor = (InteractorEntity) hovered;
+        } else {
+            hoveredInteractor = null;
         }
         return true;
     }

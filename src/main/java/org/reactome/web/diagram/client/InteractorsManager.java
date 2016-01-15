@@ -2,6 +2,7 @@ package org.reactome.web.diagram.client;
 
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.common.LinkCommon;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
@@ -215,6 +216,10 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     }
 
     public void updateInteractor(InteractorEntity entity){
-        context.getInteractors().updateInteractor(currentResource, entity);
+        InteractorsContent interactors = context.getInteractors();
+        interactors.updateInteractor(currentResource, entity);
+        for (InteractorLink link : entity.getLinks()) {
+            interactors.updateInteractor(currentResource, link);
+        }
     }
 }
