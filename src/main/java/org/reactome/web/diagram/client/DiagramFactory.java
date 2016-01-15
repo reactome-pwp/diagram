@@ -19,7 +19,7 @@ public abstract class DiagramFactory {
 
     //It has a value by default but it can be set to a different one so in every load
     //the "user preferred" interactors resource will be selected
-    public static String INTERACTORS_INITIAL_RESOURCE = "Resource1"; // -> null here means DO NOT LOAD interactors
+    public static String INTERACTORS_INITIAL_RESOURCE = "intact"; // -> null here means DO NOT LOAD interactors
 
     //Added for testing
     public static DiagramViewer createDiagramViewer() {

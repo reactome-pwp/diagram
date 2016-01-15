@@ -81,19 +81,30 @@
         <url-pattern>/download/current/diagram/*</url-pattern>
     </servlet-mapping>
 
-    <!-- static files local server (ONLY USED IN DEV MODE) -->
-    <!-- Please note a "reactome" user (or a symlink) needs to be set up -->
+    <!-- Reactome Content Service Configuration (ONLY USED IN DEV MODE) -->
     <servlet>
         <servlet-name>InteractorsProxy</servlet-name>
-        <servlet-class>uk.ac.ebi.pride.web.util.servlet.proxy.StaticFilesProxyServlet</servlet-class>
+        <servlet-class>uk.ac.ebi.pride.web.util.servlet.proxy.ProxyServlet</servlet-class>
         <init-param>
-            <param-name>proxyFilePath</param-name>
-            <param-value>/Users/reactome/diagram/interactors</param-value>
+            <param-name>proxyHost</param-name>
+            <param-value>localhost</param-value>
+            <!--<param-value>reactomedev.oicr.on.ca</param-value>-->
+            <!--<param-value>www.reactome.org</param-value>-->
+        </init-param>
+        <init-param>
+            <param-name>proxyPort</param-name>
+            <param-value>8585</param-value>
+            <!--<param-value>7080</param-value>-->
+        </init-param>
+        <init-param>
+            <param-name>proxyPath</param-name>
+            <param-value>/</param-value>
+            <!--<param-value>/</param-value>-->
         </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>InteractorsProxy</servlet-name>
-        <url-pattern>/ContentService/interactors/*</url-pattern>
+        <url-pattern>/ContentService/*</url-pattern>
     </servlet-mapping>
 
     <!-- Reactome IMAGES (ONLY USED IN DEV MODE) -->
