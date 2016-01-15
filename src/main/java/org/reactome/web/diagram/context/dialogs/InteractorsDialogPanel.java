@@ -70,25 +70,25 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
 
     public void forceDraw(){
         if(interactorsTable!=null) {
-           interactorsTable.redraw();
+            interactorsTable.redraw();
         }
     }
 
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
         updateDialogContent();
+        showLoading(false);
     }
 
     @Override
     public void onInteractorsError(InteractorsErrorEvent event) {
-        setInteractions();
-        loadingIcon.setVisible(false);
-        interactorsTable.setVisible(true);
+        showLoading(false);
     }
 
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         currentResource = event.getResource();
+        showLoading(true);
         updateDialogContent();
     }
 
@@ -111,17 +111,13 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
         initWidget(container);
 
         updateDialogContent();
+        showLoading(false);
     }
 
     private void updateDialogContent(){
         if(context==null) return;
         if(context.getInteractors().isResourceLoaded(currentResource)){
             setInteractions();
-            loadingIcon.setVisible(false);
-            interactorsTable.setVisible(true);
-        }else{
-            interactorsTable.setVisible(false);
-            loadingIcon.setVisible(true);
         }
     }
 
@@ -134,8 +130,15 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
                 interactions.addAll(aux);
             }
             interactorsTable.updateRows(interactions);
+            showLoading(false);
         }
     }
+
+    private void showLoading(boolean isLoading){
+        loadingIcon.setVisible(isLoading);
+        interactorsTable.setVisible(!isLoading);
+    }
+
     public static Resources RESOURCES;
     static {
         RESOURCES = GWT.create(Resources.class);
