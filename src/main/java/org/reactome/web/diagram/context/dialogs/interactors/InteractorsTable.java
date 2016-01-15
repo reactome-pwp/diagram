@@ -50,8 +50,10 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
 
     public void setMoleculesLabels(boolean showIds){
         if(type!=null) { removeColumn(type); }
-        type = buildColumnTitle(showIds);
+        type = buildColumnTitle();
         insertColumn(0, type, name);
+        insertColumn(1, buildIDColumn(), "ID");
+        insertColumn(2, buildScoreColumn(), "Score");
 //        redraw();
     }
 
@@ -85,19 +87,13 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         return molecules;
     }
 
-    private Column<T, String> buildColumnTitle(final boolean showIds) {
+    private Column<T, String> buildColumnTitle() {
         Column<T, String> columnTitle = new Column<T, String>(new ClickableTextCell()) {
             @Override
             public String getValue(T object) {
-                if(showIds){
-//                    return object.getIdentifier() != null && !object.getIdentifier().isEmpty() ? object.getIdentifier() : object.getStId();
-                }else{
-//                    return object.getDisplayName();
-                }
                 return object.getAcc();
             }
         };
-        columnTitle.setSortable(true);
         columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {
             public void update(int index, T object, String value) {
                 fireEvent(new InteractorSelectedEvent(object));
@@ -106,15 +102,26 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         return columnTitle;
     }
 
-    private Column<T, String> buildColumnExpression(final int col, double min, double max) {
-        return new Column<T, String>(new InteractorCell(min, max)) {
+    private Column<T, String> buildScoreColumn() {
+        Column<T, String> columnTitle = new Column<T, String>(new ClickableTextCell()) {
             @Override
             public String getValue(T object) {
-//                Double exp = (object.getExpression() != null) ? object.getExpression().get(col) : null;
-//                return exp != null ? NumberFormat.getFormat("#.##E0").format(exp) : "";
-                return "0.0";
+                return "" + object.getScore();
             }
         };
+//        columnTitle.setSortable(true);
+        return columnTitle;
+    }
+
+    private Column<T, String> buildIDColumn() {
+        Column<T, String> columnTitle = new Column<T, String>(new ClickableTextCell()) {
+            @Override
+            public String getValue(T object) {
+                return "" + object.getId();
+            }
+        };
+//        columnTitle.setSortable(true);
+        return columnTitle;
     }
 
     @Override

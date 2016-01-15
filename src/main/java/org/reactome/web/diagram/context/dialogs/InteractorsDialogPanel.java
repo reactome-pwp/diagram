@@ -117,6 +117,7 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
 
     private void updateDialogContent(){
         if(context==null) return;
+        clearInteractors();
         if(context.getInteractors().isResourceLoaded(currentResource)){
             setInteractions();
         } else {
@@ -128,7 +129,6 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
     private void setInteractions() {
         if (context != null) {
             Set<RawInteractor> aux = context.getInteractors().getRawInteractors(currentResource, physicalEntity.getIdentifier());
-            interactions.clear();
             if(aux!=null) {
                 interactions.addAll(aux);
             }
@@ -137,17 +137,22 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
         }
     }
 
+    private void clearInteractors(){
+        interactions.clear();
+        interactorsTable.updateRows(interactions);
+    }
+
     private void showLoading(boolean isLoading){
         loadingIcon.setVisible(isLoading);
         interactorsTable.setVisible(!isLoading);
     }
+
 
     public static Resources RESOURCES;
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
     }
-
 
     public interface Resources extends ClientBundle {
         @Source(ResourceCSS.CSS)
