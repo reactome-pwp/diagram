@@ -82,6 +82,7 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
 
     @Override
     public void onInteractorsError(InteractorsErrorEvent event) {
+        updateDialogContent();
         showLoading(false);
     }
 
