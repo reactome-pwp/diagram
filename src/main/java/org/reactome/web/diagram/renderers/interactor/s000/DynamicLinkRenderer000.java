@@ -15,11 +15,6 @@ public class DynamicLinkRenderer000 extends DynamicLinkAbstractRenderer {
     }
 
     @Override
-    public void drawText(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
-        //Nothing here
-    }
-
-    @Override
     public void highlight(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset){
         //Nothing here
     }

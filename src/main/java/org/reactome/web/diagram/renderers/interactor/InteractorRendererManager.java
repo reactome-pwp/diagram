@@ -64,6 +64,11 @@ public class InteractorRendererManager implements DiagramZoomHandler, DiagramLoa
         return InteractorRendererManager.manager;
     }
 
+    public InteractorRenderer getRenderer(Class clazz){
+        if (clazz == null) return null;
+        return this.current.get(clazz);
+    }
+
     public InteractorRenderer getRenderer(DiagramInteractor diagramInteractor){
         if (diagramInteractor == null) return null;
         return this.current.get(diagramInteractor.getClass());

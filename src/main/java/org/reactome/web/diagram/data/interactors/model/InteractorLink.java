@@ -84,4 +84,17 @@ public abstract class InteractorLink extends DiagramInteractor {
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
+
+    @Override
+    public String toString() {
+        return "InteractorLink{" +
+                "minX=" + minX +
+                ", minY=" + minY +
+                ", maxX=" + maxX +
+                ", maxY=" + maxY +
+                ", visible=" + isVisible() +
+                ", score=" + score +
+                ", id='" + id + '\'' +
+                '}';
+    }
 }

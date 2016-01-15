@@ -30,6 +30,7 @@ import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
 import org.reactome.web.diagram.events.ExpressionValueHoveredEvent;
@@ -376,10 +377,26 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         cleanCanvas(interactors);
         Double factor = context.getDiagramStatus().getFactor();
         Coordinate offset = context.getDiagramStatus().getOffset();
+        List<InteractorEntity> entities = new LinkedList<>();
         for (DiagramInteractor item : items) {
-            InteractorRenderer renderer = interactorRendererManager.getRenderer(item);
-            if(renderer!=null){
-                renderer.draw(interactors, item, factor, offset);
+            if (item instanceof InteractorEntity) {
+                entities.add((InteractorEntity) item);
+            } else {
+                InteractorRenderer renderer = interactorRendererManager.getRenderer(item);
+                if (renderer != null) {
+                    renderer.draw(interactors, item, factor, offset);
+                }
+            }
+        }
+        InteractorRenderer renderer = interactorRendererManager.getRenderer(InteractorEntity.class);
+        if (renderer != null) {
+            interactors.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
+            for (InteractorEntity entity : entities) {
+                renderer.draw(interactors, entity, factor, offset);
+                interactors.save();
+                interactors.setFillStyle("#0000FF");
+                renderer.drawText(interactors, entity, factor, offset);
+                interactors.restore();
             }
         }
     }
@@ -596,6 +613,12 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         this.reactionsHighlight.setLineWidth(factor * 7);
         this.reactionsHighlight.setStrokeStyle(profileProperties.getHighlight());
+
+//        this.interactors.setStrokeStyle("#F0F0F0");
+        this.interactors.setFillStyle("#ABCDEF");
+        this.interactors.setLineWidth(factor * 2);
+        this.interactors.setTextAlign(Context2d.TextAlign.CENTER);
+        this.interactors.setTextBaseline(Context2d.TextBaseline.MIDDLE);
 
         this.interactorsSelection.setLineWidth(factor * 3);
         this.interactorsSelection.setStrokeStyle(profileProperties.getSelection());

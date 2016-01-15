@@ -4,6 +4,7 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.common.InteractorsSummary;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.model.DynamicLink;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
@@ -183,13 +184,29 @@ public class InteractorsContent {
     }
 
     public Collection<DiagramInteractor> getVisibleInteractors(String resource, Box visibleArea) {
+        Set<DiagramInteractor> rtn = new HashSet<>();
         if(resource!=null) {
             QuadTree<DiagramInteractor> quadTree = this.interactorsTreeCache.get(resource.toLowerCase());
             if (quadTree != null) {
-                return quadTree.getItems(visibleArea);
+                Collection<DiagramInteractor> aux = quadTree.getItems(visibleArea);
+                if(aux!=null) {
+                    double threshold = getInteractorsThreshold(resource);
+                    for (DiagramInteractor interactor : aux) {
+                        if (interactor instanceof InteractorLink) {
+                            InteractorLink link = (InteractorLink) interactor;
+                            if (link.getScore() >= threshold) {
+                                rtn.add(link);
+                                if(link instanceof DynamicLink){
+                                    DynamicLink dynamicLink = (DynamicLink) link;
+                                    rtn.add(dynamicLink.getInteractorEntity());
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
-        return new HashSet<>();
+        return rtn;
     }
 
     public boolean isInteractorResourceCached(String resource) {

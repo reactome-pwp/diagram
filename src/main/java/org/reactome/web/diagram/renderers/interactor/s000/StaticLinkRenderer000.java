@@ -16,11 +16,6 @@ public class StaticLinkRenderer000 extends StaticLinkAbstractRenderer {
     }
 
     @Override
-    public void drawText(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
-        //Nothing here
-    }
-
-    @Override
     public void highlight(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset){
         //Nothing here
     }

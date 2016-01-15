@@ -41,7 +41,8 @@ import java.util.Set;
  */
 class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsManager.Handler,
         LayoutLoadedHandler, DiagramLoadRequestHandler, DiagramLoadedHandler,
-        InteractorsLoadedHandler, InteractorsResourceChangedHandler, InteractorsCollapsedHandler, InteractorsLayoutUpdatedHandler,
+        InteractorsLoadedHandler, InteractorsResourceChangedHandler, InteractorsCollapsedHandler,
+        InteractorsLayoutUpdatedHandler, InteractorsFilteredHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         GraphObjectHoveredHandler, GraphObjectSelectedHandler, CanvasExportRequestedHandler,
@@ -123,13 +124,14 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLayoutUpdatedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsFilteredEvent.TYPE, this);
 
         eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
         eventBus.addHandler(ThumbnailAreaMovedEvent.TYPE, this);
         eventBus.addHandler(ControlActionEvent.TYPE, this);
     }
-    
+
     private void doUpdate() {
         if (context == null) return;
         if (forceDraw) {
@@ -831,5 +833,11 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
         eventBus.fireEventFromSource(new DiagramZoomEvent(factor, visibleArea), this);
         forceDraw = true;  //IMPORTANT: Please leave it at the very end after the event firing
+    }
+
+    @Override
+    public void onInteractorsFiltered(InteractorsFilteredEvent event) {
+        Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
+        drawInteractors(visibleArea);
     }
 }

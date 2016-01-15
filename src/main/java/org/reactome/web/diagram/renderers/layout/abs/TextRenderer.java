@@ -28,26 +28,26 @@ public class TextRenderer {
         this.padding = 0;
     }
 
-    protected void drawTextSingleLine(AdvancedContext2d ctx, String message, Coordinate centerPosition, Double factor, Coordinate offset){
+    public void drawTextSingleLine(AdvancedContext2d ctx, String message, Coordinate centerPosition, Double factor, Coordinate offset){
         Coordinate newCenter = CoordinateFactory.get(centerPosition.getX(), centerPosition.getY()).transform(factor,offset);
         drawTextSingleLine(ctx, message, newCenter);
     }
 
-    protected void drawTextSingleLine(AdvancedContext2d ctx, String message, Coordinate centerPosition){
+    public void drawTextSingleLine(AdvancedContext2d ctx, String message, Coordinate centerPosition){
         ctx.fillText(message, centerPosition.getX(), centerPosition.getY());
     }
 
-    protected void borderTextSingleLine(AdvancedContext2d ctx, String message, Coordinate centerPosition){
+    public void borderTextSingleLine(AdvancedContext2d ctx, String message, Coordinate centerPosition){
         ctx.fillText(message, centerPosition.getX(), centerPosition.getY());
         ctx.strokeText(message, centerPosition.getX(), centerPosition.getY());
     }
 
-    protected void drawTextMultiLine(AdvancedContext2d ctx, String message, NodeProperties properties, Double factor, Coordinate offset) {
+    public void drawTextMultiLine(AdvancedContext2d ctx, String message, NodeProperties properties, Double factor, Coordinate offset) {
         NodeProperties prop = NodePropertiesFactory.transform(properties, factor, offset);
         drawTextMultiLine(ctx, message, prop);
     }
 
-    protected void drawTextMultiLine(AdvancedContext2d ctx, String message, NodeProperties properties){
+    public void drawTextMultiLine(AdvancedContext2d ctx, String message, NodeProperties properties){
         double availableWidth = properties.getWidth() - padding;
         List<String> textLines = spitText(ctx, message, availableWidth);
 
@@ -71,7 +71,7 @@ public class TextRenderer {
         }
     }
 
-    protected void borderTextMultiLine(AdvancedContext2d ctx, String message, NodeProperties properties){
+    public void borderTextMultiLine(AdvancedContext2d ctx, String message, NodeProperties properties){
         double availableWidth = properties.getWidth() - padding;
         List<String> textLines = spitText(ctx, message, availableWidth);
 
