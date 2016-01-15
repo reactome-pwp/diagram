@@ -119,6 +119,8 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
         if(context==null) return;
         if(context.getInteractors().isResourceLoaded(currentResource)){
             setInteractions();
+        } else {
+            showLoading(true);
         }
     }
 
