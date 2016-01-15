@@ -161,14 +161,8 @@ public class InteractorsContent {
 
 
     public Collection<DiagramInteractor> getHoveredTarget(String resource, Coordinate p, double factor) {
-        if(resource!=null) {
-            QuadTree<DiagramInteractor> quadTree = this.interactorsTreeCache.get(resource.toLowerCase());
-            if (quadTree != null) {
-                double f = 1 / factor;
-                return quadTree.getItems(new Box(p.getX() - f, p.getY() - f, p.getX() + f, p.getY() + f));
-            }
-        }
-        return new HashSet<>();
+        double f = 1 / factor;
+        return getVisibleInteractors(resource, new Box(p.getX() - f, p.getY() - f, p.getX() + f, p.getY() + f));
     }
 
     public Set<RawInteractor> getRawInteractors(String resource, String acc){
