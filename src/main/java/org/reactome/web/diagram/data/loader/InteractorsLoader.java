@@ -51,7 +51,9 @@ public class InteractorsLoader implements RequestCallback {
         for (DiagramObject diagramObject : content.getDiagramObjects()) {
             if(diagramObject instanceof Node){
                 GraphPhysicalEntity pe = ((Node) diagramObject).getGraphObject();
-                post.append(pe.getIdentifier()).append(",");
+                if(pe.getIdentifier()!=null) {
+                    post.append(pe.getIdentifier()).append(",");
+                }
             }
         }
         if(post.length()>0) post.delete(post.length()-1, post.length());
