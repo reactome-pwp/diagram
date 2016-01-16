@@ -146,10 +146,15 @@ public class InteractorsContent {
         return new HashSet<>();
     }
 
-    public Collection<InteractorLink> getDiagramInteractions(String resource, Node node) {
+    public List<InteractorLink> getDiagramInteractions(String resource, Node node) {
+        List<InteractorLink> rtn = new ArrayList<>();
         MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource.toLowerCase());
-        if (cache != null) return cache.getElements(node);
-        return new HashSet<>();
+        if (cache != null){
+            Set<InteractorLink> set = cache.getElements(node);
+            if(set!=null) rtn.addAll(set);
+        }
+        Collections.sort(rtn);
+        return rtn;
     }
 
     public InteractorEntity getDiagramInteractor(String resource, String acc) {
@@ -164,12 +169,21 @@ public class InteractorsContent {
         return getVisibleInteractors(resource, new Box(p.getX() - f, p.getY() - f, p.getX() + f, p.getY() + f));
     }
 
-    public Set<RawInteractor> getRawInteractors(String resource, String acc) {
+    public List<RawInteractor> getRawInteractors(String resource, String acc) {
+        List<RawInteractor> rtn = new ArrayList<>();
         MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.toLowerCase());
         if (map != null) {
-            return map.getElements(acc);
+            rtn.addAll(map.getElements(acc));
+            Collections.sort(rtn, new Comparator<RawInteractor>() {
+                @Override
+                public int compare(RawInteractor o1, RawInteractor o2) {
+                    int c = Double.compare(o2.getScore(), o1.getScore());
+                    if (c == 0) return o1.getAcc().compareTo(o2.getAcc());
+                    return c;
+                }
+            });
         }
-        return null;
+        return rtn;
     }
 
     public boolean isResourceLoaded(String resource) {
@@ -189,14 +203,6 @@ public class InteractorsContent {
 
     public boolean isInteractorResourceCached(String resource) {
         return interactorsSummaryMap.keySet().contains(resource.toLowerCase());
-    }
-
-    public int getNumberOfBurstEntities(String resource) {
-        int rtn = 0;
-        for (InteractorEntity entity : getDiagramInteractors(resource)) {
-            if (entity.isVisible()) rtn++;
-        }
-        return rtn;
     }
 
     public void resetBurstInteractors(String resource, Collection<DiagramObject> diagramObjects) {
