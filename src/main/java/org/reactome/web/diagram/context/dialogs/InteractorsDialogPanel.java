@@ -13,15 +13,19 @@ import org.reactome.web.diagram.context.dialogs.interactors.InteractorsTable;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.loader.LoaderManager;
+import org.reactome.web.diagram.events.InteractorHoveredEvent;
 import org.reactome.web.diagram.events.InteractorsErrorEvent;
 import org.reactome.web.diagram.events.InteractorsLoadedEvent;
 import org.reactome.web.diagram.events.InteractorsResourceChangedEvent;
+import org.reactome.web.diagram.handlers.InteractorHoveredHandler;
 import org.reactome.web.diagram.handlers.InteractorsErrorHandler;
 import org.reactome.web.diagram.handlers.InteractorsLoadedHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
+import org.reactome.web.diagram.util.Console;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +35,7 @@ import java.util.Set;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class InteractorsDialogPanel extends Composite implements InteractorSelectedHandler, InteractorsLoadedHandler,
-        InteractorsResourceChangedHandler, InteractorsErrorHandler {
+        InteractorsResourceChangedHandler, InteractorsErrorHandler, InteractorHoveredHandler {
 
     private EventBus eventBus;
     private FlowPanel container;
@@ -66,6 +70,7 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
         this.eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
         this.eventBus.addHandler(InteractorsErrorEvent.TYPE, this);
         this.eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
+        this.eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
     }
 
     public void forceDraw(){
@@ -87,6 +92,16 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
     }
 
     @Override
+    public void onInteractorHovered(InteractorHoveredEvent event) {
+        DiagramInteractor interactor = event.getInteractor();
+        String accession = null;
+        if(interactor != null) {
+            accession = interactor.getAccession();
+        }
+        interactorsTable.setHovered(accession);
+    }
+
+    @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         currentResource = event.getResource();
         showLoading(true);
@@ -95,7 +110,19 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
 
     @Override
     public void onInteractorSelected(InteractorSelectedEvent event) {
-
+        RawInteractor interactor = event.getValue();
+        InteractorSelectedEvent.Selection selectedColumn =  event.getSelectedColumn();
+        switch(selectedColumn) {
+            case ACCESSION:
+                Console.info(interactor.getAcc());
+                break;
+            case ID:
+                Console.info(interactor.getId());
+                break;
+            case SCORE:
+                Console.info(interactor.getScore());
+                break;
+        }
     }
 
     private void initialiseWidget(){
@@ -115,6 +142,7 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
         showLoading(false);
     }
 
+
     private void updateDialogContent(){
         if(context==null) return;
         clearInteractors();
@@ -124,7 +152,6 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
             showLoading(true);
         }
     }
-
 
     private void setInteractions() {
         if (context != null) {
