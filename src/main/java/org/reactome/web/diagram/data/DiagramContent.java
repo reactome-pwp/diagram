@@ -198,6 +198,20 @@ public class DiagramContent {
         return this.diagramObjects.getItems(visibleArea);
     }
 
+    public int getNumberOfBurstEntities() {
+        int n = 0;
+        for (DiagramObject diagramObject : getDiagramObjects()) {
+            if(diagramObject instanceof Node){
+                Node node = (Node) diagramObject;
+                SummaryItem summaryItem = node.getInteractorsSummary();
+                if(summaryItem!=null){
+                    if(summaryItem.getPressed()!=null && summaryItem.getPressed()) n++;
+                }
+            }
+        }
+        return n;
+    }
+
     public void clearDisplayedInteractors() {
         for (DiagramObject diagramObject : getDiagramObjects()) {
             if (diagramObject instanceof Node) {
