@@ -87,45 +87,39 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         return Objects.equals(hovered, item);
     }
 
-    public boolean isHoveredVisible(){
-        return hovered != null && InteractorRendererManager.get().getRenderer(hovered).isVisible(hovered);
-    }
-
     //Why do we need a layout node? easy... layout! layout! layout! :D
     public void loadInteractors(Node node) {
         InteractorsLayout layoutBuilder = new InteractorsLayout(node);
         GraphPhysicalEntity p = node.getGraphObject();
-        Set<RawInteractor> rawInteractors = context.getInteractors().getRawInteractors(currentResource, p.getIdentifier());
-        if (rawInteractors != null) {
-            int n = getNumberOfInteractorsToDraw(rawInteractors);
-            int i = 0;
-            for (RawInteractor rawInteractor : rawInteractors) {
+        List<RawInteractor> rawInteractors = context.getInteractors().getRawInteractors(currentResource, p.getIdentifier());
 
-                //TODO: Cover the case when an entity in the diagram interacts with another one in the diagram (Static link)
+        int n = getNumberOfInteractorsToDraw(rawInteractors);
+        for (int i = 0; i < n; i++) {
+            RawInteractor rawInteractor = rawInteractors.get(i);
 
-                InteractorEntity interactor = getOrCreateInteractorEntity(rawInteractor.getAcc());
+            //TODO: Cover the case when an entity in the diagram interacts with another one in the diagram (Static link)
 
-                layoutBuilder.doLayout(interactor, i++, n);
+            InteractorEntity interactor = getOrCreateInteractorEntity(rawInteractor.getAcc());
 
-                Set<InteractorLink> links = new HashSet<>();
-                context.getInteractors().cache(currentResource, node, interactor);
-                for (InteractorLink link : interactor.addInteraction(node, rawInteractor.getId(), rawInteractor.getScore())) {
-                    context.getInteractors().cache(currentResource, node, link);
-                    links.add(link);
-                }
+            layoutBuilder.doLayout(interactor, i, n);
 
-                //next block (adding to the QuadTree) also needs to be done after the doLayout
-                context.getInteractors().addInteractor(currentResource, interactor);
-                for (InteractorLink link : links) {
-                    context.getInteractors().addInteractor(currentResource, link);
-                }
-                if(i == MAX_INTERACTORS) break; //No more than MAX_INTERACTORS elements can be visible
+            Set<InteractorLink> links = new HashSet<>();
+            context.getInteractors().cache(currentResource, node, interactor);
+            for (InteractorLink link : interactor.addInteraction(node, rawInteractor.getId(), rawInteractor.getScore())) {
+                context.getInteractors().cache(currentResource, node, link);
+                links.add(link);
+            }
+
+            //next block (adding to the QuadTree) also needs to be done after the doLayout
+            context.getInteractors().addInteractor(currentResource, interactor);
+            for (InteractorLink link : links) {
+                context.getInteractors().addInteractor(currentResource, link);
             }
         }
         eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
     }
 
-    public void createNewLinksForExistingInteractors(Node node, Collection<DiagramInteractor> interactors) {
+    public void createNewLinksForExistingInteractors(final Node node, Collection<DiagramInteractor> interactors) {
         //TODO: Cover the case when an entity in the diagram interacts with another one in the diagram (Static link)
 
         List<InteractorEntity> entities = new LinkedList<>();
@@ -135,30 +129,29 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             }
         }
 
-        int i = 0;
         int n = getNumberOfInteractorsToDraw(entities);
-        for (InteractorEntity entity : entities) {
-            recalculateLayoutIfNeeded(node, entity, i++, n);
+        for (int i = 0; i < getNumberOfInteractorsToDraw(entities); i++) {
+            InteractorEntity entity = entities.get(i);
+            recalculateLayoutIfNeeded(node, entity, i, n);
             for (LinkCommon linkCommon : entity.getUniqueLinks()) {
                 for (InteractorLink link : entity.addInteraction(node, linkCommon.getId(), linkCommon.getScore())) {
                     context.getInteractors().cache(currentResource, node, link);
                     context.getInteractors().addInteractor(currentResource, link);
                 }
             }
-            if(i == MAX_INTERACTORS) break; //No more than MAX_INTERACTORS elements can be visible
         }
     }
 
-    public void recalculateLayoutIfNeededAndSetVisibility(Node node, Collection<InteractorLink> links, boolean visible) {
-        int i = 0;
+    public void recalculateLayoutIfNeededAndSetVisibility(Node node, List<InteractorLink> links, boolean visible) {
         int n = getNumberOfInteractorsToDraw(links);
-        for (InteractorLink link : links) {
+        for (int i = 0; i < n; i++) {
+            InteractorLink link = links.get(i);
             if (link instanceof DynamicLink) {
                 InteractorEntity entity = ((DynamicLink) link).getInteractorEntity();
-                recalculateLayoutIfNeeded(node, entity, i++, n);
+                recalculateLayoutIfNeeded(node, entity, i, n);
             }
-            if(i == MAX_INTERACTORS) break; //No more than MAX_INTERACTORS elements can be visible
         }
+        //The visibility of the links has to be changed AFTER recalculating the layout
         for (InteractorLink link : links) {
             link.setVisible(visible);
         }
