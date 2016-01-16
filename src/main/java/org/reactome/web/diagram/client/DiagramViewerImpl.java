@@ -34,6 +34,7 @@ import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -756,8 +757,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     private void setInteractorVisibility(String resource, Node node, boolean visible){
-        Collection<InteractorLink> interactions = context.getInteractors().getDiagramInteractions(resource, node);
-
+        List<InteractorLink> interactions = context.getInteractors().getDiagramInteractions(resource, node);
         if (interactions != null) {
             interactorsManager.recalculateLayoutIfNeededAndSetVisibility(node, interactions, visible);
         } else {
