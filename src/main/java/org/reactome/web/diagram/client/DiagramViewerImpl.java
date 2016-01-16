@@ -34,6 +34,7 @@ import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -445,7 +446,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
             if (event.getZoom()) {
                 this.diagramManager.displayDiagramObjects(layoutManager.getHalo());
             }
-            layoutManager.resetHalo();
+//            layoutManager.resetHalo();
             forceDraw = true;
             if (event.getFireExternally()) {
                 fireEvent(event);
@@ -559,7 +560,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     @Override
     public void resetSelection() {
-        layoutManager.resetHalo();
         if (layoutManager.resetSelected()) {
             this.forceDraw = true;
             this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(null, false), this);
@@ -757,8 +757,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     private void setInteractorVisibility(String resource, Node node, boolean visible){
-        Collection<InteractorLink> interactions = context.getInteractors().getDiagramInteractions(resource, node);
-
+        List<InteractorLink> interactions = context.getInteractors().getDiagramInteractions(resource, node);
         if (interactions != null) {
             interactorsManager.recalculateLayoutIfNeededAndSetVisibility(node, interactions, visible);
         } else {

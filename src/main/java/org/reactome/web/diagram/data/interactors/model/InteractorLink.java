@@ -1,16 +1,18 @@
 package org.reactome.web.diagram.data.interactors.model;
 
+import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.Segment;
 import org.reactome.web.diagram.data.layout.category.SegmentCategory;
 import org.reactome.web.diagram.data.layout.impl.SegmentFactory;
+import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public abstract class InteractorLink extends DiagramInteractor {
+public abstract class InteractorLink extends DiagramInteractor implements Comparable<InteractorLink> {
 
     final Node from;
     Coordinate fromPoint;
@@ -77,12 +79,20 @@ public abstract class InteractorLink extends DiagramInteractor {
 
     @Override
     public boolean isVisible() {
-        return visible;
+        double threshold = InteractorsContent.getInteractorsThreshold(LoaderManager.INTERACTORS_RESOURCE);
+        return visible && score >= threshold;
     }
 
     @Override
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    @Override
+    public int compareTo(InteractorLink o) {
+        int n = Double.compare(o.score, score);
+        if (n == 0) return getToAccession().compareTo(o.getToAccession());
+        return n;
     }
 
     @Override

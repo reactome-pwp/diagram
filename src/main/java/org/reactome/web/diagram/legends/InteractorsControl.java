@@ -116,7 +116,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     }
 
     private void update() {
-        int burstEntities = context.getInteractors().getNumberOfBustEntities(currentResource);
+        int burstEntities = context.getContent().getNumberOfBurstEntities();
         if (burstEntities == 0) {
             setVisible(false);
         } else {
