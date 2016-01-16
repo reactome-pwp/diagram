@@ -1,6 +1,5 @@
 package org.reactome.web.diagram.util.interactors;
 
-import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
@@ -24,17 +23,10 @@ public class InteractorsLayout {
     private static final int BOX_HEIGHT = 25;
     private static final int RADIUS = 200;
 
-    private String acc;
     private Node node;
 
     public InteractorsLayout(Node node) {
         this.node = node;
-        GraphPhysicalEntity pe = node.getGraphObject();
-        this.acc = pe.getIdentifier();
-    }
-
-    public String getAcc() {
-        return acc;
     }
 
     public Node getNode() {
@@ -42,7 +34,7 @@ public class InteractorsLayout {
     }
 
     public boolean doLayout(InteractorEntity entity, int i, int n) {
-        return doLayout(node, entity, i, n, false);
+        return doLayout(node, entity, i, n, !entity.isVisible());
     }
 
     public static boolean doLayout(Node node, InteractorEntity entity, int i, int n, boolean force) {
@@ -53,8 +45,8 @@ public class InteractorsLayout {
             double angle = delta * i + OFFSET;
             Coordinate center = getCentre(node.getProp());
 
-            double x = center.getX() + RADIUS * Math.cos(angle);
-            double y = center.getY() + RADIUS * Math.sin(angle);
+            double x = center.getX() - RADIUS * Math.cos(angle);
+            double y = center.getY() - RADIUS * Math.sin(angle);
 
             entity.setMinX(x - BOX_WIDTH);
             entity.setMaxX(x + BOX_WIDTH);
