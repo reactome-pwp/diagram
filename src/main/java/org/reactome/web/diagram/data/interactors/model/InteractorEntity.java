@@ -5,10 +5,8 @@ import org.reactome.web.diagram.data.interactors.common.LinkCommon;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
-import org.reactome.web.diagram.util.MapSet;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -18,7 +16,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
     private String accession;
 
     Set<GraphPhysicalEntity> interactsWith = new HashSet<>();
-    MapSet<Node, InteractorLink> links = new MapSet<>();
+    Map<Node, InteractorLink> links = new HashMap<>();
 
     public InteractorEntity(String accession) {
         this.accession = accession;
@@ -32,7 +30,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
 
         DynamicLink link = new DynamicLink(node, this, id, score);
         interactors.add(link);
-        links.add(node, link);
+        links.put(node, link);
         return interactors;
     }
 
@@ -76,14 +74,12 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
         return rtn;
     }
 
-    public Set<InteractorLink> getLinks() {
+    public Collection<InteractorLink> getLinks() {
         return links.values();
     }
 
-    public Set<InteractorLink> getLinks(Node node){
-        Set<InteractorLink> rtn = links.getElements(node);
-        if(rtn!=null) return rtn;
-        return new HashSet<>();
+    public InteractorLink getLink(Node node){
+        return links.get(node);
     }
 
     @Override
