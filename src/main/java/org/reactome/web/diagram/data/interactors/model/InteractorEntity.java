@@ -40,6 +40,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
         return interactsWith;
     }
 
+    @Override
     public String getAccession() {
         return accession;
     }
