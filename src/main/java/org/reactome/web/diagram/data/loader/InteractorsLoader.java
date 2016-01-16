@@ -9,9 +9,6 @@ import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsExceptio
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsFactory;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
-import org.springframework.util.StringUtils;
-
-import java.util.*;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -42,7 +39,7 @@ public class InteractorsLoader implements RequestCallback {
 
     public void load(DiagramContent content, String resource){
         if(resource==null){
-            this.handler.onInteractorsLoaderError(new InteractorsException(resource, "Resource not specified"));
+            this.handler.onInteractorsLoaderError(new InteractorsException(null, "Resource not specified"));
             return;
         }
         this.resource = resource;
@@ -61,7 +58,6 @@ public class InteractorsLoader implements RequestCallback {
         String url = PREFIX + "static/proteins/details/?v=" + LoaderManager.version;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
         try {
-
             this.request = requestBuilder.sendRequest(post.toString(), this);
         } catch (RequestException e) {
             this.handler.onInteractorsLoaderError(new InteractorsException(resource, e.getMessage()));
