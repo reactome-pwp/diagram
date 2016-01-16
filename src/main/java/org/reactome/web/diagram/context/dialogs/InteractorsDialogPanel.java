@@ -25,7 +25,6 @@ import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -125,13 +124,9 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
         }
     }
 
-
     private void setInteractions() {
         if (context != null) {
-            Set<RawInteractor> aux = context.getInteractors().getRawInteractors(currentResource, physicalEntity.getIdentifier());
-            if(aux!=null) {
-                interactions.addAll(aux);
-            }
+            interactions.addAll(context.getInteractors().getRawInteractors(currentResource, physicalEntity.getIdentifier()));
             interactorsTable.updateRows(interactions);
             showLoading(false);
         }
