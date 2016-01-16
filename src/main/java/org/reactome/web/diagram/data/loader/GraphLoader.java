@@ -45,15 +45,16 @@ public class GraphLoader implements RequestCallback {
     public void onResponseReceived(Request request, Response response) {
         switch (response.getStatusCode()){
             case Response.SC_OK:
+                long start = System.currentTimeMillis();
+                Graph graph;
                 try {
-                    long start = System.currentTimeMillis();
                     //Creates the graph
-                    Graph graph = GraphFactory.getGraphObject(Graph.class, response.getText());
-                    long time = System.currentTimeMillis() - start;
-                    this.handler.graphLoaded(graph, time);
+                    graph = GraphFactory.getGraphObject(Graph.class, response.getText());
                 } catch (DiagramObjectException e) {
                     this.handler.onGraphLoaderError(e);
+                    return;
                 }
+                this.handler.graphLoaded(graph, System.currentTimeMillis() - start);
                 break;
             default:
                 this.handler.onGraphLoaderError(new Exception(response.getStatusText()));
