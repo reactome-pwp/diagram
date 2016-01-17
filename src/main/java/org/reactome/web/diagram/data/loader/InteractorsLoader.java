@@ -2,9 +2,13 @@ package org.reactome.web.diagram.data.loader;
 
 import com.google.gwt.http.client.*;
 import org.reactome.web.diagram.client.DiagramFactory;
+import org.reactome.web.diagram.data.DiagramContent;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsException;
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsFactory;
+import org.reactome.web.diagram.data.layout.DiagramObject;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -33,16 +37,29 @@ public class InteractorsLoader implements RequestCallback {
         }
     }
 
-    public void load(String stId, String resource){
+    public void load(DiagramContent content, String resource){
         if(resource==null){
-            this.handler.onInteractorsLoaderError(new InteractorsException(resource, "Resource not specified"));
+            this.handler.onInteractorsLoaderError(new InteractorsException(null, "Resource not specified"));
             return;
         }
         this.resource = resource;
-        String url = PREFIX + resource + "/" + stId + ".details.json?v=" + LoaderManager.version;
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
+
+        StringBuilder post = new StringBuilder();
+        for (DiagramObject diagramObject : content.getDiagramObjects()) {
+            GraphObject graphObject = diagramObject.getGraphObject();
+            if(graphObject instanceof GraphPhysicalEntity){
+                GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+                if (pe.getIdentifier() != null) {
+                    post.append(pe.getIdentifier()).append(",");
+                }
+            }
+        }
+        if(post.length()>0) post.delete(post.length()-1, post.length());
+
+        String url = PREFIX + "static/proteins/details/?v=" + LoaderManager.version;
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
         try {
-            this.request = requestBuilder.sendRequest(null, this);
+            this.request = requestBuilder.sendRequest(post.toString(), this);
         } catch (RequestException e) {
             this.handler.onInteractorsLoaderError(new InteractorsException(resource, e.getMessage()));
         }

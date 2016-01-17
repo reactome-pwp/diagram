@@ -39,4 +39,27 @@ public class StaticLink extends InteractorLink {
     public Node getNode(){
         return to;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        StaticLink that = (StaticLink) o;
+
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (from != null ? !from.equals(that.from) : that.from != null) return false;
+        return to != null ? to.equals(that.to) : that.to == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        result = 31 * result + (from != null ? from.hashCode() : 0);
+        result = 31 * result + (to != null ? to.hashCode() : 0);
+        return result;
+    }
 }
