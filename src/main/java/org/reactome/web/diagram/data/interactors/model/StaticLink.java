@@ -20,6 +20,11 @@ public class StaticLink extends InteractorLink {
         setBoundaries(toCentre);
     }
 
+    public String getAccession(){
+        GraphPhysicalEntity pe = to.getGraphObject();
+        return pe.getIdentifier();
+    }
+
     @Override
     public Coordinate getTo() {
         return toCentre;

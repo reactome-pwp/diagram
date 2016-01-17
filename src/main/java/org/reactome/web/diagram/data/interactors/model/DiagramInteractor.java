@@ -14,6 +14,8 @@ public abstract class DiagramInteractor implements QuadTreeBox {
     DiagramInteractor() {
     }
 
+    public abstract String getAccession();
+
     @Override
     public double getMinX() {
         return minX;

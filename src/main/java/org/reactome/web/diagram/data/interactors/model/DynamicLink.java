@@ -16,6 +16,10 @@ public class DynamicLink extends InteractorLink {
         setBoundaries(to.getCentre());
     }
 
+    public String getAccession(){
+        return to.getAccession();
+    }
+
     @Override
     public Coordinate getTo() {
         return to.getCentre(); //This needs to be calculated every time since InteractorEntity is Draggable
