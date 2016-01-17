@@ -147,14 +147,16 @@ public class InteractorsContent {
     }
 
     public List<InteractorLink> getDiagramInteractions(String resource, Node node) {
-        List<InteractorLink> rtn = new ArrayList<>();
         MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource.toLowerCase());
         if (cache != null){
             Set<InteractorLink> set = cache.getElements(node);
-            if(set!=null) rtn.addAll(set);
+            if (set != null) {
+                List<InteractorLink> rtn = new ArrayList<>(set);
+                Collections.sort(rtn);
+                return rtn;
+            }
         }
-        Collections.sort(rtn);
-        return rtn;
+        return null;
     }
 
     public InteractorEntity getDiagramInteractor(String resource, String acc) {
