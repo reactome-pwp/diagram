@@ -17,9 +17,9 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
     final Node from;
     Coordinate fromPoint;
 
-    private String id;
-    private double score;
-    private boolean visible = true;
+    String id;
+    double score;
+    boolean visible = true;
 
     InteractorLink(Node from, String id, double score) {
         this.from = from;
@@ -51,25 +51,6 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
         maxX = Math.max(fromPoint.getX(), to.getX());
         minY = Math.min(fromPoint.getY(), to.getY());
         maxY = Math.max(fromPoint.getY(), to.getY());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        InteractorLink that = (InteractorLink) o;
-
-        if (from != null ? !from.equals(that.from) : that.from != null) return false;
-        return id != null ? id.equals(that.id) : that.id == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = from != null ? from.hashCode() : 0;
-        result = 31 * result + (id != null ? id.hashCode() : 0);
-        return result;
     }
 
     @Override
