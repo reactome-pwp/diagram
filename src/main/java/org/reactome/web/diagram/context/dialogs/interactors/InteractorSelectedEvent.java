@@ -10,9 +10,11 @@ public class InteractorSelectedEvent<T extends RawInteractor> extends GwtEvent<I
     public static Type<InteractorSelectedHandler> TYPE = new Type<>();
 
     private T value;
+    private Selection selectedColumn;
 
-    public InteractorSelectedEvent(T value) {
+    public InteractorSelectedEvent(T value, Selection selectedColumn) {
         this.value = value;
+        this.selectedColumn = selectedColumn;
     }
 
     @Override
@@ -27,5 +29,15 @@ public class InteractorSelectedEvent<T extends RawInteractor> extends GwtEvent<I
 
     public T getValue() {
         return value;
+    }
+
+    public Selection getSelectedColumn() {
+        return selectedColumn;
+    }
+
+    public enum Selection {
+        ACCESSION,
+        ID,
+        SCORE
     }
 }

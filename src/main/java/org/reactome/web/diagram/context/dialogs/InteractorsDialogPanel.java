@@ -11,20 +11,15 @@ import org.reactome.web.diagram.context.dialogs.interactors.InteractorSelectedEv
 import org.reactome.web.diagram.context.dialogs.interactors.InteractorSelectedHandler;
 import org.reactome.web.diagram.context.dialogs.interactors.InteractorsTable;
 import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.loader.LoaderManager;
-import org.reactome.web.diagram.events.InteractorHoveredEvent;
-import org.reactome.web.diagram.events.InteractorsErrorEvent;
-import org.reactome.web.diagram.events.InteractorsLoadedEvent;
-import org.reactome.web.diagram.events.InteractorsResourceChangedEvent;
-import org.reactome.web.diagram.handlers.InteractorHoveredHandler;
-import org.reactome.web.diagram.handlers.InteractorsErrorHandler;
-import org.reactome.web.diagram.handlers.InteractorsLoadedHandler;
-import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
+import org.reactome.web.diagram.events.*;
+import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.Console;
 
 import java.util.LinkedList;
@@ -34,7 +29,7 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class InteractorsDialogPanel extends Composite implements InteractorSelectedHandler, InteractorsLoadedHandler,
-        InteractorsResourceChangedHandler, InteractorsErrorHandler, InteractorHoveredHandler {
+        InteractorsResourceChangedHandler, InteractorsErrorHandler, InteractorHoveredHandler, InteractorsFilteredHandler {
 
     private EventBus eventBus;
     private FlowPanel container;
@@ -70,6 +65,7 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
         this.eventBus.addHandler(InteractorsErrorEvent.TYPE, this);
         this.eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
         this.eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
+        this.eventBus.addHandler(InteractorsFilteredEvent.TYPE, this);
     }
 
     public void forceDraw(){
@@ -91,13 +87,14 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
     }
 
     @Override
+    public void onInteractorsFiltered(InteractorsFilteredEvent event) {
+        interactorsTable.setThreshold(event.getScore());
+    }
+
+    @Override
     public void onInteractorHovered(InteractorHoveredEvent event) {
         DiagramInteractor interactor = event.getInteractor();
-        String accession = null;
-        if(interactor != null) {
-            accession = interactor.getAccession();
-        }
-        interactorsTable.setHovered(accession);
+        interactorsTable.setHovered(interactor);
     }
 
     @Override
@@ -128,7 +125,8 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
         container = new FlowPanel();
         container.setStyleName(RESOURCES.getCSS().container());
 
-        interactorsTable = new InteractorsTable("Interactors", analysisType, expColumns, min, max, selectedExpCol);
+        double threshold = InteractorsContent.getInteractorsThreshold(currentResource);
+        interactorsTable = new InteractorsTable("Interactors", threshold, analysisType, expColumns, min, max, selectedExpCol);
         interactorsTable.setHeight("150px");
         interactorsTable.addMoleculeSelectedHandler(this);
 

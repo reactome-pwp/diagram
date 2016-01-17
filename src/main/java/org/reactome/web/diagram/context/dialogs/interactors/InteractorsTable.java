@@ -3,7 +3,9 @@ package org.reactome.web.diagram.context.dialogs.interactors;
 import com.google.gwt.cell.client.ClickableTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.CssResource.ImportedWithPrefix;
@@ -14,7 +16,11 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HeaderPanel;
 import com.google.gwt.view.client.ListDataProvider;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
+import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
+import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
+import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 
 import java.util.List;
 
@@ -27,12 +33,16 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
     private AnalysisType analysisType;
     private String name;
 
-    public InteractorsTable(String name, AnalysisType analysisType, List<String> expression, Double min, Double max, int sel) {
+    private T hoveredItem;
+    private double threshold;
+
+    public InteractorsTable(String name, double threshold, AnalysisType analysisType, List<String> expression, Double min, Double max, int sel) {
         super(0, (MoleculesTableResource) GWT.create(MoleculesTableResource.class));
         this.name = name;
         this.analysisType = analysisType;
+        this.threshold = threshold;
         setAlwaysShowScrollBars(false);
-        setEmptyTableWidget(new HTML("No interactors to Display"));
+        setEmptyTableWidget(new HTML("No interactors to display"));
 
         dataProvider = new ListDataProvider<>();
         dataProvider.addDataDisplay(this);
@@ -54,7 +64,6 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         insertColumn(0, type, name);
         insertColumn(1, buildIDColumn(), "ID");
         insertColumn(2, buildScoreColumn(), "Score");
-//        redraw();
     }
 
     public void updateRows(List<T> newList){
@@ -64,27 +73,60 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         setRowCount(newList.size());
     }
 
-    private List<T> sortMolecules(List<T> molecules, AnalysisType analysisType){
-//        Collections.sort(molecules, GraphPhysicalEntity.getIdentifierComparator());
-//        List<T> list = new LinkedList<>();
-//        List<T> tailList = new LinkedList<>();
-//        if(analysisType==null || analysisType == AnalysisType.OVERREPRESENTATION || analysisType==AnalysisType.SPECIES_COMPARISON) {
-//            // We have to move all the NOT HIT molecules at the very end
-//            for (T molecule : molecules) {
-//                if (!molecule.isHit()) tailList.add(molecule);
-//                else list.add(molecule);
-//            }
-//        }else{
-//            // We have to move all the molecules without expression at the very end
-//            for (T molecule : molecules) {
-//                if (molecule.getExpression() == null || molecule.getExpression().isEmpty()) tailList.add(molecule);
-//                else list.add(molecule);
-//            }
-//        }
-//        list.addAll(tailList);
-//        return list;
+    public void setHovered(DiagramInteractor hovered) {
+        this.hoveredItem = null;
+        if (hovered != null){
+            List<T> list = dataProvider.getList();
+            for (int i = 0; i < list.size(); i++) {
+                T object = list.get(i);
+                if(hovered instanceof InteractorEntity && hovered.getAccession().equals(object.getAcc())){
+                    this.hoveredItem = object;
+                    break;
+                } else if (hovered instanceof InteractorLink && ((InteractorLink) hovered).getId().equals(object.getId())) {
+                    this.hoveredItem = object;
+                    break;
+                }
+            }
+        }
+        applyThreshold();
+        highlightHoveredItem();
+    }
 
-        return molecules;
+    public void setThreshold(double threshold){
+        this.threshold = threshold;
+        applyThreshold();
+    }
+
+    private void highlightHoveredItem(){
+        List<T> list = dataProvider.getList();
+        for(int i=0;i<list.size();i++){
+            T object = dataProvider.getList().get(i);
+            if(object.equals(hoveredItem)){
+                getRowElement(i).getStyle().setBackgroundColor(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax());
+                getRowElement(i).getCells().getItem(0).getStyle().setColor("#000000");
+                getRowElement(i).getCells().getItem(1).getStyle().setColor("#000000");
+                getRowElement(i).getCells().getItem(2).getStyle().setColor("#000000");
+                getRowElement(i).scrollIntoView();
+            }else{
+                getRowElement(i).getStyle().clearBackgroundColor();
+            }
+        }
+    }
+
+    private void applyThreshold(){
+        List<T> list = dataProvider.getList();
+        for(int i=0;i<list.size();i++){
+            T object = dataProvider.getList().get(i);
+            if(object.getScore()<threshold ){
+                getRowElement(i).getCells().getItem(0).getStyle().setColor("#AAAAAA");
+                getRowElement(i).getCells().getItem(1).getStyle().setColor("#AAAAAA");
+                getRowElement(i).getCells().getItem(2).getStyle().setColor("#AAAAAA");
+            }else{
+                getRowElement(i).getCells().getItem(0).getStyle().setColor("#FFFFFF");
+                getRowElement(i).getCells().getItem(1).getStyle().setColor("#FFFFFF");
+                getRowElement(i).getCells().getItem(2).getStyle().setColor("#FFFFFF");
+            }
+        }
     }
 
     private Column<T, String> buildColumnTitle() {
@@ -96,20 +138,9 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         };
         columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {
             public void update(int index, T object, String value) {
-                fireEvent(new InteractorSelectedEvent(object));
+                fireEvent(new InteractorSelectedEvent(object, InteractorSelectedEvent.Selection.ACCESSION));
             }
         });
-        return columnTitle;
-    }
-
-    private Column<T, String> buildScoreColumn() {
-        Column<T, String> columnTitle = new Column<T, String>(new ClickableTextCell()) {
-            @Override
-            public String getValue(T object) {
-                return "" + object.getScore();
-            }
-        };
-//        columnTitle.setSortable(true);
         return columnTitle;
     }
 
@@ -120,21 +151,38 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
                 return "" + object.getId();
             }
         };
-//        columnTitle.setSortable(true);
+        columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {
+            public void update(int index, T object, String value) {
+                fireEvent(new InteractorSelectedEvent(object, InteractorSelectedEvent.Selection.ID));
+            }
+        });
+        return columnTitle;
+    }
+
+    private Column<T, String> buildScoreColumn() {
+        Column<T, String> columnTitle = new Column<T, String>(new ClickableTextCell()) {
+            @Override
+            public String getValue(T object) {
+                return NumberFormat.getFormat("0.00000").format(object.getScore());
+            }
+        };
+        columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {
+            public void update(int index, T object, String value) {
+                fireEvent(new InteractorSelectedEvent(object, InteractorSelectedEvent.Selection.SCORE));
+            }
+        });
         return columnTitle;
     }
 
     @Override
     public void redraw() {
         super.redraw();
-        if(this.analysisType==AnalysisType.OVERREPRESENTATION || this.analysisType==AnalysisType.SPECIES_COMPARISON ) {
-//            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-//                @Override
-//                public void execute() {
-//                    applyORAColour();
-//                }
-//            });
-        }
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                applyThreshold();
+            }
+        });
     }
 
 
