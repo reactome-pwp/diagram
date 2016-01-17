@@ -245,6 +245,7 @@ public class InteractorsContent {
     }
 
     private void setInteractorsSummary(InteractorsSummary summary, MapSet<String, GraphObject> identifierMap) {
+        if(summary.getNumber() == 0) return;
         Set<GraphObject> elements = identifierMap.getElements(summary.getAccession());
         if (elements != null) {
             for (GraphObject graphObject : elements) {
