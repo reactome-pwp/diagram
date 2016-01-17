@@ -72,6 +72,7 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
         }else{
             this.pin.setPos(getMousePosition(event), this.canvas.getOffsetWidth(), (int) this.pin.r);
             updateValueBox(getPercentageFromPinPosition());
+            checkPinMoved();
         }
         draw();
     }
