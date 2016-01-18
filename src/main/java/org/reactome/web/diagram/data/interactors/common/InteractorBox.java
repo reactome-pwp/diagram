@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.data.interactors.common;
 
 import org.reactome.web.diagram.data.layout.Coordinate;
+import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import uk.ac.ebi.pwp.structures.quadtree.client.QuadTreeBox;
 
 /**
@@ -57,5 +58,9 @@ public class InteractorBox implements QuadTreeBox {
 
     public double getHeight() {
         return height;
+    }
+
+    public Coordinate getCentre() {
+       return CoordinateFactory.get(minX + width/2, minY + height/2);
     }
 }
