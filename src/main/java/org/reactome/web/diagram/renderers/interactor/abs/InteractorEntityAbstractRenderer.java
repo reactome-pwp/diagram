@@ -5,10 +5,10 @@ import org.reactome.web.diagram.data.interactors.common.InteractorBox;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
+import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.layout.abs.TextRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
-import org.reactome.web.diagram.util.Console;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -36,9 +36,15 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
         if(!item.isVisible()) return;
         InteractorEntity node = (InteractorEntity) item;
         if(node.getAccession() == null || node.getAccession().isEmpty()) return;
-        Coordinate centre = node.getCentre().transform(factor, offset);
+        InteractorBox box = item.transform(factor, offset);
         TextRenderer textRenderer = new TextRenderer(RendererProperties.WIDGET_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
-        textRenderer.drawTextSingleLine(ctx, node.getAccession(), centre);
+        TextMetrics metrics = ctx.measureText(node.getAccession());
+        if(metrics.getWidth()<=box.getWidth() - 2 * RendererProperties.NODE_TEXT_PADDING) {
+            textRenderer.drawTextSingleLine(ctx, node.getAccession(), box.getCentre());
+        } else {
+            textRenderer.drawTextMultiLine(ctx, node.getAccession(), NodePropertiesFactory.get(box));
+        }
+
     }
 
     @Override
