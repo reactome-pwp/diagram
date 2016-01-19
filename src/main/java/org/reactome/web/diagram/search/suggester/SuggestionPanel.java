@@ -11,6 +11,7 @@ import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.cellview.client.HasKeyboardPagingPolicy;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -18,8 +19,7 @@ import com.google.gwt.view.client.SingleSelectionModel;
 import org.reactome.web.diagram.controls.top.search.SearchPerformedEvent;
 import org.reactome.web.diagram.controls.top.search.SearchPerformedHandler;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
-import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
-import org.reactome.web.diagram.data.interactors.model.InteractorLink;
+import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.events.SuggestionSelectedEvent;
 import org.reactome.web.diagram.search.handlers.SuggestionSelectedHandler;
@@ -56,12 +56,9 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
             }else if(item instanceof GraphObject) {
                 GraphObject graphObject = (GraphObject) item;
                 return graphObject.getDbId();
-            } else if( item instanceof InteractorEntity) {
-                InteractorEntity interactorEntity = (InteractorEntity) item;
-                return interactorEntity.getAccession();
-            } else if (item instanceof InteractorLink) {
-                InteractorLink interactorLink = (InteractorLink) item;
-                return interactorLink.getId();
+            } else if( item instanceof InteractorSearchResult) {
+                InteractorSearchResult interactorSearchResult = (InteractorSearchResult) item;
+                return interactorSearchResult.getAcc() + interactorSearchResult.getId();
             }
             return null;
         }
@@ -82,6 +79,9 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
 
         suggestions.setKeyboardPagingPolicy(HasKeyboardPagingPolicy.KeyboardPagingPolicy.INCREASE_RANGE);
         suggestions.setKeyboardSelectionPolicy(HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.DISABLED);
+
+        dataProvider = new ListDataProvider<>();
+        dataProvider.addDataDisplay(this.suggestions);
 
         this.add(suggestions);
         //Setting the legend style
@@ -119,10 +119,19 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
     public void onSearchPerformed(SearchPerformedEvent event) {
         SearchResultObject sel = selectionModel.getSelectedObject();
         List<SearchResultObject> searchResult = event.getSuggestions();
-        if(!searchResult.isEmpty() && !searchResult.contains(sel)) selectionModel.clear();
+        if(!searchResult.isEmpty() && !searchResult.contains(sel)) {
+            selectionModel.clear();
+        } else if (searchResult.isEmpty() && !event.getTerm().isEmpty()){
+            suggestions.setEmptyListWidget(new HTML("No results found for '" + event.getTerm() +"'"));
+        } else {
+            suggestions.setEmptyListWidget(null);
+        }
 
-        dataProvider = new ListDataProvider<>(searchResult);
-        dataProvider.addDataDisplay(this.suggestions);
+        dataProvider.getList().clear();
+        dataProvider.getList().addAll(searchResult);
+        suggestions.setVisibleRange(0, searchResult.size()); //configure list paging
+        suggestions.setRowCount(searchResult.size());
+
         if (dataProvider.getList().isEmpty()) {
             fireEvent(new SuggestionSelectedEvent(null));
         }else{
