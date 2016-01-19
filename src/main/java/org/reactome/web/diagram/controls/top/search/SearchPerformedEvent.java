@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.controls.top.search;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.search.SearchResultObject;
 
 import java.util.List;
 
@@ -11,9 +11,11 @@ import java.util.List;
 public class SearchPerformedEvent extends GwtEvent<SearchPerformedHandler> {
     public static Type<SearchPerformedHandler> TYPE = new Type<>();
 
-    private List<GraphObject> suggestions;
+    private String term;
+    private List<SearchResultObject> suggestions;
 
-    public SearchPerformedEvent(List<GraphObject> suggestions) {
+    public SearchPerformedEvent(String term, List<SearchResultObject> suggestions) {
+        this.term = term;
         this.suggestions = suggestions;
     }
 
@@ -27,7 +29,11 @@ public class SearchPerformedEvent extends GwtEvent<SearchPerformedHandler> {
         handler.onSearchPerformed(this);
     }
 
-    public List<GraphObject> getSuggestions() {
+    public String getTerm() {
+        return term;
+    }
+
+    public List<SearchResultObject> getSuggestions() {
         return suggestions;
     }
 }

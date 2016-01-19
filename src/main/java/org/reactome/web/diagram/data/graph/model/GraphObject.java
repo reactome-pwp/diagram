@@ -8,6 +8,7 @@ import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
 import org.reactome.web.diagram.data.layout.Connector;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.search.SearchResultObject;
 
 import java.util.*;
 
@@ -15,7 +16,7 @@ import java.util.*;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public abstract class GraphObject implements Comparable<GraphObject> {
+public abstract class GraphObject implements Comparable<GraphObject>, SearchResultObject {
     private Long dbId;
     private String stId;
     private String displayName;

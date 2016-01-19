@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class InfoPanel extends Composite {
+public class GraphObjectInfoPanel extends Composite {
 
     GraphObject graphObject;
     EventBus eventBus;
@@ -27,7 +27,7 @@ public class InfoPanel extends Composite {
         OBJECT_INFO_RESOURCES.getCSS().ensureInjected();
     }
 
-    public InfoPanel(EventBus eventBus, GraphObject graphObject) {
+    public GraphObjectInfoPanel(EventBus eventBus, GraphObject graphObject) {
         this.eventBus = eventBus;
         this.graphObject = graphObject;
         this.content = new FlowPanel();

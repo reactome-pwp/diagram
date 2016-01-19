@@ -9,13 +9,14 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.search.SearchResultObject;
 
 /**
  * A custom {@link Cell} used to render the suggestion for a {@link GraphObject}
  *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class SuggestionCell extends AbstractCell<GraphObject> {
+public class SuggestionCell extends AbstractCell<SearchResultObject> {
 
     interface Templates extends SafeHtmlTemplates {
         @SafeHtmlTemplates.Template("" +
@@ -48,7 +49,7 @@ public class SuggestionCell extends AbstractCell<GraphObject> {
 
 
     @Override
-    public void render(Context context, GraphObject value, SafeHtmlBuilder sb) {
+    public void render(Context context, SearchResultObject value, SafeHtmlBuilder sb) {
         /*
          * Always do a null check on the value. Cell widgets can pass null to
          * cells if the underlying data contains a null, or if the data arrives

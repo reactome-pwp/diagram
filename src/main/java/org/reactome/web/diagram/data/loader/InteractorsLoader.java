@@ -69,14 +69,16 @@ public class InteractorsLoader implements RequestCallback {
     public void onResponseReceived(Request request, Response response) {
         switch (response.getStatusCode()){
             case Response.SC_OK:
+                long start = System.currentTimeMillis();
+                RawInteractors interactors;
                 try {
-                    long start = System.currentTimeMillis();
-                    RawInteractors interactors = InteractorsFactory.getInteractorObject(RawInteractors.class, response.getText());
-                    long time = System.currentTimeMillis() - start;
-                    this.handler.interactorsLoaded(interactors, time);
+                    interactors = InteractorsFactory.getInteractorObject(RawInteractors.class, response.getText());
                 } catch (InteractorsException e) {
                     this.handler.onInteractorsLoaderError(e);
+                    return;
                 }
+                long time = System.currentTimeMillis() - start;
+                this.handler.interactorsLoaded(interactors, time);
                 break;
             default:
                 this.handler.onInteractorsLoaderError(new InteractorsException(resource, response.getStatusText()));

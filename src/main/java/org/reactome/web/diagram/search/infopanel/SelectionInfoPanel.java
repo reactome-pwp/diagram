@@ -2,6 +2,7 @@ package org.reactome.web.diagram.search.infopanel;
 
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.events.SuggestionSelectedEvent;
 import org.reactome.web.diagram.search.handlers.SuggestionSelectedHandler;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
@@ -20,9 +21,12 @@ public class SelectionInfoPanel extends AbstractAccordionPanel implements Sugges
     public void onSuggestionSelected(SuggestionSelectedEvent event) {
         this.clear();
 
-        GraphObject obj = event.getGraphObject();
+        SearchResultObject obj = event.getSearchResultObject();
         if(obj!=null) {
-            this.add(new InfoPanel(eventBus, obj));
+            if(obj instanceof GraphObject) {
+                this.add(new GraphObjectInfoPanel(eventBus, (GraphObject) obj));
+            }
+            //TODO
         }
     }
 }

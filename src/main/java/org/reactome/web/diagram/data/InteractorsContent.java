@@ -6,6 +6,7 @@ import org.reactome.web.diagram.data.interactors.common.InteractorsSummary;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorLink;
+import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
@@ -169,6 +170,21 @@ public class InteractorsContent {
     public Collection<DiagramInteractor> getHoveredTarget(String resource, Coordinate p, double factor) {
         double f = 1 / factor;
         return getVisibleInteractors(resource, new Box(p.getX() - f, p.getY() - f, p.getX() + f, p.getY() + f));
+    }
+
+    //We keep this cache to avoid creating it every time
+    private Map<String, List<InteractorSearchResult>> interactorsSearchItemsPerResource = new HashMap<>();
+    public List<InteractorSearchResult> getInteractorSearchResult(String resource) {
+        List<InteractorSearchResult> rtn = interactorsSearchItemsPerResource.get(resource);
+        if (rtn != null) return rtn;
+        rtn = new ArrayList<>();
+        MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.toLowerCase());
+        if (map != null)
+            for (String acc : map.keySet())
+                for (RawInteractor rawInteractor : map.getElements(acc))
+                    rtn.add(new InteractorSearchResult(acc, rawInteractor));
+        interactorsSearchItemsPerResource.put(resource, rtn);
+        return rtn;
     }
 
     public List<RawInteractor> getRawInteractors(String resource, String acc) {

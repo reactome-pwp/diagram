@@ -15,7 +15,7 @@ import java.util.Collection;
 public class DatabaseObjectListPanel extends FlowPanel {
 
     public DatabaseObjectListPanel(String title, Collection<? extends GraphObject> objects, EventBus eventBus) {
-        InfoPanel.SuggestionPanelCSS css = InfoPanel.OBJECT_INFO_RESOURCES.getCSS();
+        GraphObjectInfoPanel.SuggestionPanelCSS css = GraphObjectInfoPanel.OBJECT_INFO_RESOURCES.getCSS();
 
         this.setStyleName(css.databaseObjectListPanel());
 
