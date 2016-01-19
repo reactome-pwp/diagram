@@ -5,6 +5,7 @@
 .sliderValueBox {
     width: 23px;
     height: 17px;
+    margin-left: 5px;
     margin-top: 3px;
     float: right;
     background-color: #6E6E6E;
