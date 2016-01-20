@@ -2,7 +2,7 @@ package org.reactome.web.diagram.data.interactors.model;
 
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.resources.client.ImageResource;
-import org.reactome.web.diagram.data.graph.model.images.GraphObjectImages;
+import org.reactome.web.diagram.data.interactors.model.images.InteractorImages;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.search.SearchResultObject;
 
@@ -36,7 +36,7 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
 
     @Override
     public ImageResource getImageResource() {
-        return GraphObjectImages.INSTANCE.entityWithAccessionedSequence();
+        return InteractorImages.INSTANCE.interactor();
     }
 
     @Override
