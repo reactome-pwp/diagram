@@ -32,7 +32,8 @@
 .interactorResourceBtn:hover label{
     margin-left: 5px;
     cursor: pointer;
-    color: rgb(6, 107, 158);}
+    color: rgb(6, 107, 158);
+}
 
 .liveResourcesOuterPanel {
     height: 153px;
@@ -46,6 +47,12 @@
     color: white;
     height: auto;
     width: 245px;
+}
+
+.loadingPanel {
+    margin-left: 13px;
+    color: rgb(6, 107, 158);
+    font-size: small;
 }
 
 .interactorResourceListBtn{

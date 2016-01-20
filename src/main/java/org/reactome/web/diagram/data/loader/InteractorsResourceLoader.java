@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class InteractorsResourceLoader implements RequestCallback {
 
-    interface Handler {
+    public interface Handler {
         void interactorsResourcesLoaded(List<RawResource> resourceList, long time);
 
         void onInteractorsResourcesLoadError(ResourcesException exception);
