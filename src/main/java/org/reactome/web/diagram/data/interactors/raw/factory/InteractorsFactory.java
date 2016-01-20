@@ -4,10 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanFactory;
-import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
-import org.reactome.web.diagram.data.interactors.raw.RawInteractorEntity;
-import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
-import org.reactome.web.diagram.data.interactors.raw.Synonym;
+import org.reactome.web.diagram.data.interactors.raw.*;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -16,6 +13,7 @@ public abstract class InteractorsFactory {
 
     @SuppressWarnings("UnusedDeclaration")
     interface ModelAutoBeanFactory extends AutoBeanFactory {
+        AutoBean<RawResource> resource();
         AutoBean<Synonym> synonyms();
         AutoBean<RawInteractor> interactor();
         AutoBean<RawInteractorEntity> entityInteractors();
