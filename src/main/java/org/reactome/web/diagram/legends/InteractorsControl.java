@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.legends;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -78,15 +79,20 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     }
 
     @Override
-    public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        currentResource = event.getResource();
-        //context is null when the diagram is in the process of loading (loading message is meant to be displayed)
-        if (context == null || !context.getInteractors().isInteractorResourceCached(event.getResource())) {
-            setVisible(true);
-            displayLoader(true, event.getResource());
-        } else {
-            update();
-        }
+    public void onInteractorsResourceChanged(final InteractorsResourceChangedEvent event) {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                currentResource = event.getResource();
+                //context is null when the diagram is in the process of loading (loading message is meant to be displayed)
+                if (context == null || !context.getInteractors().isInteractorResourceCached(event.getResource())) {
+                    setVisible(true);
+                    displayLoader(true, event.getResource());
+                } else {
+                    update();
+                }
+            }
+        });
     }
 
     @Override
