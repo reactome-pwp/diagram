@@ -17,16 +17,22 @@ package org.reactome.web.diagram.data.interactors.common;
 public class InteractorsSummary {
 
     private String accession;
+    private Long diagramId;
     private int number;
     private boolean pressed = false;
 
-    public InteractorsSummary(String accession, int number) {
+    public InteractorsSummary(String accession, Long diagramId, int number) {
         this.accession = accession;
+        this.diagramId = diagramId;
         this.number = number;
     }
 
     public String getAccession() {
         return accession;
+    }
+
+    public Long getDiagramId() {
+        return diagramId;
     }
 
     public int getNumber() {
@@ -48,15 +54,12 @@ public class InteractorsSummary {
 
         InteractorsSummary that = (InteractorsSummary) o;
 
-        if (number != that.number) return false;
-        return accession != null ? accession.equals(that.accession) : that.accession == null;
+        return diagramId != null ? diagramId.equals(that.diagramId) : that.diagramId == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = accession != null ? accession.hashCode() : 0;
-        result = 31 * result + number;
-        return result;
+        return diagramId != null ? diagramId.hashCode() : 0;
     }
 }

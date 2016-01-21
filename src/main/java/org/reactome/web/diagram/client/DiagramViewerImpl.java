@@ -26,7 +26,6 @@ import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
-import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.ViewportUtils;
 import org.reactome.web.pwp.model.classes.Pathway;
 import org.reactome.web.pwp.model.util.LruCache;
@@ -482,8 +481,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         context.getContent().clearDisplayedInteractors();
         if(context.getInteractors().isInteractorResourceCached(event.getResource())) {
-            MapSet<String, GraphObject> identifiersMap = context.getContent().getIdentifierMap();
-            context.getInteractors().restoreInteractorsSummary(event.getResource(), identifiersMap);
+            context.getInteractors().restoreInteractorsSummary(event.getResource(), context.getContent());
         }
         forceDraw = true;
     }

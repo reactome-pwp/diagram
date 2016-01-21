@@ -12,6 +12,7 @@ import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.SummaryItem;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.pwp.model.util.LruCache;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
@@ -101,9 +102,24 @@ public class InteractorsContent {
     }
 
     public void cacheInteractors(String resource, String acc, Integer number, MapSet<String, GraphObject> identifierMap) {
-        InteractorsSummary summary = new InteractorsSummary(acc, number);
-        this.interactorsSummaryMap.add(resource.toLowerCase(), summary);
-        setInteractorsSummary(summary, identifierMap);
+        if(number == 0) return;
+        Set<GraphObject> elements = identifierMap.getElements(acc);
+        if (elements != null) {
+            for (GraphObject graphObject : elements) {
+                if (graphObject instanceof GraphPhysicalEntity) {
+                    GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+                    for (DiagramObject diagramObject : pe.getDiagramObjects()) {
+                        InteractorsSummary summary = new InteractorsSummary(acc, diagramObject.getId(), number);
+                        this.interactorsSummaryMap.add(resource.toLowerCase(), summary);
+                        Node node = (Node) diagramObject;
+                        node.getInteractorsSummary().setNumber(summary.getNumber());
+                        node.getInteractorsSummary().setPressed(summary.isPressed());
+                        //The changes need to be updated in the cache, so when restoring, the pressed ones are known
+                        node.setDiagramEntityInteractorsSummary(summary);
+                    }
+                }
+            }
+        }
     }
 
 
@@ -259,11 +275,16 @@ public class InteractorsContent {
         }
     }
 
-    public void restoreInteractorsSummary(String resource, MapSet<String, GraphObject> identifierMap) {
+    public void restoreInteractorsSummary(String resource, DiagramContent content) {
         Set<InteractorsSummary> items = interactorsSummaryMap.getElements(resource.toLowerCase());
         if (items == null) return;
         for (InteractorsSummary summary : items) {
-            setInteractorsSummary(summary, identifierMap);
+            Console.info(content.getDiagramObject(summary.getDiagramId()));
+            Node node = (Node) content.getDiagramObject(summary.getDiagramId());
+            node.getInteractorsSummary().setNumber(summary.getNumber());
+            node.getInteractorsSummary().setPressed(summary.isPressed());
+            //The changes need to be updated in the cache, so when restoring, the pressed ones are known
+            node.setDiagramEntityInteractorsSummary(summary);
         }
     }
 
@@ -278,24 +299,5 @@ public class InteractorsContent {
 
     public static void setInteractorsThreshold(String resource, double threshold) {
         interactorsThreshold.put(resource.toLowerCase(), threshold);
-    }
-
-    private void setInteractorsSummary(InteractorsSummary summary, MapSet<String, GraphObject> identifierMap) {
-        if(summary.getNumber() == 0) return;
-        Set<GraphObject> elements = identifierMap.getElements(summary.getAccession());
-        if (elements != null) {
-            for (GraphObject graphObject : elements) {
-                if (graphObject instanceof GraphPhysicalEntity) {
-                    GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
-                    for (DiagramObject diagramObject : pe.getDiagramObjects()) {
-                        Node node = (Node) diagramObject;
-                        node.getInteractorsSummary().setNumber(summary.getNumber());
-                        node.getInteractorsSummary().setPressed(summary.isPressed());
-                        //The changes need to be updated in the cache, so when restoring, the pressed ones are known
-                        node.setDiagramEntityInteractorsSummary(summary);
-                    }
-                }
-            }
-        }
     }
 }
