@@ -2,24 +2,35 @@ package org.reactome.web.diagram.data.interactors.model;
 
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.resources.client.ImageResource;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.model.images.InteractorImages;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.search.SearchResultObject;
+
+import java.util.Set;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class InteractorSearchResult implements Comparable<InteractorSearchResult>, SearchResultObject {
 
+    private String resource;
     private String diagramAcc;
     private RawInteractor rawInteractor;
+    private Set<GraphObject> interactsWith;
 
     private String primary;
     private String secondary;
 
-    public InteractorSearchResult(String diagramAcc, RawInteractor rawInteractor) {
+    public InteractorSearchResult(String resource, String diagramAcc, RawInteractor rawInteractor,  Set<GraphObject> interactsWith) {
+        this.resource = resource;
         this.diagramAcc = diagramAcc;
         this.rawInteractor = rawInteractor;
+        this.interactsWith = interactsWith;
+    }
+
+    public String getResource() {
+        return resource;
     }
 
     public String getDiagramAcc() {
@@ -32,6 +43,10 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
 
     public String getId() {
         return rawInteractor.getId();
+    }
+
+    public Set<GraphObject> getInteractsWith() {
+        return interactsWith;
     }
 
     @Override

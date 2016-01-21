@@ -4,7 +4,6 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
 
-
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
@@ -27,9 +26,12 @@ public class InteractorInfoPanel extends Composite {
         header.add(new InlineLabel(interactor.getAcc()));
         this.add(header);
         this.add(new Label("Type: Interactor"));
-        //TODO need access to the context
+        this.add(new Label("Resource: " + (interactor.getResource().equals("static") ? "Static (IntAct)" : interactor.getResource())));
+        if (!interactor.getInteractsWith().isEmpty()) {
+            String title = "Interacts with:";
+            this.add(new DatabaseObjectListPanel(title, interactor.getInteractsWith(), eventBus));
+        }
     }
-
     /**
      * Padding grows wider the div but this is not the expected behaviour here. To make it compatible
      * across all browsers the recommendation is having two divs

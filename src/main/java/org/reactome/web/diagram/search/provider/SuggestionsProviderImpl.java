@@ -38,7 +38,7 @@ public class SuggestionsProviderImpl implements SuggestionsProvider<SearchResult
                 rtn.add(obj);
             }
         }
-        for (InteractorSearchResult obj : context.getInteractors().getInteractorSearchResult(LoaderManager.INTERACTORS_RESOURCE)) {
+        for (InteractorSearchResult obj : context.getInteractors().getInteractorSearchResult(LoaderManager.INTERACTORS_RESOURCE, context.getContent())) {
             if(isTermInObject(obj, term)) {
                 rtn.add(obj);
             }

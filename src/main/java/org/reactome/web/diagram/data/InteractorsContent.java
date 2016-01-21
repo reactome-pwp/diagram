@@ -174,7 +174,7 @@ public class InteractorsContent {
 
     //We keep this cache to avoid creating it every time
     private Map<String, List<InteractorSearchResult>> interactorsSearchItemsPerResource = new HashMap<>();
-    public List<InteractorSearchResult> getInteractorSearchResult(String resource) {
+    public List<InteractorSearchResult> getInteractorSearchResult(String resource, DiagramContent content) {
         List<InteractorSearchResult> rtn = interactorsSearchItemsPerResource.get(resource);
         if (rtn != null) return rtn;
         rtn = new ArrayList<>();
@@ -182,9 +182,15 @@ public class InteractorsContent {
         if (map != null)
             for (String acc : map.keySet())
                 for (RawInteractor rawInteractor : map.getElements(acc))
-                    rtn.add(new InteractorSearchResult(acc, rawInteractor));
+                    rtn.add(new InteractorSearchResult(resource, acc, rawInteractor, getInteractsWith(acc, content)));
         interactorsSearchItemsPerResource.put(resource, rtn);
         return rtn;
+    }
+
+    private Set<GraphObject> getInteractsWith(String diagramAcc, DiagramContent content) {
+        Set<GraphObject> aux  = content.getIdentifierMap().getElements(diagramAcc);
+        if(aux != null) return aux;
+        return new HashSet<>();
     }
 
     public List<RawInteractor> getRawInteractors(String resource, String acc) {
