@@ -169,7 +169,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         loadingIcon.setVisible(visible);
         controlsFP.setVisible(!visible);
         if (visible) {
-            message.setText(MSG_LOADING + resource + "...");
+            message.setText(MSG_LOADING + (resource.equals("static") ? "Static (IntAct)" : resource) + "...");
         }
     }
 
@@ -201,6 +201,6 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
     private void setMessage(String msg) {
         loadingIcon.setVisible(false);
-        message.setText(msg);
+        message.setText(msg.equals("static") ? "Static (IntAct)" : msg);
     }
 }
