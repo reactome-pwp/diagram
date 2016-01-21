@@ -6,9 +6,9 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.model.images.InteractorImages;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.search.SearchResultObject;
+import org.reactome.web.diagram.util.MapSet;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,7 +20,7 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     private String resource;
     private String accession;
     private Map<String, Double> interaction;
-    private Set<GraphObject> interactsWith;
+    private MapSet<String, GraphObject> interactsWith;
 
     private String primary;
     private String secondary;
@@ -28,12 +28,12 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     public InteractorSearchResult(String resource, String accession) {
         this.resource = resource;
         this.accession = accession;
-        this.interactsWith = new HashSet<>();
+        this.interactsWith = new MapSet<>();
         this.interaction = new HashMap<>();
     }
 
-    public void addInteractsWith(Set<GraphObject> interactsWith){
-        this.interactsWith.addAll(interactsWith);
+    public void addInteractsWith(String interactionId, Set<GraphObject> interactsWith){
+        this.interactsWith.add(interactionId, interactsWith);
     }
 
     public void addInteraction(RawInteractor rawInteractor){
@@ -53,11 +53,11 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
         return accession;
     }
 
-    public Map<String, Double> getInteraction() {
-        return interaction;
+    public Double getInteractionScore(String interactionId) {
+        return interaction.get(interactionId);
     }
 
-    public Set<GraphObject> getInteractsWith() {
+    public MapSet<String, GraphObject> getInteractsWith() {
         return interactsWith;
     }
 

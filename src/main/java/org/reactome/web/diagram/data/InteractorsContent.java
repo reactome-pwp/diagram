@@ -206,7 +206,7 @@ public class InteractorsContent {
                         cache.put(accession, result);
                         rtn.add(result);
                     }
-                    result.addInteractsWith(getInteractsWith(diagramAcc, content));
+                    result.addInteractsWith(rawInteractor.getId(), getInteractsWith(diagramAcc, content));
                     result.addInteraction(rawInteractor);
                 }
             }

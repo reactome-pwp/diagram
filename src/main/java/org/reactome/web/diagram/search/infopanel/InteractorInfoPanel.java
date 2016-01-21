@@ -1,8 +1,13 @@
 package org.reactome.web.diagram.search.infopanel;
 
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
+import org.reactome.web.diagram.util.MapSet;
+
+import java.util.Set;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -27,9 +32,14 @@ public class InteractorInfoPanel extends Composite {
         this.add(header);
         this.add(new Label("Type: Interactor"));
         this.add(new Label("Resource: " + (interactor.getResource().equals("static") ? "Static (IntAct)" : interactor.getResource())));
-        if (!interactor.getInteractsWith().isEmpty()) {
-            String title = "Interacts with:";
-            this.add(new DatabaseObjectListPanel(title, interactor.getInteractsWith(), eventBus));
+        MapSet<String, GraphObject> interactsWith = interactor.getInteractsWith();
+        for(String interactionId:interactsWith.keySet()) {
+            Set<GraphObject> interactors = interactsWith.getElements(interactionId);
+            if (!interactors.isEmpty()) {
+                Double score = interactor.getInteractionScore(interactionId);
+                String title = "Interacts with: [" + interactionId + "] - Score:" + (score!=null ? NumberFormat.getFormat("0.00000").format(score): "-");
+                this.add(new DatabaseObjectListPanel(title, interactors, eventBus));
+            }
         }
     }
     /**
