@@ -179,10 +179,22 @@ public class InteractorsContent {
         if (rtn != null) return rtn;
         rtn = new ArrayList<>();
         MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.toLowerCase());
-        if (map != null)
-            for (String acc : map.keySet())
-                for (RawInteractor rawInteractor : map.getElements(acc))
-                    rtn.add(new InteractorSearchResult(resource, acc, rawInteractor, getInteractsWith(acc, content)));
+        if (map != null) {
+            Map<String, InteractorSearchResult> cache = new HashMap<>();
+            for (String diagramAcc : map.keySet()) {
+                for (RawInteractor rawInteractor : map.getElements(diagramAcc)) {
+                    String accession = rawInteractor.getAcc();
+                    InteractorSearchResult result = cache.get(accession);
+                    if (result == null) {
+                        result = new InteractorSearchResult(resource, accession);
+                        cache.put(accession, result);
+                        rtn.add(result);
+                    }
+                    result.addInteractsWith(getInteractsWith(diagramAcc, content));
+                    result.addInteraction(rawInteractor);
+                }
+            }
+        }
         interactorsSearchItemsPerResource.put(resource, rtn);
         return rtn;
     }

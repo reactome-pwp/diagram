@@ -108,7 +108,7 @@ public class SuggestionsProviderImpl implements SuggestionsProvider<SearchResult
             return obj.getStId().toLowerCase().contains(term);
         } else if (searchResultObject instanceof InteractorSearchResult){
             InteractorSearchResult obj = (InteractorSearchResult) searchResultObject;
-            return obj.getAcc().toLowerCase().contains(term) || obj.getId().toLowerCase().contains(term);
+            return obj.containsTerm(term);
         }
         return false;
     }

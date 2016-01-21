@@ -23,7 +23,7 @@ public class InteractorInfoPanel extends Composite {
 
         FlowPanel header = new FlowPanel();
         header.setStyleName(css.infoHeader());
-        header.add(new InlineLabel(interactor.getAcc()));
+        header.add(new InlineLabel(interactor.getAccession()));
         this.add(header);
         this.add(new Label("Type: Interactor"));
         this.add(new Label("Resource: " + (interactor.getResource().equals("static") ? "Static (IntAct)" : interactor.getResource())));

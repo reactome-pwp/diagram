@@ -58,7 +58,7 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
                 return graphObject.getDbId();
             } else if( item instanceof InteractorSearchResult) {
                 InteractorSearchResult interactorSearchResult = (InteractorSearchResult) item;
-                return interactorSearchResult.getAcc() + interactorSearchResult.getId();
+                return interactorSearchResult.getAccession();
             }
             return null;
         }

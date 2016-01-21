@@ -7,6 +7,9 @@ import org.reactome.web.diagram.data.interactors.model.images.InteractorImages;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.search.SearchResultObject;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -15,34 +18,43 @@ import java.util.Set;
 public class InteractorSearchResult implements Comparable<InteractorSearchResult>, SearchResultObject {
 
     private String resource;
-    private String diagramAcc;
-    private RawInteractor rawInteractor;
+    private String accession;
+    private Map<String, Double> interaction;
     private Set<GraphObject> interactsWith;
 
     private String primary;
     private String secondary;
 
-    public InteractorSearchResult(String resource, String diagramAcc, RawInteractor rawInteractor,  Set<GraphObject> interactsWith) {
+    public InteractorSearchResult(String resource, String accession) {
         this.resource = resource;
-        this.diagramAcc = diagramAcc;
-        this.rawInteractor = rawInteractor;
-        this.interactsWith = interactsWith;
+        this.accession = accession;
+        this.interactsWith = new HashSet<>();
+        this.interaction = new HashMap<>();
+    }
+
+    public void addInteractsWith(Set<GraphObject> interactsWith){
+        this.interactsWith.addAll(interactsWith);
+    }
+
+    public void addInteraction(RawInteractor rawInteractor){
+        this.interaction.put(rawInteractor.getId(), rawInteractor.getScore());
+    }
+
+    public boolean containsTerm(String term){
+        return accession.toLowerCase().contains(term) || interaction.keySet().toString().toLowerCase().contains(term);
     }
 
     public String getResource() {
         return resource;
     }
 
-    public String getDiagramAcc() {
-        return diagramAcc;
+
+    public String getAccession() {
+        return accession;
     }
 
-    public String getAcc() {
-        return rawInteractor.getAcc();
-    }
-
-    public String getId() {
-        return rawInteractor.getId();
+    public Map<String, Double> getInteraction() {
+        return interaction;
     }
 
     public Set<GraphObject> getInteractsWith() {
@@ -66,8 +78,8 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
 
     @Override
     public void setSearchDisplay(String[] searchTerms) {
-        primary = rawInteractor.getAcc();
-        secondary= rawInteractor.getId();
+        primary = accession;
+        secondary = interaction.keySet().toString(); secondary = secondary.substring(1, secondary.length()-1);
 
         if (searchTerms == null || searchTerms.length == 0) return;
 
@@ -92,8 +104,6 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
 
     @Override
     public int compareTo(InteractorSearchResult o) {
-        int cmp = rawInteractor.getAcc().compareTo(o.rawInteractor.getAcc());
-        if (cmp == 0) return rawInteractor.getId().compareTo(o.rawInteractor.getId());
-        return cmp;
+        return accession.compareTo(o.accession);
     }
 }
