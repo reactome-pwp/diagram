@@ -60,8 +60,9 @@ public class LayoutManager implements DiagramLoadedHandler, DiagramRequestedHand
      * pointer is using the renderer isHovered method.
      */
     public Collection<HoveredItem> getHovered(Coordinate model) {
-        Collection<DiagramObject> target = this.context.getContent().getHoveredTarget(model, context.getDiagramStatus().getFactor());
         List<HoveredItem> rtn = new LinkedList<>();
+        if(context==null) return rtn;
+        Collection<DiagramObject> target = this.context.getContent().getHoveredTarget(model, context.getDiagramStatus().getFactor());
         for (DiagramObject item : target) {
             Renderer renderer = RendererManager.get().getRenderer(item);
             if (renderer != null) {
