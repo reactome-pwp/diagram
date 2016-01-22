@@ -14,7 +14,7 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
 public abstract class SummaryItemAbstractRenderer {
     enum Type {
         TL("#FFFFFF", "#FF0000", "#B80000"),
-        TR("#FFFFFF", "#FF0000", "#B80000"),
+        TR("#FFFFFF", "#F44336", "#B71C1C"),
         BR("#FFFFFF", "#ABABAB", "#ABABAB"),
         BL("#FFFFFF", "#ABABAB", "#ABABAB");
 
