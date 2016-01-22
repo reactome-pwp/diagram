@@ -32,6 +32,8 @@ public class InteractorsContent {
     static final int NUMBER_OF_ELEMENTS = 15;
     static final int MIN_AREA = 25;
 
+    static final double DEFAULT_SCORE = 0.45;
+
     static Map<String, Double> interactorsThreshold = new HashMap<>();
 
     private Map<String, MapSet<String, RawInteractor>> rawInteractorsCache; //resource -> node acc -> raw interactors
@@ -291,7 +293,7 @@ public class InteractorsContent {
     public static double getInteractorsThreshold(String resource) {
         Double threshold = interactorsThreshold.get(resource.toLowerCase());
         if (threshold == null) {
-            threshold = 0.5;
+            threshold = DEFAULT_SCORE;
             setInteractorsThreshold(resource, threshold);
         }
         return threshold;

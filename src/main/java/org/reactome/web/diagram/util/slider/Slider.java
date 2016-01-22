@@ -25,9 +25,14 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
     private SliderPin pin;
     private PinStatus pinStatus = PinStatus.STD;
     private double percentage = 0.0;
+    private double min;
+    private double max;
 
-    public Slider(int width, int height, double initialPercentage, boolean includeTextBox) {
+    public Slider(int width, int height, double min, double max, double initialPercentage, boolean includeTextBox) {
         this.percentage = initialPercentage;
+        this.min = min;
+        this.max = max;
+        //TODO Consistency check in the min-max-initialPercentage
         this.canvas = Canvas.createIfSupported();
         if(this.canvas !=null){
             this.canvas.setWidth(width + "px");
@@ -98,7 +103,10 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
     }
 
     public void setValue(double value){
-        int cX = (int) (Math.round((this.canvas.getOffsetWidth() - (2 * this.pin.r)) * value) + this.pin.r);
+        if (value<min) { value = min; }
+        else if (value>max) { value = max; }
+
+        int cX = (int) (Math.round((this.canvas.getOffsetWidth() - (2 * this.pin.r)) * (value - min)/(max-min) ) + this.pin.r);
         Point pos = new Point(cX, this.pin.pos.y);
         this.pin.setNewPos(pos);
         this.draw();
@@ -146,7 +154,7 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
         double y = tick * 3;
 
         int cR = (int) Math.round(tick * 2);
-        int cX = (int) Math.round((width - (2 * cR)) * percentage) + cR;
+        int cX = (int) Math.round((width - (2 * cR)) * (percentage-min)/(max-min)) + cR;
         int cY = (int) Math.round(height / 2.0);
 
         this.pin = new SliderPin(cX, cY, cR);
@@ -162,7 +170,7 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
     private double getPercentageFromPinPosition(){
         int x = this.pin.pos.x - (int) this.pin.r;
         double w = this.canvas.getOffsetWidth() - 2 * this.pin.r;
-        return Math.round( (x / w) * 100) / 100.0;
+        return Math.round( ((x * (max-min) / w) + min)  * 100) / 100.0;
     }
 
     private void updateValueBox(Double percentage){
