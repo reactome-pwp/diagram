@@ -17,10 +17,14 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
 
     @Override
     public void shape(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset){
+        InteractorEntity entity = (InteractorEntity) item;
         InteractorBox box = item.transform(factor, offset);
-//        ctx.bubble(box.getMinX(), box.getMinY(), box.getMaxX(), box.getMaxY());
-        ctx.beginPath();
-        ctx.rect(box.getMinX(), box.getMinY(), box.getWidth(), box.getHeight());
+        if(entity.isChemical()){
+            ctx.bubble(box.getMinX(), box.getMinY(), box.getMaxX(), box.getMaxY());
+        }else {
+            ctx.beginPath();
+            ctx.rect(box.getMinX(), box.getMinY(), box.getWidth(), box.getHeight());
+        }
     }
 
     @Override

@@ -14,13 +14,14 @@ import java.util.*;
 public class InteractorEntity extends DiagramInteractor implements Draggable {
 
     private String accession;
-
-    Set<GraphPhysicalEntity> interactsWith = new HashSet<>();
-    Map<Node, InteractorLink> links = new HashMap<>();
+    private boolean chemical;
 
     public InteractorEntity(String accession) {
         this.accession = accession;
+        this.chemical = accession.toLowerCase().contains("chebi");
     }
+    Set<GraphPhysicalEntity> interactsWith = new HashSet<>();
+    Map<Node, InteractorLink> links = new HashMap<>();
 
     public Set<InteractorLink> addInteraction(Node node, String id, double score) {
         //IMPORTANT: local set is meant to return ONLY the new ones
@@ -41,6 +42,10 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
     @Override
     public String getAccession() {
         return accession;
+    }
+
+    public boolean isChemical() {
+        return chemical;
     }
 
     public Coordinate getCentre(){
