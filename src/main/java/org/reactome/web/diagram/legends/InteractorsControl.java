@@ -215,7 +215,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
     private void setMessage(String msg) {
         loadingIcon.setVisible(false);
-        message.setText(msg.equals("static") ? "Static (IntAct)" : msg);
+        message.setText(msg.equals("static") ? "Static (IntAct)" : formatName(msg));
     }
 
     /**
