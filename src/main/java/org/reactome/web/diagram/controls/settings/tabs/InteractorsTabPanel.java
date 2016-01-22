@@ -117,7 +117,10 @@ public class InteractorsTabPanel extends Composite implements ValueChangeHandler
 
                 if(!resource.getActive()){
                     radioBtn.setEnabled(false);
+                    radioBtn.setTitle(resource.getName() +  " is not available at the moment");
                     radioBtn.setStyleName(RESOURCES.getCSS().interactorResourceListBtnDisabled());
+                } else {
+                    radioBtn.setTitle("Select " + resource.getName() +  " as a resource");
                 }
 
                 // Restore previous selection
