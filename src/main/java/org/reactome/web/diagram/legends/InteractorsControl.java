@@ -27,6 +27,8 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     @SuppressWarnings("FieldCanBeLocal")
     private static String MSG_LOADING = "Loading interactors for ";
     @SuppressWarnings("FieldCanBeLocal")
+    private static String MSG_LOADING_PSICQUIC = "Loading PSICQUIC interactors for ";
+    @SuppressWarnings("FieldCanBeLocal")
     private static String MSG_NO_INTERACTORS_FOUND = "No interactors found in ";
 
     private String currentResource;
@@ -175,7 +177,13 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         loadingIcon.setVisible(visible);
         controlsFP.setVisible(!visible);
         if (visible) {
-            message.setText(MSG_LOADING + (resource.equals("static") ? "Static (IntAct)" : resource) + "...");
+            String msg;
+            if(resource.equals("static")) {
+                msg = MSG_LOADING + "Static (IntAct)";
+            } else {
+                msg = MSG_LOADING_PSICQUIC + formatName(resource);
+            }
+            message.setText(msg + "...");
         }
     }
 
@@ -208,5 +216,19 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     private void setMessage(String msg) {
         loadingIcon.setVisible(false);
         message.setText(msg.equals("static") ? "Static (IntAct)" : msg);
+    }
+
+    /**
+     *  Changes the name by capitalizing the first character
+     *  only in case all letters are lowercase
+     */
+    private String formatName(String originalName) {
+        String output;
+        if(originalName.equals(originalName.toLowerCase())){
+            output = originalName.substring(0, 1).toUpperCase() + originalName.substring(1);
+        } else {
+            output = originalName;
+        }
+        return output;
     }
 }
