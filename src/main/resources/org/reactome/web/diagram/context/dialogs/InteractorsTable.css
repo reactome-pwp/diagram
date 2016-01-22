@@ -1,0 +1,130 @@
+@CHARSET "UTF-8";
+
+/*@def selectionBorderWidth 2px;*/
+
+.dataGridWidget {
+    background-color: transparent !important;
+    font-size: smaller;
+    cursor: default;
+}
+
+.dataGridFirstColumn {
+
+}
+
+.dataGridLastColumn {
+
+}
+
+.dataGridFooter {
+    color: black;
+    border-top: 2px solid #6f7277;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.dataGridHeader {
+    color: black;
+    border-bottom: 2px solid #6f7277;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 0;
+    text-shadow: none;
+}
+
+.dataGridCell {
+    font-size: smaller;
+    border: none;
+    overflow: hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    padding: 0;
+}
+
+.dataGridFirstColumnFooter {
+
+}
+
+.dataGridFirstColumnHeader {
+
+}
+
+.dataGridLastColumnFooter {
+
+}
+
+.dataGridLastColumnHeader {
+    text-align: right;
+}
+
+.dataGridSortableHeader {
+    cursor: pointer;
+    /*cursor: hand;*/
+}
+
+.dataGridSortableHeader:hover {
+    color: #6c6b6b;
+}
+
+.dataGridSortedHeaderAscending {
+
+}
+
+.dataGridSortedHeaderDescending {
+
+}
+
+.dataGridEvenRow {
+    background: rgba(100, 100, 200, 0.5);
+}
+
+.dataGridEvenRowCell {
+    /*border: selectionBorderWidth solid #ffffff;*/
+}
+
+.dataGridOddRow {
+    background: rgba(150, 150, 250, 0.5);
+}
+
+.dataGridOddRowCell {
+    /*border: selectionBorderWidth solid #f3f7fb;*/
+}
+
+.dataGridHoveredRow {
+    color: black;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+}
+
+.dataGridHoveredRowCell {
+    /*border: selectionBorderWidth solid #eee;*/
+}
+
+.dataGridKeyboardSelectedRow {
+    color: black;
+    background: rgba(200, 200, 200, 0.5);
+}
+
+.dataGridKeyboardSelectedRowCell {
+    /*border: selectionBorderWidth solid #ffc;*/
+}
+
+.dataGridSelectedRow {
+    background: #628cd5;
+    color: white;
+    height: auto;
+    overflow: auto;
+}
+
+.dataGridSelectedRowCell {
+    /*border: selectionBorderWidth solid #628cd5;*/
+}
+
+/**
+ * The keyboard selected cell is visible over selection.
+ */
+.dataGridKeyboardSelectedCell {
+    /*border: selectionBorderWidth solid #d7dde8;*/
+}

@@ -4,7 +4,9 @@ import com.google.gwt.cell.client.ClickableTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.i18n.client.HasDirection;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
@@ -13,6 +15,7 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.client.ui.CustomScrollPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HeaderPanel;
 import com.google.gwt.view.client.ListDataProvider;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
@@ -64,6 +67,9 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         insertColumn(0, type, name);
         insertColumn(1, buildIDColumn(), "ID");
         insertColumn(2, buildScoreColumn(), "Score");
+
+        this.setColumnWidth(0, 120, Unit.PX);
+        this.setColumnWidth(2, 50, Unit.PX);
     }
 
     public void updateRows(List<T> newList){
@@ -166,6 +172,9 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
                 return NumberFormat.getFormat("0.00000").format(object.getScore());
             }
         };
+        // This is for setting the column text alignment BUT
+        // to to the same for the header you have to go to the CSS
+        columnTitle.setHorizontalAlignment(HasHorizontalAlignment.HorizontalAlignmentConstant.endOf(HasDirection.Direction.LTR));
         columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {
             public void update(int index, T object, String value) {
                 fireEvent(new InteractorSelectedEvent(object, InteractorSelectedEvent.Selection.SCORE));
@@ -209,9 +218,9 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
 
     public interface MoleculesTableResource extends DataGrid.Resources {
 
-        @ImportedWithPrefix("diagram-MoleculesTable")
+        @ImportedWithPrefix("diagram-InteractorsTable")
         interface MoleculesStyle extends Style {
-            String CSS = "org/reactome/web/diagram/context/dialogs/MoleculesTable.css";
+            String CSS = "org/reactome/web/diagram/context/dialogs/InteractorsTable.css";
         }
 
         /**
