@@ -227,15 +227,18 @@ public class InteractorsContent {
         List<RawInteractor> rtn = new ArrayList<>();
         MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.toLowerCase());
         if (map != null) {
-            rtn.addAll(map.getElements(acc));
-            Collections.sort(rtn, new Comparator<RawInteractor>() {
-                @Override
-                public int compare(RawInteractor o1, RawInteractor o2) {
-                    int c = Double.compare(o2.getScore(), o1.getScore());
-                    if (c == 0) return o1.getAcc().compareTo(o2.getAcc());
-                    return c;
-                }
-            });
+            Set<RawInteractor> set = map.getElements(acc);
+            if (set != null) {
+                rtn.addAll(set);
+                Collections.sort(rtn, new Comparator<RawInteractor>() {
+                    @Override
+                    public int compare(RawInteractor o1, RawInteractor o2) {
+                        int c = Double.compare(o2.getScore(), o1.getScore());
+                        if (c == 0) return o1.getAcc().compareTo(o2.getAcc());
+                        return c;
+                    }
+                });
+            }
         }
         return rtn;
     }
