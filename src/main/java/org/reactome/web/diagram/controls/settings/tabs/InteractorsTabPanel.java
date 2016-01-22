@@ -55,7 +55,7 @@ public class InteractorsTabPanel extends Composite implements ValueChangeHandler
         loadingPanel.setStyleName(RESOURCES.getCSS().loadingPanel());
 
 
-        Label liveResourcesLabel = new Label("PSICQUIC");
+        Label liveResourcesLabel = new Label("PSICQUIC:");
         liveResourcesLabel.setTitle("Select one of the PSICQUIC resources");
         liveResourcesLabel.setStyleName(RESOURCES.getCSS().interactorResourceBtn());
 
@@ -110,7 +110,7 @@ public class InteractorsTabPanel extends Composite implements ValueChangeHandler
         if(!resourcesList.isEmpty()){
             liveResourcesFP.clear();
             for(RawResource resource:resourcesList){
-                RadioButton radioBtn = new RadioButton("Resources", resource.getName());
+                RadioButton radioBtn = new RadioButton("Resources", formatName(resource.getName()));
                 radioBtn.setFormValue(resource.getName()); //use FormValue to keep the value
                 radioBtn.addValueChangeHandler(this);
                 radioBtn.setStyleName(RESOURCES.getCSS().interactorResourceListBtn());
@@ -130,6 +130,20 @@ public class InteractorsTabPanel extends Composite implements ValueChangeHandler
                 liveResourcesFP.add(radioBtn);
             }
         }
+    }
+
+    /**
+     *  Changes the name by capitalizing the first character
+     *  only in case all letters are lowercase
+     */
+    private String formatName(String originalName) {
+        String output;
+        if(originalName.equals(originalName.toLowerCase())){
+            output = originalName.substring(0, 1).toUpperCase() + originalName.substring(1);
+        } else {
+            output = originalName;
+        }
+        return output;
     }
 
     private Widget getOptionsPanel(){
