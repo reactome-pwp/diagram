@@ -37,7 +37,7 @@
         <dependency>
             <groupId>org.reactome.web.pwp</groupId>
             <artifactId>model</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
 
         <!-- QuadTree implementation for GWT -->
