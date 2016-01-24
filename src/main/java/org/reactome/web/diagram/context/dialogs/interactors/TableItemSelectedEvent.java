@@ -6,25 +6,25 @@ import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class InteractorSelectedEvent<T extends RawInteractor> extends GwtEvent<InteractorSelectedHandler> {
-    public static Type<InteractorSelectedHandler> TYPE = new Type<>();
+public class TableItemSelectedEvent<T extends RawInteractor> extends GwtEvent<TableItemSelectedHandler> {
+    public static Type<TableItemSelectedHandler> TYPE = new Type<>();
 
     private T value;
     private Selection selectedColumn;
 
-    public InteractorSelectedEvent(T value, Selection selectedColumn) {
+    public TableItemSelectedEvent(T value, Selection selectedColumn) {
         this.value = value;
         this.selectedColumn = selectedColumn;
     }
 
     @Override
-    public Type<InteractorSelectedHandler> getAssociatedType() {
+    public Type<TableItemSelectedHandler> getAssociatedType() {
         return TYPE;
     }
 
     @Override
-    protected void dispatch(InteractorSelectedHandler handler) {
-        handler.onInteractorSelected(this);
+    protected void dispatch(TableItemSelectedHandler handler) {
+        handler.onTableItemSelected(this);
     }
 
     public T getValue() {

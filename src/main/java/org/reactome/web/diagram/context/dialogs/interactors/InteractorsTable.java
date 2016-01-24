@@ -57,8 +57,8 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         scrollPanel.getHorizontalScrollbar().asWidget().getElement().getStyle().setOpacity(0);
     }
 
-    public HandlerRegistration addMoleculeSelectedHandler(InteractorSelectedHandler handler){
-        return addHandler(handler, InteractorSelectedEvent.TYPE);
+    public HandlerRegistration addTableItemSelectedHandler(TableItemSelectedHandler handler){
+        return addHandler(handler, TableItemSelectedEvent.TYPE);
     }
 
     public void setMoleculesLabels(boolean showIds){
@@ -144,7 +144,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         };
         columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {
             public void update(int index, T object, String value) {
-                fireEvent(new InteractorSelectedEvent(object, InteractorSelectedEvent.Selection.ACCESSION));
+                fireEvent(new TableItemSelectedEvent(object, TableItemSelectedEvent.Selection.ACCESSION));
             }
         });
         return columnTitle;
@@ -159,7 +159,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         };
         columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {
             public void update(int index, T object, String value) {
-                fireEvent(new InteractorSelectedEvent(object, InteractorSelectedEvent.Selection.ID));
+                fireEvent(new TableItemSelectedEvent(object, TableItemSelectedEvent.Selection.ID));
             }
         });
         return columnTitle;
@@ -177,7 +177,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         columnTitle.setHorizontalAlignment(HasHorizontalAlignment.HorizontalAlignmentConstant.endOf(HasDirection.Direction.LTR));
         columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {
             public void update(int index, T object, String value) {
-                fireEvent(new InteractorSelectedEvent(object, InteractorSelectedEvent.Selection.SCORE));
+                fireEvent(new TableItemSelectedEvent(object, TableItemSelectedEvent.Selection.SCORE));
             }
         });
         return columnTitle;

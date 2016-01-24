@@ -7,9 +7,9 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import org.reactome.web.diagram.context.dialogs.interactors.InteractorSelectedEvent;
-import org.reactome.web.diagram.context.dialogs.interactors.InteractorSelectedHandler;
 import org.reactome.web.diagram.context.dialogs.interactors.InteractorsTable;
+import org.reactome.web.diagram.context.dialogs.interactors.TableItemSelectedEvent;
+import org.reactome.web.diagram.context.dialogs.interactors.TableItemSelectedHandler;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class InteractorsDialogPanel extends Composite implements InteractorSelectedHandler, InteractorsLoadedHandler,
+public class InteractorsDialogPanel extends Composite implements TableItemSelectedHandler, InteractorsLoadedHandler,
         InteractorsResourceChangedHandler, InteractorsErrorHandler, InteractorHoveredHandler, InteractorsFilteredHandler {
 
     private EventBus eventBus;
@@ -105,15 +105,17 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
     }
 
     @Override
-    public void onInteractorSelected(InteractorSelectedEvent event) {
+    public void onTableItemSelected(TableItemSelectedEvent event) {
         RawInteractor interactor = event.getValue();
-        InteractorSelectedEvent.Selection selectedColumn =  event.getSelectedColumn();
+        TableItemSelectedEvent.Selection selectedColumn =  event.getSelectedColumn();
         switch(selectedColumn) {
             case ACCESSION:
                 Console.info(interactor.getAcc());
+                eventBus.fireEventFromSource(new InteractorSelectedEvent(interactor, InteractorSelectedEvent.ObjectType.INTERACTOR), this );
                 break;
             case ID:
                 Console.info(interactor.getId());
+                eventBus.fireEventFromSource(new InteractorSelectedEvent(interactor, InteractorSelectedEvent.ObjectType.INTERACTION), this );
                 break;
             case SCORE:
                 Console.info(interactor.getScore());
@@ -128,7 +130,7 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
         double threshold = InteractorsContent.getInteractorsThreshold(currentResource);
         interactorsTable = new InteractorsTable<RawInteractor>("Interactors", threshold, analysisType, expColumns, min, max, selectedExpCol);
         interactorsTable.setHeight("150px");
-        interactorsTable.addMoleculeSelectedHandler(this);
+        interactorsTable.addTableItemSelectedHandler(this);
 
         loadingIcon = new Image(PathwaysDialogPanel.RESOURCES.loader());
         container.add(loadingIcon);
