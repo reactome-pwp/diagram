@@ -126,7 +126,7 @@ public class InteractorsDialogPanel extends Composite implements InteractorSelec
         container.setStyleName(RESOURCES.getCSS().container());
 
         double threshold = InteractorsContent.getInteractorsThreshold(currentResource);
-        interactorsTable = new InteractorsTable("Interactors", threshold, analysisType, expColumns, min, max, selectedExpCol);
+        interactorsTable = new InteractorsTable<RawInteractor>("Interactors", threshold, analysisType, expColumns, min, max, selectedExpCol);
         interactorsTable.setHeight("150px");
         interactorsTable.addMoleculeSelectedHandler(this);
 
