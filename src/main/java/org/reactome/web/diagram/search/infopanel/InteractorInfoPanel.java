@@ -31,7 +31,7 @@ public class InteractorInfoPanel extends Composite {
         header.add(new InlineLabel(interactor.getAccession()));
         this.add(header);
         this.add(new Label("Type: Interactor"));
-        this.add(new Label("Resource: " + (interactor.getResource().equals("static") ? "Static (IntAct)" : interactor.getResource())));
+        this.add(new Label("Resource: " + (interactor.getResource().equals("static") ? "Static (IntAct)" : formatName(interactor.getResource()))));
         MapSet<String, GraphObject> interactsWith = interactor.getInteractsWith();
         for(String interactionId:interactsWith.keySet()) {
             Set<GraphObject> interactors = interactsWith.getElements(interactionId);
@@ -63,4 +63,17 @@ public class InteractorInfoPanel extends Composite {
         this.mainPanel.add(widget);
     }
 
+    /**
+     *  Changes the name by capitalizing the first character
+     *  only in case all letters are lowercase
+     */
+    private String formatName(String originalName) {
+        String output;
+        if(originalName.equals(originalName.toLowerCase())){
+            output = originalName.substring(0, 1).toUpperCase() + originalName.substring(1);
+        } else {
+            output = originalName;
+        }
+        return output;
+    }
 }
