@@ -54,20 +54,23 @@ public class InteractorsLoader implements RequestCallback {
                 }
             }
         }
-        if(post.length()>0) post.delete(post.length()-1, post.length());
+        if(post.length()>0){
+            post.delete(post.length()-1, post.length());
+            String url;
+            if (resource.toLowerCase().equals("static")) {
+                url = PREFIX + "static/proteins/details/?v=" + LoaderManager.version;
+            } else {
+                url = PREFIX + "psicquic/proteins/" + resource + "/details?v=" + LoaderManager.version;
+            }
 
-        String url;
-        if (resource.toLowerCase().equals("static")){
-            url = PREFIX + "static/proteins/details/?v=" + LoaderManager.version;
+            RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
+            try {
+                this.request = requestBuilder.sendRequest(post.toString(), this);
+            } catch (RequestException e) {
+                this.handler.onInteractorsLoaderError(new InteractorsException(resource, e.getMessage()));
+            }
         } else {
-            url = PREFIX + "psicquic/proteins/" + resource + "/details?v=" + LoaderManager.version;
-        }
-
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
-        try {
-            this.request = requestBuilder.sendRequest(post.toString(), this);
-        } catch (RequestException e) {
-            this.handler.onInteractorsLoaderError(new InteractorsException(resource, e.getMessage()));
+            handler.onInteractorsLoaderError(new InteractorsException(resource, "No target entities for interactors"));
         }
     }
 
