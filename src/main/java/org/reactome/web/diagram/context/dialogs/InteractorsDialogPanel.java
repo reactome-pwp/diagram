@@ -20,7 +20,6 @@ import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
-import org.reactome.web.diagram.util.Console;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -110,15 +109,11 @@ public class InteractorsDialogPanel extends Composite implements TableItemSelect
         TableItemSelectedEvent.Selection selectedColumn =  event.getSelectedColumn();
         switch(selectedColumn) {
             case ACCESSION:
-                Console.info(interactor.getAcc());
                 eventBus.fireEventFromSource(new InteractorSelectedEvent(interactor, InteractorSelectedEvent.ObjectType.INTERACTOR), this );
                 break;
             case ID:
-                Console.info(interactor.getId());
-                eventBus.fireEventFromSource(new InteractorSelectedEvent(interactor, InteractorSelectedEvent.ObjectType.INTERACTION), this );
-                break;
             case SCORE:
-                Console.info(interactor.getScore());
+                eventBus.fireEventFromSource(new InteractorSelectedEvent(interactor, InteractorSelectedEvent.ObjectType.INTERACTION), this );
                 break;
         }
     }
