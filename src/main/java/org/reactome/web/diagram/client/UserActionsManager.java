@@ -113,6 +113,9 @@ class UserActionsManager implements MouseActionsHandlers {
         diagramMoved = false;
         mouseDown = null;
         canvas.setCursor(Style.Cursor.DEFAULT);
+        // With this we force to re-calculate the hovered element
+        // (assuming there is nothing in the provided position)
+        handler.setMousePosition(CoordinateFactory.get(-2000, -2000));
     }
 
     @Override
