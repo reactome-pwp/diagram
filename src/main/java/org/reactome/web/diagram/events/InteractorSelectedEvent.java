@@ -13,11 +13,19 @@ import org.reactome.web.diagram.handlers.InteractorSelectedHandler;
 public class InteractorSelectedEvent extends GwtEvent<InteractorSelectedHandler> {
     public static final Type<InteractorSelectedHandler> TYPE = new Type<>();
 
-    public enum ObjectType {INTERACTOR, INTERACTION}
+    public enum ObjectType {
+        INTERACTOR("http://identifiers.org/##RESOURCE##/##ID##"),
+        INTERACTION("http://www.ebi.ac.uk/Tools/webservices/psicquic/view/main.xhtml?query=");
+
+        String url;
+
+        ObjectType(String url) {
+            this.url = url;
+        }
+    }
 
     private ObjectType type;
     private String identifier;
-
 
     public InteractorSelectedEvent(DiagramInteractor interactor) {
         if(interactor instanceof InteractorEntity){
@@ -59,6 +67,27 @@ public class InteractorSelectedEvent extends GwtEvent<InteractorSelectedHandler>
 
     public String getIdentifier() {
         return identifier;
+    }
+
+    public String getUrl() {
+        String url = "";
+        switch (type){
+            case INTERACTION:
+                url = type.url + identifier;
+                break;
+            case INTERACTOR:
+                String acc = identifier;
+                String[] text = acc.split(":");
+                String resource;
+                if (text.length > 1){
+                    resource = text[0].toLowerCase();
+                } else {
+                    resource = "uniprot"; //Uniprot is the default one
+                }
+                url = type.url.replace("##RESOURCE##", resource).replace("##ID##", acc);
+                break;
+        }
+        return url;
     }
 
     @Override
