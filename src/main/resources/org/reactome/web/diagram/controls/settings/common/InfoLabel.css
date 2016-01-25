@@ -7,18 +7,19 @@
     color: white;
     text-align: center;
     padding-bottom: 2px;
-    height: 23px;
+    max-height: 23px;
     overflow: hidden;
 
     /* Used to animate the width of panel */
-    -webkit-transition: height 0.3s ease;
-    -moz-transition: height 0.3s ease;
-    -o-transition: height 0.3s ease;
-    transition: height 0.3s ease;
+    -webkit-transition: max-height 0.3s ease;
+    -moz-transition: max-height 0.3s ease;
+    -o-transition: max-height 0.3s ease;
+    transition: max-height 0.3s ease;
 }
 
 .infoLabelExpanded {
-    height: 95px !important;
+    height: auto !important;
+    max-height: 500px;
 }
 
 .infoLabelHeader {
@@ -42,9 +43,10 @@
 }
 
 .infoText {
+    margin-top: 6px;
     font-size: small !important;
     padding: 0 10px 0 10px;
-    height: 45px;
+    height: auto;
     text-align: justify;
     font-style: italic;
 }
