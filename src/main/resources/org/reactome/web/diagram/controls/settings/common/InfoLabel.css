@@ -1,0 +1,50 @@
+.infoLabel {
+    font-size: medium !important;
+    margin-top: 5px;
+    font-weight: bold;
+    background-color: rgb(30, 148, 208);
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    padding-bottom: 2px;
+    height: 23px;
+    overflow: hidden;
+
+    /* Used to animate the width of panel */
+    -webkit-transition: height 0.3s ease;
+    -moz-transition: height 0.3s ease;
+    -o-transition: height 0.3s ease;
+    transition: height 0.3s ease;
+}
+
+.infoLabelExpanded {
+    height: 95px !important;
+}
+
+.infoLabelHeader {
+
+}
+
+.infoLabelBtn {
+    /*background-color: #45b0d8;*/
+    border: none;
+    border-radius: 15px;
+    color: white;
+    float: right;
+    margin-top: 5px;
+    margin-right: 8px;
+    outline: none;
+    cursor: pointer;
+}
+
+.infoLabelBtn img {
+    /*vertical-align: middle !important;*/
+}
+
+.infoText {
+    font-size: small !important;
+    padding: 0 10px 0 10px;
+    height: 45px;
+    text-align: justify;
+    font-style: italic;
+}

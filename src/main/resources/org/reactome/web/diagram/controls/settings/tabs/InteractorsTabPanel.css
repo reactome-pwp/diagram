@@ -3,16 +3,6 @@
     font-size: medium !important;
 }
 
-.tabHeader {
-    margin-top: 5px;
-    font-weight: bold;
-    background-color: rgb(30, 148, 208);
-    border-radius: 15px;
-    color: white;
-    text-align: center;
-    padding-bottom: 2px;
-}
-
 .interactorLabel {
     margin-top: 5px;
     color: rgb(0, 90, 117);

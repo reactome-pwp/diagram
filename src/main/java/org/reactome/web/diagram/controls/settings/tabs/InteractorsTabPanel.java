@@ -7,8 +7,10 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.controls.settings.common.InfoLabel;
 import org.reactome.web.diagram.data.interactors.raw.RawResource;
 import org.reactome.web.diagram.data.interactors.raw.factory.ResourcesException;
 import org.reactome.web.diagram.data.loader.InteractorsResourceLoader;
@@ -34,8 +36,7 @@ public class InteractorsTabPanel extends Composite implements ValueChangeHandler
     public InteractorsTabPanel(EventBus eventBus) {
         this.eventBus = eventBus;
 
-        Label tabHeader = new Label("Interactor Overlays");
-        tabHeader.setStyleName(RESOURCES.getCSS().tabHeader());
+        InfoLabel tabHeader = new InfoLabel("Interactor Overlays", RESOURCES.aboutThis());
 
         Label lb = new Label("Existing resources:");
         lb.setStyleName(RESOURCES.getCSS().interactorLabel());
@@ -180,6 +181,9 @@ public class InteractorsTabPanel extends Composite implements ValueChangeHandler
 
         @Source("../images/loader.gif")
         ImageResource loadingSpinner();
+
+        @Source("../tabs/InteractorsInfo.txt")
+        TextResource aboutThis();
     }
 
     @CssResource.ImportedWithPrefix("diagram-InteractorsTabPanel")
@@ -191,8 +195,6 @@ public class InteractorsTabPanel extends Composite implements ValueChangeHandler
         String interactorLabel();
 
         String interactorResourceBtn();
-
-        String tabHeader();
 
         String liveResourcesOuterPanel();
 
