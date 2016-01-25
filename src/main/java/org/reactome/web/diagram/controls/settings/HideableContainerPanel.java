@@ -161,6 +161,8 @@ public class HideableContainerPanel extends FlowPanel implements ClickHandler {
         @Source("images/showHide.png")
         ImageResource showHideIcon();
 
+        @Source("images/showHide_blue.png")
+        ImageResource showHideHoveredIcon();
     }
 
     @CssResource.ImportedWithPrefix("diagram-HideableContainerPanel")

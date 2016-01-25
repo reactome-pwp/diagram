@@ -8,7 +8,6 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
@@ -21,9 +20,8 @@ public class InfoLabel extends FlowPanel implements ClickHandler{
 
     public InfoLabel(String labelText, TextResource infoText){
         InlineLabel label = new InlineLabel(labelText);
-        label.setStyleName(RESOURCES.getCSS().infoLabelHeader());
 
-        Image img = new Image(RESOURCES.info());
+        Label img = new Label();
         img.addClickHandler(this);
         img.setTitle("Click to learn more");
         img.setStyleName(RESOURCES.getCSS().infoLabelBtn());
@@ -62,8 +60,11 @@ public class InfoLabel extends FlowPanel implements ClickHandler{
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
 
-        @Source("../images/info.png")
-        ImageResource info();
+        @Source("../images/info_normal.png")
+        ImageResource infoNormal();
+
+        @Source("../images/info_hovered.png")
+        ImageResource infoHovered();
     }
 
     @CssResource.ImportedWithPrefix("diagram-InfoLabel")
@@ -73,8 +74,6 @@ public class InfoLabel extends FlowPanel implements ClickHandler{
         String infoLabel();
 
         String infoLabelExpanded();
-
-        String infoLabelHeader();
 
         String infoLabelBtn();
 

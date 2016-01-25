@@ -118,6 +118,10 @@
     margin: 2px 8px;
 }
 
+@sprite .showHide:hover {
+    gwt-image:'showHideHoveredIcon';
+}
+
 .showHideRight {
     -ms-transform: rotate(180deg); /* IE 9 */
     -webkit-transform: rotate(180deg);/* Chrome, Safari, Opera */

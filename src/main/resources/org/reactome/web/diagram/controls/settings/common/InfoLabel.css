@@ -23,15 +23,10 @@
     max-height: 500px;
 }
 
-.infoLabelHeader {
-
-}
-
-.infoLabelBtn {
-    /*background-color: #45b0d8;*/
-    border: none;
-    border-radius: 15px;
-    color: white;
+@sprite .infoLabelBtn {
+    gwt-image: 'infoNormal';
+    background-repeat:no-repeat;
+    border: 0;
     float: right;
     margin-top: 5px;
     margin-right: 8px;
@@ -39,9 +34,10 @@
     cursor: pointer;
 }
 
-.infoLabelBtn img {
-    /*vertical-align: middle !important;*/
+@sprite .infoLabelBtn:hover {
+    gwt-image: 'infoHovered';
 }
+
 
 .infoText {
     margin-top: 6px;
