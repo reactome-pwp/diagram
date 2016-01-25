@@ -44,6 +44,7 @@ class UserActionsManager implements MouseActionsHandlers {
     private Handler handler;
 
     private boolean diagramMoved = false;
+    private boolean interactorDragged = false;
     private Double fingerDistance;
 
     public UserActionsManager(Handler handler, DiagramCanvas canvas) {
@@ -55,10 +56,11 @@ class UserActionsManager implements MouseActionsHandlers {
     public void onClick(ClickEvent event) {
         event.preventDefault();
         event.stopPropagation();
-        if (!this.diagramMoved) {
+        if (!diagramMoved && !interactorDragged) {
+            diagramMoved = false;
+            interactorDragged = false;
             handler.setSelection(false, true);
         }
-        this.diagramMoved = false;
     }
 
     @Override
@@ -75,7 +77,8 @@ class UserActionsManager implements MouseActionsHandlers {
     public void onMouseDown(MouseDownEvent event) {
         event.stopPropagation();
         event.preventDefault();
-        this.diagramMoved = false;
+        diagramMoved = false;
+        interactorDragged = false;
         int button = event.getNativeEvent().getButton();
         switch (button) {
             case NativeEvent.BUTTON_RIGHT:
@@ -102,6 +105,7 @@ class UserActionsManager implements MouseActionsHandlers {
                 handler.padding(delta);
 
             } else {
+                interactorDragged = true;
                 handler.dragInteractor(hoveredInteractor, delta);
             }
             setMouseDownPosition(event.getRelativeElement(), event);
@@ -137,24 +141,27 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onTouchCancel(TouchCancelEvent event) {
-        this.mouseDown = null;
-        this.diagramMoved = false;
-        this.fingerDistance = null;
+        mouseDown = null;
+        diagramMoved = false;
+        interactorDragged = false;
+        fingerDistance = null;
     }
 
     @Override
     public void onTouchEnd(TouchEndEvent event) {
-        if (!this.diagramMoved) {
+        if (this.diagramMoved || !interactorDragged) {
             //Do NOT use this.mouseCurrent in the next line
             handler.setSelection(false, true);
         }
-        this.mouseDown = null;
-        this.diagramMoved = false;
-        this.fingerDistance = null;
+        mouseDown = null;
+        diagramMoved = false;
+        interactorDragged = false;
+        fingerDistance = null;
     }
 
     @Override
     public void onTouchMove(TouchMoveEvent event) {
+        //TODO: Take into account interactor dragged scenario
         event.stopPropagation();
         event.preventDefault();
         if (mouseDown != null) {
