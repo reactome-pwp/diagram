@@ -115,8 +115,6 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     public void onInteractorsResourceChanged(final InteractorsResourceChangedEvent event) {
         INTERACTORS_RESOURCE = event.getResource();
         if (INTERACTORS_RESOURCE != null && !context.getInteractors().isInteractorResourceCached(INTERACTORS_RESOURCE)) {
-            // Any previous request has to be canceled
-            interactorsLoader.cancel();
             interactorsLoader.load(content, INTERACTORS_RESOURCE);
         }
     }

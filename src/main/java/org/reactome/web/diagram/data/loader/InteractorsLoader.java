@@ -32,12 +32,15 @@ public class InteractorsLoader implements RequestCallback {
     }
 
     public void cancel(){
-        if(this.request!=null && this.request.isPending()){
-            this.request.cancel();
+        if(request!=null && request.isPending()){
+            request.cancel();
         }
     }
 
     public void load(DiagramContent content, String resource){
+        // Any previous request has to be canceled
+        cancel();
+
         if(resource==null){
             this.handler.onInteractorsLoaderError(new InteractorsException(null, "Resource not specified"));
             return;
