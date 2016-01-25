@@ -104,7 +104,7 @@ public class InteractorsContent {
     }
 
     public void cacheInteractors(String resource, String acc, Integer number, MapSet<String, GraphObject> identifierMap) {
-        if(number == 0) return;
+        if (number == 0) return;
         Set<GraphObject> elements = identifierMap.getElements(acc);
         if (elements != null) {
             for (GraphObject graphObject : elements) {
@@ -123,7 +123,6 @@ public class InteractorsContent {
             }
         }
     }
-
 
     //This method is not checking whether the interactors where previously put in place since
     //when it is called, the interactors have probably been retrieved "again" from the server
@@ -167,7 +166,7 @@ public class InteractorsContent {
 
     public List<InteractorLink> getDiagramInteractions(String resource, Node node) {
         MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource.toLowerCase());
-        if (cache != null){
+        if (cache != null) {
             Set<InteractorLink> set = cache.getElements(node);
             if (set != null) {
                 List<InteractorLink> rtn = new ArrayList<>(set);
@@ -218,8 +217,8 @@ public class InteractorsContent {
     }
 
     private Set<GraphObject> getInteractsWith(String diagramAcc, DiagramContent content) {
-        Set<GraphObject> aux  = content.getIdentifierMap().getElements(diagramAcc);
-        if(aux != null) return aux;
+        Set<GraphObject> aux = content.getIdentifierMap().getElements(diagramAcc);
+        if (aux != null) return aux;
         return new HashSet<>();
     }
 
