@@ -3,6 +3,7 @@ package org.reactome.web.diagram.client;
 import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.Window;
 import org.reactome.web.diagram.common.DisplayManager;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContext;
@@ -42,7 +43,7 @@ import java.util.Set;
 class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsManager.Handler,
         LayoutLoadedHandler, DiagramLoadRequestHandler, DiagramLoadedHandler,
         InteractorsLoadedHandler, InteractorsResourceChangedHandler, InteractorsCollapsedHandler,
-        InteractorsLayoutUpdatedHandler, InteractorsFilteredHandler,
+        InteractorsLayoutUpdatedHandler, InteractorsFilteredHandler, InteractorSelectedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         GraphObjectHoveredHandler, GraphObjectSelectedHandler, CanvasExportRequestedHandler,
@@ -125,6 +126,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLayoutUpdatedEvent.TYPE, this);
         eventBus.addHandler(InteractorsFilteredEvent.TYPE, this);
+        eventBus.addHandler(InteractorSelectedEvent.TYPE, this);
 
         eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
@@ -445,7 +447,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
             if (event.getZoom()) {
                 this.diagramManager.displayDiagramObjects(layoutManager.getHalo());
             }
-//            layoutManager.resetHalo();
             forceDraw = true;
             if (event.getFireExternally()) {
                 fireEvent(event);
@@ -465,6 +466,11 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         forceDraw = true;
     }
 
+    @Override
+    public void onInteractorsFiltered(InteractorsFilteredEvent event) {
+        Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
+        drawInteractors(visibleArea);
+    }
 
     @Override
     public void onInteractorsLayoutUpdated(InteractorsLayoutUpdatedEvent event) {
@@ -484,6 +490,11 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
             context.getInteractors().restoreInteractorsSummary(event.getResource(), context.getContent());
         }
         forceDraw = true;
+    }
+
+    @Override
+    public void onInteractorSelected(InteractorSelectedEvent event) {
+        Window.open(event.getUrl(), "_blank", "");
     }
 
     @Override
@@ -833,11 +844,5 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
         eventBus.fireEventFromSource(new DiagramZoomEvent(factor, visibleArea), this);
         forceDraw = true;  //IMPORTANT: Please leave it at the very end after the event firing
-    }
-
-    @Override
-    public void onInteractorsFiltered(InteractorsFilteredEvent event) {
-        Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
-        drawInteractors(visibleArea);
     }
 }
