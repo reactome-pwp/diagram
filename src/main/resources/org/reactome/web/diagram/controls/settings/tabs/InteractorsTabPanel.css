@@ -31,13 +31,14 @@
     width: 245px;
     margin-left: 10px;
     background-color: transparent;
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 .liveResourcesInnerPanel {
     color: white;
     height: auto;
-    width: 245px;
+    width: 244px;
 }
 
 .loadingPanel {
