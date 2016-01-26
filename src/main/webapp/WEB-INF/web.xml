@@ -83,7 +83,7 @@
 
     <!-- Reactome Content Service Configuration (ONLY USED IN DEV MODE) -->
     <servlet>
-        <servlet-name>InteractorsProxy</servlet-name>
+        <servlet-name>ContentServiceProxy</servlet-name>
         <servlet-class>uk.ac.ebi.pride.web.util.servlet.proxy.ProxyServlet</servlet-class>
         <init-param>
             <param-name>proxyHost</param-name>
@@ -103,7 +103,7 @@
         </init-param>
     </servlet>
     <servlet-mapping>
-        <servlet-name>InteractorsProxy</servlet-name>
+        <servlet-name>ContentServiceProxy</servlet-name>
         <url-pattern>/ContentService/*</url-pattern>
     </servlet-mapping>
 
