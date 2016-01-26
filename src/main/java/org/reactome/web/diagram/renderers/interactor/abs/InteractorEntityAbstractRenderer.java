@@ -6,6 +6,7 @@ import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
+import org.reactome.web.diagram.profiles.interactors.InteractorColours;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.layout.abs.TextRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
@@ -31,8 +32,16 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
     public void draw(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
         if(!item.isVisible()) return;
         shape(ctx, item, factor, offset);
-        ctx.fill();
-        ctx.stroke();
+        if(((InteractorEntity) item).isChemical()) { //Only do extra stuff in case of chemicals (which is less likely)
+            ctx.save();
+            ctx.setFillStyle(InteractorColours.get().PROFILE.getChemical().getFill());
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        } else {
+            ctx.fill();
+            ctx.stroke();
+        }
     }
 
     @Override

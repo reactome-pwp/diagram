@@ -106,7 +106,7 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
     }
 
     @Override
-    public void onProfileChanged(DiagramProfileChangedEvent event) {
+    public void onDiagramProfileChanged(DiagramProfileChangedEvent event) {
         this.setCanvasProperties();
         this.drawThumbnail();
     }

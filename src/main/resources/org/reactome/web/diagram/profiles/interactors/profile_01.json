@@ -1,0 +1,13 @@
+{
+  "name": "Cyan",
+  "chemical": {
+    "fill": "#B2EBF2",
+    "stroke": "#000000",
+    "text": "#000000"
+  },
+  "protein": {
+    "fill": "#26C6DA",
+    "stroke": "#616161",
+    "text": "#000000"
+  }
+}

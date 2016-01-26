@@ -23,7 +23,7 @@ public class DiagramProfileChangedEvent extends GwtEvent<DiagramProfileChangedHa
 
     @Override
     protected void dispatch(DiagramProfileChangedHandler handler) {
-        handler.onProfileChanged(this);
+        handler.onDiagramProfileChanged(this);
     }
 
     public DiagramProfile getDiagramProfile() {

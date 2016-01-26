@@ -8,6 +8,6 @@ import org.reactome.web.diagram.events.DiagramProfileChangedEvent;
  */
 public interface DiagramProfileChangedHandler extends EventHandler {
 
-    void onProfileChanged(DiagramProfileChangedEvent event);
+    void onDiagramProfileChanged(DiagramProfileChangedEvent event);
 
 }

@@ -42,6 +42,9 @@ import org.reactome.web.diagram.messages.LoadingMessage;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.profiles.diagram.model.DiagramProfileProperties;
+import org.reactome.web.diagram.profiles.interactors.InteractorColours;
+import org.reactome.web.diagram.profiles.interactors.model.InteractorProfile;
+import org.reactome.web.diagram.profiles.interactors.model.InteractorProfileNode;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.OverlayContext;
@@ -131,6 +134,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         //This is MANDATORY
         DiagramColours.initialise(eventBus);
         AnalysisColours.initialise(eventBus);
+        InteractorColours.initialise(eventBus);
 
         this.thumbnail = new DiagramThumbnail(eventBus);
 
@@ -375,6 +379,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
     public void renderInteractors(Collection<DiagramInteractor> items, DiagramContext context){
         cleanCanvas(interactors);
+        //By default we use the protein colour profile (NOTE: renderers will change it for chemicals and leave it for proteins save/restore)
+        interactors.setFillStyle(InteractorColours.get().PROFILE.getProtein().getFill());
+        interactors.setStrokeStyle(InteractorColours.get().PROFILE.getProtein().getStroke());
         Double factor = context.getDiagramStatus().getFactor();
         Coordinate offset = context.getDiagramStatus().getOffset();
         List<InteractorEntity> entities = new LinkedList<>();
@@ -394,7 +401,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             for (InteractorEntity entity : entities) {
                 renderer.draw(interactors, entity, factor, offset);
                 interactors.save();
-                interactors.setFillStyle("#0000FF");
+                InteractorProfile profile = InteractorColours.get().PROFILE;
+                InteractorProfileNode node = entity.isChemical() ? profile.getChemical() : profile.getProtein();
+                interactors.setFillStyle(node.getText());
                 renderer.drawText(interactors, entity, factor, offset);
                 interactors.restore();
             }
@@ -614,8 +623,6 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.reactionsHighlight.setLineWidth(factor * 7);
         this.reactionsHighlight.setStrokeStyle(profileProperties.getHighlight());
 
-//        this.interactors.setStrokeStyle("#F0F0F0");
-        this.interactors.setFillStyle("#ABCDEF");
         this.interactors.setLineWidth(factor * 2);
         this.interactors.setTextAlign(Context2d.TextAlign.CENTER);
         this.interactors.setTextBaseline(Context2d.TextBaseline.MIDDLE);

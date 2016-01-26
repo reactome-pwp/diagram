@@ -204,7 +204,7 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
     }
 
     @Override
-    public void onProfileChanged(DiagramProfileChangedEvent event) {
+    public void onDiagramProfileChanged(DiagramProfileChangedEvent event) {
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {

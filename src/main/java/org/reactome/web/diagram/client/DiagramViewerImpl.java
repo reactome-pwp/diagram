@@ -43,7 +43,7 @@ import java.util.Set;
 class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsManager.Handler,
         LayoutLoadedHandler, DiagramLoadRequestHandler, DiagramLoadedHandler,
         InteractorsLoadedHandler, InteractorsResourceChangedHandler, InteractorsCollapsedHandler,
-        InteractorsLayoutUpdatedHandler, InteractorsFilteredHandler, InteractorSelectedHandler,
+        InteractorsLayoutUpdatedHandler, InteractorsFilteredHandler, InteractorSelectedHandler, InteractorProfileChangedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         GraphObjectHoveredHandler, GraphObjectSelectedHandler, CanvasExportRequestedHandler,
@@ -127,6 +127,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         eventBus.addHandler(InteractorsLayoutUpdatedEvent.TYPE, this);
         eventBus.addHandler(InteractorsFilteredEvent.TYPE, this);
         eventBus.addHandler(InteractorSelectedEvent.TYPE, this);
+        eventBus.addHandler(InteractorProfileChangedEvent.TYPE, this);
 
         eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
@@ -515,7 +516,12 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     @Override
-    public void onProfileChanged(DiagramProfileChangedEvent event) {
+    public void onDiagramProfileChanged(DiagramProfileChangedEvent event) {
+        forceDraw = true;
+    }
+
+    @Override
+    public void onInteractorProfileChanged(InteractorProfileChangedEvent event) {
         forceDraw = true;
     }
 
