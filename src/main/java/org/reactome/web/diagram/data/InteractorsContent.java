@@ -30,7 +30,7 @@ public class InteractorsContent {
 
     //The number of elements for every QuadTree quadrant node
     static final int NUMBER_OF_ELEMENTS = 15;
-    static final int MIN_AREA = 25;
+    static final int MIN_AREA = 50;
 
     static final double DEFAULT_SCORE = 0.45;
 
