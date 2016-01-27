@@ -37,7 +37,7 @@ public class InteractorInfoPanel extends Composite {
             Set<GraphObject> interactors = interactsWith.getElements(interactionId);
             if (!interactors.isEmpty()) {
                 Double score = interactor.getInteractionScore(interactionId);
-                String title = "Interacts with: [" + interactionId + "] - Score:" + (score!=null ? NumberFormat.getFormat("0.00000").format(score): "-");
+                String title = "Interacts with: [" + interactionId + "] - Score: " + (score!=null ? NumberFormat.getFormat("0.000").format(score): "-");
                 this.add(new DatabaseObjectListPanel(title, interactors, eventBus));
             }
         }
