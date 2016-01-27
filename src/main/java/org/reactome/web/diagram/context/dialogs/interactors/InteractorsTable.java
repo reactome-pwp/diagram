@@ -23,7 +23,6 @@ import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
-import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 
 import java.util.List;
 
@@ -38,6 +37,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
 
     private T hoveredItem;
     private double threshold;
+    private static String  HIGHLIGHT_COLOUR = "#FFFF00";
 
     public InteractorsTable(String name, double threshold, AnalysisType analysisType, List<String> expression, Double min, Double max, int sel) {
         super(0, (MoleculesTableResource) GWT.create(MoleculesTableResource.class));
@@ -108,7 +108,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         for(int i=0;i<list.size();i++){
             T object = dataProvider.getList().get(i);
             if(object.equals(hoveredItem)){
-                getRowElement(i).getStyle().setBackgroundColor(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax());
+                getRowElement(i).getStyle().setBackgroundColor(HIGHLIGHT_COLOUR);
                 getRowElement(i).getCells().getItem(0).getStyle().setColor("#000000");
                 getRowElement(i).getCells().getItem(1).getStyle().setColor("#000000");
                 getRowElement(i).getCells().getItem(2).getStyle().setColor("#000000");
