@@ -169,7 +169,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         Column<T, String> columnTitle = new Column<T, String>(new ClickableTextCell()) {
             @Override
             public String getValue(T object) {
-                return NumberFormat.getFormat("0.00000").format(object.getScore());
+                return NumberFormat.getFormat("0.000").format(object.getScore());
             }
         };
         // This is for setting the column text alignment BUT
