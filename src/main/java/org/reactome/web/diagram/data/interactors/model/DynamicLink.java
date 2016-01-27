@@ -21,7 +21,7 @@ public class DynamicLink extends InteractorLink {
     }
 
     @Override
-    public Coordinate getTo() {
+    public Coordinate getCoordinateTo() {
         return to.getCentre(); //This needs to be calculated every time since InteractorEntity is Draggable
     }
 

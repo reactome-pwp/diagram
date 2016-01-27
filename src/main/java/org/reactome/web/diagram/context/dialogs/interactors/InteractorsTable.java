@@ -82,13 +82,26 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
     public void setHovered(DiagramInteractor hovered) {
         this.hoveredItem = null;
         if (hovered != null){
-            List<T> list = dataProvider.getList();
-            for (int i = 0; i < list.size(); i++) {
-                T object = list.get(i);
-                if(hovered instanceof InteractorEntity && hovered.getAccession().equals(object.getAcc())){
+            for (T object : dataProvider.getList()) {
+                if (hovered instanceof InteractorEntity && hovered.getAccession().equals(object.getAcc())) {
                     this.hoveredItem = object;
                     break;
                 } else if (hovered instanceof InteractorLink && ((InteractorLink) hovered).getId().equals(object.getId())) {
+                    this.hoveredItem = object;
+                    break;
+                }
+            }
+        }
+        applyThreshold();
+        highlightHoveredItem();
+    }
+
+    public void setHovered(String acc){
+        if (acc == null || acc.isEmpty()){
+            hoveredItem = null;
+        } else {
+            for (T object : dataProvider.getList()) {
+                if (acc.equals(object.getAcc())) {
                     this.hoveredItem = object;
                     break;
                 }

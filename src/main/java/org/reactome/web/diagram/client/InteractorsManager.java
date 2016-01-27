@@ -3,14 +3,13 @@ package org.reactome.web.diagram.client;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.InteractorsContent;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.common.LinkCommon;
-import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
-import org.reactome.web.diagram.data.interactors.model.DynamicLink;
-import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
-import org.reactome.web.diagram.data.interactors.model.InteractorLink;
+import org.reactome.web.diagram.data.interactors.model.*;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
+import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
@@ -19,6 +18,7 @@ import org.reactome.web.diagram.handlers.InteractorsCollapsedHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 import org.reactome.web.diagram.renderers.interactor.InteractorRenderer;
 import org.reactome.web.diagram.renderers.interactor.InteractorRendererManager;
+import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
 import java.util.*;
@@ -91,41 +91,85 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     public void loadInteractors(Node node) {
         InteractorsLayout layoutBuilder = new InteractorsLayout(node);
         GraphPhysicalEntity p = node.getGraphObject();
-        List<RawInteractor> rawInteractors = context.getInteractors().getRawInteractors(currentResource, p.getIdentifier());
+        InteractorsContent interactors = context.getInteractors();
+        List<RawInteractor> rawInteractors = interactors.getRawInteractors(currentResource, p.getIdentifier());
 
         int n = getNumberOfInteractorsToDraw(rawInteractors);
-        for (int i = 0; i < n; i++) {
+        final int N = n; //The maximum initial number (it cannot be changed in the inner of the next for)
+        int inDiagram = 0;
+        for (int i = 0; i < n; i++) {  //please note that "n" can be increased if the interactors are present in the diagram
             RawInteractor rawInteractor = rawInteractors.get(i);
 
-            //TODO: Cover the case when an entity in the diagram interacts with another one in the diagram (Static link)
-
-            InteractorEntity interactor = getOrCreateInteractorEntity(rawInteractor.getAcc());
-
-            layoutBuilder.doLayout(interactor, i, n);
-
-            Set<InteractorLink> links = new HashSet<>();
-            context.getInteractors().cache(currentResource, node, interactor);
-            for (InteractorLink link : interactor.addInteraction(node, rawInteractor.getId(), rawInteractor.getScore())) {
-                context.getInteractors().cache(currentResource, node, link);
-                links.add(link);
+            String acc = rawInteractor.getAcc();
+            MapSet<String, GraphObject> map = context.getContent().getIdentifierMap();
+            //The following line removes resource name prefixes in the accession because the graph do not have them (CHEBI:12345 -> 12345)
+            Set<GraphObject> objects = map.getElements(acc.replaceAll("^\\w+[-:_]", ""));
+            boolean interactorCreated = false;
+            if (objects != null) {
+                //In this case the interactor is already present in the diagram so we have to create links between the different nodes
+                for (GraphObject object : objects) {
+                    for (DiagramObject nodeTo : object.getDiagramObjects()) {
+                        InteractorLink link;
+                        if (node.equals(nodeTo)) {
+                            link = new LoopLink(node, rawInteractor.getId(), rawInteractor.getScore());
+                        } else {
+                            link = new StaticLink(node, (Node) nodeTo, rawInteractor.getId(), rawInteractor.getScore());
+                        }
+                        interactors.cache(currentResource, node, link);
+                        interactors.addInteractor(currentResource, link);
+                        interactorCreated = true;
+                    }
+                }
             }
+            //It may happen that a interactor is present in the diagram but as part of a complex/set (so it doesn't get created in the previous part)
+            if(!interactorCreated) {
+                //In this case the interactor is NOT present in the diagram so we have to create an interactor with its link to the node
+                InteractorEntity interactor = getOrCreateInteractorEntity(acc);
 
-            //next block (adding to the QuadTree) also needs to be done after the doLayout
-            context.getInteractors().addInteractor(currentResource, interactor);
-            for (InteractorLink link : links) {
-                context.getInteractors().addInteractor(currentResource, link);
+                layoutBuilder.doLayout(interactor, i - inDiagram, N);  //the maximum number of elements is used here for layout beauty purposes
+
+                Set<InteractorLink> links = new HashSet<>();
+                interactors.cache(currentResource, node, interactor);
+                for (InteractorLink link : interactor.addInteraction(node, rawInteractor.getId(), rawInteractor.getScore())) {
+                    interactors.cache(currentResource, node, link);
+                    links.add(link);
+                }
+
+                //next block (adding to the QuadTree) also needs to be done after the doLayout
+                interactors.addInteractor(currentResource, interactor);
+                for (InteractorLink link : links) {
+                    interactors.addInteractor(currentResource, link);
+                }
+            } else {
+                //This is a correction applied when the interactor was already in the diagram. It means that we have
+                //more space to add more interactors in the corona
+                inDiagram++;   //a correction over the doLayout
+                n = n + 1 < rawInteractors.size() ? n + 1 : n; //a correction over the possible elements to be included
             }
         }
         eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
     }
 
     public void createNewLinksForExistingInteractors(final Node node, Collection<DiagramInteractor> interactors) {
-        //TODO: Cover the case when an entity in the diagram interacts with another one in the diagram (Static link)
-
         List<InteractorEntity> entities = new LinkedList<>();
         for (DiagramInteractor interactor : interactors) {
             if (interactor instanceof InteractorEntity) {
                 entities.add((InteractorEntity) interactor);
+            } else if (interactor instanceof StaticLink) {
+                StaticLink aux = (StaticLink) interactor;
+                //Here both (from and to) need to be checked as target for the static interactor
+                for (Node to : Arrays.asList(aux.getNodeFrom(), aux.getNodeTo())) {
+                    if(!to.equals(node)){
+                        StaticLink link = new StaticLink(node, to, aux.getId(), aux.getScore());
+                        context.getInteractors().cache(currentResource, node, link);
+                        context.getInteractors().addInteractor(currentResource, link);
+                    }
+                }
+            } else if (interactor instanceof LoopLink) {
+                LoopLink aux = (LoopLink) interactor;
+                LoopLink link = new LoopLink(node, aux.getId(), aux.getScore());
+                context.getInteractors().cache(currentResource, node, link);
+                context.getInteractors().addInteractor(currentResource, link);
             }
         }
 

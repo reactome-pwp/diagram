@@ -3,6 +3,8 @@ package org.reactome.web.diagram.data.interactors.model;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.Segment;
+import org.reactome.web.diagram.data.layout.impl.SegmentFactory;
 import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
 /**
@@ -26,7 +28,7 @@ public class StaticLink extends InteractorLink {
     }
 
     @Override
-    public Coordinate getTo() {
+    public Coordinate getCoordinateTo() {
         return toCentre;
     }
 
@@ -36,8 +38,20 @@ public class StaticLink extends InteractorLink {
         return pe.getIdentifier();
     }
 
-    public Node getNode(){
+    public Node getNodeTo(){
         return to;
+    }
+
+    @Override
+    public void setBoundaries(Coordinate to) {
+        Segment link = SegmentFactory.get(InteractorsLayout.getCentre(from.getProp()), to);
+        fromPoint = InteractorsLayout.getSegmentsIntersection(link, from);
+        toCentre = InteractorsLayout.getSegmentsIntersection(link, this.to);
+
+        minX = Math.min(fromPoint.getX(), toCentre.getX());
+        maxX = Math.max(fromPoint.getX(), toCentre.getX());
+        minY = Math.min(fromPoint.getY(), toCentre.getY());
+        maxY = Math.max(fromPoint.getY(), toCentre.getY());
     }
 
     @Override

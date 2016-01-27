@@ -1,22 +1,21 @@
 package org.reactome.web.diagram.renderers.interactor.abs;
 
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
-import org.reactome.web.diagram.data.interactors.model.InteractorLink;
+import org.reactome.web.diagram.data.interactors.model.LoopLink;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public abstract class InteractorLinkAbstractRenderer extends InteractorAbstractRenderer {
+public abstract class LoopLinkAbstractRenderer extends InteractorAbstractRenderer {
 
     public void shape(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset){
-        InteractorLink link = (InteractorLink) item;
-        Coordinate from = link.getCoordinateFrom().transform(factor, offset);
-        Coordinate to = link.getCoordinateTo().transform(factor, offset);
+        LoopLink link = (LoopLink) item;
+        Coordinate centre = link.getCentre().transform(factor, offset);
         ctx.beginPath();
-        ctx.moveTo(from.getX(), from.getY());
-        ctx.lineTo(to.getX(), to.getY());
+        //For next line, take into account that canvas has the coordinates origin in the top-left corner
+        ctx.arc(centre.getX(), centre.getY(), LoopLink.RADIUS * factor, -LoopLink.START_ANGLE, -LoopLink.END_ANGLE, true);
     }
 
     @Override
@@ -32,7 +31,7 @@ public abstract class InteractorLinkAbstractRenderer extends InteractorAbstractR
     }
 
     @Override
-    public void highlight(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset){
+    public void highlight(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
         shape(ctx, item, factor, offset);
         ctx.stroke();
     }

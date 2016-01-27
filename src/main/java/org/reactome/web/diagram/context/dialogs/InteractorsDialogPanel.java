@@ -13,6 +13,7 @@ import org.reactome.web.diagram.context.dialogs.interactors.TableItemSelectedHan
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
@@ -28,7 +29,8 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class InteractorsDialogPanel extends Composite implements TableItemSelectedHandler, InteractorsLoadedHandler,
-        InteractorsResourceChangedHandler, InteractorsErrorHandler, InteractorHoveredHandler, InteractorsFilteredHandler {
+        InteractorsResourceChangedHandler, InteractorsErrorHandler, InteractorHoveredHandler, InteractorsFilteredHandler,
+        GraphObjectHoveredHandler {
 
     private EventBus eventBus;
     private FlowPanel container;
@@ -65,6 +67,7 @@ public class InteractorsDialogPanel extends Composite implements TableItemSelect
         this.eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
         this.eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
         this.eventBus.addHandler(InteractorsFilteredEvent.TYPE, this);
+        this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
     }
 
     public void forceDraw(){
@@ -94,6 +97,17 @@ public class InteractorsDialogPanel extends Composite implements TableItemSelect
     public void onInteractorHovered(InteractorHoveredEvent event) {
         DiagramInteractor interactor = event.getInteractor();
         interactorsTable.setHovered(interactor);
+    }
+
+    @Override
+    public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
+        GraphObject obj = event.getGraphObject();
+        String acc = null;
+        if(obj instanceof GraphPhysicalEntity) {
+            GraphPhysicalEntity pe = (GraphPhysicalEntity) obj;
+            acc = pe.getIdentifier();
+        }
+        interactorsTable.setHovered(acc);
     }
 
     @Override

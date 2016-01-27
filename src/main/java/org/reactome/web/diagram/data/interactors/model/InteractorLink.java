@@ -27,11 +27,15 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
         this.score = score;
     }
 
-    public Coordinate getFrom() {
+    public Node getNodeFrom() {
+        return from;
+    }
+
+    public Coordinate getCoordinateFrom() {
         return fromPoint;
     }
 
-    public abstract Coordinate getTo();
+    public abstract Coordinate getCoordinateTo();
 
     public abstract String getToAccession();
 
@@ -55,7 +59,7 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
 
     @Override
     public boolean isHovered(Coordinate pos) {
-        return SegmentCategory.isInSegment(SegmentFactory.get(fromPoint, getTo()), pos);
+        return SegmentCategory.isInSegment(SegmentFactory.get(fromPoint, getCoordinateTo()), pos);
     }
 
     @Override
@@ -78,7 +82,7 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
 
     @Override
     public String toString() {
-        return "InteractorLink{" +
+        return getClass().getSimpleName() + "{" +
                 "minX=" + minX +
                 ", minY=" + minY +
                 ", maxX=" + maxX +
