@@ -28,7 +28,7 @@
 }
 
 .liveResourcesOuterPanel {
-    height: 153px;
+    height: 135px;
     width: 245px;
     margin-left: 10px;
     background-color: transparent;
@@ -49,7 +49,8 @@
 }
 
 .interactorResourceListBtn{
-    display: block;
+    display: inline-block;
+    width: 200px;
 }
 
 .interactorResourceListBtn label{
@@ -65,10 +66,38 @@
 }
 
 .interactorResourceListBtnDisabled{
-    display: block;
+    display: inline-block;
+    width: 200px;
 }
 
 .interactorResourceListBtnDisabled label{
     margin-left: 5px;
     color: dimgray;
+}
+
+.downloadBtn {
+    background-color: rgb(30, 148, 208); /*#45b0d8;*/
+    border: none;
+    border-radius: 15px;
+    color: white;
+    margin-top: 5px;
+    margin-left: 37px;
+    padding: 6px;
+    outline: none;
+    font-size: medium !important;
+}
+
+.downloadBtn img {
+    vertical-align: middle !important;
+    padding-right: 3px;
+}
+
+.downloadBtn:hover {
+    background-color: #177dc0;
+    cursor: pointer !important;
+}
+
+.downloadBtn:active:hover {
+    background-color: #07558b;
+    cursor: pointer !important;
 }
