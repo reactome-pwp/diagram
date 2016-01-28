@@ -149,10 +149,12 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        if(context.getInteractors().isResourceLoaded(event.getResource())){
-            downloadBtn.setVisible(true);
-        } else {
-            downloadBtn.setVisible(false);
+        if(context!=null) {
+            if (context.getInteractors().isResourceLoaded(event.getResource())) {
+                downloadBtn.setVisible(true);
+            } else {
+                downloadBtn.setVisible(false);
+            }
         }
     }
 
