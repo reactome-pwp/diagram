@@ -73,7 +73,11 @@ public class InteractorSelectedEvent extends GwtEvent<InteractorSelectedHandler>
         String url = "";
         switch (type){
             case INTERACTION:
-                url = type.url + identifier;
+                if(identifier.contains("EBI-")){
+                    url = "http://www.ebi.ac.uk/intact/interaction/" + identifier;
+                } else {
+                    url = type.url + identifier;
+                }
                 break;
             case INTERACTOR:
                 String acc = identifier;
@@ -81,10 +85,10 @@ public class InteractorSelectedEvent extends GwtEvent<InteractorSelectedHandler>
                 String resource;
                 if (text.length > 1){
                     resource = text[0].toLowerCase();
+                    url = type.url.replace("##RESOURCE##", resource).replace("##ID##", acc);
                 } else {
-                    resource = "uniprot"; //Uniprot is the default one
+                    url = "http://www.uniprot.org/uniprot/" + acc;
                 }
-                url = type.url.replace("##RESOURCE##", resource).replace("##ID##", acc);
                 break;
         }
         return url;
