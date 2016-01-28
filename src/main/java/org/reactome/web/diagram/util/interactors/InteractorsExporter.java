@@ -6,10 +6,19 @@ import org.reactome.web.diagram.util.MapSet;
 import java.util.Set;
 
 /**
+ * This class is used to export the interactors to a file
+ *
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class InteractorsExporter {
 
+    /***
+     * This method takes as input the name of the file to be saved and
+     * a MapSet containing:  DiagramAccession -> Set<RawInteractors>
+     *
+     * @param filename the name of the file to be saved
+     * @param interactors
+     */
     public static void exportInteractors(String filename, MapSet<String, RawInteractor> interactors) {
         alertDownload(filename, getFileContent(interactors));
     }
@@ -40,11 +49,11 @@ public class InteractorsExporter {
                 .append("Interactor B").append("\t")
                 .append("InteractionID").append("\t")
                 .append("miScore").append("\t\n");
-        for (String key : interactors.keySet()) {
-            Set<RawInteractor> rawInteractors = interactors.getElements(key);
+        for (String diagramAcc : interactors.keySet()) {
+            Set<RawInteractor> rawInteractors = interactors.getElements(diagramAcc);
             if(rawInteractors != null) {
                 for (RawInteractor rawInteractor : rawInteractors) {
-                    builder.append(key).append("\t")
+                    builder.append(diagramAcc).append("\t")
                             .append(rawInteractor.getAcc()).append("\t")
                             .append(rawInteractor.getId()).append("\t")
                             .append(rawInteractor.getScore()).append("\t\n");
