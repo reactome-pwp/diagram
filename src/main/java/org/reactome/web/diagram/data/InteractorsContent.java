@@ -201,14 +201,19 @@ public class InteractorsContent {
             for (String diagramAcc : map.keySet()) {
                 for (RawInteractor rawInteractor : map.getElements(diagramAcc)) {
                     String accession = rawInteractor.getAcc();
-                    InteractorSearchResult result = cache.get(accession);
-                    if (result == null) {
-                        result = new InteractorSearchResult(resource, accession);
-                        cache.put(accession, result);
-                        rtn.add(result);
+
+                    // If the interactor is in the diagram we do not
+                    // present it as a separate result
+                    if(!map.keySet().contains(accession)) {
+                        InteractorSearchResult result = cache.get(accession);
+                        if (result == null) {
+                            result = new InteractorSearchResult(resource, accession);
+                            cache.put(accession, result);
+                            rtn.add(result);
+                        }
+                        result.addInteractsWith(rawInteractor.getId(), getInteractsWith(diagramAcc, content));
+                        result.addInteraction(rawInteractor);
                     }
-                    result.addInteractsWith(rawInteractor.getId(), getInteractsWith(diagramAcc, content));
-                    result.addInteraction(rawInteractor);
                 }
             }
         }
@@ -240,6 +245,10 @@ public class InteractorsContent {
             }
         }
         return rtn;
+    }
+
+    public MapSet<String, RawInteractor> getRawInteractorsPerResource(String resource) {
+        return rawInteractorsCache.get(resource.toLowerCase());
     }
 
     public boolean isResourceLoaded(String resource) {
