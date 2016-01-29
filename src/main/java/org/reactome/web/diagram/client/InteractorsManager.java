@@ -78,7 +78,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     }
 
     private int getNumberOfInteractorsToDraw(Collection items){
-        if(items==null) return 0;
+        if (items == null) return 0;
         int n = items.size();
         return n <= MAX_INTERACTORS ? n : MAX_INTERACTORS;
     }
@@ -94,19 +94,15 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         InteractorsContent interactors = context.getInteractors();
         List<RawInteractor> rawInteractors = interactors.getRawInteractors(currentResource, p.getIdentifier());
 
-        int n = getNumberOfInteractorsToDraw(rawInteractors);
-        final int N = n; //The maximum initial number (it cannot be changed in the inner of the next for)
-        int inDiagram = 0;
-        for (int i = 0; i < n; i++) {  //please note that "n" can be increased if the interactors are present in the diagram
-            RawInteractor rawInteractor = rawInteractors.get(i);
-
+        //Keeping a list of the dynamic interactors will help later to decide the number of visible interactors
+        List<RawInteractor> dynamicInteractors = new LinkedList<>();
+        MapSet<String, GraphObject> map = context.getContent().getIdentifierMap();
+        for (RawInteractor rawInteractor : rawInteractors) {
             String acc = rawInteractor.getAcc();
-            MapSet<String, GraphObject> map = context.getContent().getIdentifierMap();
             //The following line removes resource name prefixes in the accession because the graph do not have them (CHEBI:12345 -> 12345)
             Set<GraphObject> objects = map.getElements(acc.replaceAll("^\\w+[-:_]", ""));
-            boolean interactorCreated = false;
             if (objects != null) {
-                //In this case the interactor is already present in the diagram so we have to create links between the different nodes
+                //All the static links can be created since they do not clutter the view
                 for (GraphObject object : objects) {
                     for (DiagramObject nodeTo : object.getDiagramObjects()) {
                         InteractorLink link;
@@ -117,34 +113,35 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
                         }
                         interactors.cache(currentResource, node, link);
                         interactors.addInteractor(currentResource, link);
-                        interactorCreated = true;
                     }
                 }
-            }
-            //It may happen that a interactor is present in the diagram but as part of a complex/set (so it doesn't get created in the previous part)
-            if(!interactorCreated) {
-                //In this case the interactor is NOT present in the diagram so we have to create an interactor with its link to the node
-                InteractorEntity interactor = getOrCreateInteractorEntity(acc);
-
-                layoutBuilder.doLayout(interactor, i - inDiagram, N);  //the maximum number of elements is used here for layout beauty purposes
-
-                Set<InteractorLink> links = new HashSet<>();
-                interactors.cache(currentResource, node, interactor);
-                for (InteractorLink link : interactor.addInteraction(node, rawInteractor.getId(), rawInteractor.getScore())) {
-                    interactors.cache(currentResource, node, link);
-                    links.add(link);
-                }
-
-                //next block (adding to the QuadTree) also needs to be done after the doLayout
-                interactors.addInteractor(currentResource, interactor);
-                for (InteractorLink link : links) {
-                    interactors.addInteractor(currentResource, link);
-                }
             } else {
-                //This is a correction applied when the interactor was already in the diagram. It means that we have
-                //more space to add more interactors in the corona
-                inDiagram++;   //a correction over the doLayout
-                n = n + 1 < rawInteractors.size() ? n + 1 : n; //a correction over the possible elements to be included
+                dynamicInteractors.add(rawInteractor);
+            }
+        }
+
+        //From those that are not visible, we pick the top "allowed" number
+        int n = getNumberOfInteractorsToDraw(dynamicInteractors);
+        for (int i = 0; i < n; i++) {  //please note that "n" can be increased if the interactors are present in the diagram
+            RawInteractor rawInteractor = rawInteractors.get(i);
+
+            String acc = rawInteractor.getAcc();
+            //In this case the interactor is NOT present in the diagram so we have to create an interactor with its link to the node
+            InteractorEntity interactor = getOrCreateInteractorEntity(acc);
+
+            layoutBuilder.doLayout(interactor, i, n);  //the maximum number of elements is used here for layout beauty purposes
+
+            Set<InteractorLink> links = new HashSet<>();
+            interactors.cache(currentResource, node, interactor);
+            for (InteractorLink link : interactor.addInteraction(node, rawInteractor.getId(), rawInteractor.getScore())) {
+                interactors.cache(currentResource, node, link);
+                links.add(link);
+            }
+
+            //next block (adding to the QuadTree) also needs to be done after the doLayout
+            interactors.addInteractor(currentResource, interactor);
+            for (InteractorLink link : links) {
+                interactors.addInteractor(currentResource, link);
             }
         }
         eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
