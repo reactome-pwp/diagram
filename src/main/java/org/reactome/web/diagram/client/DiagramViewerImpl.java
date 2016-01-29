@@ -145,7 +145,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         }else if (!mouseCurrent.equals(mousePrevious)) {
             mousePrevious = mouseCurrent;
             DiagramInteractor hoveredInteractor = getHoveredInteractor();
-            highlightInteractor(hoveredInteractor); //if hovered interactor is null, calling highlightInteractor will clear the previous highlight
             canvas.setCursor(hoveredInteractor == null ? Style.Cursor.DEFAULT : Style.Cursor.POINTER);
             if (hoveredInteractor != null) {
                 resetHighlight(); // This resets the layout highlight -> please note that the method is defined in the DiagramViewer interface
@@ -155,6 +154,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
                 canvas.setCursor(item == null ? Style.Cursor.DEFAULT : Style.Cursor.POINTER);
                 highlightHoveredItem(hovered);
             }
+            highlightInteractor(hoveredInteractor); //if hovered interactor is null, calling highlightInteractor will clear the previous highlight
         }
     }
 
