@@ -66,7 +66,10 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     @Override
     public void onDiagramLoaded(DiagramLoadedEvent event) {
         context = event.getContext();
-        update();
+        if (context.getInteractors().isInteractorResourceCached(currentResource)) {
+            update();
+        }
+
     }
 
     @Override
@@ -94,6 +97,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
         currentResource = event.getInteractors().getResource();
+        //TODO Check why no warning is shown in case no interactors are present
         int totalInteractorsLoaded = event.getInteractors().getEntities().size();
         if(totalInteractorsLoaded==0) {
             Console.warn(">> No interactors present <<");
@@ -113,7 +117,6 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     public void onSliderValueChanged(SliderValueChangedEvent event) {
         double threshold = event.getPercentage();
         InteractorsContent.setInteractorsThreshold(currentResource, threshold);
-        //TODO: Consider removing the event
         eventBus.fireEventFromSource(new InteractorsFilteredEvent(threshold), this);
     }
 
