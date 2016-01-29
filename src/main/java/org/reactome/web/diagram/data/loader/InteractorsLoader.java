@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.data.loader;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.http.client.*;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.DiagramContent;
@@ -70,11 +71,22 @@ public class InteractorsLoader implements RequestCallback {
             try {
                 this.request = requestBuilder.sendRequest(post.toString(), this);
             } catch (RequestException e) {
-                this.handler.onInteractorsLoaderError(new InteractorsException(resource, e.getMessage()));
+                fireDeferredErrorEvent(resource, e.getMessage());
             }
         } else {
-            handler.onInteractorsLoaderError(new InteractorsException(resource, "No target entities for interactors"));
+            fireDeferredErrorEvent(resource, "No target entities for interactors");
         }
+    }
+
+    private void fireDeferredErrorEvent(final String resource, final String message){
+        // Firing of the error event is deferred to ensure that InteractorsResourceChanged
+        // event is handled first by the rest of the modules.
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                handler.onInteractorsLoaderError(new InteractorsException(resource, message));
+            }
+        });
     }
 
     @Override

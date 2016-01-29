@@ -1,6 +1,5 @@
 package org.reactome.web.diagram.data.loader;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.DiagramContent;
@@ -117,14 +116,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
         INTERACTORS_RESOURCE = event.getResource();
         interactorsLoader.cancel();
         if (INTERACTORS_RESOURCE != null && !context.getInteractors().isInteractorResourceCached(INTERACTORS_RESOURCE)) {
-            // Loading is deferred to esure that InteractorsResourceChanged
-            // event is handled first by the rest of the modules.
-            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                @Override
-                public void execute() {
-                    interactorsLoader.load(content, INTERACTORS_RESOURCE);
-                }
-            });
+            interactorsLoader.load(content, INTERACTORS_RESOURCE);
         }
     }
 
