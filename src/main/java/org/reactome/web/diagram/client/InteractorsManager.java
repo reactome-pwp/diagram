@@ -18,6 +18,7 @@ import org.reactome.web.diagram.handlers.InteractorsCollapsedHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 import org.reactome.web.diagram.renderers.interactor.InteractorRenderer;
 import org.reactome.web.diagram.renderers.interactor.InteractorRendererManager;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
@@ -184,13 +185,16 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     }
 
     public void recalculateLayoutIfNeededAndSetVisibility(Node node, List<InteractorLink> links, boolean visible) {
-        int n = getNumberOfInteractorsToDraw(links);
+        List<DynamicLink> dynamicLinks = new LinkedList<>();
+        for (InteractorLink link : links) {
+            if(link instanceof DynamicLink) dynamicLinks.add((DynamicLink) link);
+        }
+        int n = getNumberOfInteractorsToDraw(dynamicLinks);
         for (int i = 0; i < n; i++) {
-            InteractorLink link = links.get(i);
-            if (link instanceof DynamicLink) {
-                InteractorEntity entity = ((DynamicLink) link).getInteractorEntity();
-                recalculateLayoutIfNeeded(node, entity, i, n);
-            }
+            DynamicLink link = dynamicLinks.get(i);
+            Console.info(link);
+            InteractorEntity entity = link.getInteractorEntity();
+            recalculateLayoutIfNeeded(node, entity, i, n);
         }
         //The visibility of the links has to be changed AFTER recalculating the layout
         for (InteractorLink link : links) {
