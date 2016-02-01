@@ -105,15 +105,21 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             if (objects != null) {
                 //All the static links can be created since they do not clutter the view
                 for (GraphObject object : objects) {
-                    for (DiagramObject nodeTo : object.getDiagramObjects()) {
-                        InteractorLink link;
-                        if (node.equals(nodeTo)) {
-                            link = new LoopLink(node, rawInteractor.getId(), rawInteractor.getScore());
-                        } else {
-                            link = new StaticLink(node, (Node) nodeTo, rawInteractor.getId(), rawInteractor.getScore());
+                    List<DiagramObject> diagramObjectList = object.getDiagramObjects();
+                    if(!diagramObjectList.isEmpty()) {
+                        for (DiagramObject nodeTo : diagramObjectList) {
+                            InteractorLink link;
+                            if (node.equals(nodeTo)) {
+                                link = new LoopLink(node, rawInteractor.getId(), rawInteractor.getScore());
+                            } else {
+                                link = new StaticLink(node, (Node) nodeTo, rawInteractor.getId(), rawInteractor.getScore());
+                            }
+                            interactors.cache(currentResource, node, link);
+                            interactors.addInteractor(currentResource, link);
                         }
-                        interactors.cache(currentResource, node, link);
-                        interactors.addInteractor(currentResource, link);
+                    } else {
+                        // Maybe a part of a complex or a set
+                        dynamicInteractors.add(rawInteractor);
                     }
                 }
             } else {
@@ -124,7 +130,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         //From those that are not visible, we pick the top "allowed" number
         int n = getNumberOfInteractorsToDraw(dynamicInteractors);
         for (int i = 0; i < n; i++) {  //please note that "n" can be increased if the interactors are present in the diagram
-            RawInteractor rawInteractor = rawInteractors.get(i);
+            RawInteractor rawInteractor = dynamicInteractors.get(i);
 
             String acc = rawInteractor.getAcc();
             //In this case the interactor is NOT present in the diagram so we have to create an interactor with its link to the node
