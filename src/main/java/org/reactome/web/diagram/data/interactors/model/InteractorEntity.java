@@ -72,10 +72,13 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
         return false;
     }
 
-    public Set<LinkCommon> getUniqueLinks(){
+    public Set<LinkCommon> getLinksFrom(String accession){
         Set<LinkCommon> rtn = new HashSet<>();
         for (InteractorLink link : links.values()) {
-            rtn.add(new LinkCommon(link.getId(), link.getScore()));
+            GraphPhysicalEntity pe = link.getNodeFrom().getGraphObject();
+            if(accession.equals(pe.getIdentifier())) {
+                rtn.add(new LinkCommon(link.getId(), link.getScore()));
+            }
         }
         return rtn;
     }

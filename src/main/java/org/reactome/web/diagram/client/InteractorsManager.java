@@ -18,7 +18,6 @@ import org.reactome.web.diagram.handlers.InteractorsCollapsedHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 import org.reactome.web.diagram.renderers.interactor.InteractorRenderer;
 import org.reactome.web.diagram.renderers.interactor.InteractorRendererManager;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
@@ -177,14 +176,18 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             }
         }
 
-        int n = getNumberOfInteractorsToDraw(entities);
-        for (int i = 0; i < getNumberOfInteractorsToDraw(entities); i++) {
-            InteractorEntity entity = entities.get(i);
-            recalculateLayoutIfNeeded(node, entity, i, n);
-            for (LinkCommon linkCommon : entity.getUniqueLinks()) {
-                for (InteractorLink link : entity.addInteraction(node, linkCommon.getId(), linkCommon.getScore())) {
-                    context.getInteractors().cache(currentResource, node, link);
-                    context.getInteractors().addInteractor(currentResource, link);
+        if(node.getGraphObject() instanceof GraphPhysicalEntity) {
+            GraphPhysicalEntity pe = node.getGraphObject();
+            int n = getNumberOfInteractorsToDraw(entities);
+            for (int i = 0; i < getNumberOfInteractorsToDraw(entities); i++) {
+                InteractorEntity entity = entities.get(i);
+                recalculateLayoutIfNeeded(node, entity, i, n);
+                //using getLinksFrom method already give us the previous filtered info from rawInteractors
+                for (LinkCommon aux : entity.getLinksFrom(pe.getIdentifier())) {
+                    for (InteractorLink link : entity.addInteraction(node, aux.getId(), aux.getScore())) {
+                        context.getInteractors().cache(currentResource, node, link);
+                        context.getInteractors().addInteractor(currentResource, link);
+                    }
                 }
             }
         }
@@ -198,7 +201,6 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         int n = getNumberOfInteractorsToDraw(dynamicLinks);
         for (int i = 0; i < n; i++) {
             DynamicLink link = dynamicLinks.get(i);
-            Console.info(link);
             InteractorEntity entity = link.getInteractorEntity();
             recalculateLayoutIfNeeded(node, entity, i, n);
         }
@@ -209,13 +211,12 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     }
 
     private void recalculateLayoutIfNeeded(Node node, InteractorEntity entity, int i, int n) {
-        if (InteractorsLayout.doLayout(node, entity, i, n, !entity.isVisible())) {
-            context.getInteractors().updateInteractor(currentResource, entity);
-            for (InteractorLink link : entity.getLinks()) {
-                //When the entity has been moved, all the links boundaries need to be updated
-                link.setBoundaries(entity.getCentre());
-                context.getInteractors().updateInteractor(currentResource, link);
-            }
+        InteractorsLayout.doLayout(node, entity, i, n, !entity.isVisible());
+        context.getInteractors().updateInteractor(currentResource, entity);
+        for (InteractorLink link : entity.getLinks()) {
+            //When the entity has been moved, all the links boundaries need to be updated
+            link.setBoundaries(entity.getCentre());
+            context.getInteractors().updateInteractor(currentResource, link);
         }
     }
 
