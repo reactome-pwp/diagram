@@ -121,11 +121,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     @Override
     public void onSearchUpdated(SearchBoxUpdatedEvent event) {
-        if(suggestionsProvider!=null) {
-            String term = input.getText().trim();
-            List<SearchResultObject> suggestions = suggestionsProvider.getSuggestions(term);
-            fireEvent(new SearchPerformedEvent(term, suggestions));
-        }
+        performSearch();
     }
 
     @Override
@@ -135,20 +131,12 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        if(suggestionsProvider!=null) {
-            String term = input.getText().trim();
-            List<SearchResultObject> suggestions = suggestionsProvider.getSuggestions(term);
-            fireEvent(new SearchPerformedEvent(term, suggestions));
-        }
+        performSearch();
     }
 
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
-        if(suggestionsProvider!=null) {
-            String term = input.getText().trim();
-            List<SearchResultObject> suggestions = suggestionsProvider.getSuggestions(term);
-            fireEvent(new SearchPerformedEvent(term, suggestions));
-        }
+        performSearch();
     }
 
     public void setFocus(boolean focused){
@@ -185,8 +173,15 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
     }
 
-    public static SearchLauncherResources RESOURCES;
+    private void performSearch() {
+        if(suggestionsProvider!=null) {
+            String term = input.getText().trim();
+            List<SearchResultObject> suggestions = suggestionsProvider.getSuggestions(term);
+            fireEvent(new SearchPerformedEvent(term, suggestions));
+        }
+    }
 
+    public static SearchLauncherResources RESOURCES;
     static {
         RESOURCES = GWT.create(SearchLauncherResources.class);
         RESOURCES.getCSS().ensureInjected();
