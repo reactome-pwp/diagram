@@ -26,7 +26,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     @SuppressWarnings("FieldCanBeLocal")
     private static String MSG_LOADING = "Loading interactors for ";
     @SuppressWarnings("FieldCanBeLocal")
-    private static String MSG_LOADING_PSICQUIC = "Loading PSICQUIC interactors for ";
+    private static String MSG_LOADING_PSICQUIC = "Loading PSICQUIC interactors from ";
     @SuppressWarnings("FieldCanBeLocal")
     private static String MSG_NO_INTERACTORS_FOUND = "No interactors found in ";
 
