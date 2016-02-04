@@ -2,9 +2,12 @@ package org.reactome.web.diagram.tooltips;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.data.layout.impl.ShapeFactory;
@@ -17,7 +20,7 @@ import java.util.Objects;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class TooltipContainer extends AbsolutePanel implements DiagramRequestedHandler, DiagramLoadedHandler,
-        GraphObjectHoveredHandler, EntityDecoratorHoveredHandler,
+        GraphObjectHoveredHandler, EntityDecoratorHoveredHandler, InteractorHoveredHandler,
         DiagramZoomHandler, DiagramPanningHandler {
 
     private static final int DELAY = 500;
@@ -33,6 +36,8 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     private int width;
     private int height;
 
+    private NumberFormat numberFormat;
+
     public TooltipContainer(EventBus eventBus, int width, int height) {
         this.eventBus = eventBus;
         this.hoveredTimer = new Timer() {
@@ -43,6 +48,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
         };
         setWidth(width);
         setHeight(height);
+        numberFormat = NumberFormat.getFormat("0.000");
         initHandlers();
     }
 
@@ -53,6 +59,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
         this.eventBus.addHandler(DiagramPanningEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramZoomEvent.TYPE, this);
+        this.eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
     }
 
     public int getWidth() {
@@ -82,6 +89,12 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
         if(!isDecorator || event.getHoveredObject()==null) {
             setHovered(event.getHoveredObject());
         }
+    }
+
+    @Override
+    public void onInteractorHovered(InteractorHoveredEvent event) {
+        DiagramInteractor interactor = event.getInteractor();
+        setHovered(interactor);
     }
 
     @Override
@@ -225,6 +238,16 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
                     }
                 };
                 infoTimer.schedule(1500);
+            } else if (hovered instanceof InteractorLink) {
+                InteractorLink interactorLink = (InteractorLink) hovered;
+                Coordinate centre = interactorLink.transform(factor, offset).getCentre();
+                tooltip.setText(interactorLink.getId() + " - Score: " + numberFormat.format(interactorLink.getScore()));
+                tooltip.setPositionAndShow(
+                        TooltipContainer.this,
+                        centre.getX(),
+                        centre.getY(),
+                        0
+                );
             } else {
                 tooltip.hide(); //just in case :)
             }
