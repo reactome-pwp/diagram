@@ -210,7 +210,7 @@ public class InteractorsContent {
                 if(!map.keySet().contains(accession)) {
                     InteractorSearchResult result = cache.get(accession);
                     if (result == null) {
-                        result = new InteractorSearchResult(resource, accession);
+                        result = new InteractorSearchResult(resource, accession, rawInteractor.getAlias());
                         cache.put(accession, result);
                         rtn.add(result);
                     }

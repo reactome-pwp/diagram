@@ -48,14 +48,15 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
     public void drawText(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
         if(!item.isVisible()) return;
         InteractorEntity node = (InteractorEntity) item;
-        if(node.getAccession() == null || node.getAccession().isEmpty()) return;
+        String displayName = node.getDisplayName();
+        if(displayName == null) return;
         InteractorBox box = item.transform(factor, offset);
         TextRenderer textRenderer = new TextRenderer(RendererProperties.WIDGET_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
-        TextMetrics metrics = ctx.measureText(node.getAccession());
+        TextMetrics metrics = ctx.measureText(displayName);
         if(metrics.getWidth()<=box.getWidth() - 2 * RendererProperties.NODE_TEXT_PADDING) {
-            textRenderer.drawTextSingleLine(ctx, node.getAccession(), box.getCentre());
+            textRenderer.drawTextSingleLine(ctx, displayName, box.getCentre());
         } else {
-            textRenderer.drawTextMultiLine(ctx, node.getAccession(), NodePropertiesFactory.get(box));
+            textRenderer.drawTextMultiLine(ctx, displayName, NodePropertiesFactory.get(box));
         }
 
     }

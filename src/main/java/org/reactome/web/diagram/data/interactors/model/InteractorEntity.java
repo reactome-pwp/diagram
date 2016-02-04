@@ -22,11 +22,10 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
     private String alias;
     private boolean chemical;
 
-    public InteractorEntity(String accession, String alias) {
     private PDBObject pdbObject;
     private ImageElement image;
 
-    public InteractorEntity(String accession) {
+    public InteractorEntity(String accession, String alias) {
         this.accession = accession;
         this.alias = alias;
         this.chemical = accession.toLowerCase().contains("chebi");
@@ -75,8 +74,6 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
         return alias != null ? alias : accession;
     }
 
-    public boolean isLaidOut(){
-        return minX != null && maxX != null && minY != null && maxY !=null;
     public ImageElement getImage() {
         if (image == null) setImageURL();
         return image;

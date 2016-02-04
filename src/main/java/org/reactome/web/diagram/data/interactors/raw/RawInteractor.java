@@ -11,6 +11,11 @@ public interface RawInteractor {
     String getAcc();
 
     /**
+     * The interactor's gene name for protein or an alternative name for chemical
+     */
+    String getAlias();
+
+    /**
      * Interaction identifier (e.g. IntAct ID)
      */
     String getId();

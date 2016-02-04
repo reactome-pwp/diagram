@@ -13,25 +13,7 @@ public interface RawInteractors {
     String getResource();
 
     /**
-     * It depends on the accession type for the resource
-     * (e.g. for UniProt http://www.uniprot.org/uniprot/##ID##)
-     */
-    String getInteractorUrl();
-
-    /**
-     * It depends on the resource
-     * (e.g. for IntAct http://www.ebi.ac.uk/intact/interaction/##ID##)
-     */
-    String getInteractionUrl();
-
-    /**
      * The list of entities with their interactor for the diagram
      */
     List<RawInteractorEntity> getEntities();
-
-    /**
-     * The list of synonyms for the interactors (to avoid data duplication)
-     */
-    List<Synonym> getSynonyms();
-
 }

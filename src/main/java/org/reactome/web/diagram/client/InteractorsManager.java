@@ -131,9 +131,8 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         for (int i = 0; i < n; i++) {  //please note that "n" can be increased if the interactors are present in the diagram
             RawInteractor rawInteractor = dynamicInteractors.get(i);
 
-            String acc = rawInteractor.getAcc();
             //In this case the interactor is NOT present in the diagram so we have to create an interactor with its link to the node
-            InteractorEntity interactor = getOrCreateInteractorEntity(acc);
+            InteractorEntity interactor = getOrCreateInteractorEntity(rawInteractor.getAcc(), rawInteractor.getAlias());
 
             layoutBuilder.doLayout(interactor, i, n);  //the maximum number of elements is used here for layout beauty purposes
 
@@ -220,10 +219,10 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         }
     }
 
-    private InteractorEntity getOrCreateInteractorEntity(String acc) {
+    private InteractorEntity getOrCreateInteractorEntity(String acc, String alias) {
         InteractorEntity interactor = context.getInteractors().getDiagramInteractor(currentResource, acc);
         if (interactor == null) {
-            interactor = new InteractorEntity(acc);
+            interactor = new InteractorEntity(acc, alias);
             context.getInteractors().cache(currentResource, interactor);
         }
         return interactor;

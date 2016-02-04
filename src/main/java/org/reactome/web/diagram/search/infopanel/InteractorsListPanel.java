@@ -58,7 +58,7 @@ public class InteractorsListPanel extends FlowPanel {
             Image icon = new Image(InteractorImages.INSTANCE.interactor());
             listItem.add(icon);
 
-            Anchor listItemLink = new Anchor(rawInteractor.getAcc());
+            Anchor listItemLink = new Anchor(rawInteractor.getAlias()!=null ? rawInteractor.getAlias() : rawInteractor.getAcc());
             listItemLink.setStyleName(css.listItemLink());
             listItemLink.setTitle(rawInteractor.getAcc());
             GraphObject graphObject = inDiagramInteractors.get(rawInteractor.getAcc());
