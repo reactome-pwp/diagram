@@ -42,7 +42,7 @@ import java.util.Set;
  */
 class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsManager.Handler,
         LayoutLoadedHandler, DiagramLoadRequestHandler, DiagramLoadedHandler,
-        InteractorsLoadedHandler, InteractorsResourceChangedHandler, InteractorsCollapsedHandler,
+        InteractorsLoadedHandler, InteractorsResourceChangedHandler, InteractorsCollapsedHandler, InteractorHoveredHandler,
         InteractorsLayoutUpdatedHandler, InteractorsFilteredHandler, InteractorSelectedHandler, InteractorProfileChangedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
@@ -123,6 +123,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
 
         eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
+        eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLayoutUpdatedEvent.TYPE, this);
         eventBus.addHandler(InteractorsFilteredEvent.TYPE, this);
@@ -458,6 +459,15 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     @Override
     public void onIllustrationSelected(IllustrationSelectedEvent event) {
         this.canvas.setIllustration(event.getUrl());
+    }
+
+    @Override
+    public void onInteractorHovered(InteractorHoveredEvent event) {
+        //In order to have fine grain hovering capabilities, this class is not taking actions for onInteractorHovered
+        //when it is fired by its own, so we ONLY want to do the STANDARD action (highlight) when the event comes from
+        //the outside. That is the reason of the next line of code
+        if (event.getSource().equals(this)) return;
+        highlightInteractor(event.getInteractor());
     }
 
     @Override
