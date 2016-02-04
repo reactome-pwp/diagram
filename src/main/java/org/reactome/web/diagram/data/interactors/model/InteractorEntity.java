@@ -14,10 +14,12 @@ import java.util.*;
 public class InteractorEntity extends DiagramInteractor implements Draggable {
 
     private String accession;
+    private String alias;
     private boolean chemical;
 
-    public InteractorEntity(String accession) {
+    public InteractorEntity(String accession, String alias) {
         this.accession = accession;
+        this.alias = alias;
         this.chemical = accession.toLowerCase().contains("chebi");
     }
     Set<GraphPhysicalEntity> interactsWith = new HashSet<>();
@@ -44,6 +46,10 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
         return accession;
     }
 
+    public String getAlias() {
+        return alias;
+    }
+
     public boolean isChemical() {
         return chemical;
     }
@@ -53,6 +59,10 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
                 minX + (maxX - minX) / 2.0,
                 minY + (maxY - minY) / 2.0
         );
+    }
+
+    public String getDisplayName(){
+        return alias != null ? alias : accession;
     }
 
     public boolean isLaidOut(){
