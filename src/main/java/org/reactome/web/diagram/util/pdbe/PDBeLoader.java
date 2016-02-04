@@ -52,7 +52,7 @@ public class PDBeLoader {
     }
 
     public void loadBestStructure(final Handler handler, final String acc) {
-        String url = "http://wwwdev.ebi.ac.uk/pdbe/api/mappings/best_structures/" + acc + "/";
+        String url = "http://www.ebi.ac.uk/pdbe/api/mappings/best_structures/" + acc + "/";
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             requestBuilder.sendRequest(null, new RequestCallback() {
