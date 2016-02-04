@@ -28,7 +28,7 @@
 }
 
 .liveResourcesOuterPanel {
-    height: 135px;
+    height: 131px;
     width: 245px;
     margin-left: 10px;
     background-color: transparent;
@@ -81,10 +81,16 @@
     border-radius: 15px;
     color: white;
     margin-top: 5px;
-    margin-left: 37px;
-    padding: 6px;
+    margin-left: 30px;
+    padding: 2px 5px 2px 5px;
     outline: none;
     font-size: medium !important;
+}
+
+.downloadBtn span {
+    vertical-align: middle !important;
+    display: inline-block;
+    max-width: 160px;
 }
 
 .downloadBtn img {
