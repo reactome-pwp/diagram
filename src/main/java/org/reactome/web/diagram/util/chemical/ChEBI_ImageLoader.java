@@ -15,6 +15,7 @@ import org.reactome.web.diagram.events.StructureImageLoadedEvent;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public class ChEBI_ImageLoader {
 
     public interface Handler {
@@ -49,6 +50,8 @@ public class ChEBI_ImageLoader {
         String id = identifier.replaceAll("^\\w+[-:_]", "");
         final String url = "http://www.ebi.ac.uk/chebi/displayImage.do?defaultImage=true&chebiId=" + id + "&dimensions=200&transbg=true";
         final Image rtn = new Image(url);
+        //Next line is meant to avoid the "SecurityError" problem when exporting tainted canvases
+        rtn.getElement().setAttribute("crossOrigin", "anonymous");
         rtn.addLoadHandler(new LoadHandler() {
             @Override
             public void onLoad(LoadEvent loadEvent) {
@@ -78,9 +81,11 @@ public class ChEBI_ImageLoader {
     static {
         RootPanel.get().add(LOADING);
         LOADING.getElement().removeFromParent();
+        LOADING.getElement().setAttribute("crossOrigin", "anonymous");
 
         RootPanel.get().add(NOT_FOUND);
         NOT_FOUND.getElement().removeFromParent();
+        NOT_FOUND.getElement().setAttribute("crossOrigin", "anonymous");
     }
 
     interface ChemicalImages extends ClientBundle {

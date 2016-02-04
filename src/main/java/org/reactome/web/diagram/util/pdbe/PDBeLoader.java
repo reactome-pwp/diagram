@@ -19,6 +19,7 @@ import org.reactome.web.diagram.util.pdbe.model.QueryResult;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public class PDBeLoader {
 
     private static PDBeLoader loader;
@@ -91,6 +92,8 @@ public class PDBeLoader {
     private void loadPDBeImage(final Handler handler, final PDBObject object) {
         String url = "http://www.ebi.ac.uk/pdbe/static/entry/" + object.getPdbid() + "_deposited_chain_front_image-800x800.png";
         final Image rtn = new Image(url);
+        //Next line is meant to avoid the "SecurityError" problem when exporting tainted canvases
+        rtn.getElement().setAttribute("crossOrigin", "anonymous");
         rtn.addLoadHandler(new LoadHandler() {
             @Override
             public void onLoad(LoadEvent loadEvent) {
@@ -121,9 +124,11 @@ public class PDBeLoader {
     static {
         RootPanel.get().add(LOADING);
         LOADING.getElement().removeFromParent();
+        LOADING.getElement().setAttribute("crossOrigin", "anonymous");
 
         RootPanel.get().add(NOT_FOUND);
         NOT_FOUND.getElement().removeFromParent();
+        NOT_FOUND.getElement().setAttribute("crossOrigin", "anonymous");
     }
 
     interface PDBeImages extends ClientBundle {
