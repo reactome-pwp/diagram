@@ -119,6 +119,18 @@ public abstract class LegendPanel extends AbsolutePanel {
 
         @Source("images/loader.gif")
         ImageResource loader();
+
+        @Source("images/play_clicked.png")
+        ImageResource downloadClicked();
+
+        @Source("images/play_disabled.png")
+        ImageResource downloadDisabled();
+
+        @Source("images/play_hovered.png")
+        ImageResource downloadHovered();
+
+        @Source("images/play_normal.png")
+        ImageResource downloadNormal();
     }
 
     /**
@@ -184,6 +196,8 @@ public abstract class LegendPanel extends AbsolutePanel {
         String interactorsControlSlider();
 
         String interactorsControlControls();
+
+        String download();
     }
 
     protected EventBus eventBus;

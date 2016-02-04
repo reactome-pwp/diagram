@@ -9,9 +9,12 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.InteractorsContent;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.Console;
+import org.reactome.web.diagram.util.MapSet;
+import org.reactome.web.diagram.util.interactors.InteractorsExporter;
 import org.reactome.web.diagram.util.slider.Slider;
 import org.reactome.web.diagram.util.slider.SliderValueChangedEvent;
 import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
@@ -29,6 +32,8 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     private static String MSG_LOADING_PSICQUIC = "Loading PSICQUIC interactors from ";
     @SuppressWarnings("FieldCanBeLocal")
     private static String MSG_NO_INTERACTORS_FOUND = "No interactors found in ";
+    @SuppressWarnings("FieldCanBeLocal")
+    private static String MSG_DOWNLOAD_TOOLTIP = "Download all diagram interactors ";
 
     private String currentResource;
 
@@ -37,6 +42,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     private InlineLabel message;
     private FlowPanel controlsFP;
     private Slider slider;
+    private PwpButton downloadBtn;
     private PwpButton closeBtn;
 
     public InteractorsControl(EventBus eventBus) {
@@ -59,8 +65,16 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             } else {
                 eventBus.fireEventFromSource(new InteractorsCollapsedEvent(currentResource), this);
             }
+            setVisible(false);
+        } else if(source.equals(this.downloadBtn)) {
+            if (context != null) {
+                MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(currentResource);
+                if(interactors != null && !interactors.isEmpty()) {
+                    String filename = context.getContent().getStableId() + "_Interactors_" + formatName(currentResource)+ ".tsv";
+                    InteractorsExporter.exportInteractors(filename, interactors);
+                }
+            }
         }
-        setVisible(false);
     }
 
     @Override
@@ -130,7 +144,8 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             setVisible(true);
             setMessage(currentResource);
             controlsFP.setVisible(true);
-            this.slider.setValue(InteractorsContent.getInteractorsThreshold(currentResource));
+            slider.setValue(InteractorsContent.getInteractorsThreshold(currentResource));
+            downloadBtn.setTitle(MSG_DOWNLOAD_TOOLTIP + formatName(currentResource));
         }
     }
 
@@ -149,9 +164,12 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         this.slider.addSliderValueChangedHandler(this);
         this.slider.setStyleName(RESOURCES.getCSS().interactorsControlSlider());
 
+        this.downloadBtn = new PwpButton(MSG_DOWNLOAD_TOOLTIP, RESOURCES.getCSS().download(), this);
+
         this.controlsFP = new FlowPanel();
         this.controlsFP.setStyleName(RESOURCES.getCSS().interactorsControlControls());
         this.controlsFP.add(this.slider);
+        this.controlsFP.add(this.downloadBtn);
 
         this.add(this.loadingIcon);
         this.add(this.message);
