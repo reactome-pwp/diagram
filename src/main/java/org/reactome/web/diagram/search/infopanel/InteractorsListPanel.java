@@ -66,9 +66,8 @@ public class InteractorsListPanel extends FlowPanel {
                 List<DiagramObject> diagramObjects = graphObject.getDiagramObjects();
                 if(diagramObjects!=null) {
                     // The interactor exists in the diagram as a protein or chemical
-                    String aux = graphObject.getDisplayName() + " (" + rawInteractor.getAcc() + ")";
-                    listItemLink.setText(aux);
-                    listItemLink.setTitle(aux);
+                    listItemLink.setText(graphObject.getDisplayName());
+                    listItemLink.setTitle(graphObject.getDisplayName() + " (" + rawInteractor.getAcc() + ")");
                     listItemLink.addClickHandler(InfoActionsHelper.getLinkClickHandler(graphObject, eventBus, this));
                     listItemLink.addMouseOverHandler(InfoActionsHelper.getLinkMouseOver(graphObject, eventBus, this));
                     listItemLink.addMouseOutHandler(InfoActionsHelper.getLinkMouseOut(eventBus, this));

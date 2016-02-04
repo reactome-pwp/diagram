@@ -54,6 +54,14 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
         return accession;
     }
 
+    public String getAlias() {
+        return alias;
+    }
+
+    public String getDisplayName() {
+        return alias !=null ? alias : accession;
+    }
+
     public Double getInteractionScore(String interactionId) {
         return interaction.get(interactionId);
     }

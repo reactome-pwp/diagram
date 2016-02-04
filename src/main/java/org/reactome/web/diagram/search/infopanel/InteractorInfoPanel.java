@@ -28,8 +28,11 @@ public class InteractorInfoPanel extends Composite {
 
         FlowPanel header = new FlowPanel();
         header.setStyleName(css.infoHeader());
-        header.add(new InlineLabel(interactor.getAccession()));
+        header.add(new InlineLabel(interactor.getDisplayName()));
         this.add(header);
+        if(interactor.getAlias()!=null){
+            this.add(new Label("Accession: " + interactor.getAccession()));
+        }
         this.add(new Label("Type: Interactor"));
         this.add(new Label("Resource: " + (interactor.getResource().equals("static") ? "Static (IntAct)" : formatName(interactor.getResource()))));
         MapSet<String, GraphObject> interactsWith = interactor.getInteractsWith();
