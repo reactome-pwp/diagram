@@ -49,7 +49,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
 
         dataProvider = new ListDataProvider<>();
         dataProvider.addDataDisplay(this);
-        setMoleculesLabels(false); // Show names by default
+        setInteractorsLabels(false); // Show names by default
 
         // Make the scrollbars invisible
         HeaderPanel panel = (HeaderPanel) this.getWidget();
@@ -61,15 +61,19 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         return addHandler(handler, TableItemSelectedEvent.TYPE);
     }
 
-    public void setMoleculesLabels(boolean showIds){
+    public void setInteractorsLabels(boolean showIds){
         if(type!=null) { removeColumn(type); }
-        type = buildColumnTitle();
+        type = buildColumnTitle(showIds);
         insertColumn(0, type, name);
-        insertColumn(1, buildIDColumn(), "ID");
-        insertColumn(2, buildScoreColumn(), "Score");
 
-        this.setColumnWidth(0, 120, Unit.PX);
-        this.setColumnWidth(2, 50, Unit.PX);
+        //We need to add the extra columns only once
+        if(getColumnCount() == 1) {
+            insertColumn(1, buildIDColumn(), "ID");
+            insertColumn(2, buildScoreColumn(), "Score");
+
+            this.setColumnWidth(0, 120, Unit.PX);
+            this.setColumnWidth(2, 50, Unit.PX);
+        }
     }
 
     public void updateRows(List<T> newList){
@@ -148,11 +152,15 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         }
     }
 
-    private Column<T, String> buildColumnTitle() {
+    private Column<T, String> buildColumnTitle(final boolean showIds) {
         Column<T, String> columnTitle = new Column<T, String>(new ClickableTextCell()) {
             @Override
             public String getValue(T object) {
-                return object.getAcc();
+                if(showIds){
+                    return object.getAcc();
+                }else{
+                    return object.getAlias()!=null ? object.getAlias() : object.getAcc();
+                }
             }
         };
         columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {

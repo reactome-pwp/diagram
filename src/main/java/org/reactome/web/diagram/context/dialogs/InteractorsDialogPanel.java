@@ -10,6 +10,8 @@ import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.diagram.context.dialogs.interactors.InteractorsTable;
 import org.reactome.web.diagram.context.dialogs.interactors.TableItemSelectedEvent;
 import org.reactome.web.diagram.context.dialogs.interactors.TableItemSelectedHandler;
+import org.reactome.web.diagram.context.dialogs.molecules.ChangeLabelsEvent;
+import org.reactome.web.diagram.context.dialogs.molecules.ChangeLabelsHandler;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
@@ -30,7 +32,7 @@ import java.util.List;
  */
 public class InteractorsDialogPanel extends Composite implements TableItemSelectedHandler, InteractorsLoadedHandler,
         InteractorsResourceChangedHandler, InteractorsErrorHandler, InteractorHoveredHandler, InteractorsFilteredHandler,
-        GraphObjectHoveredHandler {
+        GraphObjectHoveredHandler, ChangeLabelsHandler {
 
     private EventBus eventBus;
     private FlowPanel container;
@@ -74,6 +76,11 @@ public class InteractorsDialogPanel extends Composite implements TableItemSelect
         if(interactorsTable!=null) {
             interactorsTable.redraw();
         }
+    }
+
+    @Override
+    public void onChangeLabels(ChangeLabelsEvent event) {
+        if(interactorsTable!=null) interactorsTable.setInteractorsLabels(event.getShowIds());
     }
 
     @Override

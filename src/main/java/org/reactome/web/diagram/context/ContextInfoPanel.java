@@ -68,6 +68,7 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
         // add handlers
         parent.addChangeLabelsEventHandler(moleculesDialogPanel);
         parent.addChangeLabelsEventHandler(pathwaysDialogPanel);
+        parent.addChangeLabelsEventHandler(interactorsDialogPanel);
 
         initWidget(outerPanel);
     }
