@@ -4,6 +4,9 @@ import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import uk.ac.ebi.pwp.structures.quadtree.client.QuadTreeBox;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -11,7 +14,7 @@ public class InteractorBox implements QuadTreeBox {
     protected double minX, minY, maxX, maxY, width, height;
 
     public InteractorBox(QuadTreeBox box) {
-        this(box.getMinX(), box.getMinY(), box.getMaxX(), box.getMaxY());;
+        this(box.getMinX(), box.getMinY(), box.getMaxX(), box.getMaxY());
     }
 
     public InteractorBox(double minX, double minY, double maxX, double maxY) {
@@ -30,6 +33,13 @@ public class InteractorBox implements QuadTreeBox {
                 maxX * factor + delta.getX(),
                 maxY * factor + delta.getY()
         );
+    }
+
+    public List<InteractorBox> splitHorizontaly(double w) {
+        List<InteractorBox> rtn = new LinkedList<>();
+        rtn.add(new InteractorBox(minX, minY, minX + w, maxY));
+        rtn.add(new InteractorBox(minX + w, minY, maxX, maxY));
+        return rtn;
     }
 
     @Override
@@ -61,6 +71,6 @@ public class InteractorBox implements QuadTreeBox {
     }
 
     public Coordinate getCentre() {
-       return CoordinateFactory.get(minX + width/2, minY + height/2);
+        return CoordinateFactory.get(minX + width / 2, minY + height / 2);
     }
 }

@@ -27,7 +27,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
 
     public InteractorEntity(String accession, String alias) {
         this.accession = accession;
-        this.alias = alias;
+        this.alias = alias.replace("_"," ");
         this.chemical = accession.toLowerCase().contains("chebi");
     }
 

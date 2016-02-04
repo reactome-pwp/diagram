@@ -19,6 +19,10 @@ import org.reactome.web.diagram.renderers.interactor.s100.DynamicLinkRenderer100
 import org.reactome.web.diagram.renderers.interactor.s100.InteractorEntityRenderer100;
 import org.reactome.web.diagram.renderers.interactor.s100.LoopLinkRenderer100;
 import org.reactome.web.diagram.renderers.interactor.s100.StaticLinkRenderer100;
+import org.reactome.web.diagram.renderers.interactor.s300.DynamicLinkRenderer300;
+import org.reactome.web.diagram.renderers.interactor.s300.InteractorEntityRenderer300;
+import org.reactome.web.diagram.renderers.interactor.s300.LoopLinkRenderer300;
+import org.reactome.web.diagram.renderers.interactor.s300.StaticLinkRenderer300;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +40,7 @@ public class InteractorRendererManager implements DiagramZoomHandler, DiagramLoa
     private Map<Class, InteractorRenderer> s050 = new HashMap<>();
     private Map<Class, InteractorRenderer> s100 = new HashMap<>();
 //    private Map<Class, InteractorRenderer> s200 = new HashMap<>();
+    private Map<Class, InteractorRenderer> s300 = new HashMap<>();
 
     private Map<Class, InteractorRenderer> current = s100;
 
@@ -89,6 +94,11 @@ public class InteractorRendererManager implements DiagramZoomHandler, DiagramLoa
         s100.put(DynamicLink.class, new DynamicLinkRenderer100());
         s100.put(StaticLink.class, new StaticLinkRenderer100());
         s100.put(LoopLink.class, new LoopLinkRenderer100());
+
+        s300.put(InteractorEntity.class, new InteractorEntityRenderer300());
+        s300.put(DynamicLink.class, new DynamicLinkRenderer300());
+        s300.put(StaticLink.class, new StaticLinkRenderer300());
+        s300.put(LoopLink.class, new LoopLinkRenderer300());
     }
 
     @Override
@@ -109,8 +119,10 @@ public class InteractorRendererManager implements DiagramZoomHandler, DiagramLoa
             this.current = this.s050;
         } else if (factor < 2) {
             this.current = this.s100;
-        } else {
+        } else if (factor < 3) {
             this.current = this.s100;
+        } else{
+            this.current = this.s300;
         }
     }
 }
