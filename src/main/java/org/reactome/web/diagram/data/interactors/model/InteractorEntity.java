@@ -1,25 +1,34 @@
 package org.reactome.web.diagram.data.interactors.model;
 
+import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.common.LinkCommon;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
+import org.reactome.web.diagram.util.chemical.ChEBI_ImageLoader;
+import org.reactome.web.diagram.util.pdbe.PDBeLoader;
+import org.reactome.web.diagram.util.pdbe.model.PDBObject;
 
 import java.util.*;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class InteractorEntity extends DiagramInteractor implements Draggable {
+public class InteractorEntity extends DiagramInteractor implements Draggable, PDBeLoader.Handler, ChEBI_ImageLoader.Handler {
 
     private String accession;
     private boolean chemical;
+
+    private PDBObject pdbObject;
+    private ImageElement image;
 
     public InteractorEntity(String accession) {
         this.accession = accession;
         this.chemical = accession.toLowerCase().contains("chebi");
     }
+
     Set<GraphPhysicalEntity> interactsWith = new HashSet<>();
     Map<Node, InteractorLink> links = new HashMap<>();
 
@@ -48,15 +57,20 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
         return chemical;
     }
 
-    public Coordinate getCentre(){
+    public Coordinate getCentre() {
         return CoordinateFactory.get(
                 minX + (maxX - minX) / 2.0,
                 minY + (maxY - minY) / 2.0
         );
     }
 
-    public boolean isLaidOut(){
-        return minX != null && maxX != null && minY != null && maxY !=null;
+    public ImageElement getImage() {
+        if (image == null) setImageURL();
+        return image;
+    }
+
+    public boolean isLaidOut() {
+        return minX != null && maxX != null && minY != null && maxY != null;
     }
 
     @Override
@@ -67,16 +81,16 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
     @Override
     public boolean isVisible() {
         for (InteractorLink link : links.values()) {
-            if(link.isVisible()) return true;
+            if (link.isVisible()) return true;
         }
         return false;
     }
 
-    public Set<LinkCommon> getLinksFrom(String accession){
+    public Set<LinkCommon> getLinksFrom(String accession) {
         Set<LinkCommon> rtn = new HashSet<>();
         for (InteractorLink link : links.values()) {
             GraphPhysicalEntity pe = link.getNodeFrom().getGraphObject();
-            if(accession.equals(pe.getIdentifier())) {
+            if (accession.equals(pe.getIdentifier())) {
                 rtn.add(new LinkCommon(link.getId(), link.getScore()));
             }
         }
@@ -87,8 +101,12 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
         return links.values();
     }
 
-    public InteractorLink getLink(Node node){
+    public InteractorLink getLink(Node node) {
         return links.get(node);
+    }
+
+    public PDBObject getPdbObject() {
+        return pdbObject;
     }
 
     @Override
@@ -140,5 +158,30 @@ public class InteractorEntity extends DiagramInteractor implements Draggable {
     @Override
     public int hashCode() {
         return accession != null ? accession.hashCode() : 0;
+    }
+
+    private void setImageURL() {
+        if (chemical) {
+            image = ImageElement.as(ChEBI_ImageLoader.LOADING.getElement());
+            ChEBI_ImageLoader.get().loadImage(this, accession);
+        } else {
+            image = ImageElement.as(PDBeLoader.LOADING.getElement());
+            PDBeLoader.get().loadBestStructure(this, accession);
+        }
+    }
+
+    @Override
+    public void onChemicalImageLoaded(Image image) {
+        this.image = ImageElement.as(image.getElement());
+    }
+
+    @Override
+    public void onPDBObjectLoaded(PDBObject pdbObject) {
+        this.pdbObject = pdbObject;
+    }
+
+    @Override
+    public void onImageLoaded(Image image) {
+        this.image = ImageElement.as(image.getElement());
     }
 }

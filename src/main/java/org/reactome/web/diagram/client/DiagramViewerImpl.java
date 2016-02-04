@@ -28,6 +28,8 @@ import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.util.ViewportUtils;
+import org.reactome.web.diagram.util.chemical.ChEBI_ImageLoader;
+import org.reactome.web.diagram.util.pdbe.PDBeLoader;
 import org.reactome.web.pwp.model.classes.Pathway;
 import org.reactome.web.pwp.model.util.LruCache;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
@@ -48,7 +50,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         GraphObjectHoveredHandler, GraphObjectSelectedHandler, CanvasExportRequestedHandler,
         DiagramObjectsFlagRequestHandler, DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler,
-        IllustrationSelectedHandler, ControlActionHandler, ThumbnailAreaMovedHandler {
+        IllustrationSelectedHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
+        StructureImageLoadedHandler {
 
     private static final int DIAGRAM_CONTEXT_CACHE_SIZE = 5;
     private final DiagramCanvas canvas; //Canvas only created once and reused every time a new diagram is loaded
@@ -78,6 +81,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         this.contextMap = new LruCache<>(DIAGRAM_CONTEXT_CACHE_SIZE);
         this.loaderManager = new LoaderManager(eventBus);
         AnalysisDataLoader.initialise(eventBus);
+        PDBeLoader.initialise(eventBus);
+        ChEBI_ImageLoader.initialise(eventBus);
         this.layoutManager = new LayoutManager(eventBus);
         this.interactorsManager = new InteractorsManager(eventBus);
 
@@ -133,6 +138,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
         eventBus.addHandler(ThumbnailAreaMovedEvent.TYPE, this);
         eventBus.addHandler(ControlActionEvent.TYPE, this);
+
+        eventBus.addHandler(StructureImageLoadedEvent.TYPE, this);
     }
 
     private void doUpdate() {
@@ -522,6 +529,17 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     @Override
     public void onInteractorProfileChanged(InteractorProfileChangedEvent event) {
+        forceDraw = true;
+    }
+
+    @Override
+    public void onLayoutImageLoaded(StructureImageLoadedEvent event) {
+//        (new Timer() {
+//            @Override
+//            public void run() {
+//                forceDraw = true;
+//            }
+//        }).schedule(500);
         forceDraw = true;
     }
 
