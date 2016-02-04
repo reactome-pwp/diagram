@@ -5,7 +5,9 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.model.*;
+import org.reactome.web.diagram.data.loader.LoaderManager;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -17,9 +19,9 @@ import java.util.Set;
  */
 public class GraphObjectInfoPanel extends Composite {
 
-    GraphObject graphObject;
     EventBus eventBus;
-    FlowPanel content;
+    GraphObject graphObject;
+    FlowPanel mainPanel;
 
     public static final ObjectInfoResources OBJECT_INFO_RESOURCES;
     static {
@@ -27,10 +29,10 @@ public class GraphObjectInfoPanel extends Composite {
         OBJECT_INFO_RESOURCES.getCSS().ensureInjected();
     }
 
-    public GraphObjectInfoPanel(EventBus eventBus, GraphObject graphObject) {
+    public GraphObjectInfoPanel(EventBus eventBus, GraphObject graphObject, DiagramContext context) {
         this.eventBus = eventBus;
         this.graphObject = graphObject;
-        this.content = new FlowPanel();
+        this.mainPanel = new FlowPanel();
 
         SuggestionPanelCSS css = OBJECT_INFO_RESOURCES.getCSS();
         this.init(css);
@@ -118,27 +120,32 @@ public class GraphObjectInfoPanel extends Composite {
             String title = "Participates in " + size + " reaction" + (size>1?"s:":":");
             this.add(new DatabaseObjectListPanel(title, participatesIn, eventBus));
         }
+
+        // Include information about the interactors of this entity
+        if(context!=null && (graphObject instanceof GraphEntityWithAccessionedSequence || graphObject instanceof GraphSimpleEntity) ){
+            this.add(new InteractorsListPanel("According to " + LoaderManager.INTERACTORS_RESOURCE + " it interacts with:", context, (GraphPhysicalEntity) graphObject, eventBus));
+        }
     }
 
     /**
      * Padding grows wider the div but this is not the expected behaviour here. To make it compatible
      * across all browsers the recommendation is having two divs
      * <div> // defines the object info panel properties
-     *     <div> // defines the object info content (set the padding here)
-     *         Info content
+     *     <div> // defines the object info mainPanel (set the padding here)
+     *         Info mainPanel
      *     </div>
      * </div>
      */
     private void init(SuggestionPanelCSS css){
         SimplePanel sp = new SimplePanel();
         sp.setStyleName(css.objectInfoPanel());
-        this.content.setStyleName(css.objectInfoContent());
-        sp.add(this.content);
+        this.mainPanel.setStyleName(css.objectInfoContent());
+        sp.add(this.mainPanel);
         initWidget(sp);
     }
 
     public void add(IsWidget widget){
-        this.content.add(widget);
+        this.mainPanel.add(widget);
     }
 
     /**

@@ -46,8 +46,8 @@ public class InteractorInfoPanel extends Composite {
      * Padding grows wider the div but this is not the expected behaviour here. To make it compatible
      * across all browsers the recommendation is having two divs
      * <div> // defines the object info panel properties
-     *     <div> // defines the object info content (set the padding here)
-     *         Info content
+     *     <div> // defines the object info mainPanel (set the padding here)
+     *         Info mainPanel
      *     </div>
      * </div>
      */

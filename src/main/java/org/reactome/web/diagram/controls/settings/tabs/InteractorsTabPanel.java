@@ -10,10 +10,9 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.TextResource;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.controls.settings.common.InfoLabel;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
@@ -44,7 +43,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     private RadioButton staticResourceBtn;
     private FlowPanel liveResourcesFP;
     private FlowPanel loadingPanel;
-    private Button downloadBtn;
+    private IconButton downloadBtn;
     private String selectedResource;
 
     public InteractorsTabPanel(EventBus eventBus) {
@@ -61,6 +60,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         staticResourceBtn.setStyleName(RESOURCES.getCSS().interactorResourceBtn());
         staticResourceBtn.setValue(true);
         staticResourceBtn.addValueChangeHandler(this);
+
+        selectedResource = staticResourceBtn.getFormValue();
 
         // Loading panel
         Image loadingSpinner = new Image(RESOURCES.loadingSpinner());
@@ -82,7 +83,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         main.add(loadingPanel);
         main.add(getOptionsPanel());
         if (InteractorsExporter.fileSaveScriptAvailable()) {
-            downloadBtn = getButton("Download Interactors", RESOURCES.downloadNormal());
+            downloadBtn = new IconButton("Download " + formatName(selectedResource) + " Interactors", RESOURCES.downloadNormal());
             downloadBtn.addClickHandler(this);
             downloadBtn.setTitle("Click to download all diagram interactors");
             downloadBtn.setStyleName(RESOURCES.getCSS().downloadBtn());
@@ -92,8 +93,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         }
         initWidget(main);
         initialiseHandlers();
-
-        selectedResource = staticResourceBtn.getFormValue();
 
         loadLiveResources(); //Load resources for the first time
         Timer refreshTimer = new Timer() {
@@ -150,6 +149,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         if(context!=null) {
+            downloadBtn.setText("Download " + formatName(event.getResource()) + " Interactors");
             if (context.getInteractors().isResourceLoaded(event.getResource())) {
                 downloadBtn.setVisible(true);
             } else {
@@ -232,16 +232,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         return sp;
     }
 
-    private Button getButton(String text, ImageResource imageResource){
-        FlowPanel fp = new FlowPanel();
-        fp.add(new Image(imageResource));
-        fp.add(new InlineLabel(text));
-
-        SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(fp.toString());
-        Button btn = new Button(safeHtml);
-        return btn;
-    }
-
     private void loadLiveResources() {
         showLoading(true);
         InteractorsResourceLoader.loadResources(InteractorsTabPanel.this);
@@ -251,6 +241,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     private void showLoading(boolean loading) {
         loadingPanel.setVisible(loading);
         liveResourcesFP.setVisible(!loading);
+        downloadBtn.setVisible(!loading);
     }
 
 

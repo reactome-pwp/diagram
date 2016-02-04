@@ -1,0 +1,46 @@
+package org.reactome.web.diagram.common;
+
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
+
+/**
+ * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
+ */
+public class IconButton extends Button {
+    private FlowPanel fp;
+    private Image image;
+    private InlineLabel label;
+
+    public IconButton(String text, ImageResource imageResource) {
+        image = new Image(imageResource);
+        label = new InlineLabel(text);
+
+        fp = new FlowPanel();
+        fp.add(image);
+        fp.add(label);
+
+        SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(fp.toString());
+        this.setHTML(safeHtml);
+    }
+
+    public void setText(String text) {
+        label.setText(text);
+        updateHTML();
+
+    }
+
+    public void setImage(ImageResource imageResource) {
+        image = new Image(imageResource);
+        updateHTML();
+    }
+
+    private void updateHTML() {
+        SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(fp.toString());
+        this.setHTML(safeHtml);
+    }
+}

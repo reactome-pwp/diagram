@@ -310,6 +310,7 @@
 .interactorsControlSlider {
     float: left;
     margin-left: 5px;
+    padding-top: 2px;
 }
 
 .interactorsControlControls {
@@ -318,14 +319,26 @@
     margin-left: 5px;
 }
 
+@sprite .download {
+    gwt-image:'downloadNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: right;
+    margin: 2px 8px;
+}
 
-/*.interactorsControl span {*/
-    /*margin: 5px 10px 0 5px;*/
-    /*float: left;*/
-    /*font-size: 14px;*/
-    /*overflow: hidden;*/
-    /*text-overflow: ellipsis;*/
-    /*display: inline-block;*/
-    /*white-space: nowrap;*/
-    /*max-width: 225px;*/
-/*}*/
+@sprite .download:hover {
+    gwt-image:'downloadHovered';
+}
+
+@sprite .download:active:hover {
+    margin: 3px 7px;
+    gwt-image: 'downloadClicked';
+}
+
+@sprite .download:disabled {
+    margin: 3px 7px;
+    gwt-image: 'downloadDisabled';
+}

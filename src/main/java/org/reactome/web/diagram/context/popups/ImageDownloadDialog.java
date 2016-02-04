@@ -7,10 +7,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.common.PwpButton;
 
 /**
@@ -49,7 +48,7 @@ public class ImageDownloadDialog extends PopupPanel {
             Anchor anchor = new Anchor();                     // For downloading the image
             anchor.setHref(image.getUrl());
             anchor.getElement().setAttribute("download", "DiagramImage.png");
-            Button button = getButton("Download as PNG", RESOURCES.downloadNormal());
+            Button button = new IconButton("Download as PNG", RESOURCES.downloadNormal());
             button.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent clickEvent) {
@@ -62,7 +61,7 @@ public class ImageDownloadDialog extends PopupPanel {
             buttons.add(anchor);
         }
         if(gsUploadByPostAvailable()){
-            Button genomespace = getButton("Upload to GenomeSpace", RESOURCES.uploadNormal());
+            Button genomespace = new IconButton("Upload to GenomeSpace", RESOURCES.uploadNormal());
             genomespace.addClickHandler( new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
@@ -101,16 +100,6 @@ public class ImageDownloadDialog extends PopupPanel {
         header.add(title);
         header.add(closeBtn);
         return header;
-    }
-
-    private Button getButton(String text, ImageResource imageResource){
-        FlowPanel fp = new FlowPanel();
-        fp.add(new Image(imageResource));
-        fp.add(new InlineLabel(text));
-
-        SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(fp.toString());
-        Button btn = new Button(safeHtml);
-        return btn;
     }
 
     @Override

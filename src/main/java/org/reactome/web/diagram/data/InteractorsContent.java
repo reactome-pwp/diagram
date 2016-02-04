@@ -192,28 +192,30 @@ public class InteractorsContent {
     //We keep this cache to avoid creating it every time
     private Map<String, List<InteractorSearchResult>> interactorsSearchItemsPerResource = new HashMap<>();
     public List<InteractorSearchResult> getInteractorSearchResult(String resource, DiagramContent content) {
+        // IMPORTANT: First check whether the rawInteractors have been loaded
+        // If not then there is no point in searching for a term and caching the results
+        MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.toLowerCase());
+        if (map == null || map.isEmpty()) return new ArrayList<>();
+
         List<InteractorSearchResult> rtn = interactorsSearchItemsPerResource.get(resource);
         if (rtn != null) return rtn;
         rtn = new ArrayList<>();
-        MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.toLowerCase());
-        if (map != null) {
-            Map<String, InteractorSearchResult> cache = new HashMap<>();
-            for (String diagramAcc : map.keySet()) {
-                for (RawInteractor rawInteractor : map.getElements(diagramAcc)) {
-                    String accession = rawInteractor.getAcc();
+        Map<String, InteractorSearchResult> cache = new HashMap<>();
+        for (String diagramAcc : map.keySet()) {
+            for (RawInteractor rawInteractor : map.getElements(diagramAcc)) {
+                String accession = rawInteractor.getAcc();
 
-                    // If the interactor is in the diagram we do not
-                    // present it as a separate result
-                    if(!map.keySet().contains(accession)) {
-                        InteractorSearchResult result = cache.get(accession);
-                        if (result == null) {
-                            result = new InteractorSearchResult(resource, accession);
-                            cache.put(accession, result);
-                            rtn.add(result);
-                        }
-                        result.addInteractsWith(rawInteractor.getId(), getInteractsWith(diagramAcc, content));
-                        result.addInteraction(rawInteractor);
+                // If the interactor is in the diagram we do not
+                // present it as a separate result
+                if(!map.keySet().contains(accession)) {
+                    InteractorSearchResult result = cache.get(accession);
+                    if (result == null) {
+                        result = new InteractorSearchResult(resource, accession);
+                        cache.put(accession, result);
+                        rtn.add(result);
                     }
+                    result.addInteractsWith(rawInteractor.getId(), getInteractsWith(diagramAcc, content));
+                    result.addInteraction(rawInteractor);
                 }
             }
         }
