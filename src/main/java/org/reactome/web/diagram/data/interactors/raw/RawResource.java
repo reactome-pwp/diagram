@@ -7,9 +7,5 @@ public interface RawResource {
 
     String getName();
 
-    String getSoapURL();
-
-    String getRestURL();
-
     Boolean getActive();
 }
