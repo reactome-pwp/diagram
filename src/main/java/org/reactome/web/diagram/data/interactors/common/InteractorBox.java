@@ -35,10 +35,17 @@ public class InteractorBox implements QuadTreeBox {
         );
     }
 
-    public List<InteractorBox> splitHorizontaly(double w) {
+    public List<InteractorBox> splitHorizontally(double w) {
         List<InteractorBox> rtn = new LinkedList<>();
         rtn.add(new InteractorBox(minX, minY, minX + w, maxY));
         rtn.add(new InteractorBox(minX + w, minY, maxX, maxY));
+        return rtn;
+    }
+
+    public List<InteractorBox> splitVertically(double h){
+        List<InteractorBox> rtn = new LinkedList<>();
+        rtn.add(new InteractorBox(minX, minY, maxX, minY + h));
+        rtn.add(new InteractorBox(minX, minY + h, maxX, maxY));
         return rtn;
     }
 
