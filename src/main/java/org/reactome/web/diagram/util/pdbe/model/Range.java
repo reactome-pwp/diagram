@@ -23,6 +23,6 @@ public class Range {
 
     @Override
     public String toString() {
-        return '[' + min + ", " + max + ']';
+        return "[" + min + ", " + max + "]";
     }
 }

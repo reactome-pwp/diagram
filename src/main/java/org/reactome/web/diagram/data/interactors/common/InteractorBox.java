@@ -10,6 +10,7 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public class InteractorBox implements QuadTreeBox {
     protected double minX, minY, maxX, maxY, width, height;
 
@@ -35,17 +36,25 @@ public class InteractorBox implements QuadTreeBox {
         );
     }
 
-    public List<InteractorBox> splitHorizontally(double w) {
+    public List<InteractorBox> splitHorizontally(double... w) {
         List<InteractorBox> rtn = new LinkedList<>();
-        rtn.add(new InteractorBox(minX, minY, minX + w, maxY));
-        rtn.add(new InteractorBox(minX + w, minY, maxX, maxY));
+        double o = 0;
+        for (double v : w) {
+            rtn.add(new InteractorBox(minX + o, minY, minX + v , maxY));
+            o = v;
+        }
+        rtn.add(new InteractorBox(minX + o, minY, maxX, maxY));
         return rtn;
     }
 
-    public List<InteractorBox> splitVertically(double h){
+    public List<InteractorBox> splitVertically(double... h){
         List<InteractorBox> rtn = new LinkedList<>();
-        rtn.add(new InteractorBox(minX, minY, maxX, minY + h));
-        rtn.add(new InteractorBox(minX, minY + h, maxX, maxY));
+        double o = 0;
+        for (double v : h) {
+            rtn.add(new InteractorBox(minX, minY + o, maxX, minY + v));
+            o = v;
+        }
+        rtn.add(new InteractorBox(minX, minY + o, maxX, maxY));
         return rtn;
     }
 

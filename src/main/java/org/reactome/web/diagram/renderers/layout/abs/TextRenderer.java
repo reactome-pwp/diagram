@@ -42,6 +42,19 @@ public class TextRenderer {
         ctx.strokeText(message, centerPosition.getX(), centerPosition.getY());
     }
 
+    public void drawPreformattedText(AdvancedContext2d ctx, String message, NodeProperties properties) {
+        // Break the message into lines
+        String[] lines = message.trim().split("\\n");
+        if(lines.length>0) {
+            double base = properties.getY() + fontSize/2;
+            double centreX = properties.getX() + properties.getWidth()/2;
+            for (int i=0;i<lines.length;i++) {
+                ctx.fillText(lines[i], centreX, base + (i * fontSize));
+            }
+
+        }
+    }
+
     public void drawTextMultiLine(AdvancedContext2d ctx, String message, NodeProperties properties, Double factor, Coordinate offset) {
         NodeProperties prop = NodePropertiesFactory.transform(properties, factor, offset);
         drawTextMultiLine(ctx, message, prop);

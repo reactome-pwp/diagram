@@ -1,6 +1,5 @@
 package org.reactome.web.diagram.renderers.interactor.s300;
 
-import com.google.gwt.canvas.dom.client.TextMetrics;
 import org.reactome.web.diagram.data.interactors.common.InteractorBox;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
@@ -21,7 +20,7 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
 
     @Override
     public void drawText(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
-        if(!isVisible(item)) return;
+        if (!isVisible(item)) return;
         ctx.save();
 
         InteractorEntity node = (InteractorEntity) item;
@@ -34,33 +33,35 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
         String displayName = node.getDisplayName();
         String details = node.getDetails();
 
-        InteractorBox box =  item.transform(factor, offset);
-        //The image size is supposed to fit the height of the box (and it is a SQUARE)
+        InteractorBox box = item.transform(factor, offset);  //The image size is supposed to fit the height of the box (and it is a SQUARE)
         box = box.splitHorizontally(box.getHeight()).get(1); //box is now the remaining of item box removing the image
-        List<InteractorBox> vBoxes = box.splitVertically(box.getHeight()/2);
 
-        //If there is not details it means that we can use the whole right half of the box to write the alias
-        ctx.setFont(RendererProperties.getFont(RendererProperties.INTERACTOR_FONT_SIZE));
-        InteractorBox aliasBox = details == null ? box : vBoxes.get(0);
         TextRenderer textRenderer = new TextRenderer(RendererProperties.INTERACTOR_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
-        TextMetrics metrics = ctx.measureText(displayName);
-        if (metrics.getWidth() <= aliasBox.getWidth() - RendererProperties.NODE_TEXT_PADDING) {
-            textRenderer.drawTextSingleLine(ctx, displayName, aliasBox.getCentre());
-        } else {
-            textRenderer.drawTextMultiLine(ctx, displayName, NodePropertiesFactory.get(aliasBox));
-        }
-
-        if (details != null) {
-            double fontsize = 3 * factor;
-            ctx.setFont(RendererProperties.getFont(fontsize));
-            textRenderer = new TextRenderer(fontsize, RendererProperties.NODE_TEXT_PADDING);
-            InteractorBox detailsBox = vBoxes.get(1);
-            metrics = ctx.measureText(details);
-            if (metrics.getWidth() <= detailsBox.getWidth() - RendererProperties.NODE_TEXT_PADDING) {
-                textRenderer.drawTextSingleLine(ctx, details, detailsBox.getCentre());
+        if (details == null) {
+            if (node.getAlias().equals(node.getAccession())) {
+                textRenderer.drawTextMultiLine(ctx, node.getAlias(), NodePropertiesFactory.get(box));
             } else {
-                textRenderer.drawTextMultiLine(ctx, details, NodePropertiesFactory.get(detailsBox));
+                List<InteractorBox> vBoxes = box.splitVertically(box.getHeight() * 0.6);
+                textRenderer.drawTextMultiLine(ctx, node.getAlias(), NodePropertiesFactory.get(vBoxes.get(0)));
+                textRenderer.drawTextMultiLine(ctx, node.getAccession(), NodePropertiesFactory.get(vBoxes.get(1)));
             }
+        } else {
+
+            List<InteractorBox> vBoxes = box.splitVertically(box.getHeight() * 0.3, box.getHeight() * 0.5);
+            //If there is not details it means that we can use the whole right half of the box to write the alias
+            ctx.setFont(RendererProperties.getFont(RendererProperties.INTERACTOR_FONT_SIZE));
+            InteractorBox aliasBox = vBoxes.get(0);
+
+            textRenderer.drawTextMultiLine(ctx, displayName, NodePropertiesFactory.get(aliasBox));
+
+            double fontSize = 3 * factor;
+            ctx.setFont(RendererProperties.getFont(fontSize));
+            textRenderer = new TextRenderer(fontSize, RendererProperties.NODE_TEXT_PADDING);
+            textRenderer.drawTextSingleLine(ctx, node.getAccession(), vBoxes.get(1).getCentre());
+
+            InteractorBox detailsBox = vBoxes.get(2);
+            textRenderer.drawPreformattedText(ctx, details, NodePropertiesFactory.get(detailsBox));
+
         }
         ctx.restore();
     }

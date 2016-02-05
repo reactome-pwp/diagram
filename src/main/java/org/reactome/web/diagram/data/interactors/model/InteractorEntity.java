@@ -77,10 +77,8 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
     public String getDetails(){
         if(pdbObject!=null) {
             StringBuilder sb = new StringBuilder();
-            if(alias!=null) sb.append(accession).append("\n");
-
             sb.append("PDBe: ").append(pdbObject.getPdbid());
-            sb.append("\n").append("Chain: ").append(pdbObject.getChain());
+            sb.append(" | ").append("Chain: ").append(pdbObject.getChain());
             sb.append("\n").append("Resolution: ").append(pdbObject.getResolution());
             sb.append("\n").append("Coverage: ").append(pdbObject.getCoverage());
             sb.append("\n").append("PDBe Range: ").append(pdbObject.getPdbRange());
