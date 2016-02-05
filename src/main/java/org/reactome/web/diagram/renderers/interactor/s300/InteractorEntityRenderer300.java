@@ -21,6 +21,9 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
 
     @Override
     public void drawText(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
+        if(!isVisible(item)) return;
+        ctx.save();
+
         InteractorEntity node = (InteractorEntity) item;
         if (node.getImage() != null) {
             Coordinate pos = CoordinateFactory.get(item.getMinX(), item.getMinY()).transform(factor, offset);
@@ -37,8 +40,9 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
         List<InteractorBox> vBoxes = box.splitVertically(box.getHeight()/2);
 
         //If there is not details it means that we can use the whole right half of the box to write the alias
+        ctx.setFont(RendererProperties.getFont(RendererProperties.INTERACTOR_FONT_SIZE));
         InteractorBox aliasBox = details == null ? box : vBoxes.get(0);
-        TextRenderer textRenderer = new TextRenderer(RendererProperties.WIDGET_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
+        TextRenderer textRenderer = new TextRenderer(RendererProperties.INTERACTOR_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
         TextMetrics metrics = ctx.measureText(displayName);
         if (metrics.getWidth() <= aliasBox.getWidth() - RendererProperties.NODE_TEXT_PADDING) {
             textRenderer.drawTextSingleLine(ctx, displayName, aliasBox.getCentre());
@@ -47,9 +51,9 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
         }
 
         if (details != null) {
-            ctx.save();
-            ctx.setFont(RendererProperties.getFont(10));
-            textRenderer = new TextRenderer(10, RendererProperties.NODE_TEXT_PADDING);
+            double fontsize = 3 * factor;
+            ctx.setFont(RendererProperties.getFont(fontsize));
+            textRenderer = new TextRenderer(fontsize, RendererProperties.NODE_TEXT_PADDING);
             InteractorBox detailsBox = vBoxes.get(1);
             metrics = ctx.measureText(details);
             if (metrics.getWidth() <= detailsBox.getWidth() - RendererProperties.NODE_TEXT_PADDING) {
@@ -57,7 +61,7 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
             } else {
                 textRenderer.drawTextMultiLine(ctx, details, NodePropertiesFactory.get(detailsBox));
             }
-            ctx.restore();
         }
+        ctx.restore();
     }
 }
