@@ -27,7 +27,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
 
     public InteractorEntity(String accession, String alias) {
         this.accession = accession;
-        this.alias = alias.replace("_"," ");
+        this.alias = alias;
         this.chemical = accession.toLowerCase().contains("chebi");
     }
 
@@ -72,6 +72,21 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
 
     public String getDisplayName(){
         return alias != null ? alias : accession;
+    }
+
+    public String getDetails(){
+        if(pdbObject!=null) {
+            StringBuilder sb = new StringBuilder();
+            if(alias!=null) sb.append(accession).append("\n");
+            sb.append("PDBe: ").append(pdbObject.getPdbid());
+            sb.append("\n").append("Chain: ").append(pdbObject.getChain());
+            sb.append("\n").append("Resolution: ").append(pdbObject.getResolution());
+            sb.append("\n").append("Coverage: ").append(pdbObject.getCoverage());
+            sb.append("\n").append("PDBe Range: ").append(pdbObject.getPdbRange());
+            sb.append("\n").append("UniProt Range: ").append(pdbObject.getUniprotRange());
+            return sb.toString();
+        }
+        return null;
     }
 
     public ImageElement getImage() {
