@@ -24,8 +24,8 @@ public class DiagramContent {
     //Quadrant minimum area (width * height):             180
     //  Right now an area of 180 x 80 = 14400 would     [--][--] 8
     //  host 4 entities of 90x40 each                   [--][--] 0
-    //  An area of 60,000 includes 16 entities
-    static final int MIN_AREA = 60000;
+    //  An area of 90,000 includes 25 entities
+    static final int MIN_AREA = 90000;
 
     Long dbId;
     String stableId;
