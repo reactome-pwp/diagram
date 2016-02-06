@@ -43,6 +43,7 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     }
 
     public boolean containsTerm(String term){
+        String alias = this.alias != null ? this.alias : ""; //Alias can be null
         return alias.toLowerCase().contains(term) || accession.toLowerCase().contains(term) || interaction.keySet().toString().toLowerCase().contains(term);
     }
 
