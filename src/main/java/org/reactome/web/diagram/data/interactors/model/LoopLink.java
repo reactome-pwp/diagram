@@ -5,7 +5,6 @@ import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.NodeProperties;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
-import org.reactome.web.diagram.util.Console;
 
 /**
  * This is a specific link for those proteins/chemicals that interact with themselves
@@ -43,7 +42,6 @@ public class LoopLink extends InteractorLink {
         if(isInCircumference){
             double angle = Math.atan2(-delta.getY(), delta.getX());
             angle = angle < 0 ? 2 * Math.PI + angle : angle; //Normalisation 0 - 2 PI
-            Console.info(angle + " (" + Math.toDegrees(angle) + ") " + START_ANGLE + " " + END_ANGLE + "    " + delta);
             return angle > START_ANGLE && angle < END_ANGLE;
         }
         return false;
