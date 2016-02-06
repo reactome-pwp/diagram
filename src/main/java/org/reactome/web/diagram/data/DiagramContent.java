@@ -20,8 +20,8 @@ import java.util.*;
 public class DiagramContent {
 
     //The number of elements for every QuadTree quadrant node
-    static final int NUMBER_OF_ELEMENTS = 15;
-    static final int MIN_AREA = 25;
+    static final int NUMBER_OF_ELEMENTS = 50;
+    static final int MIN_AREA = 500;
 
     Long dbId;
     String stableId;
