@@ -12,7 +12,6 @@ import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.SummaryItem;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.pwp.model.util.LruCache;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
@@ -29,8 +28,8 @@ public class InteractorsContent {
     static final int INTERACTORS_FRAME_OFFSET = 500;
 
     //The number of elements for every QuadTree quadrant node
-    static final int NUMBER_OF_ELEMENTS = 15;
-    static final int MIN_AREA = 50;
+    static final int NUMBER_OF_ELEMENTS = 50;
+    static final int MIN_AREA = 500;
 
     static final double DEFAULT_SCORE = 0.45;
 
@@ -294,7 +293,6 @@ public class InteractorsContent {
         Set<InteractorsSummary> items = interactorsSummaryMap.getElements(resource.toLowerCase());
         if (items == null) return;
         for (InteractorsSummary summary : items) {
-            Console.info(content.getDiagramObject(summary.getDiagramId()));
             Node node = (Node) content.getDiagramObject(summary.getDiagramId());
             node.getInteractorsSummary().setNumber(summary.getNumber());
             node.getInteractorsSummary().setPressed(summary.isPressed());
