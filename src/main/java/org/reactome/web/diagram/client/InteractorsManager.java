@@ -136,18 +136,13 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
 
             layoutBuilder.doLayout(interactor, i, n);  //the maximum number of elements is used here for layout beauty purposes
 
-            Set<InteractorLink> links = new HashSet<>();
             interactors.cache(currentResource, node, interactor);
-            for (InteractorLink link : interactor.addInteraction(node, rawInteractor.getId(), rawInteractor.getScore())) {
-                interactors.cache(currentResource, node, link);
-                links.add(link);
-            }
+            InteractorLink link = interactor.addInteraction(node, rawInteractor.getId(), rawInteractor.getScore());
+            interactors.cache(currentResource, node, link);
 
             //next block (adding to the QuadTree) also needs to be done after the doLayout
             interactors.addInteractor(currentResource, interactor);
-            for (InteractorLink link : links) {
-                interactors.addInteractor(currentResource, link);
-            }
+            interactors.addInteractor(currentResource, link);
         }
         eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
     }
@@ -183,10 +178,9 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
                 recalculateLayoutIfNeeded(node, entity, i, n);
                 //using getLinksFrom method already give us the previous filtered info from rawInteractors
                 for (LinkCommon aux : entity.getLinksFrom(pe.getIdentifier())) {
-                    for (InteractorLink link : entity.addInteraction(node, aux.getId(), aux.getScore())) {
-                        context.getInteractors().cache(currentResource, node, link);
-                        context.getInteractors().addInteractor(currentResource, link);
-                    }
+                    InteractorLink link = entity.addInteraction(node, aux.getId(), aux.getScore());
+                    context.getInteractors().cache(currentResource, node, link);
+                    context.getInteractors().addInteractor(currentResource, link);
                 }
             }
         }

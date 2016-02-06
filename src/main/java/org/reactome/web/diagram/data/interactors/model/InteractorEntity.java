@@ -25,25 +25,26 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
     private PDBObject pdbObject;
     private ImageElement image;
 
+    private Set<GraphPhysicalEntity> interactsWith = new HashSet<>();
+    private Map<Node, InteractorLink> links = new HashMap<>();
+
     public InteractorEntity(String accession, String alias) {
         this.accession = accession;
         this.alias = alias;
         this.chemical = accession.toLowerCase().contains("chebi");
     }
 
-    Set<GraphPhysicalEntity> interactsWith = new HashSet<>();
-    Map<Node, InteractorLink> links = new HashMap<>();
-
-    public Set<InteractorLink> addInteraction(Node node, String id, double score) {
+    public InteractorLink addInteraction(Node node, String id, double score) {
         //IMPORTANT: local set is meant to return ONLY the new ones
-        Set<InteractorLink> interactors = new HashSet<>();
         GraphPhysicalEntity pe = node.getGraphObject();
         interactsWith.add(pe);
 
-        DynamicLink link = new DynamicLink(node, this, id, score);
-        interactors.add(link);
-        links.put(node, link);
-        return interactors;
+        InteractorLink link = links.get(node);
+        if (link == null) {
+            link = new DynamicLink(node, this, id, score);
+            links.put(node, link);
+        }
+        return link;
     }
 
     public Set<GraphPhysicalEntity> getInteractsWith() {
@@ -70,20 +71,17 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
         );
     }
 
-    public String getDisplayName(){
+    public String getDisplayName() {
         return alias != null ? alias : accession;
     }
 
-    public String getDetails(){
-        if(pdbObject!=null) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("PDBe: ").append(pdbObject.getPdbid());
-            sb.append(" | ").append("Chain: ").append(pdbObject.getChain());
-            sb.append("\n").append("Resolution: ").append(pdbObject.getResolution());
-            sb.append("\n").append("Coverage: ").append(pdbObject.getCoverage());
-            sb.append("\n").append("PDBe Range: ").append(pdbObject.getPdbRange());
-            sb.append("\n").append("UniProt Range: ").append(pdbObject.getUniprotRange());
-            return sb.toString();
+    public String getDetails() {
+        if (pdbObject != null) {
+            return  "PDBe: " + pdbObject.getPdbid() + " | " + "Chain: " + pdbObject.getChain() +
+                    "\n" + "Resolution: " + pdbObject.getResolution() +
+                    "\n" + "Coverage: " + pdbObject.getCoverage() +
+                    "\n" + "PDBe Range: " + pdbObject.getPdbRange() +
+                    "\n" + "UniProt Range: " + pdbObject.getUniprotRange();
         }
         return null;
     }
