@@ -49,7 +49,7 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
 
     public void setBoundaries(Coordinate to) {
         Segment link = SegmentFactory.get(InteractorsLayout.getCentre(from.getProp()), to);
-        fromPoint = InteractorsLayout.getSegmentsIntersection(link, from);
+        fromPoint = InteractorsLayout.getSegmentsIntersectionOut(link, from);
 
         minX = Math.min(fromPoint.getX(), to.getX());
         maxX = Math.max(fromPoint.getX(), to.getX());

@@ -45,8 +45,8 @@ public class StaticLink extends InteractorLink {
     @Override
     public void setBoundaries(Coordinate to) {
         Segment link = SegmentFactory.get(InteractorsLayout.getCentre(from.getProp()), to);
-        fromPoint = InteractorsLayout.getSegmentsIntersection(link, from);
-        toCentre = InteractorsLayout.getSegmentsIntersection(link, this.to);
+        fromPoint = InteractorsLayout.getSegmentsIntersectionOut(link, from);
+        toCentre = InteractorsLayout.getSegmentsIntersectionIn(link, this.to);
 
         minX = Math.min(fromPoint.getX(), toCentre.getX());
         maxX = Math.max(fromPoint.getX(), toCentre.getX());
