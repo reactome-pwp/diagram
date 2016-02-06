@@ -50,6 +50,7 @@ public class ChEBI_ImageLoader {
         String id = identifier.replaceAll("^\\w+[-:_]", "");
         final String url = "/chebi/displayImage.do?defaultImage=true&chebiId=" + id + "&dimensions=200&transbg=true";
         final Image rtn = new Image(url);
+        rtn.setAltText(url);
         //Next line is meant to avoid the "SecurityError" problem when exporting tainted canvases
         rtn.getElement().setAttribute("crossOrigin", "anonymous");
         rtn.addLoadHandler(new LoadHandler() {
@@ -80,10 +81,12 @@ public class ChEBI_ImageLoader {
 
     static {
         RootPanel.get().add(LOADING);
+        LOADING.setAltText("Chemical protein structure");
         LOADING.getElement().removeFromParent();
         LOADING.getElement().setAttribute("crossOrigin", "anonymous");
 
         RootPanel.get().add(NOT_FOUND);
+        NOT_FOUND.setAltText("Chemical structure not found");
         NOT_FOUND.getElement().removeFromParent();
         NOT_FOUND.getElement().setAttribute("crossOrigin", "anonymous");
     }

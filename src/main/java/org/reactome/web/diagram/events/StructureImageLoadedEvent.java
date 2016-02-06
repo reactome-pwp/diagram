@@ -34,7 +34,7 @@ public class StructureImageLoadedEvent extends GwtEvent<StructureImageLoadedHand
     @Override
     public String toString() {
         return "StructureImageLoadedEvent{" +
-                "image=" + image.getUrl() +
+                "image=" + image.getAltText() +
                 '}';
     }
 }
