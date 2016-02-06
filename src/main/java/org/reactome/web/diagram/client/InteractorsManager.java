@@ -64,20 +64,20 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
      * renderer assigned. The most accurate and reliable way of finding out the hovered object by the mouse
      * pointer is using the renderer isHovered method.
      */
-    public Collection<DiagramInteractor> getHovered(Coordinate model){
+    public Collection<DiagramInteractor> getHovered(Coordinate model) {
         List<DiagramInteractor> rtn = new LinkedList<>();
-        if(context==null) return rtn;
-        Collection<DiagramInteractor> target = context.getInteractors().getHoveredTarget(currentResource, model,context.getDiagramStatus().getFactor());
+        if (context == null) return rtn;
+        Collection<DiagramInteractor> target = context.getInteractors().getHoveredTarget(currentResource, model, context.getDiagramStatus().getFactor());
         for (DiagramInteractor interactor : target) {
             InteractorRenderer renderer = InteractorRendererManager.get().getRenderer(interactor);
-            if(renderer.isVisible(interactor) && interactor.isHovered(model)){
+            if (renderer.isVisible(interactor) && interactor.isHovered(model)) {
                 rtn.add(interactor);
             }
         }
         return rtn;
     }
 
-    private int getNumberOfInteractorsToDraw(Collection items){
+    private int getNumberOfInteractorsToDraw(Collection items) {
         if (items == null) return 0;
         int n = items.size();
         return n <= MAX_INTERACTORS ? n : MAX_INTERACTORS;
@@ -105,7 +105,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
                 //All the static links can be created since they do not clutter the view
                 for (GraphObject object : objects) {
                     List<DiagramObject> diagramObjectList = object.getDiagramObjects();
-                    if(!diagramObjectList.isEmpty()) {
+                    if (!diagramObjectList.isEmpty()) {
                         for (DiagramObject nodeTo : diagramObjectList) {
                             InteractorLink link;
                             if (node.equals(nodeTo)) {
@@ -154,13 +154,24 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
                 entities.add((InteractorEntity) interactor);
             } else if (interactor instanceof StaticLink) {
                 StaticLink aux = (StaticLink) interactor;
-                //Here both (from and to) need to be checked as target for the static interactor
-                for (Node to : Arrays.asList(aux.getNodeFrom(), aux.getNodeTo())) {
-                    if(!to.equals(node)){
-                        StaticLink link = new StaticLink(node, to, aux.getId(), aux.getScore());
-                        context.getInteractors().cache(currentResource, node, link);
-                        context.getInteractors().addInteractor(currentResource, link);
+                GraphPhysicalEntity peF = node.getGraphObject();
+                GraphPhysicalEntity peT = aux.getNodeTo().getGraphObject();
+                if (peF.getIdentifier().equals(peT.getIdentifier())) {
+                    //This is a static link pointing to another entity in the diagram with SAME identifier
+                    //so conceptually it is like a LoopLink (We show them as a feature)
+                    //Here both (from and to) need to be checked as target for the static interactor
+                    for (Node to : Arrays.asList(aux.getNodeFrom(), aux.getNodeTo())) {
+                        if (!to.equals(node)) {
+                            StaticLink link = new StaticLink(node, to, aux.getId(), aux.getScore());
+                            context.getInteractors().cache(currentResource, node, link);
+                            context.getInteractors().addInteractor(currentResource, link);
+                        }
                     }
+                } else {
+                    //This is a standard static link pointing to a different existing entity in the diagram
+                    StaticLink link = new StaticLink(node, aux.getNodeTo(), aux.getId(), aux.getScore());
+                    context.getInteractors().cache(currentResource, node, link);
+                    context.getInteractors().addInteractor(currentResource, link);
                 }
             } else if (interactor instanceof LoopLink) {
                 LoopLink aux = (LoopLink) interactor;
@@ -170,7 +181,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             }
         }
 
-        if(node.getGraphObject() instanceof GraphPhysicalEntity) {
+        if (node.getGraphObject() instanceof GraphPhysicalEntity) {
             GraphPhysicalEntity pe = node.getGraphObject();
             int n = getNumberOfInteractorsToDraw(entities);
             for (int i = 0; i < getNumberOfInteractorsToDraw(entities); i++) {
@@ -189,7 +200,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     public void recalculateLayoutIfNeededAndSetVisibility(Node node, List<InteractorLink> links, boolean visible) {
         List<DynamicLink> dynamicLinks = new LinkedList<>();
         for (InteractorLink link : links) {
-            if(link instanceof DynamicLink) dynamicLinks.add((DynamicLink) link);
+            if (link instanceof DynamicLink) dynamicLinks.add((DynamicLink) link);
         }
         int n = getNumberOfInteractorsToDraw(dynamicLinks);
         for (int i = 0; i < n; i++) {
@@ -246,14 +257,14 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     }
 
     public InteractorHoveredEvent setHovered(DiagramInteractor hovered) {
-        if(!Objects.equals(this.hovered, hovered)) {
+        if (!Objects.equals(this.hovered, hovered)) {
             this.hovered = hovered;
             return new InteractorHoveredEvent(hovered);
         }
         return null;
     }
 
-    public void updateInteractor(InteractorEntity entity){
+    public void updateInteractor(InteractorEntity entity) {
         InteractorsContent interactors = context.getInteractors();
         interactors.updateInteractor(currentResource, entity);
         for (InteractorLink link : entity.getLinks()) {
