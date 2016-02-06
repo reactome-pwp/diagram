@@ -25,11 +25,15 @@ import java.util.*;
 public class InteractorsContent {
 
     static final int INTERACTORS_RESOURCE_CACHE_SIZE = 5;
-    static final int INTERACTORS_FRAME_OFFSET = 500;
+    static final int INTERACTORS_FRAME_OFFSET = 1000;
 
     //The number of elements for every QuadTree quadrant node
-    static final int NUMBER_OF_ELEMENTS = 50;
-    static final int MIN_AREA = 500;
+    static final int NUMBER_OF_ELEMENTS = 25;
+    //Quadrant minimum area (width * height):             180
+    //  Right now an area of 180 x 80 = 14400 would     [--][--] 8
+    //  host 4 entities of 90x40 each                   [--][--] 0
+    //  An area of 60,000 includes 16 entities
+    static final int MIN_AREA = 60000;
 
     static final double DEFAULT_SCORE = 0.45;
 
