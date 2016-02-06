@@ -12,6 +12,7 @@ import org.reactome.web.diagram.renderers.layout.abs.TextRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -46,7 +47,9 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
 
         TextRenderer textRenderer = new TextRenderer(RendererProperties.INTERACTOR_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
         if (details == null) {
-            if (node.getAlias().equals(node.getAccession())) {
+            if(node.getAlias() == null){
+                textRenderer.drawTextMultiLine(ctx, node.getAccession(), NodePropertiesFactory.get(box));
+            } else if (Objects.equals(node.getAlias(), node.getAccession())) {
                 textRenderer.drawTextMultiLine(ctx, node.getAlias(), NodePropertiesFactory.get(box));
             } else {
                 List<InteractorBox> vBoxes = box.splitVertically(box.getHeight() * 0.6);
