@@ -64,28 +64,28 @@ public class PDBeLoader {
                             JsArray<PDBObject> pdbs = result.getPDBObject(acc);
                             if (pdbs != null && pdbs.length() > 0) {
                                 PDBObject object = pdbs.get(0);
-                                loadPDBeImage(handler, object);
                                 handler.onPDBObjectLoaded(object);
+                                loadPDBeImage(handler, object);
                             } else {
-                                eventBus.fireEventFromSource(new StructureImageLoadedEvent(NOT_FOUND), PDBeLoader.this);
                                 handler.onImageLoaded(NOT_FOUND);
+                                eventBus.fireEventFromSource(new StructureImageLoadedEvent(NOT_FOUND), PDBeLoader.this);
                             }
                             break;
                         default:
-                            eventBus.fireEventFromSource(new StructureImageLoadedEvent(NOT_FOUND), PDBeLoader.this);
                             handler.onImageLoaded(NOT_FOUND);
+                            eventBus.fireEventFromSource(new StructureImageLoadedEvent(NOT_FOUND), PDBeLoader.this);
                     }
                 }
 
                 @Override
                 public void onError(Request request, Throwable exception) {
-                    eventBus.fireEventFromSource(new StructureImageLoadedEvent(NOT_FOUND), PDBeLoader.this);
                     handler.onImageLoaded(NOT_FOUND);
+                    eventBus.fireEventFromSource(new StructureImageLoadedEvent(NOT_FOUND), PDBeLoader.this);
                 }
             });
         } catch (RequestException e) {
-            eventBus.fireEventFromSource(new StructureImageLoadedEvent(NOT_FOUND), PDBeLoader.this);
             handler.onImageLoaded(NOT_FOUND);
+            eventBus.fireEventFromSource(new StructureImageLoadedEvent(NOT_FOUND), PDBeLoader.this);
         }
     }
 
