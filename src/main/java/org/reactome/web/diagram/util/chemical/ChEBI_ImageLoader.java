@@ -48,7 +48,7 @@ public class ChEBI_ImageLoader {
 
     public void loadImage(final Handler handler, String identifier){
         String id = identifier.replaceAll("^\\w+[-:_]", "");
-        final String url = "http://www.ebi.ac.uk/chebi/displayImage.do?defaultImage=true&chebiId=" + id + "&dimensions=200&transbg=true";
+        final String url = "/chebi/displayImage.do?defaultImage=true&chebiId=" + id + "&dimensions=200&transbg=true";
         final Image rtn = new Image(url);
         //Next line is meant to avoid the "SecurityError" problem when exporting tainted canvases
         rtn.getElement().setAttribute("crossOrigin", "anonymous");
@@ -58,16 +58,16 @@ public class ChEBI_ImageLoader {
                 //It was just added to the DOM to force load so this method is called
                 rtn.getElement().removeFromParent();
                 rtn.setVisible(true);
-                eventBus.fireEventFromSource(new StructureImageLoadedEvent(rtn), ChEBI_ImageLoader.this);
                 handler.onChemicalImageLoaded(rtn);
+                eventBus.fireEventFromSource(new StructureImageLoadedEvent(rtn), ChEBI_ImageLoader.this);
             }
         });
         rtn.addErrorHandler(new ErrorHandler() {
             @Override
             public void onError(ErrorEvent errorEvent) {
                 rtn.getElement().removeFromParent();
-                eventBus.fireEventFromSource(new StructureImageLoadedEvent(NOT_FOUND), ChEBI_ImageLoader.this);
                 handler.onChemicalImageLoaded(NOT_FOUND);
+                eventBus.fireEventFromSource(new StructureImageLoadedEvent(NOT_FOUND), ChEBI_ImageLoader.this);
             }
         });
         //Making it invisible and attaching it to the DOM forces the loading of the image (so the previous handler is called)
