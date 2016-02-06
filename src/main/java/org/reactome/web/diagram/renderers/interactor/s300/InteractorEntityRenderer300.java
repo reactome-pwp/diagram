@@ -21,19 +21,27 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
     @Override
     public void drawText(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
         if (!isVisible(item)) return;
-        ctx.save();
 
         InteractorEntity node = (InteractorEntity) item;
+        if(node.isChemical()){
+            drawChemicalDetails(ctx, node, factor, offset);
+        } else {
+            drawProteinDetails(ctx, node, factor, offset);
+        }
+    }
+
+    private void drawProteinDetails(AdvancedContext2d ctx, InteractorEntity node, Double factor, Coordinate offset){
+        ctx.save();
         if (node.getImage() != null) {
-            Coordinate pos = CoordinateFactory.get(item.getMinX(), item.getMinY()).transform(factor, offset);
-            double delta = (item.getMaxY() - item.getMinY()) * factor;
+            Coordinate pos = CoordinateFactory.get(node.getMinX(), node.getMinY()).transform(factor, offset);
+            double delta = (node.getMaxY() - node.getMinY()) * factor;
             ctx.drawImage(node.getImage(), pos.getX(), pos.getY(), delta, delta);
         }
 
         String displayName = node.getDisplayName();
         String details = node.getDetails();
 
-        InteractorBox box = item.transform(factor, offset);  //The image size is supposed to fit the height of the box (and it is a SQUARE)
+        InteractorBox box = node.transform(factor, offset);  //The image size is supposed to fit the height of the box (and it is a SQUARE)
         box = box.splitHorizontally(box.getHeight()).get(1); //box is now the remaining of item box removing the image
 
         TextRenderer textRenderer = new TextRenderer(RendererProperties.INTERACTOR_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
@@ -64,5 +72,14 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
 
         }
         ctx.restore();
+    }
+
+    private void drawChemicalDetails(AdvancedContext2d ctx, InteractorEntity node, Double factor, Coordinate offset){
+        if (node.getImage() != null) {
+            Coordinate pos = CoordinateFactory.get(node.getMinX(), node.getMinY()).transform(factor, offset);
+            double delta = (node.getMaxY() - node.getMinY()) * factor;
+            ctx.drawImage(node.getImage(), pos.getX(), pos.getY(), delta, delta);
+        }
+        super.drawText(ctx, node, factor, offset);
     }
 }
