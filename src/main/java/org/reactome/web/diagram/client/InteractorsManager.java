@@ -188,6 +188,8 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
     }
 
+    //Removing interactors consist in removing ALL the links but not the entities
+    //The reason why is because we want to keep them cached (PDBe or ChEBI data might have been retrieved)
     private void removeInteractors(Node node) {
         InteractorsContent interactors = context.getInteractors();
         for (InteractorLink link : interactors.getInteractorLinks(currentResource, node)) {
