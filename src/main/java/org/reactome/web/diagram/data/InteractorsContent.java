@@ -75,10 +75,10 @@ public class InteractorsContent {
     }
 
     public void cache(String resource, InteractorEntity interactor) {
-        Map<String, InteractorEntity> map = this.interactorsCache.get(resource.toLowerCase());
+        Map<String, InteractorEntity> map = interactorsCache.get(resource.toLowerCase());
         if (map == null) {
             map = new HashMap<>();
-            this.interactorsCache.put(resource.toLowerCase(), map);
+            interactorsCache.put(resource.toLowerCase(), map);
         }
         map.put(interactor.getAccession(), interactor);
     }
@@ -101,7 +101,7 @@ public class InteractorsContent {
                     GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
                     for (DiagramObject diagramObject : pe.getDiagramObjects()) {
                         InteractorsSummary summary = new InteractorsSummary(acc, diagramObject.getId(), number);
-                        this.interactorsSummaryMap.add(resource.toLowerCase(), summary);
+                        interactorsSummaryMap.add(resource.toLowerCase(), summary);
                         Node node = (Node) diagramObject;
                         node.getInteractorsSummary().setNumber(summary.getNumber());
                         node.getInteractorsSummary().setPressed(summary.isPressed());
@@ -135,8 +135,16 @@ public class InteractorsContent {
 
     public void removeFromView(String resource, DiagramInteractor interactor) {
         QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource.toLowerCase());
-        if (tree != null) {
-            tree.remove(interactor);
+        if (tree != null) tree.remove(interactor);
+
+        //In order to reduce the memory usage, we can remove the links from the interactionsPerNode
+        if (interactor instanceof InteractorLink) {
+            MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource);
+            if (cache != null) {
+                InteractorLink link = (InteractorLink) interactor;
+                Set<InteractorLink> links = cache.getElements(link.getNodeFrom());
+                if (links != null) links.remove(link);
+            }
         }
     }
 
@@ -189,7 +197,7 @@ public class InteractorsContent {
 
                 // If the interactor is in the diagram we do not
                 // present it as a separate result
-                if(!map.keySet().contains(accession)) {
+                if (!map.keySet().contains(accession)) {
                     InteractorSearchResult result = cache.get(accession);
                     if (result == null) {
                         result = new InteractorSearchResult(resource, accession, rawInteractor.getAlias());
@@ -242,10 +250,8 @@ public class InteractorsContent {
     public Collection<DiagramInteractor> getVisibleInteractors(String resource, Box visibleArea) {
         Set<DiagramInteractor> rtn = new HashSet<>();
         if (resource != null) {
-            QuadTree<DiagramInteractor> quadTree = this.interactorsTreeCache.get(resource.toLowerCase());
-            if (quadTree != null) {
-                rtn = quadTree.getItems(visibleArea);
-            }
+            QuadTree<DiagramInteractor> quadTree = interactorsTreeCache.get(resource.toLowerCase());
+            if (quadTree != null) rtn = quadTree.getItems(visibleArea);
         }
         return rtn;
     }
