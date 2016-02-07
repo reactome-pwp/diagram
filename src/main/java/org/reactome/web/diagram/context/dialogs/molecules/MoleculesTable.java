@@ -165,6 +165,7 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
         columnTitle.setSortable(true);
         columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {
             public void update(int index, T object, String value) {
+                //noinspection unchecked
                 fireEvent(new MoleculeSelectedEvent(object));
             }
         });
