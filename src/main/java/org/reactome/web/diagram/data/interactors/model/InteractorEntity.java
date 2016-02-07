@@ -33,7 +33,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
         this.chemical = accession.toLowerCase().contains("chebi");
     }
 
-    public InteractorLink addInteraction(Node node, String id, double score) {
+    public InteractorLink addLink(Node node, String id, double score) {
         InteractorLink link = new DynamicLink(node, this, id, score);
         links.add(link);
         return link;
