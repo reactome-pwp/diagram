@@ -144,13 +144,13 @@ public class InteractorsContent {
         }
     }
 
-    public Collection<InteractorLink> getDiagramInteractions(String resource) {
+    public Collection<InteractorLink> getInteractorLinks(String resource) {
         MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource.toLowerCase());
         if (cache != null) return cache.values();
         return new HashSet<>();
     }
 
-    public List<InteractorLink> getDiagramInteractions(String resource, Node node) {
+    public List<InteractorLink> getInteractorLinks(String resource, Node node) {
         MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource.toLowerCase());
         if (cache != null) {
             Set<InteractorLink> set = cache.getElements(node);
@@ -160,10 +160,10 @@ public class InteractorsContent {
                 return rtn;
             }
         }
-        return null;
+        return new LinkedList<>();
     }
 
-    public InteractorEntity getDiagramInteractor(String resource, String acc) {
+    public InteractorEntity getInteractorEntity(String resource, String acc) {
         Map<String, InteractorEntity> cache = interactorsCache.get(resource.toLowerCase());
         if (cache != null) return cache.get(acc);
         return null;

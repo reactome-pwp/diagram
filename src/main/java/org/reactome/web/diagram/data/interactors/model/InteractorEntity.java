@@ -2,8 +2,6 @@ package org.reactome.web.diagram.data.interactors.model;
 
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.user.client.ui.Image;
-import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
-import org.reactome.web.diagram.data.interactors.common.LinkCommon;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
@@ -11,7 +9,9 @@ import org.reactome.web.diagram.util.chemical.ChEBI_ImageLoader;
 import org.reactome.web.diagram.util.pdbe.PDBeLoader;
 import org.reactome.web.diagram.util.pdbe.model.PDBObject;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -25,8 +25,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
     private PDBObject pdbObject;
     private ImageElement image;
 
-    private Set<GraphPhysicalEntity> interactsWith = new HashSet<>();
-    private Map<Node, InteractorLink> links = new HashMap<>();
+    private Set<InteractorLink> links = new HashSet<>();
 
     public InteractorEntity(String accession, String alias) {
         this.accession = accession;
@@ -35,20 +34,13 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
     }
 
     public InteractorLink addInteraction(Node node, String id, double score) {
-        //IMPORTANT: local set is meant to return ONLY the new ones
-        GraphPhysicalEntity pe = node.getGraphObject();
-        interactsWith.add(pe);
-
-        InteractorLink link = links.get(node);
-        if (link == null) {
-            link = new DynamicLink(node, this, id, score);
-            links.put(node, link);
-        }
+        InteractorLink link = new DynamicLink(node, this, id, score);
+        links.add(link);
         return link;
     }
 
-    public Set<GraphPhysicalEntity> getInteractsWith() {
-        return interactsWith;
+    public boolean removeLink(DynamicLink link){
+        return links.remove(link);
     }
 
     @Override
@@ -65,10 +57,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
     }
 
     public Coordinate getCentre() {
-        return CoordinateFactory.get(
-                minX + (maxX - minX) / 2.0,
-                minY + (maxY - minY) / 2.0
-        );
+        return CoordinateFactory.get(minX + (maxX - minX) / 2.0, minY + (maxY - minY) / 2.0);
     }
 
     public String getDisplayName() {
@@ -77,7 +66,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
 
     public String getDetails() {
         if (pdbObject != null) {
-            return  "PDBe: " + pdbObject.getPdbid() + " | " + "Chain: " + pdbObject.getChain() +
+            return  "PDBe: " + pdbObject.getPdbid() + "    " + "Chain: " + pdbObject.getChain() +
                     "\n" + "Resolution: " + pdbObject.getResolution() +
                     "\n" + "Coverage: " + pdbObject.getCoverage() +
                     "\n" + "PDBe Range: " + pdbObject.getPdbRange() +
@@ -102,34 +91,19 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
 
     @Override
     public boolean isVisible() {
-        for (InteractorLink link : links.values()) {
+        for (InteractorLink link : links) {
             if (link.isVisible()) return true;
         }
         return false;
     }
 
-    public Set<LinkCommon> getLinksFrom(String accession) {
-        Set<LinkCommon> rtn = new HashSet<>();
-        for (InteractorLink link : links.values()) {
-            GraphPhysicalEntity pe = link.getNodeFrom().getGraphObject();
-            if (accession.equals(pe.getIdentifier())) {
-                rtn.add(new LinkCommon(link.getId(), link.getScore()));
-            }
-        }
-        return rtn;
-    }
-
     public Collection<InteractorLink> getLinks() {
-        return links.values();
+        return links;
     }
 
-    public InteractorLink getLink(Node node) {
-        return links.get(node);
-    }
-
-    public PDBObject getPdbObject() {
-        return pdbObject;
-    }
+//    public PDBObject getPdbObject() {
+//        return pdbObject;
+//    }
 
     @Override
     public void setMinX(double minX) {
@@ -157,7 +131,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
         maxX += deltaX;
         minY += deltaY;
         maxY += deltaY;
-        for (InteractorLink interactorLink : links.values()) {
+        for (InteractorLink interactorLink : links) {
             interactorLink.setBoundaries(getCentre());
         }
     }

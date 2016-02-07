@@ -5,12 +5,12 @@ import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
-import org.reactome.web.diagram.data.interactors.common.LinkCommon;
 import org.reactome.web.diagram.data.interactors.model.*;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
 import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
@@ -43,7 +43,6 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         addHandlers();
     }
 
-    @SuppressWarnings("Duplicates")
     private void addHandlers() {
         this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
@@ -77,18 +76,60 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         return rtn;
     }
 
-    private int getNumberOfInteractorsToDraw(Collection items) {
-        if (items == null) return 0;
-        int n = items.size();
-        return n <= MAX_INTERACTORS ? n : MAX_INTERACTORS;
-    }
-
     public boolean isHighlighted(DiagramInteractor item) {
         return Objects.equals(hovered, item);
     }
 
+    @Override
+    public void onDiagramLoaded(DiagramLoadedEvent event) {
+        context = event.getContext();
+    }
+
+    @Override
+    public void onDiagramRequested(DiagramRequestedEvent event) {
+        context = null;
+    }
+
+    @Override
+    public void onInteractorsCollapsed(InteractorsCollapsedEvent event) {
+        for (InteractorLink link : context.getInteractors().getInteractorLinks(currentResource)) {
+            removeInteractorLink(link);
+        }
+        eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
+    }
+
+    @Override
+    public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
+        currentResource = event.getResource();
+    }
+
+    public InteractorHoveredEvent setHovered(DiagramInteractor hovered) {
+        if (!Objects.equals(this.hovered, hovered)) {
+            this.hovered = hovered;
+            return new InteractorHoveredEvent(hovered);
+        }
+        return null;
+    }
+
+    public void updateInteractor(InteractorEntity entity) {
+        InteractorsContent interactors = context.getInteractors();
+        interactors.updateView(currentResource, entity);
+        for (InteractorLink link : entity.getLinks()) {
+            interactors.updateView(currentResource, link);
+        }
+    }
+
+
+    public boolean update(SummaryItem summaryItem, Node hovered) {
+        boolean forceDraw = updateSummaryItem(hovered);
+        boolean pressed = summaryItem.getPressed() != null && summaryItem.getPressed();
+        if (pressed) loadInteractors(hovered);
+        else removeInteractors(hovered);
+        return forceDraw;
+    }
+
     //Why do we need a layout node? easy... layout! layout! layout! :D
-    public void loadInteractors(Node node) {
+    private void loadInteractors(Node node) {
         InteractorsLayout layoutBuilder = new InteractorsLayout(node);
         GraphPhysicalEntity p = node.getGraphObject();
         InteractorsContent interactors = context.getInteractors();
@@ -114,7 +155,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
                                 link = new StaticLink(node, (Node) nodeTo, rawInteractor.getId(), rawInteractor.getScore());
                             }
                             interactors.cache(currentResource, node, link);
-                            interactors.addInteractor(currentResource, link);
+                            interactors.addToView(currentResource, link);
                         }
                     } else {
                         // Maybe a part of a complex or a set
@@ -141,91 +182,44 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             interactors.cache(currentResource, node, link);
 
             //next block (adding to the QuadTree) also needs to be done after the doLayout
-            interactors.addInteractor(currentResource, interactor);
-            interactors.addInteractor(currentResource, link);
+            interactors.addToView(currentResource, interactor);
+            interactors.addToView(currentResource, link);
         }
         eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
     }
 
-    public void createNewLinksForExistingInteractors(final Node node, Collection<DiagramInteractor> interactors) {
-        List<InteractorEntity> entities = new LinkedList<>();
-        for (DiagramInteractor interactor : interactors) {
-            if (interactor instanceof InteractorEntity) {
-                entities.add((InteractorEntity) interactor);
-            } else if (interactor instanceof StaticLink) {
-                StaticLink aux = (StaticLink) interactor;
-                GraphPhysicalEntity peF = node.getGraphObject();
-                GraphPhysicalEntity peT = aux.getNodeTo().getGraphObject();
-                if (peF.getIdentifier().equals(peT.getIdentifier())) {
-                    //This is a static link pointing to another entity in the diagram with SAME identifier
-                    //so conceptually it is like a LoopLink (We show them as a feature)
-                    //Here both (from and to) need to be checked as target for the static interactor
-                    for (Node to : Arrays.asList(aux.getNodeFrom(), aux.getNodeTo())) {
-                        if (!to.equals(node)) {
-                            StaticLink link = new StaticLink(node, to, aux.getId(), aux.getScore());
-                            context.getInteractors().cache(currentResource, node, link);
-                            context.getInteractors().addInteractor(currentResource, link);
-                        }
-                    }
-                } else {
-                    //This is a standard static link pointing to a different existing entity in the diagram
-                    StaticLink link = new StaticLink(node, aux.getNodeTo(), aux.getId(), aux.getScore());
-                    context.getInteractors().cache(currentResource, node, link);
-                    context.getInteractors().addInteractor(currentResource, link);
-                }
-            } else if (interactor instanceof LoopLink) {
-                LoopLink aux = (LoopLink) interactor;
-                LoopLink link = new LoopLink(node, aux.getId(), aux.getScore());
-                context.getInteractors().cache(currentResource, node, link);
-                context.getInteractors().addInteractor(currentResource, link);
-            }
+    private void removeInteractors(Node node) {
+        InteractorsContent interactors = context.getInteractors();
+        List<InteractorLink> interactions = interactors.getInteractorLinks(currentResource, node);
+        for (InteractorLink link : interactions) {
+            removeInteractorLink(link);
         }
-
-        if (node.getGraphObject() instanceof GraphPhysicalEntity) {
-            GraphPhysicalEntity pe = node.getGraphObject();
-            int n = getNumberOfInteractorsToDraw(entities);
-            for (int i = 0; i < getNumberOfInteractorsToDraw(entities); i++) {
-                InteractorEntity entity = entities.get(i);
-                recalculateLayoutIfNeeded(node, entity, i, n);
-                //using getLinksFrom method already give us the previous filtered info from rawInteractors
-                for (LinkCommon aux : entity.getLinksFrom(pe.getIdentifier())) {
-                    InteractorLink link = entity.addInteraction(node, aux.getId(), aux.getScore());
-                    context.getInteractors().cache(currentResource, node, link);
-                    context.getInteractors().addInteractor(currentResource, link);
-                }
-            }
-        }
+        eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
     }
 
-    public void recalculateLayoutIfNeededAndSetVisibility(Node node, List<InteractorLink> links, boolean visible) {
-        List<DynamicLink> dynamicLinks = new LinkedList<>();
-        for (InteractorLink link : links) {
-            if (link instanceof DynamicLink) dynamicLinks.add((DynamicLink) link);
+    private void removeInteractorLink(InteractorLink link) {
+        InteractorsContent interactors = context.getInteractors();
+        if (link instanceof DynamicLink) {
+            DynamicLink aux = (DynamicLink) link;
+            InteractorEntity entity = aux.getInteractorEntity();
+            entity.removeLink(aux);
+            if (!entity.isVisible()) interactors.removeFromView(currentResource, entity);
         }
-        int n = getNumberOfInteractorsToDraw(dynamicLinks);
-        for (int i = 0; i < n; i++) {
-            DynamicLink link = dynamicLinks.get(i);
-            InteractorEntity entity = link.getInteractorEntity();
-            recalculateLayoutIfNeeded(node, entity, i, n);
-        }
-        //The visibility of the links has to be changed AFTER recalculating the layout
-        for (InteractorLink link : links) {
-            link.setVisible(visible);
-        }
+        interactors.removeFromView(currentResource, link);
     }
 
-    private void recalculateLayoutIfNeeded(Node node, InteractorEntity entity, int i, int n) {
-        InteractorsLayout.doLayout(node, entity, i, n, !entity.isVisible());
-        context.getInteractors().updateInteractor(currentResource, entity);
-        for (InteractorLink link : entity.getLinks()) {
-            //When the entity has been moved, all the links boundaries need to be updated
-            link.setBoundaries(entity.getCentre());
-            context.getInteractors().updateInteractor(currentResource, link);
+    private boolean updateSummaryItem(DiagramObject hovered) {
+        if (hovered instanceof Node) {
+            Node node = (Node) hovered;
+            Boolean pressed = node.getInteractorsSummary().getPressed();
+            node.getInteractorsSummary().setPressed(pressed == null || !pressed);
+            node.getDiagramEntityInteractorsSummary().setPressed(pressed == null || !pressed);
         }
+        return true;
     }
 
     private InteractorEntity getOrCreateInteractorEntity(String acc, String alias) {
-        InteractorEntity interactor = context.getInteractors().getDiagramInteractor(currentResource, acc);
+        InteractorEntity interactor = context.getInteractors().getInteractorEntity(currentResource, acc);
         if (interactor == null) {
             interactor = new InteractorEntity(acc, alias);
             context.getInteractors().cache(currentResource, interactor);
@@ -233,42 +227,9 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         return interactor;
     }
 
-    @Override
-    public void onDiagramLoaded(DiagramLoadedEvent event) {
-        context = event.getContext();
-    }
-
-    @Override
-    public void onDiagramRequested(DiagramRequestedEvent event) {
-        context = null;
-    }
-
-    @Override
-    public void onInteractorsCollapsed(InteractorsCollapsedEvent event) {
-        for (InteractorLink link : context.getInteractors().getDiagramInteractions(currentResource)) {
-            link.setVisible(false);
-        }
-        eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
-    }
-
-    @Override
-    public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        currentResource = event.getResource();
-    }
-
-    public InteractorHoveredEvent setHovered(DiagramInteractor hovered) {
-        if (!Objects.equals(this.hovered, hovered)) {
-            this.hovered = hovered;
-            return new InteractorHoveredEvent(hovered);
-        }
-        return null;
-    }
-
-    public void updateInteractor(InteractorEntity entity) {
-        InteractorsContent interactors = context.getInteractors();
-        interactors.updateInteractor(currentResource, entity);
-        for (InteractorLink link : entity.getLinks()) {
-            interactors.updateInteractor(currentResource, link);
-        }
+    private int getNumberOfInteractorsToDraw(Collection items) {
+        if (items == null) return 0;
+        int n = items.size();
+        return n <= MAX_INTERACTORS ? n : MAX_INTERACTORS;
     }
 }
