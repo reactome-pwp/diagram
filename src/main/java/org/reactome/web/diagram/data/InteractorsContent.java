@@ -75,25 +75,21 @@ public class InteractorsContent {
     }
 
     public void cache(String resource, InteractorEntity interactor) {
-        if (interactor.getAccession() != null) {
-            Map<String, InteractorEntity> map = this.interactorsCache.get(resource.toLowerCase());
-            if (map == null) {
-                map = new HashMap<>();
-                this.interactorsCache.put(resource.toLowerCase(), map);
-            }
-            map.put(interactor.getAccession(), interactor);
+        Map<String, InteractorEntity> map = this.interactorsCache.get(resource.toLowerCase());
+        if (map == null) {
+            map = new HashMap<>();
+            this.interactorsCache.put(resource.toLowerCase(), map);
         }
+        map.put(interactor.getAccession(), interactor);
     }
 
-    public void cache(String resource, Node node, DiagramInteractor diagramInteractor) {
-        if (diagramInteractor instanceof InteractorLink) {
-            MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource.toLowerCase());
-            if (cache == null) {
-                cache = new MapSet<>();
-                interactionsPerNode.put(resource.toLowerCase(), cache);
-            }
-            cache.add(node, (InteractorLink) diagramInteractor);
+    public void cache(String resource, Node node, InteractorLink link) {
+        MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource.toLowerCase());
+        if (cache == null) {
+            cache = new MapSet<>();
+            interactionsPerNode.put(resource.toLowerCase(), cache);
         }
+        cache.add(node, link);
     }
 
     public void cacheInteractors(String resource, String acc, Integer number, MapSet<String, GraphObject> identifierMap) {

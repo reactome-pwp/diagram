@@ -177,8 +177,8 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
 
             layoutBuilder.doLayout(interactor, i, n);  //the maximum number of elements is used here for layout beauty purposes
 
-            interactors.cache(currentResource, node, interactor);
-            InteractorLink link = interactor.addInteraction(node, rawInteractor.getId(), rawInteractor.getScore());
+            interactors.cache(currentResource, interactor);
+            InteractorLink link = interactor.addLink(node, rawInteractor.getId(), rawInteractor.getScore());
             interactors.cache(currentResource, node, link);
 
             //next block (adding to the QuadTree) also needs to be done after the doLayout
@@ -190,8 +190,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
 
     private void removeInteractors(Node node) {
         InteractorsContent interactors = context.getInteractors();
-        List<InteractorLink> interactions = interactors.getInteractorLinks(currentResource, node);
-        for (InteractorLink link : interactions) {
+        for (InteractorLink link : interactors.getInteractorLinks(currentResource, node)) {
             removeInteractorLink(link);
         }
         eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
