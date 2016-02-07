@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class InteractorsTabPanel extends Composite implements ClickHandler, ValueChangeHandler, InteractorsResourceLoader.Handler,
         InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler,
-        DiagramLoadedHandler, DiagramLoadRequestHandler {
+        DiagramLoadedHandler, DiagramRequestedHandler {
     private static int RESOURCES_REFRESH = 600000; // Update every 10 minutes
 
     private EventBus eventBus;
@@ -116,8 +116,9 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     }
 
     @Override
-    public void onDiagramLoadRequest(DiagramLoadRequestEvent event) {
+    public void onDiagramRequested(DiagramRequestedEvent event) {
         context = null;
+        downloadBtn.setVisible(false);
     }
 
     @Override
@@ -170,7 +171,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
     private void initialiseHandlers() {
         eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
-        eventBus.addHandler(DiagramLoadRequestEvent.TYPE, this);
+        eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
         eventBus.addHandler(InteractorsErrorEvent.TYPE, this);
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
