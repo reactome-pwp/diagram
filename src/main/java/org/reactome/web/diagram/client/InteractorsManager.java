@@ -204,7 +204,8 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             DynamicLink aux = (DynamicLink) link;
             InteractorEntity entity = aux.getInteractorEntity();
             entity.removeLink(aux);
-            if (!entity.isVisible()) interactors.removeFromView(currentResource, entity);
+            //IMPORTANT: Do NOT use entity.isVisible() because that takes into account the threshold
+            if (entity.getLinks().isEmpty()) interactors.removeFromView(currentResource, entity);
         }
         interactors.removeFromView(currentResource, link);
     }
