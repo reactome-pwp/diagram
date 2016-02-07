@@ -15,7 +15,6 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
-import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -36,7 +35,6 @@ import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -544,12 +542,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     @Override
     public void onLayoutImageLoaded(StructureImageLoadedEvent event) {
-//        (new Timer() {
-//            @Override
-//            public void run() {
-//                forceDraw = true;
-//            }
-//        }).schedule(500);
         forceDraw = true;
     }
 
@@ -652,11 +644,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         super.setVisible(visible);
         if (visible) onResize();
         if (context != null) {
-            if (visible) {
-                context.restoreDialogs();
-            } else {
-                context.hideDialogs();
-            }
+            if (visible) context.restoreDialogs();
+            else context.hideDialogs();
         }
     }
 
@@ -762,7 +751,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
             if (hoveredItem.getSummaryItem() != null) {
                 SummaryItem summaryItem = hoveredItem.getSummaryItem();
                 if(summaryItem.getType().equals("TR")){
-                    manageInteractors(summaryItem, (Node) hoveredItem.getHoveredObject());
+                    forceDraw |= interactorsManager.update(summaryItem, (Node) hoveredItem.getHoveredObject());
                 }
                 this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getSummaryItem()), this);
             }
@@ -776,42 +765,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
             this.resetIllustration();
             this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(toSelect, zoom, fireExternally), this);
         }
-    }
-
-    private void manageInteractors(SummaryItem summaryItem, Node hovered){
-        updateSummaryItem(hovered);
-        String resource = interactorsManager.getCurrentResource();
-        GraphPhysicalEntity pe = hovered.getGraphObject();
-        Collection<DiagramInteractor> interactors = context.getInteractors().getDiagramInteractors(resource, pe.getIdentifier());
-        boolean pressed = summaryItem.getPressed() != null && summaryItem.getPressed();
-        boolean previouslyLoaded = interactors != null && !interactors.isEmpty();
-        if (pressed && !previouslyLoaded) {
-            interactorsManager.loadInteractors(hovered);
-        } else {
-            setInteractorVisibility(resource, hovered, pressed);
-        }
-    }
-
-    private void updateSummaryItem(DiagramObject hovered){
-        if(hovered instanceof Node){
-            Node node = (Node) hovered;
-            Boolean pressed = node.getInteractorsSummary().getPressed();
-            node.getInteractorsSummary().setPressed(pressed == null || !pressed);
-            node.getDiagramEntityInteractorsSummary().setPressed(pressed == null || !pressed);
-        }
-        forceDraw = true;
-    }
-
-    private void setInteractorVisibility(String resource, Node node, boolean visible){
-        List<InteractorLink> interactions = context.getInteractors().getDiagramInteractions(resource, node);
-        if (interactions != null) {
-            interactorsManager.recalculateLayoutIfNeededAndSetVisibility(node, interactions, visible);
-        } else {
-            GraphPhysicalEntity pe = node.getGraphObject();
-            Collection<DiagramInteractor> interactors = context.getInteractors().getDiagramInteractors(resource, pe.getIdentifier());
-            interactorsManager.createNewLinksForExistingInteractors(node, new HashSet<>(interactors));
-        }
-        eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
     }
 
     private void fitDiagram(boolean animation) {
