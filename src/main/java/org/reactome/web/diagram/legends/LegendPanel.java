@@ -120,16 +120,16 @@ public abstract class LegendPanel extends AbsolutePanel {
         @Source("images/loader.gif")
         ImageResource loader();
 
-        @Source("images/play_clicked.png")
+        @Source("images/download_clicked.png")
         ImageResource downloadClicked();
 
-        @Source("images/play_disabled.png")
+        @Source("images/download_disabled.png")
         ImageResource downloadDisabled();
 
-        @Source("images/play_hovered.png")
+        @Source("images/download_hovered.png")
         ImageResource downloadHovered();
 
-        @Source("images/play_normal.png")
+        @Source("images/download_normal.png")
         ImageResource downloadNormal();
     }
 
