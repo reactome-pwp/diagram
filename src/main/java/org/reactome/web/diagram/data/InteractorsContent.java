@@ -43,7 +43,6 @@ public class InteractorsContent {
 
     private MapSet<String, InteractorsSummary> interactorsSummaryMap; //resource -> InteractorsSummary
     private Map<String, Map<String, InteractorEntity>> interactorsCache; //resource -> acc -> interactors
-    private Map<String, MapSet<String, DiagramInteractor>> interactorsPerAcc; //resource -> node acc -> interactors
     private Map<String, MapSet<Node, InteractorLink>> interactionsPerNode; //resource -> layout node -> interaction
 
     private LruCache<String, QuadTree<DiagramInteractor>> interactorsTreeCache;
@@ -53,7 +52,6 @@ public class InteractorsContent {
         this.rawInteractorsCache = new HashMap<>();
         this.interactorsSummaryMap = new MapSet<>();
         this.interactorsCache = new HashMap<>();
-        this.interactorsPerAcc = new HashMap<>();
         this.interactionsPerNode = new HashMap<>();
 
         this.interactorsTreeCache = new LruCache<>(INTERACTORS_RESOURCE_CACHE_SIZE);
@@ -96,14 +94,6 @@ public class InteractorsContent {
             }
             cache.add(node, (InteractorLink) diagramInteractor);
         }
-
-        MapSet<String, DiagramInteractor> aux = interactorsPerAcc.get(resource.toLowerCase());
-        if (aux == null) {
-            aux = new MapSet<>();
-            interactorsPerAcc.put(resource.toLowerCase(), aux);
-        }
-        GraphPhysicalEntity pe = node.getGraphObject();
-        aux.add(pe.getIdentifier(), diagramInteractor);
     }
 
     public void cacheInteractors(String resource, String acc, Integer number, MapSet<String, GraphObject> identifierMap) {
@@ -130,7 +120,7 @@ public class InteractorsContent {
     //This method is not checking whether the interactors where previously put in place since
     //when it is called, the interactors have probably been retrieved "again" from the server
     //IMPORTANT: To avoid loading data that already exists -> CHECK BEFORE RETRIEVING :)
-    public void addInteractor(String resource, DiagramInteractor interactor) {
+    public void addToView(String resource, DiagramInteractor interactor) {
         QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource.toLowerCase());
         if (tree == null) {
             tree = new QuadTree<>(minX, minY, maxX, maxY, NUMBER_OF_ELEMENTS, MIN_AREA);
@@ -139,7 +129,7 @@ public class InteractorsContent {
         tree.add(interactor);
     }
 
-    public void updateInteractor(String resource, DiagramInteractor interactor) {
+    public void updateView(String resource, DiagramInteractor interactor) {
         QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource.toLowerCase());
         if (tree != null) {
             tree.remove(interactor);
@@ -147,18 +137,11 @@ public class InteractorsContent {
         }
     }
 
-    public Collection<InteractorEntity> getDiagramInteractors(String resource) {
-        Map<String, InteractorEntity> cache = interactorsCache.get(resource.toLowerCase());
-        if (cache != null) return cache.values();
-        return new HashSet<>();
-    }
-
-    public Collection<DiagramInteractor> getDiagramInteractors(String resource, String acc) {
-        MapSet<String, DiagramInteractor> cache = interactorsPerAcc.get(resource.toLowerCase());
-        if (cache != null) {
-            return cache.getElements(acc);
+    public void removeFromView(String resource, DiagramInteractor interactor) {
+        QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource.toLowerCase());
+        if (tree != null) {
+            tree.remove(interactor);
         }
-        return new HashSet<>();
     }
 
     public Collection<InteractorLink> getDiagramInteractions(String resource) {
