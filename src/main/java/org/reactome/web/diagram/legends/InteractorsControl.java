@@ -34,7 +34,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     @SuppressWarnings("FieldCanBeLocal")
     private static String MSG_NO_INTERACTORS_FOUND = "No interactors found in ";
     @SuppressWarnings("FieldCanBeLocal")
-    private static String MSG_DOWNLOAD_TOOLTIP = "Download all diagram interactors ";
+    private static String MSG_DOWNLOAD_TOOLTIP = "Download all diagram interactors from ";
 
     private String currentResource;
 
