@@ -173,8 +173,8 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
         this.add(this.loadingIcon);
         this.add(this.message);
-        this.add(this.controlsFP);
         this.add(this.closeBtn);
+        this.add(this.controlsFP);
     }
 
     private void initHandlers() {

@@ -314,9 +314,8 @@
 }
 
 .interactorsControlControls {
-    float: left;
+    float: right;
     overflow: visible;
-    margin-left: 5px;
 }
 
 @sprite .download {
@@ -326,7 +325,7 @@
     border: 0;
     cursor: pointer;
     float: right;
-    margin: 2px 8px;
+    margin: 2px 0 0 10px;
 }
 
 @sprite .download:hover {
