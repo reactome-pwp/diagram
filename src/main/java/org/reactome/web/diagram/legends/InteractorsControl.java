@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.legends;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -104,7 +105,12 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             setVisible(true);
             displayLoader(true, event.getResource());
         } else {
-            update();
+            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                @Override
+                public void execute() {
+                    update();
+                }
+            });
         }
     }
 

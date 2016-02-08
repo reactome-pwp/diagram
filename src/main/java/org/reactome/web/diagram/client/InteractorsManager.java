@@ -119,12 +119,11 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         }
     }
 
-
-    public boolean update(SummaryItem summaryItem, Node hovered) {
-        boolean forceDraw = updateSummaryItem(hovered);
+    public boolean update(SummaryItem summaryItem, Node node) {
+        boolean forceDraw = updateSummaryItem(node);
         boolean pressed = summaryItem.getPressed() != null && summaryItem.getPressed();
-        if (pressed) loadInteractors(hovered);
-        else removeInteractors(hovered);
+        if (pressed) loadInteractors(node);
+        else removeInteractors(node);
         return forceDraw;
     }
 
@@ -169,19 +168,18 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
 
         //From those that are not visible, we pick the top "allowed" number
         int n = getNumberOfInteractorsToDraw(dynamicInteractors);
-        for (int i = 0; i < n; i++) {  //please note that "n" can be increased if the interactors are present in the diagram
+        for (int i = 0; i < n; i++) {
             RawInteractor rawInteractor = dynamicInteractors.get(i);
 
-            //In this case the interactor is NOT present in the diagram so we have to create an interactor with its link to the node
             InteractorEntity interactor = getOrCreateInteractorEntity(rawInteractor.getAcc(), rawInteractor.getAlias());
 
             layoutBuilder.doLayout(interactor, i, n);  //the maximum number of elements is used here for layout beauty purposes
 
-            interactors.cache(currentResource, interactor);
             InteractorLink link = interactor.addLink(node, rawInteractor.getId(), rawInteractor.getScore());
+            interactors.cache(currentResource, interactor);
             interactors.cache(currentResource, node, link);
 
-            //next block (adding to the QuadTree) also needs to be done after the doLayout
+            //adding to the QuadTree also needs to be done after the doLayout
             interactors.addToView(currentResource, interactor);
             interactors.addToView(currentResource, link);
         }
