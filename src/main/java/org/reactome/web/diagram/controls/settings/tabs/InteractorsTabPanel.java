@@ -164,7 +164,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     public void onValueChange(ValueChangeEvent event) {
         RadioButton selectedBtn = (RadioButton) event.getSource();
         // Keep current selection
-        selectedResource = selectedBtn.getText();
+        selectedResource = staticResourceBtn.getFormValue();
         String value = selectedBtn.getFormValue();
         // Fire event for a Resource selection
         eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(value), this);
