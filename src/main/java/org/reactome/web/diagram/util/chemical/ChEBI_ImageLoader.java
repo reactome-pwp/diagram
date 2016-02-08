@@ -48,7 +48,7 @@ public class ChEBI_ImageLoader {
 
     public void loadImage(final Handler handler, String identifier){
         String id = identifier.replaceAll("^\\w+[-:_]", "");
-        final String url = "/chebi/displayImage.do?defaultImage=true&chebiId=" + id + "&dimensions=200&transbg=true";
+        final String url = "http://www.ebi.ac.uk/chebi/displayImage.do?defaultImage=true&chebiId=" + id + "&dimensions=200&transbg=true";
         final Image rtn = new Image(url);
         rtn.setAltText(url);
         //Next line is meant to avoid the "SecurityError" problem when exporting tainted canvases
