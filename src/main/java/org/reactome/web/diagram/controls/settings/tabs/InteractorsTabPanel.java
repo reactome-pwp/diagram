@@ -83,9 +83,9 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         main.add(loadingPanel);
         main.add(getOptionsPanel());
         if (InteractorsExporter.fileSaveScriptAvailable()) {
-            downloadBtn = new IconButton("Download " + formatName(selectedResource) + " Interactors", RESOURCES.downloadNormal());
+            downloadBtn = new IconButton(formatName(selectedResource), RESOURCES.downloadNormal());
             downloadBtn.addClickHandler(this);
-            downloadBtn.setTitle("Click to download all diagram interactors");
+            downloadBtn.setTitle("Click to download all diagram interactors from " + formatName(selectedResource));
             downloadBtn.setStyleName(RESOURCES.getCSS().downloadBtn());
             main.add(downloadBtn);
         } else {
@@ -150,7 +150,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         if(context!=null) {
-            downloadBtn.setText("Download " + formatName(event.getResource()) + " Interactors");
+            downloadBtn.setText(formatName(event.getResource()));
+            downloadBtn.setTitle("Click to download all diagram interactors from " + formatName(event.getResource()));
             if (context.getInteractors().isResourceLoaded(event.getResource())) {
                 downloadBtn.setVisible(true);
             } else {
