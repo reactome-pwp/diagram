@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.http.client.*;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
@@ -19,6 +20,9 @@ import org.reactome.web.diagram.util.Console;
 public class Chemical_ImageLoader {
 
     private static Chemical_ImageLoader loader;
+
+    public static final Image LOADING = new Image(ChemicalImages.INSTANCE.loading());
+    public static final Image NOT_FOUND = new Image(ChemicalImages.INSTANCE.notFound());
 
     public interface Handler {
         void onChemicalImageLoaded(Image image);
@@ -47,52 +51,82 @@ public class Chemical_ImageLoader {
     }
 
     public void loadImage(final Handler handler, String identifier){
-        final String url;
         if(identifier.startsWith("CHEBI")){
-            String id = identifier.replaceAll("^CHEBI[-:_]?", "");
-            url = "http://www.ebi.ac.uk/chebi/displayImage.do?defaultImage=true&chebiId=" + id + "&dimensions=200&transbg=true";
+            loadChEBI(handler, identifier);
         } else if(identifier.startsWith("CHEMBL")) {
-            String id = identifier.replaceAll("^CHEMBL[-:_]?", "");
-//            url = "http://www.ebi.ac.uk/chembl/compound/displayimage_large/" + id;
-
-//            url = "https://www.ebi.ac.uk/chembl/api/data/image/CHEMBL209793?format=svg";
-            url = "http://www.ebi.ac.uk/chembl/api/data/image/" + id + "?format=svg";
+            loadCHEMBL(handler, identifier);
         } else {
             Console.warn("Chemical images for " + identifier + " have not been contemplated");
             handler.onChemicalImageLoaded(NOT_FOUND);
             eventBus.fireEventFromSource(new StructureImageLoadedEvent(NOT_FOUND), this);
-            return;
         }
+    }
 
-        final Image rtn = new Image(url);
-        rtn.setAltText(url);
+    public void loadCHEMBL(final Handler handler, String identifier){
+        String id = identifier.replaceAll("^CHEMBL[-:_]?", "");
+        String url = "http://www.ebi.ac.uk/chembl/api/data/image/" + id + "?format=png";
+//        String url = "https://www.ebi.ac.uk/chembl/api/data/image/CHEMBL209793?format=png";
+
+        //The following work forces a Access-Control-Allow-Origin header by CHEMBL because
+        //it is only added when the header X-Requested-With:XMLHttpRequest is added
+        //Ideally the Access-Control-Allow-Origin:* should be provided by default for every
+        //image query, so the loading can be automatically performed by the IMG TAG itself and
+        //then used by the canvas (with the permission for exporting) [See ChEBI or PDBe use case]
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
+        requestBuilder.setHeader("X-Requested-With", "XMLHttpRequest");
+        try {
+            requestBuilder.sendRequest(null, new RequestCallback() {
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                    Image image = new Image("data:image/png;base64," + response.getText());
+                    forceLoadImage(handler, image);
+                }
+
+                @Override
+                public void onError(Request request, Throwable throwable) {
+                    handler.onChemicalImageLoaded(NOT_FOUND);
+                }
+            });
+        } catch (RequestException e) {
+            handler.onChemicalImageLoaded(NOT_FOUND);
+        }
+    }
+
+    public void loadChEBI(final Handler handler, String identifier){
+        String id = identifier.replaceAll("^CHEBI[-:_]?", "");
+        String url = "http://www.ebi.ac.uk/chebi/displayImage.do?defaultImage=true&chebiId=" + id + "&dimensions=200&transbg=true";
+
+        final Image image = new Image(url);
+        image.setAltText(url);
         //Next line is meant to avoid the "SecurityError" problem when exporting tainted canvases
-        rtn.getElement().setAttribute("crossOrigin", "anonymous");
-        rtn.addLoadHandler(new LoadHandler() {
+        image.getElement().setAttribute("crossOrigin", "anonymous");
+        forceLoadImage(handler, image);
+    }
+
+    private void forceLoadImage(final Handler handler, final Image image){
+        image.addLoadHandler(new LoadHandler() {
             @Override
             public void onLoad(LoadEvent loadEvent) {
                 //It was just added to the DOM to force load so this method is called
-                rtn.getElement().removeFromParent();
-                rtn.setVisible(true);
-                handler.onChemicalImageLoaded(rtn);
-                eventBus.fireEventFromSource(new StructureImageLoadedEvent(rtn), Chemical_ImageLoader.this);
+                image.getElement().removeFromParent();
+                image.setVisible(true);
+                handler.onChemicalImageLoaded(image);
+                eventBus.fireEventFromSource(new StructureImageLoadedEvent(image), Chemical_ImageLoader.this);
             }
         });
-        rtn.addErrorHandler(new ErrorHandler() {
+        image.addErrorHandler(new ErrorHandler() {
             @Override
             public void onError(ErrorEvent errorEvent) {
-                rtn.getElement().removeFromParent();
+                image.getElement().removeFromParent();
                 handler.onChemicalImageLoaded(NOT_FOUND);
                 eventBus.fireEventFromSource(new StructureImageLoadedEvent(NOT_FOUND), Chemical_ImageLoader.this);
             }
         });
         //Making it invisible and attaching it to the DOM forces the loading of the image (so the previous handler is called)
-        rtn.setVisible(false);
-        RootPanel.get().add(rtn);
+        image.setVisible(false);
+        RootPanel.get().add(image);
     }
 
-    public static final Image LOADING = new Image(ChemicalImages.INSTANCE.loading());
-    public static final Image NOT_FOUND = new Image(ChemicalImages.INSTANCE.notFound());
 
     static {
         RootPanel.get().add(LOADING);
