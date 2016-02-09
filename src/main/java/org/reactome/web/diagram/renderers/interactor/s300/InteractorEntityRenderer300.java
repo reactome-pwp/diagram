@@ -36,7 +36,8 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
         if (node.getImage() != null) {
             Coordinate pos = CoordinateFactory.get(node.getMinX(), node.getMinY()).transform(factor, offset);
             double delta = (node.getMaxY() - node.getMinY()) * factor;
-            ctx.drawImage(node.getImage(), pos.getX(), pos.getY(), delta, delta);
+//            ctx.drawImage(node.getImage(), pos.getX(), pos.getY(), delta, delta);
+            ctx.createRadialGradient( pos.getX(),pos.getY(),5,90,60,100);
         }
 
         String displayName = node.getDisplayName();
@@ -78,11 +79,18 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
     }
 
     private void drawChemicalDetails(AdvancedContext2d ctx, InteractorEntity node, Double factor, Coordinate offset){
+        ctx.save();
+        String displayName = node.getDisplayName();
+        InteractorBox box = node.transform(factor, offset);
+        double delta = box.getHeight() * 0.65; // Shrink the image in order to make it fit into the bubble
         if (node.getImage() != null) {
-            Coordinate pos = CoordinateFactory.get(node.getMinX(), node.getMinY()).transform(factor, offset);
-            double delta = (node.getMaxY() - node.getMinY()) * factor;
-            ctx.drawImage(node.getImage(), pos.getX(), pos.getY(), delta, delta);
+            Coordinate centre = box.getCentre();
+            // Center the image vertically but keep it more to the left half of the bubble
+            ctx.drawImage(node.getImage(), centre.getX() - delta , centre.getY() - delta/2, delta, delta);
         }
-        super.drawText(ctx, node, factor, offset);
+        InteractorBox textBox = box.splitHorizontally( box.getWidth()/2 ).get(1); //box is now the remaining of item box removing the image
+        TextRenderer textRenderer = new TextRenderer(RendererProperties.INTERACTOR_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
+        textRenderer.drawTextMultiLine(ctx, displayName, NodePropertiesFactory.get(textBox));
+        ctx.restore();
     }
 }
