@@ -36,7 +36,8 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
         if (node.getImage() != null) {
             Coordinate pos = CoordinateFactory.get(node.getMinX(), node.getMinY()).transform(factor, offset);
             double delta = (node.getMaxY() - node.getMinY()) * factor;
-            ctx.drawImage(node.getImage(), pos.getX(), pos.getY(), delta, delta);
+//            ctx.drawImage(node.getImage(), pos.getX(), pos.getY(), delta, delta);
+            ctx.createRadialGradient( pos.getX(),pos.getY(),5,90,60,100);
         }
 
         String displayName = node.getDisplayName();
