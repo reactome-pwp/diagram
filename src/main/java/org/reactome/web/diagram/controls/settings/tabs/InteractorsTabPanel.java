@@ -34,7 +34,7 @@ import java.util.List;
 public class InteractorsTabPanel extends Composite implements ClickHandler, ValueChangeHandler, InteractorsResourceLoader.Handler,
         InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler,
         DiagramLoadedHandler, DiagramRequestedHandler {
-    private static int RESOURCES_REFRESH = 5000; // Update every 10 minutes
+    private static int RESOURCES_REFRESH = 600000; // Update every 10 minutes
 
     private EventBus eventBus;
     private DiagramContext context;
