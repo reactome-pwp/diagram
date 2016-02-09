@@ -198,6 +198,8 @@ public abstract class LegendPanel extends AbsolutePanel {
         String interactorsControlControls();
 
         String download();
+
+        String unselectable();
     }
 
     protected EventBus eventBus;

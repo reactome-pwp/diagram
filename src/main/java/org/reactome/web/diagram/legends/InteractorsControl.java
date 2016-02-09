@@ -158,6 +158,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     private void initUI() {
         addStyleName(RESOURCES.getCSS().analysisControl());
         addStyleName(RESOURCES.getCSS().interactorsControl());
+        addStyleName(RESOURCES.getCSS().unselectable());
 
         this.loadingIcon = new Image(RESOURCES.loader());
         this.loadingIcon.setStyleName(RESOURCES.getCSS().interactorsControlLoadingIcon());
