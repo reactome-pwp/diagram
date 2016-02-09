@@ -27,7 +27,7 @@ import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.util.ViewportUtils;
-import org.reactome.web.diagram.util.chemical.ChEBI_ImageLoader;
+import org.reactome.web.diagram.util.chemical.Chemical_ImageLoader;
 import org.reactome.web.diagram.util.pdbe.PDBeLoader;
 import org.reactome.web.pwp.model.classes.Pathway;
 import org.reactome.web.pwp.model.util.LruCache;
@@ -80,7 +80,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         this.loaderManager = new LoaderManager(eventBus);
         AnalysisDataLoader.initialise(eventBus);
         PDBeLoader.initialise(eventBus);
-        ChEBI_ImageLoader.initialise(eventBus);
+        Chemical_ImageLoader.initialise(eventBus);
         this.layoutManager = new LayoutManager(eventBus);
         this.interactorsManager = new InteractorsManager(eventBus);
 
