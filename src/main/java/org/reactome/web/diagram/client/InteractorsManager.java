@@ -141,28 +141,33 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             String acc = rawInteractor.getAcc();
             //The following line removes resource name prefixes in the accession because the graph do not have them (CHEBI:12345 -> 12345)
             Set<GraphObject> objects = map.getElements(acc.replaceAll("^\\w+[-:_]", ""));
-            if (objects != null) {
+º            if (objects == null) {
+                dynamicInteractors.add(rawInteractor);
+            } else {
                 //All the static links can be created since they do not clutter the view
+                boolean staticCreated = false;
                 for (GraphObject object : objects) {
                     List<DiagramObject> diagramObjectList = object.getDiagramObjects();
                     if (!diagramObjectList.isEmpty()) {
                         for (DiagramObject nodeTo : diagramObjectList) {
-                            InteractorLink link;
+                            InteractorLink link = null;
                             if (node.equals(nodeTo)) {
                                 link = new LoopLink(node, rawInteractor.getId(), rawInteractor.getScore());
-                            } else {
+                            } else if (!node.getGraphObject().equals(nodeTo.getGraphObject())) {
                                 link = new StaticLink(node, (Node) nodeTo, rawInteractor.getId(), rawInteractor.getScore());
                             }
-                            interactors.cache(currentResource, node, link);
-                            interactors.addToView(currentResource, link);
+                            if (link != null) {
+                                interactors.cache(currentResource, node, link);
+                                interactors.addToView(currentResource, link);
+                                staticCreated = true;
+                            }
                         }
-                    } else {
-                        // Maybe a part of a complex or a set
-                        dynamicInteractors.add(rawInteractor);
                     }
                 }
-            } else {
-                dynamicInteractors.add(rawInteractor);
+                if(!staticCreated){
+                    // Maybe a part of a complex or a set
+                    dynamicInteractors.add(rawInteractor);
+                }
             }
         }
 
@@ -205,6 +210,8 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             //IMPORTANT: Do NOT use entity.isVisible() because that takes into account the threshold
             if (entity.getLinks().isEmpty()) interactors.removeFromView(currentResource, entity);
         }
+        //In order to reduce the memory usage, we can remove the links from the interactionsPerNode
+        interactors.removeInteractorLink(currentResource, link);
         interactors.removeFromView(currentResource, link);
     }
 
