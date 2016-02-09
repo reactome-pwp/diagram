@@ -6,6 +6,8 @@ import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.util.chemical.ChEBI_ImageLoader;
+import org.reactome.web.diagram.util.chemical.ChEMBL_ImageLoader;
+import org.reactome.web.diagram.util.chemical.Chemical_ImageLoader;
 import org.reactome.web.diagram.util.pdbe.PDBeLoader;
 import org.reactome.web.diagram.util.pdbe.model.PDBObject;
 
@@ -16,7 +18,7 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class InteractorEntity extends DiagramInteractor implements Draggable, PDBeLoader.Handler, ChEBI_ImageLoader.Handler {
+public class InteractorEntity extends DiagramInteractor implements Draggable, PDBeLoader.Handler, Chemical_ImageLoader.Handler {
 
     private String accession;
     private String alias;
@@ -30,7 +32,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
     public InteractorEntity(String accession, String alias) {
         this.accession = accession;
         this.alias = alias;
-        this.chemical = accession.toLowerCase().contains("chebi");
+        this.chemical = accession.matches("^(CHEBI|CHEMBL).*");
     }
 
     public InteractorLink addLink(Node node, String id, double score) {
@@ -39,7 +41,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
         return link;
     }
 
-    public boolean removeLink(DynamicLink link){
+    public boolean removeLink(DynamicLink link) {
         return links.remove(link);
     }
 
@@ -66,7 +68,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
 
     public String getDetails() {
         if (pdbObject != null) {
-            return  "PDBe: " + pdbObject.getPdbid() + "    " + "Chain: " + pdbObject.getChain() +
+            return "PDBe: " + pdbObject.getPdbid() + "    " + "Chain: " + pdbObject.getChain() +
                     "\n" + "Resolution: " + pdbObject.getResolution() +
                     "\n" + "Coverage: " + pdbObject.getCoverage() +
                     "\n" + "PDBe Range: " + pdbObject.getPdbRange() +
@@ -158,8 +160,14 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
 
     private void setImageURL() {
         if (chemical) {
-            image = ImageElement.as(ChEBI_ImageLoader.LOADING.getElement());
-            ChEBI_ImageLoader.get().loadImage(this, accession);
+            image = ImageElement.as(Chemical_ImageLoader.LOADING.getElement());
+            if (accession.startsWith("CHEBI")) {
+                ChEBI_ImageLoader.get().loadImage(this, accession);
+            } else if (accession.startsWith("CHEMBL")) {
+                ChEMBL_ImageLoader.get().loadImage(this, accession);
+            } else {
+                image = ImageElement.as(Chemical_ImageLoader.NOT_FOUND.getElement());
+            }
         } else {
             image = ImageElement.as(PDBeLoader.LOADING.getElement());
             PDBeLoader.get().loadBestStructure(this, accession);
