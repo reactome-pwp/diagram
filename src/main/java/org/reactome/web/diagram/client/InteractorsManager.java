@@ -141,7 +141,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             String acc = rawInteractor.getAcc();
             //The following line removes resource name prefixes in the accession because the graph do not have them (CHEBI:12345 -> 12345)
             Set<GraphObject> objects = map.getElements(acc.replaceAll("^\\w+[-:_]", ""));
-º            if (objects == null) {
+            if (objects == null) {
                 dynamicInteractors.add(rawInteractor);
             } else {
                 //All the static links can be created since they do not clutter the view
