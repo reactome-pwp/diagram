@@ -136,22 +136,20 @@ public class InteractorsContent {
     public void removeFromView(String resource, DiagramInteractor interactor) {
         QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource.toLowerCase());
         if (tree != null) tree.remove(interactor);
-
-        //In order to reduce the memory usage, we can remove the links from the interactionsPerNode
-        if (interactor instanceof InteractorLink) {
-            MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource);
-            if (cache != null) {
-                InteractorLink link = (InteractorLink) interactor;
-                Set<InteractorLink> links = cache.getElements(link.getNodeFrom());
-                if (links != null) links.remove(link);
-            }
-        }
     }
 
     public Collection<InteractorLink> getInteractorLinks(String resource) {
         MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource.toLowerCase());
         if (cache != null) return cache.values();
         return new HashSet<>();
+    }
+
+    public void removeInteractorLink(String resource, InteractorLink link){
+        MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource.toLowerCase());
+        if (cache != null) {
+            Set<InteractorLink> links = cache.getElements(link.getNodeFrom());
+            if (links != null) links.remove(link);
+        }
     }
 
     public List<InteractorLink> getInteractorLinks(String resource, Node node) {
