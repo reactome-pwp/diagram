@@ -34,7 +34,7 @@ import java.util.List;
 public class InteractorsTabPanel extends Composite implements ClickHandler, ValueChangeHandler, InteractorsResourceLoader.Handler,
         InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler,
         DiagramLoadedHandler, DiagramRequestedHandler {
-    private static int RESOURCES_REFRESH = 600000; // Update every 10 minutes
+    private static int RESOURCES_REFRESH = 5000; // Update every 10 minutes
 
     private EventBus eventBus;
     private DiagramContext context;
@@ -163,11 +163,9 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     @Override
     public void onValueChange(ValueChangeEvent event) {
         RadioButton selectedBtn = (RadioButton) event.getSource();
-        // Keep current selection
-        selectedResource = staticResourceBtn.getFormValue();
-        String value = selectedBtn.getFormValue();
+        selectedResource = selectedBtn.getFormValue(); // Keep current selection
         // Fire event for a Resource selection
-        eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(value), this);
+        eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(selectedResource), this);
     }
 
     private void initialiseHandlers() {
@@ -202,7 +200,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                 }
 
                 // Restore previous selection
-                if (radioBtn.getText().equals(selectedResource)) {
+                if (radioBtn.getFormValue().equals(selectedResource)) {
                     radioBtn.setValue(true);
                 }
                 liveResourcesFP.add(radioBtn);
