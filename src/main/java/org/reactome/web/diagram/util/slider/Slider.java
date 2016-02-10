@@ -113,6 +113,10 @@ public class Slider extends Composite implements HasHandlers, MouseMoveHandler, 
         checkPinMoved();
     }
 
+    public void setTooltip(String msg) {
+        this.canvas.setTitle(msg);
+    }
+
     private void checkPinMoved(){
         double percentage = getPercentageFromPinPosition();
         if(this.percentage!=percentage){
