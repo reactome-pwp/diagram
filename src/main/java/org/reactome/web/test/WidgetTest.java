@@ -37,7 +37,7 @@ public class WidgetTest implements EntryPoint {
                     @Override
                     public void execute() {
                         diagram.loadDiagram("R-HSA-5205647");
-//                        diagram.loadDiagram("R-HSA-1181150");
+//                        diagram.loadDiagram("R-HSA-5205647");
 //                        diagram.loadDiagram("R-HSA-5693567"); //Big one with plenty of overlap
                     }
                 });

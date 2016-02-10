@@ -12,6 +12,7 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.controls.settings.common.InfoLabel;
 import org.reactome.web.diagram.data.DiagramContext;
@@ -24,6 +25,7 @@ import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.interactors.InteractorsExporter;
+import org.reactome.web.diagram.util.interactors.ResourceNameFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,9 +56,9 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         Label lb = new Label("Existing resources:");
         lb.setStyleName(RESOURCES.getCSS().interactorLabel());
 
-        staticResourceBtn = new RadioButton("Resources", "Static (IntAct)");
-        staticResourceBtn.setFormValue("static"); //use FormValue to keep the value
-        staticResourceBtn.setTitle("Select IntAct as a resource");
+        staticResourceBtn = new RadioButton("Resources", DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME);
+        staticResourceBtn.setFormValue(DiagramFactory.INTERACTORS_INITIAL_RESOURCE); //use FormValue to keep the value
+        staticResourceBtn.setTitle("Select " + DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME + " as a resource");
         staticResourceBtn.setStyleName(RESOURCES.getCSS().interactorResourceBtn());
         staticResourceBtn.setValue(true);
         staticResourceBtn.addValueChangeHandler(this);
@@ -83,9 +85,10 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         main.add(loadingPanel);
         main.add(getOptionsPanel());
         if (InteractorsExporter.fileSaveScriptAvailable()) {
-            downloadBtn = new IconButton(formatName(selectedResource), RESOURCES.downloadNormal());
+            String resourceName = ResourceNameFormatter.format(selectedResource);
+            downloadBtn = new IconButton(resourceName, RESOURCES.downloadNormal());
             downloadBtn.addClickHandler(this);
-            downloadBtn.setTitle("Click to download all diagram interactors from " + formatName(selectedResource));
+            downloadBtn.setTitle("Click to download all diagram interactors from " + resourceName);
             downloadBtn.setStyleName(RESOURCES.getCSS().downloadBtn());
             main.add(downloadBtn);
         } else {
@@ -109,7 +112,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         if (context != null) {
             MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(selectedResource);
             if(interactors != null && !interactors.isEmpty()) {
-                String filename = context.getContent().getStableId() + "_Interactors_" + formatName(selectedResource)+ ".tsv";
+                String filename = context.getContent().getStableId() + "_Interactors_" + ResourceNameFormatter.format(selectedResource)+ ".tsv";
                 InteractorsExporter.exportInteractors(filename, interactors);
             }
         }
@@ -150,8 +153,9 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         if(context!=null) {
-            downloadBtn.setText(formatName(event.getResource()));
-            downloadBtn.setTitle("Click to download all diagram interactors from " + formatName(event.getResource()));
+            String resourceName = ResourceNameFormatter.format(event.getResource());
+            downloadBtn.setText(resourceName);
+            downloadBtn.setTitle("Click to download all diagram interactors from " + resourceName);
             if (context.getInteractors().isResourceLoaded(event.getResource())) {
                 downloadBtn.setVisible(true);
             } else {
@@ -186,7 +190,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         if (!resourcesList.isEmpty()) {
             liveResourcesFP.clear();
             for (RawResource resource : resourcesList) {
-                RadioButton radioBtn = new RadioButton("Resources", formatName(resource.getName()));
+                RadioButton radioBtn = new RadioButton("Resources", ResourceNameFormatter.format(resource.getName()));
                 radioBtn.setFormValue(resource.getName()); //use FormValue to keep the value
                 radioBtn.addValueChangeHandler(this);
                 radioBtn.setStyleName(RESOURCES.getCSS().interactorResourceListBtn());
@@ -208,20 +212,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         }
     }
 
-    /**
-     * Changes the name by capitalizing the first character
-     * only in case all letters are lowercase
-     */
-    private String formatName(String originalName) {
-        String output;
-        if (originalName.equals(originalName.toLowerCase())) {
-            output = originalName.substring(0, 1).toUpperCase() + originalName.substring(1);
-        } else {
-            output = originalName;
-        }
-        return output;
-    }
-
     private Widget getOptionsPanel() {
         liveResourcesFP = new FlowPanel();
         liveResourcesFP.setStyleName(RESOURCES.getCSS().liveResourcesInnerPanel());
@@ -235,7 +225,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     private void loadLiveResources() {
         showLoading(true);
         InteractorsResourceLoader.loadResources(InteractorsTabPanel.this);
-
     }
 
     private void showLoading(boolean loading) {

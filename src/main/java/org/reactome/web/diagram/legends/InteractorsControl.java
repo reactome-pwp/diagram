@@ -7,6 +7,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.InteractorsContent;
@@ -16,6 +17,7 @@ import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.interactors.InteractorsExporter;
+import org.reactome.web.diagram.util.interactors.ResourceNameFormatter;
 import org.reactome.web.diagram.util.slider.Slider;
 import org.reactome.web.diagram.util.slider.SliderValueChangedEvent;
 import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
@@ -28,7 +30,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler, InteractorsLayoutUpdatedHandler {
 
     @SuppressWarnings("FieldCanBeLocal")
-    private static String MSG_LOADING = "Loading interactors for ";
+    private static String MSG_LOADING = "Loading interactors from ";
     @SuppressWarnings("FieldCanBeLocal")
     private static String MSG_LOADING_PSICQUIC = "Loading PSICQUIC interactors from ";
     @SuppressWarnings("FieldCanBeLocal")
@@ -71,7 +73,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             if (context != null) {
                 MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(currentResource);
                 if(interactors != null && !interactors.isEmpty()) {
-                    String filename = context.getContent().getStableId() + "_Interactors_" + formatName(currentResource)+ ".tsv";
+                    String filename = context.getContent().getStableId() + "_Interactors_" + ResourceNameFormatter.format(currentResource)+ ".tsv";
                     InteractorsExporter.exportInteractors(filename, interactors);
                 }
             }
@@ -148,10 +150,10 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
             this.removeStyleName(RESOURCES.getCSS().interactorsControlWarning());
             setVisible(true);
-            setMessage(currentResource);
+            setMessage(ResourceNameFormatter.format(currentResource));
             controlsFP.setVisible(true);
             slider.setValue(InteractorsContent.getInteractorsThreshold(currentResource));
-            downloadBtn.setTitle(MSG_DOWNLOAD_TOOLTIP + formatName(currentResource));
+            downloadBtn.setTitle(MSG_DOWNLOAD_TOOLTIP + ResourceNameFormatter.format(currentResource));
         }
     }
 
@@ -168,6 +170,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         this.closeBtn = new PwpButton("Close and clear interactors", RESOURCES.getCSS().close(), this);
 
         this.slider = new Slider(100, 24, 0.45, 1, 0.45, true);
+        this.slider.setTooltip("Use this slider to set the confidence threshold");
         this.slider.addSliderValueChangedHandler(this);
         this.slider.setStyleName(RESOURCES.getCSS().interactorsControlSlider());
 
@@ -200,10 +203,10 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         controlsFP.setVisible(!visible);
         if (visible) {
             String msg;
-            if(resource.equals("static")) {
-                msg = MSG_LOADING + "Static (IntAct)";
+            if(resource.equals(DiagramFactory.INTERACTORS_INITIAL_RESOURCE)) {
+                msg = MSG_LOADING + ResourceNameFormatter.format(DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME);
             } else {
-                msg = MSG_LOADING_PSICQUIC + formatName(resource);
+                msg = MSG_LOADING_PSICQUIC + ResourceNameFormatter.format(resource);
             }
             message.setText(msg + "...");
         }
@@ -231,26 +234,12 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             this.addStyleName(RESOURCES.getCSS().interactorsControlWarning());
             this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
         }
-        setMessage(MSG_NO_INTERACTORS_FOUND+ currentResource);
+        setMessage(MSG_NO_INTERACTORS_FOUND + ResourceNameFormatter.format(currentResource));
         controlsFP.setVisible(!visible);
     }
 
     private void setMessage(String msg) {
         loadingIcon.setVisible(false);
-        message.setText(msg.equals("static") ? "Static (IntAct)" : formatName(msg));
-    }
-
-    /**
-     *  Changes the name by capitalizing the first character
-     *  only in case all letters are lowercase
-     */
-    private String formatName(String originalName) {
-        String output;
-        if(originalName.equals(originalName.toLowerCase())){
-            output = originalName.substring(0, 1).toUpperCase() + originalName.substring(1);
-        } else {
-            output = originalName;
-        }
-        return output;
+        message.setText(msg);
     }
 }

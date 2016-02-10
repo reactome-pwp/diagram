@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
 import org.reactome.web.diagram.util.MapSet;
+import org.reactome.web.diagram.util.interactors.ResourceNameFormatter;
 
 import java.util.Set;
 
@@ -34,7 +35,7 @@ public class InteractorInfoPanel extends Composite {
             this.add(new Label("Accession: " + interactor.getAccession()));
         }
         this.add(new Label("Type: Interactor"));
-        this.add(new Label("Resource: " + (interactor.getResource().equals("static") ? "Static (IntAct)" : formatName(interactor.getResource()))));
+        this.add(new Label("Resource: " + ResourceNameFormatter.format(interactor.getResource())));
         MapSet<String, GraphObject> interactsWith = interactor.getInteractsWith();
         for(String interactionId:interactsWith.keySet()) {
             Set<GraphObject> interactors = interactsWith.getElements(interactionId);
@@ -64,19 +65,5 @@ public class InteractorInfoPanel extends Composite {
 
     public void add(IsWidget widget){
         this.mainPanel.add(widget);
-    }
-
-    /**
-     *  Changes the name by capitalizing the first character
-     *  only in case all letters are lowercase
-     */
-    private String formatName(String originalName) {
-        String output;
-        if(originalName.equals(originalName.toLowerCase())){
-            output = originalName.substring(0, 1).toUpperCase() + originalName.substring(1);
-        } else {
-            output = originalName;
-        }
-        return output;
     }
 }

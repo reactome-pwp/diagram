@@ -8,6 +8,7 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public class InteractorEntityRenderer050 extends InteractorEntityAbstractRenderer {
     @Override
     public void draw(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
@@ -23,6 +24,15 @@ public class InteractorEntityRenderer050 extends InteractorEntityAbstractRendere
         ctx.save();
         ctx.setGlobalAlpha((factor - 0.5) * alpha * 2);
         super.drawText(ctx, item, factor, offset);
+        ctx.restore();
+    }
+
+    @Override
+    public void highlight(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
+        double alpha = ctx.getGlobalAlpha();
+        ctx.save();
+        ctx.setGlobalAlpha((factor - 0.5) * alpha * 2);
+        super.highlight(ctx, item, factor, offset);
         ctx.restore();
     }
 }
