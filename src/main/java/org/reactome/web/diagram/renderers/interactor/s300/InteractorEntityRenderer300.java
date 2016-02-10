@@ -81,7 +81,7 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
         ctx.save();
         String displayName = node.getDisplayName();
         InteractorBox box = node.transform(factor, offset);
-        double delta = box.getHeight() * 0.65; // Shrink the image in order to make it fit into the bubble
+        double delta = box.getHeight() * 0.7; // Shrink the image in order to make it fit into the bubble
         if (node.getImage() != null) {
             Coordinate centre = box.getCentre();
             // Center the image vertically but keep it more to the left half of the bubble
