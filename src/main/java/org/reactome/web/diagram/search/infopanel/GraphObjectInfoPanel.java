@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.loader.LoaderManager;
+import org.reactome.web.diagram.util.interactors.ResourceNameFormatter;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -123,7 +124,8 @@ public class GraphObjectInfoPanel extends Composite {
 
         // Include information about the interactors of this entity
         if(context!=null && (graphObject instanceof GraphEntityWithAccessionedSequence || graphObject instanceof GraphSimpleEntity) ){
-            this.add(new InteractorsListPanel("According to " + LoaderManager.INTERACTORS_RESOURCE + " it interacts with:", context, (GraphPhysicalEntity) graphObject, eventBus));
+            String resource = ResourceNameFormatter.format(LoaderManager.INTERACTORS_RESOURCE);
+            this.add(new InteractorsListPanel("According to " + resource + ", it interacts with:", context, (GraphPhysicalEntity) graphObject, eventBus));
         }
     }
 
