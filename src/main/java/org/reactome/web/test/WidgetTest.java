@@ -36,7 +36,7 @@ public class WidgetTest implements EntryPoint {
                 Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                     @Override
                     public void execute() {
-                        diagram.loadDiagram("R-HSA-5210891");
+                        diagram.loadDiagram("R-HSA-5205647");
 //                        diagram.loadDiagram("R-HSA-5205647");
 //                        diagram.loadDiagram("R-HSA-5693567"); //Big one with plenty of overlap
                     }
