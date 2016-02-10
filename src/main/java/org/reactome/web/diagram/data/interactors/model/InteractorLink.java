@@ -3,11 +3,9 @@ package org.reactome.web.diagram.data.interactors.model;
 import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
-import org.reactome.web.diagram.data.layout.Segment;
 import org.reactome.web.diagram.data.layout.category.SegmentCategory;
 import org.reactome.web.diagram.data.layout.impl.SegmentFactory;
 import org.reactome.web.diagram.data.loader.LoaderManager;
-import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -47,15 +45,7 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
         return score;
     }
 
-    public void setBoundaries(Coordinate to) {
-        Segment link = SegmentFactory.get(InteractorsLayout.getCentre(from.getProp()), to);
-        fromPoint = InteractorsLayout.getSegmentsIntersectionOut(link, from);
-
-        minX = Math.min(fromPoint.getX(), to.getX());
-        maxX = Math.max(fromPoint.getX(), to.getX());
-        minY = Math.min(fromPoint.getY(), to.getY());
-        maxY = Math.max(fromPoint.getY(), to.getY());
-    }
+    public abstract void setBoundaries();
 
     @Override
     public boolean isHovered(Coordinate pos) {

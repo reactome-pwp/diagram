@@ -132,7 +132,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
         minY += deltaY;
         maxY += deltaY;
         for (InteractorLink interactorLink : links) {
-            interactorLink.setBoundaries(getCentre());
+            interactorLink.setBoundaries();
         }
     }
 

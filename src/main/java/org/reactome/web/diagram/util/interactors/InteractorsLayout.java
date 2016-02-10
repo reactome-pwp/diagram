@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.util.interactors;
 
+import org.reactome.web.diagram.data.interactors.common.InteractorBox;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
@@ -63,6 +64,15 @@ public class InteractorsLayout {
         );
     }
 
+    public static Coordinate getSegmentsIntersection(Segment interactor, InteractorEntity entity){
+        Coordinate point = interactor.getTo();
+        for (Segment segment : getOuterSegments(entity)) {
+            Coordinate aux = getSegmentsIntersection(segment, interactor);
+            if (aux != null) return aux;
+        }
+        return point;
+    }
+
     public static Coordinate getSegmentsIntersectionOut(Segment interactor, Node node) {
         return getSegmentsIntersection(interactor, node, true);
     }
@@ -90,20 +100,8 @@ public class InteractorsLayout {
     }
 
     private static Coordinate getSegmentIntersectionWithNode(Segment interactor, Node node) {
-        NodeProperties prop = node.getProp();
-        Coordinate a = CoordinateFactory.get(prop.getX(), prop.getY());
-        Coordinate b = CoordinateFactory.get(prop.getX() + prop.getWidth(), prop.getY());
-        Coordinate c = CoordinateFactory.get(prop.getX() + prop.getWidth(), prop.getY() + prop.getHeight());
-        Coordinate d = CoordinateFactory.get(prop.getX(), prop.getY() + prop.getHeight());
-
-        List<Segment> segments = new LinkedList<>();
-        segments.add(SegmentFactory.get(a, b));
-        segments.add(SegmentFactory.get(b, c));
-        segments.add(SegmentFactory.get(c, d));
-        segments.add(SegmentFactory.get(d, a));
-
         Coordinate point = interactor.getTo();
-        for (Segment segment : segments) {
+        for (Segment segment : getOuterSegments(node)) {
             Coordinate aux = getSegmentsIntersection(segment, interactor);
             if (aux != null) return aux;
         }
@@ -192,5 +190,57 @@ public class InteractorsLayout {
         if (isPointInSegment(p1, s)) rtn.add(p1);
         if (isPointInSegment(p2, s)) rtn.add(p2);
         return rtn;
+    }
+
+    private static List<Segment> getOuterSegments(Node node){
+        NodeProperties prop = node.getProp();
+        Coordinate a = CoordinateFactory.get(prop.getX(), prop.getY());
+        Coordinate b = CoordinateFactory.get(prop.getX() + prop.getWidth(), prop.getY());
+        Coordinate c = CoordinateFactory.get(prop.getX() + prop.getWidth(), prop.getY() + prop.getHeight());
+        Coordinate d = CoordinateFactory.get(prop.getX(), prop.getY() + prop.getHeight());
+
+        List<Segment> segments = new LinkedList<>();
+        segments.add(SegmentFactory.get(a, b));
+        segments.add(SegmentFactory.get(b, c));
+        segments.add(SegmentFactory.get(c, d));
+        segments.add(SegmentFactory.get(d, a));
+        return segments;
+    }
+
+    private static List<Segment> getOuterSegments(InteractorEntity entity){
+        List<Segment> segments = new LinkedList<>();
+
+        if(entity.isChemical()){
+            InteractorBox box = new InteractorBox(entity);
+            Coordinate a = CoordinateFactory.get(box.getMinX() + box.getWidth() * 0.4 , entity.getMinY());
+            Coordinate b = CoordinateFactory.get(box.getMinX() + box.getWidth() * 0.6, entity.getMinY());
+            Coordinate c = CoordinateFactory.get(box.getMaxX(), box.getMinY() + box.getHeight() * 0.35);
+            Coordinate d = CoordinateFactory.get(box.getMaxX(), box.getMinY() + box.getHeight() * 0.55);
+            Coordinate e = CoordinateFactory.get(box.getMinX() + box.getWidth() * 0.6, entity.getMaxY());
+            Coordinate f = CoordinateFactory.get(box.getMinX() + box.getWidth() * 0.4, entity.getMaxY());
+            Coordinate g = CoordinateFactory.get(box.getMinX(), box.getMinY() + box.getHeight() * 0.55);
+            Coordinate h = CoordinateFactory.get(box.getMinX(), box.getMinY() + box.getHeight() * 0.35);
+
+            segments.add(SegmentFactory.get(a, b));
+            segments.add(SegmentFactory.get(b, c));
+            segments.add(SegmentFactory.get(c, d));
+            segments.add(SegmentFactory.get(d, e));
+            segments.add(SegmentFactory.get(e, f));
+            segments.add(SegmentFactory.get(f, g));
+            segments.add(SegmentFactory.get(g, h));
+            segments.add(SegmentFactory.get(h, a));
+        } else {
+            Coordinate a = CoordinateFactory.get(entity.getMinX(), entity.getMinY());
+            Coordinate b = CoordinateFactory.get(entity.getMaxX(), entity.getMinY());
+            Coordinate c = CoordinateFactory.get(entity.getMaxX(), entity.getMaxY());
+            Coordinate d = CoordinateFactory.get(entity.getMinX(), entity.getMaxY());
+
+            segments.add(SegmentFactory.get(a, b));
+            segments.add(SegmentFactory.get(b, c));
+            segments.add(SegmentFactory.get(c, d));
+            segments.add(SegmentFactory.get(d, a));
+        }
+
+        return segments;
     }
 }

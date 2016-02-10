@@ -2,6 +2,9 @@ package org.reactome.web.diagram.data.interactors.model;
 
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.Segment;
+import org.reactome.web.diagram.data.layout.impl.SegmentFactory;
+import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -9,11 +12,12 @@ import org.reactome.web.diagram.data.layout.Node;
 public class DynamicLink extends InteractorLink {
     
     private InteractorEntity to;
+    private Coordinate toPoint;
 
     public DynamicLink(Node from, InteractorEntity to, String id, double score) {
         super(from, id, score);
         this.to = to;
-        setBoundaries(to.getCentre());
+        setBoundaries();
     }
 
     public String getAccession(){
@@ -22,12 +26,25 @@ public class DynamicLink extends InteractorLink {
 
     @Override
     public Coordinate getCoordinateTo() {
-        return to.getCentre(); //This needs to be calculated every time since InteractorEntity is Draggable
+        return toPoint;
     }
 
     @Override
     public String getToAccession() {
         return to.getAccession();
+    }
+
+    @Override
+    public void setBoundaries() {
+        Segment link = SegmentFactory.get(InteractorsLayout.getCentre(from.getProp()), to.getCentre());
+
+        fromPoint = InteractorsLayout.getSegmentsIntersectionOut(link, from);
+        toPoint = InteractorsLayout.getSegmentsIntersection(link, this.to);
+
+        minX = Math.min(fromPoint.getX(), toPoint.getX());
+        maxX = Math.max(fromPoint.getX(), toPoint.getX());
+        minY = Math.min(fromPoint.getY(), toPoint.getY());
+        maxY = Math.max(fromPoint.getY(), toPoint.getY());
     }
 
     public InteractorEntity getInteractorEntity(){

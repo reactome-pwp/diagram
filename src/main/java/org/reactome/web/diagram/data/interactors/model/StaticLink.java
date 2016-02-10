@@ -13,13 +13,12 @@ import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 public class StaticLink extends InteractorLink {
 
     private Node to;
-    private Coordinate toCentre;
+    private Coordinate toPoint;
 
     public StaticLink(Node from, Node to, String id, double score) {
         super(from, id, score);
         this.to = to;
-        toCentre = InteractorsLayout.getCentre(to.getProp());
-        setBoundaries(toCentre);
+        setBoundaries();
     }
 
     public String getAccession(){
@@ -29,7 +28,7 @@ public class StaticLink extends InteractorLink {
 
     @Override
     public Coordinate getCoordinateTo() {
-        return toCentre;
+        return toPoint;
     }
 
     @Override
@@ -43,15 +42,16 @@ public class StaticLink extends InteractorLink {
     }
 
     @Override
-    public void setBoundaries(Coordinate to) {
-        Segment link = SegmentFactory.get(InteractorsLayout.getCentre(from.getProp()), to);
+    public void setBoundaries() {
+        toPoint = InteractorsLayout.getCentre(to.getProp());
+        Segment link = SegmentFactory.get(InteractorsLayout.getCentre(from.getProp()), toPoint);
         fromPoint = InteractorsLayout.getSegmentsIntersectionOut(link, from);
-        toCentre = InteractorsLayout.getSegmentsIntersectionIn(link, this.to);
+        toPoint = InteractorsLayout.getSegmentsIntersectionIn(link, this.to);
 
-        minX = Math.min(fromPoint.getX(), toCentre.getX());
-        maxX = Math.max(fromPoint.getX(), toCentre.getX());
-        minY = Math.min(fromPoint.getY(), toCentre.getY());
-        maxY = Math.max(fromPoint.getY(), toCentre.getY());
+        minX = Math.min(fromPoint.getX(), toPoint.getX());
+        maxX = Math.max(fromPoint.getX(), toPoint.getX());
+        minY = Math.min(fromPoint.getY(), toPoint.getY());
+        maxY = Math.max(fromPoint.getY(), toPoint.getY());
     }
 
     @Override

@@ -22,7 +22,7 @@ public class LoopLink extends InteractorLink {
         super(node, id, score);
         this.id = id;
         this.score = score;
-        setBoundaries(null);
+        setBoundaries();
     }
 
     public Coordinate getCentre() {
@@ -59,7 +59,7 @@ public class LoopLink extends InteractorLink {
     }
 
     @Override
-    public void setBoundaries(Coordinate to) {
+    public void setBoundaries() {
         NodeProperties prop = from.getProp();
         centre = CoordinateFactory.get(prop.getX(), prop.getY() + prop.getHeight());
         minX = centre.getX() - RADIUS;
