@@ -5,11 +5,16 @@ import org.reactome.web.diagram.data.graph.raw.EntityNode;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
 import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractorEntity;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.util.Console;
+import org.reactome.web.diagram.util.MapSet;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
@@ -17,16 +22,14 @@ import java.util.*;
  */
 public abstract class DiagramContentFactory {
 
-    public static DiagramContent getDiagramContent(Diagram diagram ) {
+    public static DiagramContent getDiagramContent(Diagram diagram) {
         DiagramContent content = new DiagramContent();
 
         //Read and set general pathway information
-        content.nextId = diagram.getNextId();
         content.stableId = diagram.getStableId();
         content.displayName = diagram.getDisplayName();
         content.dbId = diagram.getDbId();
         content.forNormalDraw = diagram.getForNormalDraw();
-        content.hideCompartmentInName = diagram.getHideCompartmentInName();
         content.isDisease = diagram.getIsDisease();
 
         content.cache(diagram.getNodes());
@@ -36,33 +39,15 @@ public abstract class DiagramContentFactory {
         content.cache(diagram.getCompartments());
         content.cache(diagram.getShadows());
 
-        //Get normal, diseased components etc.
-//        content.normalComponents = getDiagramObjectSet(content.diagramObjectMap, diagram.getNormalComponents());
-        content.diseaseComponents = getDiagramObjectSet(content.diagramObjectMap, diagram.getDiseaseComponents());
-        content.lofNodes = getDiagramObjectSet(content.diagramObjectMap, diagram.getLofNodes());
-
         content.minX = diagram.getMinX().doubleValue();
         content.maxX = diagram.getMaxX().doubleValue();
         content.minY = diagram.getMinY().doubleValue();
         content.maxY = diagram.getMaxY().doubleValue();
 
-        return content;
+        return content.init();
     }
 
-    private static Set<DiagramObject> getDiagramObjectSet(Map<Long, DiagramObject> map, Set<Long> list){
-        Set<DiagramObject> rtn = new HashSet<>();
-        if(list!=null) {
-            for (Long id : list) {
-                DiagramObject diagramObject = map.get(id);
-                if (diagramObject != null) {
-                    rtn.add(diagramObject);
-                }
-            }
-        }
-        return rtn;
-    }
-
-    public static void fillGraphContent(DiagramContent content, Graph graph){
+    public static void fillGraphContent(DiagramContent content, Graph graph) {
         GraphObjectFactory.content = content;
 
         for (EntityNode node : graph.getNodes()) {
@@ -74,7 +59,7 @@ public abstract class DiagramContentFactory {
 
         for (EntityNode node : graph.getNodes()) {
             GraphObject obj = content.getDatabaseObject(node.getDbId());
-            if(obj instanceof GraphPhysicalEntity) {
+            if (obj instanceof GraphPhysicalEntity) {
                 GraphPhysicalEntity pe = (GraphPhysicalEntity) obj;
                 for (DiagramObject diagramObject : getDiagramObjects(node.getDiagramIds())) {
                     pe.addDiagramObject(diagramObject);
@@ -86,7 +71,7 @@ public abstract class DiagramContentFactory {
 
                 List<GraphPhysicalEntity> children = getDatabaseObjects(node.getChildren());
                 pe.addChildren(children);
-            }else if(obj instanceof GraphPathway){
+            } else if (obj instanceof GraphPathway) {
                 GraphPathway pathway = (GraphPathway) obj;
                 for (DiagramObject diagramObject : getDiagramObjects(node.getDiagramIds())) {
                     pathway.addDiagramObject(diagramObject);
@@ -130,7 +115,7 @@ public abstract class DiagramContentFactory {
             event.setFollowingEvents(following);
         }
 
-        if(graph.getSubpathways()!=null) {
+        if (graph.getSubpathways() != null) {
             for (SubpathwayNode subpathway : graph.getSubpathways()) {
                 GraphSubpathway sp = GraphObjectFactory.getOrCreateDatabaseObject(subpathway);
                 for (Long event : subpathway.getEvents()) {
@@ -140,9 +125,9 @@ public abstract class DiagramContentFactory {
         }
     }
 
-    private static List<DiagramObject> getDiagramObjects(List<Long> ids){
+    private static List<DiagramObject> getDiagramObjects(List<Long> ids) {
         List<DiagramObject> rtn = new ArrayList<>();
-        if(ids!=null){
+        if (ids != null) {
             for (Long id : ids) {
                 rtn.add(GraphObjectFactory.content.getDiagramObject(id));
             }
@@ -150,9 +135,9 @@ public abstract class DiagramContentFactory {
         return rtn;
     }
 
-    private static  <T extends GraphObject> List<T> getDatabaseObjects(List<Long> dbIds){
+    private static <T extends GraphObject> List<T> getDatabaseObjects(List<Long> dbIds) {
         List<T> rtn = new ArrayList<>();
-        if(dbIds!=null) {
+        if (dbIds != null) {
             for (Long dbId : dbIds) {
                 //noinspection unchecked
                 T t = (T) GraphObjectFactory.content.getDatabaseObject(dbId);
@@ -164,5 +149,21 @@ public abstract class DiagramContentFactory {
             }
         }
         return rtn;
+    }
+
+    public static void fillInteractorsContent(DiagramContext context, RawInteractors rawInteractors) {
+        DiagramContent content = context.getContent();
+        InteractorsContent interactors = context.getInteractors();
+        MapSet<String, GraphObject> identifierMap = content.getIdentifierMap();
+        String resource = rawInteractors.getResource();
+        //The next line creates an empty entry in the cache
+        interactors.getOrCreateRawInteractorCachedResource(resource);
+        for (RawInteractorEntity interactorEntity : rawInteractors.getEntities()) {
+            String acc = interactorEntity.getAcc();
+            interactors.cacheInteractors(resource, acc, interactorEntity.getCount(), identifierMap);
+            for (RawInteractor rawInteractor : interactorEntity.getInteractors()) {
+                interactors.cache(resource, acc, rawInteractor);
+            }
+        }
     }
 }

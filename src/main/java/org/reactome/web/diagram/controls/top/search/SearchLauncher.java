@@ -12,14 +12,9 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.reactome.web.diagram.common.PwpButton;
-import org.reactome.web.diagram.data.DiagramContent;
-import org.reactome.web.diagram.data.graph.model.GraphObject;
-import org.reactome.web.diagram.events.DiagramLoadedEvent;
-import org.reactome.web.diagram.events.DiagramRequestedEvent;
-import org.reactome.web.diagram.events.LayoutLoadedEvent;
-import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
-import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
-import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
+import org.reactome.web.diagram.events.*;
+import org.reactome.web.diagram.handlers.*;
+import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.events.PanelCollapsedEvent;
 import org.reactome.web.diagram.search.events.PanelExpandedEvent;
 import org.reactome.web.diagram.search.handlers.PanelCollapsedHandler;
@@ -35,13 +30,14 @@ import java.util.List;
  */
 public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         DiagramLoadedHandler, DiagramRequestedHandler, LayoutLoadedHandler, SearchBoxUpdatedHandler,
-        SearchBoxArrowKeysHandler {
+        InteractorsResourceChangedHandler, InteractorsLoadedHandler,
+        SearchBoxArrowKeysHandler  {
 
     @SuppressWarnings("FieldCanBeLocal")
     private static String OPENING_TEXT = "Search for any diagram term ...";
 
     private EventBus eventBus;
-    private SuggestionsProvider<GraphObject> suggestionsProvider;
+    private SuggestionsProvider<SearchResultObject> suggestionsProvider;
 
     private SearchBox input = null;
     private PwpButton searchBtn = null;
@@ -120,21 +116,27 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     @Override
     public void onDiagramLoaded(DiagramLoadedEvent event) {
         this.searchBtn.setEnabled(true);
-        DiagramContent content = event.getContext().getContent();
-        this.suggestionsProvider = new SuggestionsProviderImpl(content);
+        this.suggestionsProvider = new SuggestionsProviderImpl(event.getContext());
     }
 
     @Override
     public void onSearchUpdated(SearchBoxUpdatedEvent event) {
-        if(suggestionsProvider!=null) {
-            List<GraphObject> suggestions = suggestionsProvider.getSuggestions(input.getText().trim());
-            fireEvent(new SearchPerformedEvent(suggestions));
-        }
+        performSearch();
     }
 
     @Override
     public void onLayoutLoaded(LayoutLoadedEvent event) {
         this.searchBtn.setEnabled(false);
+    }
+
+    @Override
+    public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
+        performSearch();
+    }
+
+    @Override
+    public void onInteractorsLoaded(InteractorsLoadedEvent event) {
+        performSearch();
     }
 
     public void setFocus(boolean focused){
@@ -159,6 +161,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         focusTimer.schedule(300);
     }
 
+
     private void initHandlers(){
         this.input.addSearchBoxUpdatedHandler(this);
         this.input.addSearchBoxArrowKeysHandler(this);
@@ -166,14 +169,24 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
         eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
     }
 
+    private void performSearch() {
+        if(suggestionsProvider!=null) {
+            String term = input.getText().trim();
+            List<SearchResultObject> suggestions = suggestionsProvider.getSuggestions(term);
+            fireEvent(new SearchPerformedEvent(term, suggestions));
+        }
+    }
 
     public static SearchLauncherResources RESOURCES;
     static {
         RESOURCES = GWT.create(SearchLauncherResources.class);
         RESOURCES.getCSS().ensureInjected();
     }
+
 
     /**
      * A ClientBundle of resources used by this widget.

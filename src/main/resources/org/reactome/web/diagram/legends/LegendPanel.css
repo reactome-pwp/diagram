@@ -2,7 +2,7 @@
     background-color: rgba(240, 240, 240, 0.9);
     border: 1px solid lightgray;
     border-radius: 15px;
-    position: absolute;
+    position: relative;
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
@@ -11,7 +11,8 @@
 
 .analysisControl{
     border-radius: 5px;
-    bottom: 10px;
+    margin-bottom: 10px;
+    /*bottom: 10px;*/
     height: 28px;
 
     /* Used to animate the positioning of the flaggedItems panel */
@@ -189,14 +190,12 @@
 }
 
 .expressionLegend {
-    bottom: 30%;
-    right: 10px;
     width: 50px;
-    /*centers in the middle*/
     height: 280px;
-    margin-top: -125px; /* height and margin-top are related, please change both if needed */
-    top: 50%;
+    top: 10px;     /*centers in the middle*/
     overflow: visible !important;
+    float: left;
+    margin-right: 10px;
 }
 
 .expressionLegendHelp {
@@ -271,4 +270,83 @@
 
 .flaggedItemsControlMovedUp {
     bottom: 45px;
+}
+
+.interactorsControl {
+    /*centers in the middle*/
+    width: 340px;
+    margin-left:-170px; /* width and margin-left are related, please change both if needed */
+    left:50%;
+}
+
+.interactorsControlError {
+    background-color: rgb(197, 91, 88);
+    border: 1px solid rgb(197, 56, 57);
+    color: white;
+}
+
+.interactorsControlWarning {
+    background-color: rgb(249, 161, 35);
+    border: 1px solid rgb(249, 157, 11);
+    color: white;
+}
+
+.interactorsControlLoadingIcon {
+    float: left;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.interactorsControlMessage {
+    float: left;
+    margin-left: 5px;
+    margin-top: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 272px;
+}
+
+.interactorsControlSlider {
+    float: left;
+    margin-left: 5px;
+    padding-top: 2px;
+}
+
+.interactorsControlControls {
+    float: right;
+    overflow: visible;
+}
+
+@sprite .download {
+    gwt-image:'downloadNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: right;
+    margin: 2px 0 0 10px;
+}
+
+@sprite .download:hover {
+    gwt-image:'downloadHovered';
+}
+
+@sprite .download:active:hover {
+    margin: 3px 7px;
+    gwt-image: 'downloadClicked';
+}
+
+@sprite .download:disabled {
+    margin: 3px 7px;
+    gwt-image: 'downloadDisabled';
+}
+
+.unselectable {
+    -webkit-touch-callout: none; /* Prevents selection */
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

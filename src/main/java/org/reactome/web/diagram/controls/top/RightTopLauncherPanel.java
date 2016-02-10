@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.controls.top.illustrations.DiagramIllustrations;
 import org.reactome.web.diagram.controls.top.key.DiagramKey;
-import org.reactome.web.diagram.controls.top.menu.SettingsMenuPanel;
 import org.reactome.web.diagram.events.CanvasExportRequestedEvent;
 
 
@@ -24,12 +23,10 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
 
     private DiagramIllustrations diagramIllustrations;
     private DiagramKey diagramKey;
-    private SettingsMenuPanel settings;
 
     private PwpButton illustrationsBtn;
     private PwpButton captureBtn;
     private PwpButton diagramKeyBtn;
-    private PwpButton settingBtn;
 
     public RightTopLauncherPanel(EventBus eventBus) {
         this.setStyleName(RESOURCES.getCSS().launcherPanel());
@@ -37,7 +34,6 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
         this.eventBus = eventBus;
         this.diagramIllustrations = new DiagramIllustrations(eventBus);
         this.diagramKey = new DiagramKey(eventBus);
-        this.settings = new SettingsMenuPanel(eventBus);
 
         this.illustrationsBtn = new PwpButton("Show illustrations", RESOURCES.getCSS().illustrations(), this);
         this.add(illustrationsBtn);
@@ -47,9 +43,6 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
 
         this.diagramKeyBtn = new PwpButton("Diagram key", RESOURCES.getCSS().key(), this);
         this.add(this.diagramKeyBtn);
-
-        this.settingBtn = new PwpButton("Settings", RESOURCES.getCSS().settings(), this);
-        this.add(this.settingBtn);
 
         this.setVisible(true);
     }
@@ -65,8 +58,6 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
             } else {
                 this.diagramKey.showRelativeTo(this.diagramKeyBtn);
             }
-        } else if (btn.equals(this.settingBtn)) {
-            this.settings.showRelativeTo(btn);
         } else if (btn.equals(this.illustrationsBtn)) {
             if (this.diagramIllustrations.isShowing()) {
                 this.diagramIllustrations.hide();
@@ -148,7 +139,5 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
         String illustrations();
 
         String key();
-
-        String settings();
     }
 }

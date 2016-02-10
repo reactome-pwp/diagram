@@ -1,0 +1,13 @@
+{
+  "name": "Teal",
+  "chemical": {
+    "fill": "#80CBC4",
+    "stroke": "#616161",
+    "text": "#000000"
+  },
+  "protein": {
+    "fill": "#26A69A",
+    "stroke": "#616161",
+    "text": "#000000"
+  }
+}

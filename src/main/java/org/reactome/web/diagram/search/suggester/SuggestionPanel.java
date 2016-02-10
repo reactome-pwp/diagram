@@ -11,6 +11,7 @@ import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.cellview.client.HasKeyboardPagingPolicy;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -18,6 +19,8 @@ import com.google.gwt.view.client.SingleSelectionModel;
 import org.reactome.web.diagram.controls.top.search.SearchPerformedEvent;
 import org.reactome.web.diagram.controls.top.search.SearchPerformedHandler;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
+import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.events.SuggestionSelectedEvent;
 import org.reactome.web.diagram.search.handlers.SuggestionSelectedHandler;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
@@ -31,9 +34,9 @@ import java.util.List;
  */
 public class SuggestionPanel extends AbstractAccordionPanel implements SearchPerformedHandler, SearchBoxArrowKeysHandler,
         SelectionChangeEvent.Handler{
-    private final SingleSelectionModel<GraphObject> selectionModel;
-    private CellList<GraphObject> suggestions;
-    private ListDataProvider<GraphObject> dataProvider;
+    private final SingleSelectionModel<SearchResultObject> selectionModel;
+    private CellList<SearchResultObject> suggestions;
+    private ListDataProvider<SearchResultObject> dataProvider;
 
     public static SuggestionResources RESOURCES;
 
@@ -45,10 +48,19 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
     /**
      * The key provider that provides the unique ID of a DatabaseObject.
      */
-    public static final ProvidesKey<GraphObject> KEY_PROVIDER = new ProvidesKey<GraphObject>() {
+    public static final ProvidesKey<SearchResultObject> KEY_PROVIDER = new ProvidesKey<SearchResultObject>() {
         @Override
-        public Object getKey(GraphObject item) {
-            return item == null ? null : item.getDbId();
+        public Object getKey(SearchResultObject item) {
+            if(item == null){
+                return null;
+            }else if(item instanceof GraphObject) {
+                GraphObject graphObject = (GraphObject) item;
+                return graphObject.getDbId();
+            } else if( item instanceof InteractorSearchResult) {
+                InteractorSearchResult interactorSearchResult = (InteractorSearchResult) item;
+                return interactorSearchResult.getAccession();
+            }
+            return null;
         }
     };
 
@@ -68,6 +80,9 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
         suggestions.setKeyboardPagingPolicy(HasKeyboardPagingPolicy.KeyboardPagingPolicy.INCREASE_RANGE);
         suggestions.setKeyboardSelectionPolicy(HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.DISABLED);
 
+        dataProvider = new ListDataProvider<>();
+        dataProvider.addDataDisplay(this.suggestions);
+
         this.add(suggestions);
         //Setting the legend style
         setStyleName(RESOURCES.getCSS().suggestionPanel());
@@ -84,7 +99,7 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
     @Override
     public void onArrowKeysPressed(SearchBoxArrowKeysEvent event) {
         if(suggestions.getRowCount()>0){
-            GraphObject current = selectionModel.getSelectedObject();
+            SearchResultObject current = selectionModel.getSelectedObject();
             int currentIndex = current==null?-1:dataProvider.getList().indexOf(current);
             int toIndex = currentIndex;
             if(event.getValue() == KeyCodes.KEY_DOWN) {
@@ -93,7 +108,7 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
                 toIndex = currentIndex - 1 > 0 ? currentIndex - 1 : 0;
             }
             if(toIndex!=-1 && toIndex!=currentIndex) {
-                GraphObject newSelection = dataProvider.getList().get(toIndex);
+                SearchResultObject newSelection = dataProvider.getList().get(toIndex);
                 suggestions.getRowElement(toIndex).scrollIntoView();
                 selectionModel.setSelected(newSelection, true);
             }
@@ -102,12 +117,21 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
 
     @Override
     public void onSearchPerformed(SearchPerformedEvent event) {
-        GraphObject sel = selectionModel.getSelectedObject();
-        List<GraphObject> searchResult = event.getSuggestions();
-        if(!searchResult.isEmpty() && !searchResult.contains(sel)) selectionModel.clear();
+        SearchResultObject sel = selectionModel.getSelectedObject();
+        List<SearchResultObject> searchResult = event.getSuggestions();
+        if(!searchResult.isEmpty() && !searchResult.contains(sel)) {
+            selectionModel.clear();
+        } else if (searchResult.isEmpty() && !event.getTerm().isEmpty()){
+            suggestions.setEmptyListWidget(new HTML("No results found for '" + event.getTerm() +"'"));
+        } else {
+            suggestions.setEmptyListWidget(null);
+        }
 
-        dataProvider = new ListDataProvider<>(searchResult);
-        dataProvider.addDataDisplay(this.suggestions);
+        dataProvider.getList().clear();
+        dataProvider.getList().addAll(searchResult);
+        suggestions.setVisibleRange(0, searchResult.size()); //configure list paging
+        suggestions.setRowCount(searchResult.size());
+
         if (dataProvider.getList().isEmpty()) {
             fireEvent(new SuggestionSelectedEvent(null));
         }else{

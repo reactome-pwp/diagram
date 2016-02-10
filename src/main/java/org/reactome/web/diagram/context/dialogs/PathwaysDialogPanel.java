@@ -119,18 +119,6 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
             eventBus.fireEventFromSource(new DiagramLoadRequestEvent(pathway), this);
         } else {
             Console.error("No diagram for " + pathway.toString(), this);
-//                RESTFulClient.getAncestors(pathway, new AncestorsCreatedHandler() {
-//                    @Override
-//                    public void onAncestorsLoaded(Ancestors ancestors) {
-//                        Pathway aux = ancestors.get(0).getLastPathwayWithDiagram();
-//                        eventBus.fireEventFromSource(new DiagramLoadRequestEvent(aux, pathway), PathwaysDialogPanel.this);
-//                    }
-//
-//                    @Override
-//                    public void onAncestorsError(Throwable exception) {
-//                        Console.error("No pathway with diagram found for " + pathway);
-//                    }
-//                });
         }
     }
 

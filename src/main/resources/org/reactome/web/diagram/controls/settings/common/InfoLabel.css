@@ -1,0 +1,49 @@
+.infoLabel {
+    font-size: medium !important;
+    margin-top: 5px;
+    font-weight: bold;
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    background-color: rgb(30, 148, 208);
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    padding-bottom: 2px;
+    max-height: 23px;
+    overflow: hidden;
+
+    /* Used to animate the width of panel */
+    -webkit-transition: max-height 0.3s ease;
+    -moz-transition: max-height 0.3s ease;
+    -o-transition: max-height 0.3s ease;
+    transition: max-height 0.3s ease;
+}
+
+.infoLabelExpanded {
+    height: auto !important;
+    max-height: 500px;
+}
+
+@sprite .infoLabelBtn {
+    gwt-image: 'infoNormal';
+    background-repeat:no-repeat;
+    border: 0;
+    float: right;
+    margin-top: 5px;
+    margin-right: 8px;
+    outline: none;
+    cursor: pointer;
+}
+
+@sprite .infoLabelBtn:hover {
+    gwt-image: 'infoHovered';
+}
+
+
+.infoText {
+    margin-top: 6px;
+    font-size: small !important;
+    padding: 0 10px 0 10px;
+    height: auto;
+    text-align: justify;
+    font-style: italic;
+}

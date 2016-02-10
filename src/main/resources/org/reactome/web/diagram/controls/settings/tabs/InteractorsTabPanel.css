@@ -1,0 +1,110 @@
+.interactorsPanel {
+    padding: 0 10px 0 10px;
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: medium !important;
+}
+
+.interactorLabel {
+    margin-top: 5px;
+    color: rgb(0, 90, 117);
+}
+
+.interactorResourceBtn {
+    margin-left: 10px;
+    display: block;
+    color:rgb(0, 90, 117);
+}
+
+.interactorResourceBtn label{
+    margin-left: 5px;
+    cursor: pointer;
+    color: white;
+}
+
+.interactorResourceBtn:hover label{
+    margin-left: 5px;
+    cursor: pointer;
+    color: rgb(6, 107, 158);
+}
+
+.liveResourcesOuterPanel {
+    height: 145px;
+    width: 245px;
+    margin-left: 10px;
+    background-color: transparent;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.liveResourcesInnerPanel {
+    color: white;
+    height: auto;
+    width: 244px;
+}
+
+.loadingPanel {
+    margin-left: 13px;
+    color: rgb(6, 107, 158);
+    font-size: small;
+}
+
+.interactorResourceListBtn{
+    display: inline-block;
+    width: 200px;
+}
+
+.interactorResourceListBtn label{
+    margin-left: 5px;
+    cursor: pointer;
+    color: white;
+}
+
+.interactorResourceListBtn:hover label{
+    margin-left: 5px;
+    cursor: pointer;
+    color: rgb(6, 107, 158);
+}
+
+.interactorResourceListBtnDisabled{
+    display: inline-block;
+    width: 200px;
+}
+
+.interactorResourceListBtnDisabled label{
+    margin-left: 5px;
+    color: dimgray;
+}
+
+.downloadBtn {
+    background-color: rgb(30, 148, 208); /*#45b0d8;*/
+    border: none;
+    border-radius: 15px;
+    color: white;
+    margin-top: 5px;
+    /*margin-left: 30px;*/
+    padding: 2px 5px 2px 5px;
+    outline: none;
+    font-size: medium !important;
+}
+
+.downloadBtn span {
+    vertical-align: middle !important;
+    display: inline-block;
+    min-width: 60px;
+    max-width: 160px;
+}
+
+.downloadBtn img {
+    vertical-align: middle !important;
+    padding-right: 3px;
+}
+
+.downloadBtn:hover {
+    background-color: #177dc0;
+    cursor: pointer !important;
+}
+
+.downloadBtn:active:hover {
+    background-color: #07558b;
+    cursor: pointer !important;
+}

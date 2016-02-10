@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.data.layout.impl;
 
+import org.reactome.web.diagram.data.interactors.common.InteractorBox;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.NodeProperties;
 
@@ -21,6 +22,10 @@ public class NodePropertiesFactory implements NodeProperties {
 
     public static NodeProperties get(double x, double y, double width, double height){
         return new NodePropertiesFactory(x, y, width, height);
+    }
+
+    public static NodeProperties get(InteractorBox box){
+        return new NodePropertiesFactory(box.getMinX(), box.getMinY(), box.getWidth(), box.getHeight());
     }
 
     @Override

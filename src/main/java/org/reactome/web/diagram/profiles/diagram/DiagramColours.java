@@ -54,7 +54,7 @@ public class DiagramColours implements DiagramProfileChangedHandler {
     }
 
     @Override
-    public void onProfileChanged(DiagramProfileChangedEvent event) {
+    public void onDiagramProfileChanged(DiagramProfileChangedEvent event) {
         this.setProfile(event.getDiagramProfile());
     }
 
@@ -76,7 +76,8 @@ public class DiagramColours implements DiagramProfileChangedHandler {
     }
 
     public String getSelectedProfileName(){
-        return Cookies.getCookie(PROFILE_COOKIE);
+        String sel = Cookies.getCookie(PROFILE_COOKIE);
+        return sel != null ? sel : ProfileType.getStandard().diagramProfile.getName();
     }
 
     private void initHandlers(){
@@ -87,7 +88,6 @@ public class DiagramColours implements DiagramProfileChangedHandler {
      * To add a profile first please add the ProfileSource interface
      * and then add the corresponding entry in this enumeration.
      */
-    @SuppressWarnings("UnusedDeclaration")
     public enum ProfileType {
         PROFILE_01(ProfileSource.SOURCE.profile01()),
         PROFILE_02(ProfileSource.SOURCE.profile02());

@@ -58,6 +58,7 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
         this.flag = createCanvas(50, 210);
 
         //Setting the legend style
+//        getElement().getStyle().setPosition(com.google.gwt.dom.client.Style.Position.ABSOLUTE);
         addStyleName(RESOURCES.getCSS().expressionLegend());
 
         fillGradient();

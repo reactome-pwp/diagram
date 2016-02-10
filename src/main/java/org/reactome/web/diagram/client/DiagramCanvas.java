@@ -20,6 +20,8 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RequiresResize;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
 import org.reactome.web.diagram.controls.navigation.NavigationControlPanel;
+import org.reactome.web.diagram.controls.settings.HideableContainerPanel;
+import org.reactome.web.diagram.controls.settings.RightContainerPanel;
 import org.reactome.web.diagram.controls.top.LeftTopLauncherPanel;
 import org.reactome.web.diagram.controls.top.RightTopLauncherPanel;
 import org.reactome.web.diagram.data.AnalysisStatus;
@@ -27,37 +29,41 @@ import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
 import org.reactome.web.diagram.events.ExpressionValueHoveredEvent;
 import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
-import org.reactome.web.diagram.legends.EnrichmentControl;
-import org.reactome.web.diagram.legends.ExpressionControl;
-import org.reactome.web.diagram.legends.ExpressionLegend;
-import org.reactome.web.diagram.legends.FlaggedItemsControl;
+import org.reactome.web.diagram.legends.*;
 import org.reactome.web.diagram.messages.AnalysisMessage;
 import org.reactome.web.diagram.messages.ErrorMessage;
 import org.reactome.web.diagram.messages.LoadingMessage;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.profiles.diagram.model.DiagramProfileProperties;
-import org.reactome.web.diagram.renderers.ConnectorRenderer;
-import org.reactome.web.diagram.renderers.Renderer;
-import org.reactome.web.diagram.renderers.RendererManager;
+import org.reactome.web.diagram.profiles.interactors.InteractorColours;
+import org.reactome.web.diagram.profiles.interactors.model.InteractorProfile;
+import org.reactome.web.diagram.profiles.interactors.model.InteractorProfileNode;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.helper.ItemsDistribution;
 import org.reactome.web.diagram.renderers.helper.RenderType;
-import org.reactome.web.diagram.renderers.impl.abs.AttachmentAbstractRenderer;
-import org.reactome.web.diagram.renderers.impl.abs.SummaryItemAbstractRenderer;
+import org.reactome.web.diagram.renderers.interactor.InteractorRenderer;
+import org.reactome.web.diagram.renderers.interactor.InteractorRendererManager;
+import org.reactome.web.diagram.renderers.layout.ConnectorRenderer;
+import org.reactome.web.diagram.renderers.layout.Renderer;
+import org.reactome.web.diagram.renderers.layout.RendererManager;
+import org.reactome.web.diagram.renderers.layout.abs.AttachmentAbstractRenderer;
+import org.reactome.web.diagram.renderers.layout.abs.SummaryItemAbstractRenderer;
 import org.reactome.web.diagram.thumbnail.DiagramThumbnail;
 import org.reactome.web.diagram.tooltips.TooltipContainer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
-import org.reactome.web.diagram.util.actions.UserActionsHandlers;
+import org.reactome.web.diagram.util.actions.MouseActionsHandlers;
 import org.reactome.web.diagram.util.actions.UserActionsInstaller;
 
 import java.util.Collection;
@@ -71,6 +77,7 @@ import java.util.Set;
 class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionColumnChangedHandler {
 
     private final RendererManager rendererManager;
+    private final InteractorRendererManager interactorRendererManager;
     private EventBus eventBus;
 
     private AdvancedContext2d compartments;
@@ -97,6 +104,10 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private AdvancedContext2d entitiesSelection;
     private AdvancedContext2d shadowsText;
 
+    private AdvancedContext2d interactorsHighlight;
+    private AdvancedContext2d interactorsSelection;
+    private AdvancedContext2d interactors;
+
     private AdvancedContext2d buffer;
 
     private TooltipContainer tooltipContainer;
@@ -117,10 +128,13 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         //This is MANDATORY
         RendererManager.initialise(eventBus);
         this.rendererManager = RendererManager.get();
+        InteractorRendererManager.initialise(eventBus);
+        this.interactorRendererManager = InteractorRendererManager.get();
 
         //This is MANDATORY
         DiagramColours.initialise(eventBus);
         AnalysisColours.initialise(eventBus);
+        InteractorColours.initialise(eventBus);
 
         this.thumbnail = new DiagramThumbnail(eventBus);
 
@@ -131,7 +145,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
     }
 
-    public void addUserActionsHandlers(UserActionsHandlers handler) {
+    public void addUserActionsHandlers(MouseActionsHandlers handler) {
         if (this.canvases.isEmpty()) {
             throw new RuntimeException("Multilayer canvas has not been yet initialised.");
         }
@@ -178,6 +192,14 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                 renderer.highlight(reactionsHighlight, item, status.getFactor(), status.getOffset());
             }
         }
+    }
+
+    public void highlightInteractor(DiagramInteractor item, DiagramContext context){
+        cleanCanvas(this.interactorsHighlight);
+        if (item == null) return;
+        DiagramStatus status = context.getDiagramStatus();
+        InteractorRenderer renderer = interactorRendererManager.getRenderer(item);
+        if(renderer!=null) renderer.highlight(interactorsHighlight, item, status.getFactor(), status.getOffset());
     }
 
     public void decorators(HoveredItem hoveredItem, DiagramContext context) {
@@ -311,25 +333,6 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         }).scheduleRepeating(20);
     }
 
-    /**
-     * In every zoom step the way the elements are drawn (even if they are drawn or not) is defined by the
-     * renderer assigned. The most accurate and reliable way of finding out the hovered object by the mouse
-     * pointer is using the renderer isHovered method.
-     */
-    public Collection<HoveredItem> getHovered(Collection<DiagramObject> target, Coordinate model) {
-        List<HoveredItem> rtn = new LinkedList<>();
-        for (DiagramObject item : target) {
-            Renderer renderer = rendererManager.getRenderer(item);
-            if (renderer != null) {
-                HoveredItem hovered = renderer.getHovered(item, model);
-                if (hovered != null) {
-                    rtn.add(hovered);
-                }
-            }
-        }
-        return rtn;
-    }
-
     public void notifyHoveredExpression(DiagramObject item, Coordinate model) {
         Renderer renderer = rendererManager.getRenderer(item);
         Double exp = (renderer != null) ? renderer.getExpressionHovered(item, model, column) : null;
@@ -371,6 +374,39 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     public void setWatermarkVisible(boolean visible){
         if(watermark!=null) {
             watermark.setVisible(visible);
+        }
+    }
+
+    public void renderInteractors(Collection<DiagramInteractor> items, DiagramContext context){
+        cleanCanvas(interactors);
+        //By default we use the protein colour profile (NOTE: renderers will change it for chemicals and leave it for proteins save/restore)
+        interactors.setFillStyle(InteractorColours.get().PROFILE.getProtein().getFill());
+        interactors.setStrokeStyle(InteractorColours.get().PROFILE.getProtein().getStroke());
+        Double factor = context.getDiagramStatus().getFactor();
+        Coordinate offset = context.getDiagramStatus().getOffset();
+        List<InteractorEntity> entities = new LinkedList<>();
+        for (DiagramInteractor item : items) {
+            if (item instanceof InteractorEntity) {
+                entities.add((InteractorEntity) item);
+            } else {
+                InteractorRenderer renderer = interactorRendererManager.getRenderer(item);
+                if (renderer != null) {
+                    renderer.draw(interactors, item, factor, offset);
+                }
+            }
+        }
+        InteractorRenderer renderer = interactorRendererManager.getRenderer(InteractorEntity.class);
+        if (renderer != null) {
+            interactors.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
+            for (InteractorEntity entity : entities) {
+                renderer.draw(interactors, entity, factor, offset);
+                interactors.save();
+                InteractorProfile profile = InteractorColours.get().PROFILE;
+                InteractorProfileNode node = entity.isChemical() ? profile.getChemical() : profile.getProtein();
+                interactors.setFillStyle(node.getText());
+                renderer.drawText(interactors, entity, factor, offset);
+                interactors.restore();
+            }
         }
     }
 
@@ -586,6 +622,16 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         this.reactionsHighlight.setLineWidth(factor * 7);
         this.reactionsHighlight.setStrokeStyle(profileProperties.getHighlight());
+
+        this.interactors.setLineWidth(factor * 2);
+        this.interactors.setTextAlign(Context2d.TextAlign.CENTER);
+        this.interactors.setTextBaseline(Context2d.TextBaseline.MIDDLE);
+
+        this.interactorsSelection.setLineWidth(factor * 3);
+        this.interactorsSelection.setStrokeStyle(profileProperties.getSelection());
+
+        this.interactorsHighlight.setLineWidth(factor * 7);
+        this.interactorsHighlight.setStrokeStyle(profileProperties.getHighlight());
     }
 
     private void addWatermark(){
@@ -627,13 +673,18 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.entitiesSelection = createCanvas(width, height);
         this.shadowsText = createCanvas(width, height);
 
+        this.interactorsHighlight = createCanvas(width, height);
+        this.interactorsSelection = createCanvas(width, height);
+        this.interactors = createCanvas(width, height);
+
+        this.tooltipContainer = createToolTipContainer(width, height);
+
+        this.buffer = createCanvas(width, height);  //Top-level canvas (mouse ctrl and buffer)
+
         //DO NOT CHANGE THE ORDER OF THE FOLLOWING TWO LINES
         this.add(new LoadingMessage(eventBus));                 //Loading message panel
         this.add(new AnalysisMessage(eventBus));                //Analysis overlay message panel
         this.add(new ErrorMessage(eventBus));                   //Error message panel
-        this.tooltipContainer = createToolTipContainer(width, height);
-
-        this.buffer = createCanvas(width, height);  //Top-level canvas (mouse ctrl and buffer)
 
         //Thumbnail
         this.add(this.thumbnail);
@@ -641,18 +692,29 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         //Watermark
         this.addWatermark();
 
+        //Right container
+        RightContainerPanel rightContainerPanel = new RightContainerPanel();
+        this.add(rightContainerPanel);
+
         //Control panel
         this.add(new NavigationControlPanel(eventBus));
 
-        //Enrichment legend and control panels
-        this.add(new EnrichmentControl(eventBus));
-
-        //Expression legend and control panels
-        this.add(new ExpressionLegend(eventBus));
-        this.add(new ExpressionControl(eventBus));
+        //Bottom Controls container
+        BottomContainerPanel bottomContainerPanel = new BottomContainerPanel();
+        this.add(bottomContainerPanel);
 
         //Flagged Objects control panel
-        this.add(new FlaggedItemsControl(eventBus));
+        bottomContainerPanel.add(new FlaggedItemsControl(eventBus));
+
+        //Enrichment legend and control panels
+        bottomContainerPanel.add(new EnrichmentControl(eventBus));
+
+        //Expression legend and control panels
+        rightContainerPanel.add(new ExpressionLegend(eventBus));
+        bottomContainerPanel.add(new ExpressionControl(eventBus));
+
+        //Interactors control panel
+        bottomContainerPanel.add(new InteractorsControl(eventBus));
 
         //Info panel
         if (DiagramFactory.SHOW_INFO) {
@@ -662,6 +724,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         //Launcher panels
         this.add(new LeftTopLauncherPanel(eventBus));
         this.add(new RightTopLauncherPanel(eventBus));
+
+        //Settings panel
+        rightContainerPanel.add(new HideableContainerPanel(eventBus));
 
         //Illustration panel
         this.add(this.illustration = new IllustrationPanel(), 0 , 0);

@@ -30,6 +30,7 @@ public abstract class RendererProperties {
     public static double PROCESS_NODE_INSET_WIDTH;
     public static double NODE_TEXT_PADDING;
     public static double NODE_LINE_WIDTH;
+    public static double INTERACTOR_FONT_SIZE;
 
     public static void setFactor(double factor) {
         FACTOR = factor;
@@ -50,6 +51,7 @@ public abstract class RendererProperties {
         }
         NOTE_FONT_SIZE = 10 * factor;
         NODE_LINE_WIDTH = 2 * factor;
+        INTERACTOR_FONT_SIZE = 6.33 * factor;
     }
 
     public static double getFactor() {

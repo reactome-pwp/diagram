@@ -1,17 +1,16 @@
 package org.reactome.web.diagram.messages;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public abstract class MessagesPanel extends AbsolutePanel {
+public abstract class MessagesPanel extends SimplePanel {
 
     public static MessagesResources RESOURCES;
     static {
@@ -34,6 +33,15 @@ public abstract class MessagesPanel extends AbsolutePanel {
 
         @Source("images/loader_lines.gif")
         ImageResource loader();
+
+        @Source("images/close_red_clicked.png")
+        ImageResource closeRedClicked();
+
+        @Source("images/close_red_hovered.png")
+        ImageResource closeRedHovered();
+
+        @Source("images/close_red_normal.png")
+        ImageResource closeRedNormal();
     }
 
     /**
@@ -53,6 +61,10 @@ public abstract class MessagesPanel extends AbsolutePanel {
         String analysisOverlayMessage();
 
         String errorMessage();
+
+        String errorMessageText();
+
+        String close();
     }
 
     protected EventBus eventBus;
@@ -60,7 +72,7 @@ public abstract class MessagesPanel extends AbsolutePanel {
     public MessagesPanel(EventBus eventBus) {
         this.eventBus = eventBus;
         //Setting the legend style
-        getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
+//        getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
         setStyleName(RESOURCES.getCSS().messagesPanel());
     }
 }

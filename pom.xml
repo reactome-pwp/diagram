@@ -7,7 +7,7 @@
     <groupId>org.reactome.web</groupId>
     <artifactId>diagram</artifactId>
     <packaging>jar</packaging>
-    <version>3.0.2</version>
+    <version>3.1.0-SNAPSHOT</version>
     <name>Reactome Diagram Viewer</name>
 
     <properties>
@@ -37,14 +37,14 @@
         <dependency>
             <groupId>org.reactome.web.pwp</groupId>
             <artifactId>model</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
 
         <!-- QuadTree implementation for GWT -->
         <dependency>
             <groupId>uk.ac.ebi.pwp.widgets</groupId>
             <artifactId>quadtree</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.2</version>
         </dependency>
 
         <dependency>
@@ -178,11 +178,6 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-        </repository>
-        <repository>
-            <id>smartclient</id>
-            <name>smartclient.com</name>
-            <url>http://www.smartclient.com/maven2</url>
         </repository>
 
         <!-- EBI repo -->

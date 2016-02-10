@@ -116,6 +116,21 @@ public abstract class LegendPanel extends AbsolutePanel {
 
         @Source("help/expression.help.html")
         TextResource expressionLegendHelp();
+
+        @Source("images/loader.gif")
+        ImageResource loader();
+
+        @Source("images/download_clicked.png")
+        ImageResource downloadClicked();
+
+        @Source("images/download_disabled.png")
+        ImageResource downloadDisabled();
+
+        @Source("images/download_hovered.png")
+        ImageResource downloadHovered();
+
+        @Source("images/download_normal.png")
+        ImageResource downloadNormal();
     }
 
     /**
@@ -167,6 +182,24 @@ public abstract class LegendPanel extends AbsolutePanel {
         String flaggedItemsLabel();
 
         String flaggedItemsControlMovedUp();
+
+        String interactorsControl();
+
+        String interactorsControlError();
+
+        String interactorsControlWarning();
+
+        String interactorsControlLoadingIcon();
+
+        String interactorsControlMessage();
+
+        String interactorsControlSlider();
+
+        String interactorsControlControls();
+
+        String download();
+
+        String unselectable();
     }
 
     protected EventBus eventBus;
@@ -175,7 +208,6 @@ public abstract class LegendPanel extends AbsolutePanel {
     public LegendPanel(EventBus eventBus) {
         this.eventBus = eventBus;
         //Setting the legend style
-        getElement().getStyle().setPosition(com.google.gwt.dom.client.Style.Position.ABSOLUTE);
         setStyleName(RESOURCES.getCSS().legendPanel());
 
         fadeInTimer = new Timer() {

@@ -4,8 +4,13 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.graph.model.GraphSubpathway;
+import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.util.MapSet;
+import uk.ac.ebi.pwp.structures.quadtree.client.Box;
+import uk.ac.ebi.pwp.structures.quadtree.client.QuadTree;
 
 import java.util.*;
 
@@ -14,14 +19,20 @@ import java.util.*;
  */
 public class DiagramContent {
 
+    //The number of elements for every QuadTree quadrant node
+    static final int NUMBER_OF_ELEMENTS = 25;
+    //Quadrant minimum area (width * height):             180
+    //  Right now an area of 180 x 80 = 14400 would     [--][--] 8
+    //  host 4 entities of 90x40 each                   [--][--] 0
+    //  An area of 90,000 includes 25 entities
+    static final int MIN_AREA = 90000;
+
     Long dbId;
     String stableId;
     String displayName;
 
-    Long nextId;
     Boolean isDisease;
     Boolean forNormalDraw;
-    Boolean hideCompartmentInName;
 
     Map<Long, DiagramObject> diagramObjectMap;
     Map<String, GraphObject> graphObjectCache;
@@ -29,13 +40,11 @@ public class DiagramContent {
     MapSet<String, GraphObject> identifierMap;
     Set<GraphPathway> encapsulatedPathways;
 
-    Set<DiagramObject> diseaseComponents;
-    Set<DiagramObject> lofNodes;
+    private QuadTree<DiagramObject> diagramObjects;
 
     boolean graphLoaded = false;
 
-    double minX; double maxX;
-    double minY; double maxY;
+    double minX, maxX, minY, maxY;
 
     public DiagramContent() {
         this.diagramObjectMap = new TreeMap<>();
@@ -45,48 +54,58 @@ public class DiagramContent {
         this.subpathwaysCache = new HashMap<>();
     }
 
-    public void cache(GraphObject dbObject){
+    //Please note that the way the content is created is by injecting the values without the constructor
+    //init has to be called to be called once every value has been set up
+    DiagramContent init(){
+        this.diagramObjects = new QuadTree<>(minX, minY, maxX, maxY, NUMBER_OF_ELEMENTS, MIN_AREA);
+        for (DiagramObject diagramObject : getDiagramObjects()) {
+            this.diagramObjects.add(diagramObject);
+        }
+        return this;
+    }
+
+    public void cache(GraphObject dbObject) {
         this.graphLoaded = true;
-        if(dbObject.getDbId()!=null) {
+        if (dbObject.getDbId() != null) {
             graphObjectCache.put(dbObject.getDbId() + "", dbObject);
         }
-        if(dbObject.getStId()!=null) {
+        if (dbObject.getStId() != null) {
             graphObjectCache.put(dbObject.getStId(), dbObject);
         }
 
-        if(dbObject instanceof GraphPhysicalEntity){
+        if (dbObject instanceof GraphPhysicalEntity) {
             GraphPhysicalEntity pe = (GraphPhysicalEntity) dbObject;
-            if(pe.getIdentifier()!=null) {
+            if (pe.getIdentifier() != null) {
                 identifierMap.add(pe.getIdentifier(), dbObject);
             }
-            if(pe.getGeneNames()!=null){
+            if (pe.getGeneNames() != null) {
                 for (String gene : pe.getGeneNames()) {
                     identifierMap.add(gene, dbObject);
                 }
             }
-        }else if(dbObject instanceof GraphPathway){
+        } else if (dbObject instanceof GraphPathway) {
             encapsulatedPathways.add((GraphPathway) dbObject);
         }
 
-        if (dbObject instanceof GraphSubpathway){
+        if (dbObject instanceof GraphSubpathway) {
             GraphSubpathway gsp = (GraphSubpathway) dbObject;
             this.subpathwaysCache.put("" + gsp.getDbId(), gsp);
             this.subpathwaysCache.put(gsp.getStId(), gsp);
         }
     }
 
-    public void cache(List<? extends DiagramObject> diagramObjects){
-        if(diagramObjects==null) return;
+    public void cache(List<? extends DiagramObject> diagramObjects) {
+        if (diagramObjects == null) return;
         for (DiagramObject diagramObject : diagramObjects) {
             this.diagramObjectMap.put(diagramObject.getId(), diagramObject);
         }
     }
 
-    public boolean containsOnlyEncapsulatedPathways(){
+    public boolean containsOnlyEncapsulatedPathways() {
         return (getDatabaseObjects().size() == encapsulatedPathways.size());
     }
 
-    public boolean containsEncapsulatedPathways(){
+    public boolean containsEncapsulatedPathways() {
         return encapsulatedPathways.size() > 0;
     }
 
@@ -96,6 +115,11 @@ public class DiagramContent {
 
     public Long getDbId() {
         return dbId;
+    }
+
+    public Collection<DiagramObject> getHoveredTarget(Coordinate p, double factor) {
+        double f = 1 / factor;
+        return diagramObjects.getItems(new Box(p.getX() - f, p.getY() - f, p.getX() + f, p.getY() + f));
     }
 
     public String getStableId() {
@@ -110,10 +134,6 @@ public class DiagramContent {
         return encapsulatedPathways;
     }
 
-    public Long getNextId() {
-        return nextId;
-    }
-
     public Boolean getIsDisease() {
         return isDisease;
     }
@@ -122,43 +142,31 @@ public class DiagramContent {
         return forNormalDraw;
     }
 
-    public Boolean getHideCompartmentInName() {
-        return hideCompartmentInName;
+    public GraphObject getDatabaseObject(String identifier) {
+        return this.graphObjectCache.get(identifier);
     }
 
-    public Set<DiagramObject> getDiseaseComponents() {
-        return diseaseComponents;
-    }
-
-    public Set<DiagramObject> getLofNodes() {
-        return lofNodes;
-    }
-
-    public GraphObject getDatabaseObject(String stId){
-        return this.graphObjectCache.get(stId);
-    }
-
-    public GraphObject getDatabaseObject(Long dbId){
+    public GraphObject getDatabaseObject(Long dbId) {
         return this.graphObjectCache.get(dbId.toString());
     }
 
-    public GraphSubpathway getGraphSubpathway(String stId){
+    public GraphSubpathway getGraphSubpathway(String stId) {
         return this.subpathwaysCache.get(stId);
     }
 
-    public GraphSubpathway getGraphSubpathway(Long dbId){
-        return this.subpathwaysCache.get(dbId.toString());
+    public GraphSubpathway getGraphSubpathway(Long dbId) {
+        return getGraphSubpathway(dbId.toString());
     }
 
-    public DiagramObject getDiagramObject(Long id){
+    public DiagramObject getDiagramObject(Long id) {
         return this.diagramObjectMap.get(id);
     }
 
-    public Collection<GraphObject> getDatabaseObjects(){
+    public Collection<GraphObject> getDatabaseObjects() {
         return new HashSet<>(this.graphObjectCache.values());
     }
 
-    public Collection<DiagramObject> getDiagramObjects(){
+    public Collection<DiagramObject> getDiagramObjects() {
         return this.diagramObjectMap.values();
     }
 
@@ -182,12 +190,44 @@ public class DiagramContent {
         return maxY;
     }
 
-    public double getWidth(){
+    public double getWidth() {
         return maxX - minX;
     }
 
-    public double getHeight(){
+    public double getHeight() {
         return maxY - minY;
+    }
+
+    public Collection<DiagramObject> getVisibleItems(Box visibleArea) {
+        return this.diagramObjects.getItems(visibleArea);
+    }
+
+    public int getNumberOfBurstEntities() {
+        int n = 0;
+        for (DiagramObject diagramObject : getDiagramObjects()) {
+            if(diagramObject instanceof Node){
+                Node node = (Node) diagramObject;
+                SummaryItem summaryItem = node.getInteractorsSummary();
+                if(summaryItem!=null){
+                    if(summaryItem.getPressed()!=null && summaryItem.getPressed()) n++;
+                }
+            }
+        }
+        return n;
+    }
+
+    public void clearDisplayedInteractors() {
+        for (DiagramObject diagramObject : getDiagramObjects()) {
+            if (diagramObject instanceof Node) {
+                Node node = (Node) diagramObject;
+                SummaryItem interactorsSummary = node.getInteractorsSummary();
+                if (interactorsSummary != null) {
+                    interactorsSummary.setNumber(null);
+                    interactorsSummary.setPressed(null);
+                }
+                node.setDiagramEntityInteractorsSummary(null);
+            }
+        }
     }
 
     @Override

@@ -1,6 +1,4 @@
 .messagesPanel{
-    /*background-color: rgba(240, 240, 240, 0.9);*/
-    /*border: 1px solid lightgray;*/
     border-radius: 12px;
     position: absolute;
 
@@ -9,7 +7,6 @@
     color: white;
     opacity: 0.85;
     display: block;
-
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
@@ -59,27 +56,58 @@
 }
 
 .errorMessage {
-    width: 190px;
-    margin-right: -95px; /* width and margin-right are related, please change both if needed */
+    width: 400px;
+    margin-right: -200px; /* width and margin-right are related, please change both if needed */
     right: 50%;
 
-    height: 40px;
-    margin-top: -20px; /* height and margin-top are related, please change both if needed */
+    height: 60px;
+    margin-top: -30px; /* height and margin-top are related, please change both if needed */
     top: 50%;
 
-    padding: 5px 10px 0 15px;
+    padding: 5px 5px 5px 10px;
 
     background-color: rgb(197, 91, 88);
     border: 1px solid rgb(197, 39, 34);
 }
 
-.errorMessage span {
-    margin-left: 15px;
+.errorMessage img {
+    margin-top: 12px;
+    float:left;
+    width: auto;
+    height: 32px;
     vertical-align: middle;
 }
 
-.errorMessage img {
-    width: auto;
-    height:32px;
-    vertical-align: middle;
+.errorMessageText {
+    padding-left: 10px;
+    height: 60px;
+    overflow: auto;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-flex-align: center;
+    -ms-flex-align: center;
+
+    -webkit-align-items: center;
+    align-items: center;
+}
+
+@sprite .close {
+    gwt-image: 'closeRedNormal';
+    outline: none;
+    background-repeat: no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: right;
+}
+
+@sprite .close:hover {
+    gwt-image: 'closeRedHovered';
+}
+
+@sprite .close:active:hover {
+    gwt-image: 'closeRedClicked';
 }

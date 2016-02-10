@@ -90,12 +90,6 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
             hide();
         }else if(btn.equals(pin)){
             this.pinned = !this.pinned;
-            //Apply the right style here
-            if(this.pinned) {
-                pin.setStyleName(RESOURCES.getCSS().pinActive());
-            }else {
-                pin.setStyleName(RESOURCES.getCSS().pin());
-            }
         }else if(btn.equals(changeLabels)){
             this.displayIds = !this.displayIds;
             //Apply the right style here
@@ -105,6 +99,12 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
                 changeLabels.setStyleName(RESOURCES.getCSS().labels());
             }
             fireEvent(new ChangeLabelsEvent(displayIds));
+        }
+        //Apply the right style here
+        if(this.pinned) {
+            pin.setStyleName(RESOURCES.getCSS().pinActive());
+        }else {
+            pin.setStyleName(RESOURCES.getCSS().pin());
         }
     }
 

@@ -38,6 +38,10 @@ public class EntityDecoratorSelectedEvent extends GwtEvent<EntityDecoratorSelect
         return TYPE;
     }
 
+    public GraphObject getGraphObject() {
+        return graphObject;
+    }
+
     public NodeAttachment getAttachment() {
         return attachment;
     }

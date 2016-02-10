@@ -7,68 +7,63 @@ import org.reactome.web.diagram.data.analysis.*;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
-import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
-import uk.ac.ebi.pwp.structures.quadtree.client.QuadTree;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
+ * The context is kept in an LruCache so previously loaded information (content and status) is kept
+ * and presented back to the user in the 'near' future.
+ *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class DiagramContext {
     static final double ANALYSIS_MIN_PERCENTAGE = 0.03;
 
-    //The number of elements for every QuadTree quadrant node
-    static final int NUMBER_OF_ELEMENTS = 15;
-    static final int INC_STEP = 10;
+    private DiagramStatus diagramStatus;
+    private AnalysisStatus analysisStatus;
 
     private DiagramContent content;
-    private DiagramStatus diagramStatus;
-    private QuadTree<DiagramObject> quadTree;
-    private AnalysisStatus analysisStatus;
+    private InteractorsContent interactors;
 
     private Map<GraphObject, ContextDialogPanel> dialogMap = new HashMap<>();
 
     public DiagramContext(DiagramContent content) {
-        this.content = content;
-
-        //It will create a QuadTree with the minimum elements per quadrant starting with
-        //NUMBER_OF_ELEMENTS and increasing by steps of INC_STEP (Even though it could
-        //penalise the loading time a little bit, this strategy improves the user experience
-        //for pathways with few overlap and does its best for the others
-        this.createQuadTree(content.getDiagramObjects(), NUMBER_OF_ELEMENTS, INC_STEP);
-
         //Status needs to be created every time we load a new content
         this.diagramStatus = new DiagramStatus();
+
+        this.content = content; //created and initialised bye the DiagramContentFactory
+        this.interactors = new InteractorsContent(content.minX, content.minY, content.maxX, content.maxY);
     }
 
-    public void clearAnalysisOverlay(){
+    public void clearAnalysisOverlay() {
         this.analysisStatus = null;
         for (GraphObject graphObject : this.content.getDatabaseObjects()) {
-            if(graphObject instanceof GraphPhysicalEntity) {
+            if (graphObject instanceof GraphPhysicalEntity) {
                 ((GraphPhysicalEntity) graphObject).resetHit();
-            }else if(graphObject instanceof GraphPathway){
+            } else if (graphObject instanceof GraphPathway) {
                 ((GraphPathway) graphObject).resetHit();
             }
         }
     }
 
-    public void setAnalysisOverlay(AnalysisStatus analysisStatus,PathwayIdentifiers pathwayIdentifiers, List<PathwaySummary> pathwaySummaries){
+    public void setAnalysisOverlay(AnalysisStatus analysisStatus, PathwayIdentifiers pathwayIdentifiers, List<PathwaySummary> pathwaySummaries) {
         this.analysisStatus = analysisStatus;
         MapSet<String, GraphObject> map = this.content.getIdentifierMap();
-        if(pathwayIdentifiers!=null) {
+        if (pathwayIdentifiers != null) {
             for (PathwayIdentifier identifier : pathwayIdentifiers.getIdentifiers()) {
                 for (IdentifierMap identifierMap : identifier.getMapsTo()) {
                     for (String id : identifierMap.getIds()) {
                         Set<GraphObject> elements = map.getElements(id);
                         if (elements == null) continue;
                         for (GraphObject graphObject : elements) {
-                            if(graphObject instanceof GraphPhysicalEntity) {
+                            if (graphObject instanceof GraphPhysicalEntity) {
                                 GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
                                 pe.setIsHit(identifier.getIdentifier(), identifier.getExp());
                             }
@@ -77,14 +72,14 @@ public class DiagramContext {
                 }
             }
         }
-        if(pathwaySummaries!=null) {
+        if (pathwaySummaries != null) {
             for (PathwaySummary pathwaySummary : pathwaySummaries) {
                 EntityStatistics statistics = pathwaySummary.getEntities();
                 if (statistics.getFound() > 0) {
                     //In this case process nodes DO NOT HAVE an identifier, but DO NOT use null here! use empty string
                     GraphPathway pathway = (GraphPathway) this.content.getDatabaseObject(pathwaySummary.getDbId());
                     Double percentage = statistics.getFound() / statistics.getTotal().doubleValue();
-                    if(percentage<ANALYSIS_MIN_PERCENTAGE) percentage = ANALYSIS_MIN_PERCENTAGE;
+                    if (percentage < ANALYSIS_MIN_PERCENTAGE) percentage = ANALYSIS_MIN_PERCENTAGE;
                     pathway.setIsHit(percentage, pathwaySummary.getEntities().getExp());
                 }
             }
@@ -95,53 +90,47 @@ public class DiagramContext {
         return analysisStatus;
     }
 
-    public Collection<DiagramObject> getHoveredTarget(Coordinate p){
-        double f = 1 / this.diagramStatus.getFactor();
-        return quadTree.getItems(new Box(p.getX()-f, p.getY()-f, p.getX()+f, p.getY()+f));
-    }
-
     public DiagramContent getContent() {
         return content;
+    }
+
+    public InteractorsContent getInteractors() {
+        return interactors;
     }
 
     public DiagramStatus getDiagramStatus() {
         return diagramStatus;
     }
 
-    public Collection<DiagramObject> getVisibleElements(int width, int height){
-        Box visibleArea = this.diagramStatus.getVisibleModelArea(width, height);
-        return this.quadTree.getItems(visibleArea);
-    }
-
-    public Box getVisibleModelArea(int width, int height){
+    public Box getVisibleModelArea(int width, int height) {
         return this.diagramStatus.getVisibleModelArea(width, height);
     }
 
-    public ColourProfileType getColourProfileType(){
-        if(content.getForNormalDraw()==null || content.getForNormalDraw()){
+    public ColourProfileType getColourProfileType() {
+        if (content.getForNormalDraw() == null || content.getForNormalDraw()) {
             return ColourProfileType.NORMAL;
         } else {
             return ColourProfileType.FADE_OUT;
         }
     }
 
-    public void hideDialogs(){
+    public void hideDialogs() {
         for (ContextDialogPanel dialogPanel : dialogMap.values()) {
             dialogPanel.hide();
         }
     }
 
-    public void restoreDialogs(){
+    public void restoreDialogs() {
         for (ContextDialogPanel dialogPanel : dialogMap.values()) {
             dialogPanel.restore();
         }
     }
 
-    public void showDialog(EventBus eventBus, DiagramObject item, Widget canvas){
-        if(item==null) return;
-        if(!dialogMap.containsKey(item.getGraphObject())) {
+    public void showDialog(EventBus eventBus, DiagramObject item, Widget canvas) {
+        if (item == null) return;
+        if (!dialogMap.containsKey(item.getGraphObject())) {
             dialogMap.put(item.getGraphObject(), new ContextDialogPanel(eventBus, item, this, canvas));
-        }else{
+        } else {
             dialogMap.get(item.getGraphObject()).show(true);
         }
     }
@@ -152,20 +141,5 @@ public class DiagramContext {
                 "content=" + content +
                 ", status=" + diagramStatus +
                 '}';
-    }
-
-    private void createQuadTree(Collection<DiagramObject> diagramObjects, int elements, int step){
-        try {
-            this.quadTree = new QuadTree<>(content.minX, content.minY, content.maxX, content.maxY, elements);
-
-            for (DiagramObject node :diagramObjects) {
-                this.quadTree.add(node);
-            }
-            if(elements > NUMBER_OF_ELEMENTS) {
-                Console.warn(this.content.getStableId() + " >> QuadTree created with quadrants of " + elements + " elements.");
-            }
-        }catch (RuntimeException e){
-            this.createQuadTree(diagramObjects, elements + step, step);
-        }
     }
 }

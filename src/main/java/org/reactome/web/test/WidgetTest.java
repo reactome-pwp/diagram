@@ -7,6 +7,8 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.client.DiagramViewer;
+import org.reactome.web.diagram.events.DiagramLoadedEvent;
+import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
 import org.reactome.web.diagram.util.Console;
 
 /**
@@ -34,22 +36,24 @@ public class WidgetTest implements EntryPoint {
                 Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                     @Override
                     public void execute() {
-                        diagram.loadDiagram("R-HSA-1181150");
+                        diagram.loadDiagram("R-HSA-5205647");
+//                        diagram.loadDiagram("R-HSA-1181150");
+//                        diagram.loadDiagram("R-HSA-5693567"); //Big one with plenty of overlap
                     }
                 });
-//                diagram.addDiagramLoadedHandler(new DiagramLoadedHandler() {
-//                    @Override
-//                    public void onDiagramLoaded(DiagramLoadedEvent event) {
+                diagram.addDiagramLoadedHandler(new DiagramLoadedHandler() {
+                    @Override
+                    public void onDiagramLoaded(DiagramLoadedEvent event) {
 //                        diagram.flagItems("NODAL");
-//                    }
-//                });
+                    }
+                });
             }
         });
     }
 
     public void initialise() {
         SplitLayoutPanel slp = new SplitLayoutPanel(10);
-        slp.addWest(getDemoLeftPanel(), 83);
+        slp.addEast(getDemoLeftPanel(), 83);
         slp.addNorth(getDemoTopPanel(), 25);
 //        slp.addNorth(getDiseasePanel(), 50);
         slp.add(diagram);
@@ -81,7 +85,6 @@ public class WidgetTest implements EntryPoint {
 
     private Widget getDemoLeftPanel(){
         FlowPanel fp = new FlowPanel();
-
 
         fp.add(new Label("R-HSA-1181150"));
         fp.add(new Label("Reactions"));
@@ -117,7 +120,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("ORA 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNTA1MjgwODM1NTRfOTE3","TOTAL");
+                diagram.setAnalysisToken("MjAxNTExMDkwOTQ2NDJfMTc%3D","TOTAL");
             }
         }));
 
@@ -129,7 +132,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("Exp 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNTA2MTAxNDQ4MTJfNzk4","TOTAL");
+                diagram.setAnalysisToken("MjAxNjAxMDQwOTM5NDBfMg==","TOTAL");
             }
         }));
 
@@ -175,6 +178,10 @@ public class WidgetTest implements EntryPoint {
         fp.add(getLoadButton("R-HSA-5467345", ""));
         fp.add(getLoadButton("R-HSA-166658", ""));
         fp.add(getLoadButton("R-HSA-391160", ""));
+        fp.add(getLoadButton("R-HSA-5693567", ""));
+        fp.add(getLoadButton("R-HSA-5205647", ""));
+        fp.add(getLoadButton("R-PFA-75153", ""));
+
         return fp;
     }
 
@@ -403,7 +410,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("Exp 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNTA2MDUwODQ0NThfNTE=","TOTAL");
+                diagram.setAnalysisToken("MjAxNjAxMDQwOTM5NDBfMg==","TOTAL");
             }
         }));
         fp.add(new Button("Exp 2", new ClickHandler() {

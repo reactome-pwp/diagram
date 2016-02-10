@@ -1,0 +1,1 @@
+Select a resource to visualise protein–protein and protein–chemical interaction data as extensions to Reactome pathways.

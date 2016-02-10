@@ -10,9 +10,13 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.context.dialogs.InteractorsDialogPanel;
 import org.reactome.web.diagram.context.dialogs.MoleculesDialogPanel;
 import org.reactome.web.diagram.context.dialogs.PathwaysDialogPanel;
 import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.graph.model.GraphEntityWithAccessionedSequence;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.graph.model.GraphSimpleEntity;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 
 import java.util.LinkedList;
@@ -35,17 +39,23 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
         buttonsPanel.setStyleName(RESOURCES.getCSS().buttonsPanel());
         buttonsPanel.add(this.molecules = getButton("Molecules", RESOURCES.molecules()));
         buttonsPanel.add(this.pathways = getButton("Pathways", RESOURCES.pathways()));
-//        buttonsPanel.add(this.interactors = getButton("Interactors", RESOURCES.interactors())); // Uncomment to include interactors
+        buttonsPanel.add(this.interactors = getButton("Interactors", RESOURCES.interactors()));
+        GraphObject graphObject = diagramObject.getGraphObject();
+
+        // Disable the interactors' tab in case of anything else besides protein and chemical
+        boolean enabled = graphObject instanceof GraphSimpleEntity || graphObject instanceof GraphEntityWithAccessionedSequence;
+        this.interactors.setEnabled(enabled);
+
         this.molecules.addStyleName(RESOURCES.getCSS().buttonSelected());
 
         this.container = new DeckLayoutPanel();
         this.container.setStyleName(RESOURCES.getCSS().container());
         MoleculesDialogPanel moleculesDialogPanel = new MoleculesDialogPanel(eventBus, diagramObject, context.getAnalysisStatus());
         PathwaysDialogPanel pathwaysDialogPanel = new PathwaysDialogPanel(eventBus, diagramObject, context);
-//        InteractorsDialogPanel interactorsDialogPanel = new InteractorsDialogPanel(eventBus, diagramObject);
+        InteractorsDialogPanel interactorsDialogPanel = new InteractorsDialogPanel(eventBus, diagramObject, context);
         this.container.add(moleculesDialogPanel);
         this.container.add(pathwaysDialogPanel);
-//        this.container.add(interactorsDialogPanel); // Uncomment to include interactors
+        this.container.add(interactorsDialogPanel);
         this.container.showWidget(0);
         this.container.setAnimationVertical(true);
         this.container.setAnimationDuration(500);
@@ -58,6 +68,7 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
         // add handlers
         parent.addChangeLabelsEventHandler(moleculesDialogPanel);
         parent.addChangeLabelsEventHandler(pathwaysDialogPanel);
+        parent.addChangeLabelsEventHandler(interactorsDialogPanel);
 
         initWidget(outerPanel);
     }
@@ -92,6 +103,7 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
             this.container.showWidget(1);
         }else if(btn.equals(this.interactors)){
             this.container.showWidget(2);
+            ((InteractorsDialogPanel)this.container.getVisibleWidget()).forceDraw();
         }
     }
 

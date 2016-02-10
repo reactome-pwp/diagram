@@ -1,0 +1,10 @@
+.container {
+    position: absolute;
+    bottom: 1px;
+
+    width: 0;
+    left: 50%;
+
+    height: auto;
+    /*background-color: crimson;*/
+}
