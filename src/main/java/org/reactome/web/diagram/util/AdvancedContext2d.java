@@ -281,23 +281,25 @@ public class AdvancedContext2d extends Context2d {
     //////////////////////////////
 
     public final void ellipse(double x, double y, double width, double height) {
+        double offset = height * 0.15;
         double x1 = x + width;
         double y1 = y + height / 2;
-        // Draws an ellipse
+        // Draws an ellipse based on bezier curves. Please note
         beginPath();
         moveTo(x, y1);
-        bezierCurveTo(x, y, x1, y, x1, y1);
-        bezierCurveTo(x + width, y + height, x, y + height, x, y1);
+        bezierCurveTo(x, y - offset, x1, y - offset, x1, y1);
+        bezierCurveTo(x + width, y + height + offset, x, y + height + offset, x, y1);
         closePath();
     }
 
     public final void bubble(double minX, double minY, double maxX, double maxY) {
+        double offset = (maxY - minY) * 0.15;
         double y1 = minY + (maxY - minY) / 2;
         // Draws an ellipse
         beginPath();
         moveTo(minX, y1);
-        bezierCurveTo(minX, minY, maxX, minY, maxX, y1);
-        bezierCurveTo(maxX, maxY, minX, maxY, minX, y1);
+        bezierCurveTo(minX, minY - offset, maxX, minY - offset, maxX, y1);
+        bezierCurveTo(maxX, maxY + offset, minX, maxY + offset, minX, y1);
         closePath();
     }
 }
