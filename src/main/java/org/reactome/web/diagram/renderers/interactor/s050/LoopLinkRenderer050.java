@@ -8,12 +8,22 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public class LoopLinkRenderer050 extends LoopLinkAbstractRenderer {
     @Override
     public void draw(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
         ctx.save();
         ctx.setGlobalAlpha((factor - 0.5) * 2);
         super.draw(ctx, item, factor, offset);
+        ctx.restore();
+    }
+
+    @Override
+    public void highlight(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
+        double alpha = ctx.getGlobalAlpha();
+        ctx.save();
+        ctx.setGlobalAlpha((factor - 0.5) * alpha * 2);
+        super.highlight(ctx, item, factor, offset);
         ctx.restore();
     }
 }
