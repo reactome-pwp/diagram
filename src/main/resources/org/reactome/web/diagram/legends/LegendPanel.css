@@ -37,7 +37,7 @@
 }
 
 @sprite .close:active:hover {
-    margin: 3px 7px;
+    /*margin: 3px 7px;*/
     gwt-image: 'closeClicked';
 }
 
@@ -333,12 +333,10 @@
 }
 
 @sprite .download:active:hover {
-    margin: 3px 7px;
     gwt-image: 'downloadClicked';
 }
 
 @sprite .download:disabled {
-    margin: 3px 7px;
     gwt-image: 'downloadDisabled';
 }
 
