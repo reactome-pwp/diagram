@@ -510,7 +510,10 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     @Override
     public void onInteractorSelected(InteractorSelectedEvent event) {
-        Window.open(event.getUrl(), "_blank", "");
+        String url = event.getUrl();
+        if (url != null) {
+            Window.open(url, "_blank", "");
+        }
     }
 
     @Override

@@ -70,6 +70,7 @@ public class InteractorSelectedEvent extends GwtEvent<InteractorSelectedHandler>
     }
 
     public String getUrl() {
+        if (identifier == null || identifier.isEmpty()) return null;
         String url = "";
         switch (type){
             case INTERACTION:
