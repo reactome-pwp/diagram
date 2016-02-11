@@ -44,8 +44,6 @@ public abstract class DiagramInteractor implements QuadTreeBox {
 
     public abstract boolean isVisible();
 
-    public abstract void setVisible(boolean visible);
-
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{" +

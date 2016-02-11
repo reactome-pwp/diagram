@@ -153,11 +153,6 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
     }
 
     @Override
-    public void setVisible(boolean visible) {
-        throw new RuntimeException("Do not use this method. Please rely on the visibility of the links");
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

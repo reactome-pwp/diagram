@@ -17,7 +17,6 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
 
     String id;
     double score;
-    boolean visible = true;
 
     InteractorLink(Node from, String id, double score) {
         this.from = from;
@@ -55,12 +54,7 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
     @Override
     public boolean isVisible() {
         double threshold = InteractorsContent.getInteractorsThreshold(LoaderManager.INTERACTORS_RESOURCE);
-        return visible && score >= threshold;
-    }
-
-    @Override
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+        return score >= threshold;
     }
 
     @Override
