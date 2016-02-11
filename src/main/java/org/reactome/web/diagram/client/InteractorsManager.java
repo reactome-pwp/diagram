@@ -178,7 +178,14 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
 
             InteractorEntity interactor = getOrCreateInteractorEntity(rawInteractor.getAcc(), rawInteractor.getAlias());
 
-            layoutBuilder.doLayout(interactor, i, n);  //the maximum number of elements is used here for layout beauty purposes
+            //the maximum number of elements (n) is used here for layout beauty purposes
+            if (layoutBuilder.doLayout(interactor, i, n)) {
+                //If an interactor has been moved, all the links pointing to it need to update their boundaries
+                for (InteractorLink link : interactor.getLinks()) {
+                    link.setBoundaries();
+                    interactors.updateView(currentResource, link);
+                }
+            }
 
             InteractorLink link = interactor.addLink(node, rawInteractor.getId(), rawInteractor.getScore());
             interactors.cache(currentResource, interactor);
