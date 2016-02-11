@@ -66,28 +66,28 @@ public class InteractorsContent {
     }
 
     public MapSet<String, RawInteractor> getOrCreateRawInteractorCachedResource(String resource) {
-        MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.toLowerCase());
+        MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource);
         if (map == null) {
             map = new MapSet<>();
-            rawInteractorsCache.put(resource.toLowerCase(), map);
+            rawInteractorsCache.put(resource, map);
         }
         return map;
     }
 
     public void cache(String resource, InteractorEntity interactor) {
-        Map<String, InteractorEntity> map = interactorsCache.get(resource.toLowerCase());
+        Map<String, InteractorEntity> map = interactorsCache.get(resource);
         if (map == null) {
             map = new HashMap<>();
-            interactorsCache.put(resource.toLowerCase(), map);
+            interactorsCache.put(resource, map);
         }
         map.put(interactor.getAccession(), interactor);
     }
 
     public void cache(String resource, Node node, InteractorLink link) {
-        MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource.toLowerCase());
+        MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource);
         if (cache == null) {
             cache = new MapSet<>();
-            interactionsPerNode.put(resource.toLowerCase(), cache);
+            interactionsPerNode.put(resource, cache);
         }
         cache.add(node, link);
     }
@@ -101,7 +101,7 @@ public class InteractorsContent {
                     GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
                     for (DiagramObject diagramObject : pe.getDiagramObjects()) {
                         InteractorsSummary summary = new InteractorsSummary(acc, diagramObject.getId(), number);
-                        interactorsSummaryMap.add(resource.toLowerCase(), summary);
+                        interactorsSummaryMap.add(resource, summary);
                         Node node = (Node) diagramObject;
                         node.getInteractorsSummary().setNumber(summary.getNumber());
                         node.getInteractorsSummary().setPressed(summary.isPressed());
@@ -117,16 +117,16 @@ public class InteractorsContent {
     //when it is called, the interactors have probably been retrieved "again" from the server
     //IMPORTANT: To avoid loading data that already exists -> CHECK BEFORE RETRIEVING :)
     public void addToView(String resource, DiagramInteractor interactor) {
-        QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource.toLowerCase());
+        QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource);
         if (tree == null) {
             tree = new QuadTree<>(minX, minY, maxX, maxY, NUMBER_OF_ELEMENTS, MIN_AREA);
-            interactorsTreeCache.put(resource.toLowerCase(), tree);
+            interactorsTreeCache.put(resource, tree);
         }
         tree.add(interactor);
     }
 
     public void updateView(String resource, DiagramInteractor interactor) {
-        QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource.toLowerCase());
+        QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource);
         if (tree != null) {
             tree.remove(interactor);
             tree.add(interactor);
@@ -134,18 +134,23 @@ public class InteractorsContent {
     }
 
     public void removeFromView(String resource, DiagramInteractor interactor) {
-        QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource.toLowerCase());
+        QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource);
         if (tree != null) tree.remove(interactor);
     }
 
-    public Collection<InteractorLink> getInteractorLinks(String resource) {
-        MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource.toLowerCase());
-        if (cache != null) return cache.values();
-        return new HashSet<>();
+    public void clearInteractors(String resource){
+        for (InteractorEntity entity : interactorsCache.get(resource).values()) {
+            entity.getLinks().clear();
+        }
+        QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource);
+        if (tree != null) {
+            tree.clear();
+        }
+        interactionsPerNode.remove(resource);
     }
-
+    
     public void removeInteractorLink(String resource, InteractorLink link){
-        MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource.toLowerCase());
+        MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource);
         if (cache != null) {
             Set<InteractorLink> links = cache.getElements(link.getNodeFrom());
             if (links != null) links.remove(link);
@@ -153,7 +158,7 @@ public class InteractorsContent {
     }
 
     public List<InteractorLink> getInteractorLinks(String resource, Node node) {
-        MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource.toLowerCase());
+        MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource);
         if (cache != null) {
             Set<InteractorLink> set = cache.getElements(node);
             if (set != null) {
@@ -166,7 +171,7 @@ public class InteractorsContent {
     }
 
     public InteractorEntity getInteractorEntity(String resource, String acc) {
-        Map<String, InteractorEntity> cache = interactorsCache.get(resource.toLowerCase());
+        Map<String, InteractorEntity> cache = interactorsCache.get(resource);
         if (cache != null) return cache.get(acc);
         return null;
     }
@@ -182,7 +187,7 @@ public class InteractorsContent {
     public List<InteractorSearchResult> getInteractorSearchResult(String resource, DiagramContent content) {
         // IMPORTANT: First check whether the rawInteractors have been loaded
         // If not then there is no point in searching for a term and caching the results
-        MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.toLowerCase());
+        MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource);
         if (map == null || map.isEmpty()) return new ArrayList<>();
 
         List<InteractorSearchResult> rtn = interactorsSearchItemsPerResource.get(resource);
@@ -219,7 +224,7 @@ public class InteractorsContent {
 
     public List<RawInteractor> getRawInteractors(String resource, String acc) {
         List<RawInteractor> rtn = new ArrayList<>();
-        MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.toLowerCase());
+        MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource);
         if (map != null) {
             Set<RawInteractor> set = map.getElements(acc);
             if (set != null) {
@@ -238,28 +243,28 @@ public class InteractorsContent {
     }
 
     public MapSet<String, RawInteractor> getRawInteractorsPerResource(String resource) {
-        return rawInteractorsCache.get(resource.toLowerCase());
+        return rawInteractorsCache.get(resource);
     }
 
     public boolean isResourceLoaded(String resource) {
-        return rawInteractorsCache.keySet().contains(resource.toLowerCase());
+        return rawInteractorsCache.keySet().contains(resource);
     }
 
     public Collection<DiagramInteractor> getVisibleInteractors(String resource, Box visibleArea) {
         Set<DiagramInteractor> rtn = new HashSet<>();
         if (resource != null) {
-            QuadTree<DiagramInteractor> quadTree = interactorsTreeCache.get(resource.toLowerCase());
+            QuadTree<DiagramInteractor> quadTree = interactorsTreeCache.get(resource);
             if (quadTree != null) rtn = quadTree.getItems(visibleArea);
         }
         return rtn;
     }
 
     public boolean isInteractorResourceCached(String resource) {
-        return interactorsSummaryMap.keySet().contains(resource.toLowerCase());
+        return interactorsSummaryMap.keySet().contains(resource);
     }
 
     public void resetBurstInteractors(String resource, Collection<DiagramObject> diagramObjects) {
-        Set<InteractorsSummary> summaries = interactorsSummaryMap.getElements(resource.toLowerCase());
+        Set<InteractorsSummary> summaries = interactorsSummaryMap.getElements(resource);
         if (summaries != null) {
             for (InteractorsSummary summary : summaries) {
                 summary.setPressed(false);
@@ -277,7 +282,7 @@ public class InteractorsContent {
     }
 
     public void restoreInteractorsSummary(String resource, DiagramContent content) {
-        Set<InteractorsSummary> items = interactorsSummaryMap.getElements(resource.toLowerCase());
+        Set<InteractorsSummary> items = interactorsSummaryMap.getElements(resource);
         if (items == null) return;
         for (InteractorsSummary summary : items) {
             Node node = (Node) content.getDiagramObject(summary.getDiagramId());
@@ -289,7 +294,7 @@ public class InteractorsContent {
     }
 
     public static double getInteractorsThreshold(String resource) {
-        Double threshold = interactorsThreshold.get(resource.toLowerCase());
+        Double threshold = interactorsThreshold.get(resource);
         if (threshold == null) {
             threshold = DEFAULT_SCORE;
             setInteractorsThreshold(resource, threshold);
@@ -298,6 +303,6 @@ public class InteractorsContent {
     }
 
     public static void setInteractorsThreshold(String resource, double threshold) {
-        interactorsThreshold.put(resource.toLowerCase(), threshold);
+        interactorsThreshold.put(resource, threshold);
     }
 }

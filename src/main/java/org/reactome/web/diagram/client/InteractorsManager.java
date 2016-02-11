@@ -18,6 +18,7 @@ import org.reactome.web.diagram.handlers.InteractorsCollapsedHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 import org.reactome.web.diagram.renderers.interactor.InteractorRenderer;
 import org.reactome.web.diagram.renderers.interactor.InteractorRendererManager;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
@@ -48,6 +49,19 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
         this.eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
         this.eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
+    }
+
+    public void drag(InteractorEntity entity, double deltaX, double deltaY){
+        InteractorsContent interactors = context.getInteractors();
+        for (InteractorLink link : entity.getLinks()) {
+            interactors.removeFromView(currentResource, link);
+        }
+        interactors.removeFromView(currentResource, entity);
+        entity.drag(deltaX, deltaY);
+        interactors.addToView(currentResource, entity);
+        for (InteractorLink link : entity.getLinks()) {
+            interactors.addToView(currentResource, link);
+        }
     }
 
     public String getCurrentResource() {
@@ -92,9 +106,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
 
     @Override
     public void onInteractorsCollapsed(InteractorsCollapsedEvent event) {
-        for (InteractorLink link : context.getInteractors().getInteractorLinks(currentResource)) {
-            removeInteractorLink(link);
-        }
+        context.getInteractors().clearInteractors(currentResource);
         eventBus.fireEventFromSource(new InteractorsLayoutUpdatedEvent(), this);
     }
 
@@ -109,14 +121,6 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             return new InteractorHoveredEvent(hovered);
         }
         return null;
-    }
-
-    public void updateInteractor(InteractorEntity entity) {
-        InteractorsContent interactors = context.getInteractors();
-        interactors.updateView(currentResource, entity);
-        for (InteractorLink link : entity.getLinks()) {
-            interactors.updateView(currentResource, link);
-        }
     }
 
     public boolean update(SummaryItem summaryItem, Node node) {
@@ -202,6 +206,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     //The reason why is because we want to keep them cached (PDBe or ChEBI data might have been retrieved)
     private void removeInteractors(Node node) {
         InteractorsContent interactors = context.getInteractors();
+        Console.log(interactors.getInteractorLinks(currentResource, node).size() + " links to remove");
         for (InteractorLink link : interactors.getInteractorLinks(currentResource, node)) {
             removeInteractorLink(link);
         }

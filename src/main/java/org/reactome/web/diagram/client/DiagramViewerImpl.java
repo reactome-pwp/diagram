@@ -811,10 +811,9 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     @Override
     public void dragInteractor(InteractorEntity interactor, Coordinate delta) {
         delta = delta.divide(context.getDiagramStatus().getFactor());
-        interactor.drag(delta.getX(), delta.getY());
+        interactorsManager.drag(interactor, delta.getX(), delta.getY());
         Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
         drawInteractors(visibleArea);
-        interactorsManager.updateInteractor(interactor);
     }
 
     public void zoom(double factor, Coordinate mouse) {
