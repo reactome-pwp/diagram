@@ -6,7 +6,9 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.interactors.common.InteractorBox;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
@@ -19,7 +21,8 @@ import java.util.Objects;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class TooltipContainer extends AbsolutePanel implements DiagramRequestedHandler, DiagramLoadedHandler,
+public class
+TooltipContainer extends AbsolutePanel implements DiagramRequestedHandler, DiagramLoadedHandler,
         GraphObjectHoveredHandler, EntityDecoratorHoveredHandler, InteractorHoveredHandler,
         DiagramZoomHandler, DiagramPanningHandler {
 
@@ -247,6 +250,22 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
                         centre.getX(),
                         centre.getY(),
                         0
+                );
+            } else if (hovered instanceof InteractorEntity) {
+                if (factor > ZOOM_THRESHOLD || factor < 0.50) {
+                    tooltip.hide();
+                    return;
+                }
+                InteractorEntity interactorEntity = (InteractorEntity) hovered;
+                InteractorBox box = new InteractorBox(interactorEntity.transform(factor, offset));
+                //Show the alias (if it exists) and the accession in brackets
+                String text = interactorEntity.getDisplayName() + (interactorEntity.getAlias()!=null ? " (" + interactorEntity.getAccession() + ")" : "");
+                tooltip.setText(text);
+                tooltip.setPositionAndShow(
+                        TooltipContainer.this,
+                        box.getMinX(),
+                        box.getMinY(),
+                        box.getHeight() + 8.0 * factor
                 );
             } else {
                 tooltip.hide(); //just in case :)

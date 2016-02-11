@@ -80,6 +80,26 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
         return image;
     }
 
+    public Collection<InteractorLink> getLinks() {
+        return links;
+    }
+
+    /**
+     * Creates a string with the names of the nodes that
+     * this entity interacts with (comma separated)
+     */
+    public String getAltText(){
+        StringBuilder builder = new StringBuilder();
+        Set<String> names = new HashSet<>();
+        for(InteractorLink link : links) {
+            //Avoid repeated names in the alternative name (for the tooltips)
+            if(names.add(link.getNodeFrom().getDisplayName())){
+                builder.append(link.getNodeFrom().getDisplayName()).append(",");
+            }
+        }
+        return builder.substring(0,builder.length()-1);
+    }
+
     public boolean isLaidOut() {
         return minX != null && maxX != null && minY != null && maxY != null;
     }
@@ -95,10 +115,6 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
             if (link.isVisible()) return true;
         }
         return false;
-    }
-
-    public Collection<InteractorLink> getLinks() {
-        return links;
     }
 
 //    public PDBObject getPdbObject() {
