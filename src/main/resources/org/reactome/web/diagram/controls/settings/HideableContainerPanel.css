@@ -26,6 +26,10 @@
     transition: width 0.3s ease;
 }
 
+.wrapperInitial {
+    width: 310px;
+}
+
 .wrapper:hover {
     width: 310px;
 }

@@ -34,6 +34,7 @@ public class HideableContainerPanel extends FlowPanel implements ClickHandler {
 
     public HideableContainerPanel(EventBus eventBus) {
         setStyleName(RESOURCES.getCSS().wrapper());
+        addStyleName(RESOURCES.getCSS().wrapperInitial());
 
         FlowPanel buttonsPanel = new FlowPanel();               // Tab buttons panel
         buttonsPanel.setStyleName(RESOURCES.getCSS().buttonsPanel());
@@ -79,6 +80,7 @@ public class HideableContainerPanel extends FlowPanel implements ClickHandler {
     }
 
     private void collapse(){
+        removeStyleName(RESOURCES.getCSS().wrapperInitial());
         if(isExpanded) {
             removeStyleName(RESOURCES.getCSS().wrapperExpanded());
             showBtn.removeStyleName(RESOURCES.getCSS().showHideRight());
@@ -170,6 +172,8 @@ public class HideableContainerPanel extends FlowPanel implements ClickHandler {
         String CSS = "org/reactome/web/diagram/controls/settings/HideableContainerPanel.css";
 
         String wrapper();
+
+        String wrapperInitial();
 
         String wrapperExpanded();
 
