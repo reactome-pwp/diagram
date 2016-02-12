@@ -90,6 +90,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
             downloadBtn.addClickHandler(this);
             downloadBtn.setTitle("Click to download all diagram interactors from " + resourceName);
             downloadBtn.setStyleName(RESOURCES.getCSS().downloadBtn());
+            downloadBtn.setVisible(false);
             main.add(downloadBtn);
         } else {
             Console.warn("FileSaver script has not been not loaded");
@@ -111,7 +112,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     public void onClick(ClickEvent event) {
         if (context != null) {
             MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(selectedResource);
-            if(interactors != null && !interactors.isEmpty()) {
+            if(hasContents(interactors)) {
                 String filename = context.getContent().getStableId() + "_Interactors_" + ResourceNameFormatter.format(selectedResource)+ ".tsv";
                 InteractorsExporter.exportInteractors(filename, interactors);
             }
@@ -121,7 +122,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     @Override
     public void onDiagramRequested(DiagramRequestedEvent event) {
         context = null;
-        downloadBtn.setVisible(false);
+        showDownloadButton(false);
     }
 
     @Override
@@ -142,12 +143,12 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
     @Override
     public void onInteractorsError(InteractorsErrorEvent event) {
-        downloadBtn.setVisible(false);
+        showDownloadButton(false);
     }
 
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
-        downloadBtn.setVisible(true);
+        showDownloadButton(true);
     }
 
     @Override
@@ -156,11 +157,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
             String resourceName = ResourceNameFormatter.format(event.getResource());
             downloadBtn.setText(resourceName);
             downloadBtn.setTitle("Click to download all diagram interactors from " + resourceName);
-            if (context.getInteractors().isResourceLoaded(event.getResource())) {
-                downloadBtn.setVisible(true);
-            } else {
-                downloadBtn.setVisible(false);
-            }
+            // check
+            showDownloadButton(context.getInteractors().isResourceLoaded(event.getResource()));
         }
     }
 
@@ -230,7 +228,39 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     private void showLoading(boolean loading) {
         loadingPanel.setVisible(loading);
         liveResourcesFP.setVisible(!loading);
-        downloadBtn.setVisible(!loading);
+    }
+
+    /***
+     * Show the download button only if the rawInteractors mapset
+     * for the selected resource contains entries
+     * @param visible
+     */
+    private void showDownloadButton(boolean visible){
+        if(visible) {
+            if (context != null) {
+                MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(selectedResource);
+                if (hasContents(interactors)) {
+                    downloadBtn.setVisible(true);
+                } else {
+                    downloadBtn.setVisible(false);
+                }
+            }
+        } else {
+            downloadBtn.setVisible(false);
+        }
+    }
+
+    private boolean hasContents(MapSet<String, RawInteractor> input){
+        boolean rtn = false;
+        if (input != null && !input.isEmpty()) {
+            for (String acc : input.keySet()) {
+                if (!input.getElements(acc).isEmpty()) {
+                    rtn = true;
+                    break;
+                }
+            }
+        }
+        return rtn;
     }
 
 
