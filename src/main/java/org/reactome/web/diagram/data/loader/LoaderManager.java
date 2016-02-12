@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.data.loader;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.DiagramContent;
@@ -130,9 +131,16 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
         context = event.getContext();
         content = context.getContent();
         if (INTERACTORS_RESOURCE != null) {   //Checking here so no error message is displayed in this case
-//            //This fakes a resource changed so the control will show the loading message
-//            //The behaviour of the three steps loading continues as expected
-            eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(INTERACTORS_RESOURCE), this);
+            //This fakes a resource changed so the control will show the loading message
+            //The behaviour of the three steps loading continues as expected
+            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                //We use the schedule deferred here because all the diagram loaded subscribers should be called BEFORE
+                //the InteractorsResourceChangedEvent is fired (to avoid messing the order of the events)
+                @Override
+                public void execute() {
+                    eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(INTERACTORS_RESOURCE),  LoaderManager.this);
+                }
+            });
         }
     }
 }
