@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.renderers.interactor.abs;
 
 import com.google.gwt.canvas.dom.client.TextMetrics;
-import org.reactome.web.diagram.data.interactors.common.InteractorBox;
+import org.reactome.web.diagram.data.interactors.common.DiagramBox;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
@@ -19,7 +19,7 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
     @Override
     public void shape(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset){
         InteractorEntity entity = (InteractorEntity) item;
-        InteractorBox box = item.transform(factor, offset);
+        DiagramBox box = item.transform(factor, offset);
         if(entity.isChemical()){
             ctx.bubble(box.getMinX(), box.getMinY(), box.getMaxX(), box.getMaxY());
         }else {
@@ -50,7 +50,7 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
         InteractorEntity node = (InteractorEntity) item;
         String displayName = node.getDisplayName();
         if(displayName == null) return;
-        InteractorBox box = item.transform(factor, offset);
+        DiagramBox box = item.transform(factor, offset);
         TextRenderer textRenderer = new TextRenderer(RendererProperties.WIDGET_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
         TextMetrics metrics = ctx.measureText(displayName);
         if(metrics.getWidth()<=box.getWidth() - 2 * RendererProperties.NODE_TEXT_PADDING) {

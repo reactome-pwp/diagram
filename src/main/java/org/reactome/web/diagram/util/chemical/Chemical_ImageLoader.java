@@ -50,6 +50,7 @@ public class Chemical_ImageLoader {
     }
 
     public void loadImage(final Handler handler, String identifier){
+        Console.info(identifier);
         if(identifier.startsWith("CHEBI")){
             loadChEBI(handler, identifier);
         } else if(identifier.startsWith("CHEMBL")) {

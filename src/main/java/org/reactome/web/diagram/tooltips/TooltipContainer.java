@@ -6,7 +6,7 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.reactome.web.diagram.data.DiagramContext;
-import org.reactome.web.diagram.data.interactors.common.InteractorBox;
+import org.reactome.web.diagram.data.interactors.common.DiagramBox;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorLink;
@@ -256,7 +256,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
                     return;
                 }
                 InteractorEntity interactorEntity = (InteractorEntity) hovered;
-                InteractorBox box = new InteractorBox(interactorEntity.transform(factor, offset));
+                DiagramBox box = new DiagramBox(interactorEntity.transform(factor, offset));
                 //Show the alias (if it exists) and the accession in brackets
                 String text = interactorEntity.getDisplayName() + (interactorEntity.getAlias()!=null ? " (" + interactorEntity.getAccession() + ")" : "");
                 tooltip.setText(text);

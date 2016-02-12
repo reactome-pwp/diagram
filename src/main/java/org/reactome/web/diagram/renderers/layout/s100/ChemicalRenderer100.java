@@ -20,23 +20,6 @@ public class ChemicalRenderer100 extends ChemicalAbstractRenderer {
         drawSummaryItems(ctx, (Node) item, factor, offset);
     }
 
-//    @Override
-//    public void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
-//        Node node = (Node) item;
-//        GraphObject graphObject = node.getGraphObject();
-//        if(graphObject instanceof GraphSimpleEntity){
-//            GraphSimpleEntity simpleEntity = (GraphSimpleEntity) graphObject;
-//            if(simpleEntity.getChemicalImage() != null){
-//                NodeProperties prop = node.getProp();
-//                Coordinate pos = CoordinateFactory.get(prop.getX(), prop.getY()).transform(factor, offset);
-//                double delta = prop.getHeight() * factor;
-//                ctx.drawImage(simpleEntity.getChemicalImage(), pos.getX(), pos.getY(), delta, delta);
-//            }
-//        } else {
-//            super.drawText(ctx, item, factor, offset);
-//        }
-//    }
-
     @Override
     public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
         Node node = (Node) item;

@@ -1,6 +1,6 @@
 package org.reactome.web.diagram.util.interactors;
 
-import org.reactome.web.diagram.data.interactors.common.InteractorBox;
+import org.reactome.web.diagram.data.interactors.common.DiagramBox;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
@@ -211,7 +211,7 @@ public class InteractorsLayout {
         List<Segment> segments = new LinkedList<>();
 
         if(entity.isChemical()){
-            InteractorBox box = new InteractorBox(entity);
+            DiagramBox box = new DiagramBox(entity);
             Coordinate a = CoordinateFactory.get(box.getMinX() + box.getWidth() * 0.4 , entity.getMinY());
             Coordinate b = CoordinateFactory.get(box.getMinX() + box.getWidth() * 0.6, entity.getMinY());
             Coordinate c = CoordinateFactory.get(box.getMaxX(), box.getMinY() + box.getHeight() * 0.35);

@@ -25,8 +25,19 @@ public class GraphEntityWithAccessionedSequence extends GraphGenomeEncodedEntity
         return GraphObjectImages.INSTANCE.entityWithAccessionedSequence();
     }
 
-    public PDBObject getPdbObject() {
-        return pdbObject;
+//    public PDBObject getPdbObject() {
+//        return pdbObject;
+//    }
+
+    public String getDetails() {
+        if (pdbObject != null) {
+            return "PDBe: " + pdbObject.getPdbid() + "    " + "Chain: " + pdbObject.getChain() +
+                    "\n" + "Resolution: " + pdbObject.getResolution() +
+                    "\n" + "Coverage: " + pdbObject.getCoverage() +
+                    "\n" + "PDBe Range: " + pdbObject.getPdbRange() +
+                    "\n" + "UniProt Range: " + pdbObject.getUniprotRange();
+        }
+        return null;
     }
 
     public ImageElement getProteinImage() {

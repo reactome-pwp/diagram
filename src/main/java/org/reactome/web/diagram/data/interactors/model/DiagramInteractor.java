@@ -1,6 +1,6 @@
 package org.reactome.web.diagram.data.interactors.model;
 
-import org.reactome.web.diagram.data.interactors.common.InteractorBox;
+import org.reactome.web.diagram.data.interactors.common.DiagramBox;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import uk.ac.ebi.pwp.structures.quadtree.client.QuadTreeBox;
 
@@ -36,8 +36,8 @@ public abstract class DiagramInteractor implements QuadTreeBox {
         return maxY;
     }
 
-    public InteractorBox transform(double factor, Coordinate delta) {
-        return new InteractorBox(this).transform(factor, delta);
+    public DiagramBox transform(double factor, Coordinate delta) {
+        return new DiagramBox(this).transform(factor, delta);
     }
 
     public abstract boolean isHovered(Coordinate pos);

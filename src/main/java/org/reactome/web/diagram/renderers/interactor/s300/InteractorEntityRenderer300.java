@@ -1,6 +1,6 @@
 package org.reactome.web.diagram.renderers.interactor.s300;
 
-import org.reactome.web.diagram.data.interactors.common.InteractorBox;
+import org.reactome.web.diagram.data.interactors.common.DiagramBox;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
@@ -42,7 +42,7 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
         String displayName = node.getDisplayName();
         String details = node.getDetails();
 
-        InteractorBox box = node.transform(factor, offset);  //The image size is supposed to fit the height of the box (and it is a SQUARE)
+        DiagramBox box = node.transform(factor, offset);  //The image size is supposed to fit the height of the box (and it is a SQUARE)
         box = box.splitHorizontally(box.getHeight()).get(1); //box is now the remaining of item box removing the image
 
         TextRenderer textRenderer = new TextRenderer(RendererProperties.INTERACTOR_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
@@ -52,16 +52,16 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
             } else if (Objects.equals(node.getAlias(), node.getAccession())) {
                 textRenderer.drawTextMultiLine(ctx, node.getAlias(), NodePropertiesFactory.get(box));
             } else {
-                List<InteractorBox> vBoxes = box.splitVertically(box.getHeight() * 0.6);
+                List<DiagramBox> vBoxes = box.splitVertically(box.getHeight() * 0.6);
                 textRenderer.drawTextMultiLine(ctx, node.getAlias(), NodePropertiesFactory.get(vBoxes.get(0)));
                 textRenderer.drawTextMultiLine(ctx, node.getAccession(), NodePropertiesFactory.get(vBoxes.get(1)));
             }
         } else {
 
-            List<InteractorBox> vBoxes = box.splitVertically(box.getHeight() * 0.3, box.getHeight() * 0.5);
+            List<DiagramBox> vBoxes = box.splitVertically(box.getHeight() * 0.3, box.getHeight() * 0.5);
             //If there is not details it means that we can use the whole right half of the box to write the alias
             ctx.setFont(RendererProperties.getFont(RendererProperties.INTERACTOR_FONT_SIZE));
-            InteractorBox aliasBox = vBoxes.get(0);
+            DiagramBox aliasBox = vBoxes.get(0);
 
             textRenderer.drawTextMultiLine(ctx, displayName, NodePropertiesFactory.get(aliasBox));
 
@@ -70,7 +70,7 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
             textRenderer = new TextRenderer(fontSize, RendererProperties.NODE_TEXT_PADDING);
             textRenderer.drawTextSingleLine(ctx, node.getAccession(), vBoxes.get(1).getCentre());
 
-            InteractorBox detailsBox = vBoxes.get(2);
+            DiagramBox detailsBox = vBoxes.get(2);
             textRenderer.drawPreformattedText(ctx, details, NodePropertiesFactory.get(detailsBox));
 
         }
@@ -80,14 +80,14 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
     private void drawChemicalDetails(AdvancedContext2d ctx, InteractorEntity node, Double factor, Coordinate offset){
         ctx.save();
         String displayName = node.getDisplayName();
-        InteractorBox box = node.transform(factor, offset);
+        DiagramBox box = node.transform(factor, offset);
         double delta = box.getHeight() * 0.8; // Shrink the image in order to make it fit into the bubble
         if (node.getImage() != null) {
             Coordinate centre = box.getCentre();
             // Center the image vertically but keep it more to the left half of the bubble
             ctx.drawImage(node.getImage(), centre.getX() - delta , centre.getY() - delta/2, delta, delta);
         }
-        InteractorBox textBox = box.splitHorizontally( box.getWidth()/2 ).get(1); //box is now the remaining of item box removing the image
+        DiagramBox textBox = box.splitHorizontally( box.getWidth()/2 ).get(1); //box is now the remaining of item box removing the image
         TextRenderer textRenderer = new TextRenderer(RendererProperties.INTERACTOR_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
         textRenderer.drawTextMultiLine(ctx, displayName, NodePropertiesFactory.get(textBox));
         ctx.restore();

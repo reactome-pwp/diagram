@@ -26,7 +26,8 @@ public class GraphSimpleEntity extends GraphPhysicalEntity implements Chemical_I
     public ImageElement getChemicalImage() {
         if(chemicalImage == null){
             chemicalImage = ImageElement.as(Chemical_ImageLoader.LOADING.getElement());
-            Chemical_ImageLoader.get().loadImage(this, getIdentifier());
+            //In Reactome, small molecules identifier are from CHEBI
+            Chemical_ImageLoader.get().loadImage(this, "CHEBI:" + getIdentifier());
         }
         return chemicalImage;
     }

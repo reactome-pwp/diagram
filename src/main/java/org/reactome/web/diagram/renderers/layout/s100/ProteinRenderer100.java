@@ -28,23 +28,6 @@ public class ProteinRenderer100 extends ProteinAbstractRenderer {
         drawSummaryItems(ctx, node, factor, offset);
     }
 
-//    @Override
-//    public void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
-//        Node node = (Node) item;
-//        GraphObject graphObject = node.getGraphObject();
-//        if(graphObject instanceof GraphEntityWithAccessionedSequence){
-//            GraphEntityWithAccessionedSequence pe = (GraphEntityWithAccessionedSequence) graphObject;
-//            if (pe.getProteinImage() != null) {
-//                NodeProperties prop = node.getProp();
-//                Coordinate pos = CoordinateFactory.get(prop.getX(), prop.getY()).transform(factor, offset);
-//                double delta = prop.getHeight() * factor;
-//                ctx.drawImage(pe.getProteinImage(), pos.getX(), pos.getY(), delta, delta);
-//            }
-//        } else {
-//            super.drawText(ctx, item, factor, offset);
-//        }
-//    }
-
     @Override
     @SuppressWarnings("Duplicates")
     public HoveredItem getHovered(DiagramObject item, Coordinate pos) {

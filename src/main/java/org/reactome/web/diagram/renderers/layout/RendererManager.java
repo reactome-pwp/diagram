@@ -10,6 +10,7 @@ import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.layout.s000.*;
 import org.reactome.web.diagram.renderers.layout.s050.*;
 import org.reactome.web.diagram.renderers.layout.s100.*;
+import org.reactome.web.diagram.renderers.layout.s300.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class RendererManager implements DiagramZoomHandler, DiagramLoadedHandler
     private Map<String, Renderer> s050 = new HashMap<>();
     private Map<String, Renderer> s100 = new HashMap<>();
 //    private Map<String, Renderer> s200 = new HashMap<>();
+    private Map<String, Renderer> s300 = new HashMap<>();
 
     private Map<String, Renderer> current = s100;
     private ConnectorRenderer connectorRenderer = new ConnectorRenderer100();
@@ -149,6 +151,23 @@ public class RendererManager implements DiagramZoomHandler, DiagramLoadedHandler
 //        s200.put("EntitySetAndMemberLink", aux);
 //        s200.put("EntitySetAndEntitySetLink", aux);
 
+        s300.put("Note", new NoteRenderer300());
+        s300.put("Compartment", new CompartmentRenderer300());
+        s300.put("Protein", new ProteinRenderer300());
+        s300.put("Chemical", new ChemicalRenderer300());
+        s300.put("Reaction", new ReactionRenderer300());
+        s300.put("Complex", new ComplexRenderer300());
+        s300.put("Entity", new OtherEntityRenderer300());
+        s300.put("EntitySet", new SetRenderer300());
+        s300.put("ProcessNode", new ProcessNodeRenderer300());
+        s300.put("FlowLine", new FlowlineRenderer300());
+        s300.put("RNA", new RNARenderer300());
+        s300.put("Gene", new GeneRenderer300());
+        s300.put("Shadow", new ShadowRenderer300());
+        aux = new LinkRenderer300();
+        s300.put("EntitySetAndMemberLink", aux);
+        s300.put("EntitySetAndEntitySetLink", aux);
+
     }
 
     @Override
@@ -169,11 +188,12 @@ public class RendererManager implements DiagramZoomHandler, DiagramLoadedHandler
         } else if (factor < 1) {
             this.connectorRenderer = new ConnectorRenderer050();
             this.current = this.s050;
-        } else if (factor < 2) {
+        } else if (factor < 3) {
             connectorRenderer = new ConnectorRenderer100();
             this.current = this.s100;
         } else {
             connectorRenderer = new ConnectorRenderer100();
+//            this.current = this.s300;
             this.current = this.s100;
         }
     }
