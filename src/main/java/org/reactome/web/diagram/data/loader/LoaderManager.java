@@ -108,7 +108,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
 
     @Override
     public void onInteractorsLoaderError(InteractorsException exception) {
-        eventBus.fireEventFromSource(new InteractorsErrorEvent(exception.getResource(), exception.getMessage()), this);
+        eventBus.fireEventFromSource(new InteractorsErrorEvent(exception.getResource(), exception.getMessage(), exception.getLevel()), this);
     }
 
     //The interactors loader is meant to be used not only when loading a new diagram but also on demand

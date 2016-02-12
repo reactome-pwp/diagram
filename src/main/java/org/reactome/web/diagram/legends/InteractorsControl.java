@@ -4,6 +4,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -14,7 +15,6 @@ import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.interactors.InteractorsExporter;
 import org.reactome.web.diagram.util.interactors.ResourceNameFormatter;
@@ -48,6 +48,8 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     private PwpButton downloadBtn;
     private PwpButton closeBtn;
 
+    private Timer hideTimer;
+
     public InteractorsControl(EventBus eventBus) {
         super(eventBus);
 
@@ -55,6 +57,13 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         this.setVisible(false);
 
         this.initHandlers();
+
+        hideTimer = new Timer() {
+            @Override
+            public void run() {
+                setVisible(false);
+            }
+        };
     }
 
     @Override
@@ -63,6 +72,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         if (source.equals(this.closeBtn)) {
             //Is safe to do this here (even if there is not loading in progress because that scenario is checked by the loader)
             setVisible(false);
+            hideTimer.cancel();
             if (loadingIcon.isVisible()) {
                 eventBus.fireEventFromSource(new InteractorsRequestCanceledEvent(), this);
             } else {
@@ -103,6 +113,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         currentResource = event.getResource();
+        hideTimer.cancel();
         //context is null when the diagram is in the process of loading (loading message is meant to be displayed)
         if (context == null || !context.getInteractors().isInteractorResourceCached(event.getResource())) {
             setVisible(true);
@@ -120,20 +131,34 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
         currentResource = event.getInteractors().getResource();
-        //TODO Check why no warning is shown in case no interactors are present
         int totalInteractorsLoaded = event.getInteractors().getEntities().size();
         if(totalInteractorsLoaded==0) {
-            Console.warn(">> No interactors present <<");
-            displayWarning(true);
+            displayWarning(MSG_NO_INTERACTORS_FOUND + ResourceNameFormatter.format(currentResource));
+            setTimer(3000);
         }else {
+            hideTimer.cancel();
             update();
         }
+
     }
 
     @Override
     public void onInteractorsError(InteractorsErrorEvent event) {
         setVisible(true);
-        displayError(event.getMessage());
+        switch (event.getLevel()){
+            case WARNING:
+                displayWarning(event.getMessage());
+                setTimer(3000);
+                break;
+            case ERROR:
+                displayError(event.getMessage());
+                setTimer(3000);
+                break;
+            case ERROR_RECOVERABLE:
+                displayError(event.getMessage());
+                break;
+        }
+
     }
 
     @Override
@@ -230,12 +255,16 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         controlsFP.setVisible(!visible);
     }
 
+    private void displayWarning(String msg) {
+        setMessage(msg);
+        displayWarning(true);
+    }
+
     private void displayWarning(boolean visible) {
         if (visible) {
             this.addStyleName(RESOURCES.getCSS().interactorsControlWarning());
             this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
         }
-        setMessage(MSG_NO_INTERACTORS_FOUND + ResourceNameFormatter.format(currentResource));
         controlsFP.setVisible(!visible);
     }
 
@@ -243,4 +272,10 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         loadingIcon.setVisible(false);
         message.setText(msg);
     }
+
+    public void setTimer(int millis) {
+        hideTimer.cancel();
+        hideTimer.schedule(millis);
+    }
+
 }

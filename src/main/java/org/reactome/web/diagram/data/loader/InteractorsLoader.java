@@ -10,6 +10,7 @@ import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsException;
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsFactory;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.events.InteractorsErrorEvent;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -71,20 +72,20 @@ public class InteractorsLoader implements RequestCallback {
             try {
                 this.request = requestBuilder.sendRequest(post.toString(), this);
             } catch (RequestException e) {
-                fireDeferredErrorEvent(resource, e.getMessage());
+                fireDeferredErrorEvent(resource, e.getMessage(), InteractorsErrorEvent.Level.ERROR);
             }
         } else {
-            fireDeferredErrorEvent(resource, "No target entities for interactors");
+            fireDeferredErrorEvent(resource, "No target entities for interactors", InteractorsErrorEvent.Level.WARNING);
         }
     }
 
-    private void fireDeferredErrorEvent(final String resource, final String message){
+    private void fireDeferredErrorEvent(final String resource, final String message, final InteractorsErrorEvent.Level level){
         // Firing of the error event is deferred to ensure that InteractorsResourceChanged
         // event is handled first by the rest of the modules.
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
-                handler.onInteractorsLoaderError(new InteractorsException(resource, message));
+                handler.onInteractorsLoaderError(new InteractorsException(resource, message, level));
             }
         });
     }

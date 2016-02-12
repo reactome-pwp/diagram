@@ -9,12 +9,20 @@ import org.reactome.web.diagram.handlers.InteractorsErrorHandler;
 public class InteractorsErrorEvent extends GwtEvent<InteractorsErrorHandler> {
     public static final Type<InteractorsErrorHandler> TYPE = new Type<>();
 
+    public enum Level {
+        WARNING,
+        ERROR,
+        ERROR_RECOVERABLE
+    }
+
     private String message;
     private String resource;
+    private Level level;
 
-    public InteractorsErrorEvent(String resource, String message) {
-        this.resource = resource;
+    public InteractorsErrorEvent(String resource, String message, Level level) {
         this.message = message;
+        this.resource = resource;
+        this.level = level;
     }
 
     @Override
@@ -25,6 +33,10 @@ public class InteractorsErrorEvent extends GwtEvent<InteractorsErrorHandler> {
     @Override
     protected void dispatch(InteractorsErrorHandler handler) {
         handler.onInteractorsError(this);
+    }
+
+    public Level getLevel() {
+        return level;
     }
 
     public String getMessage() {
@@ -38,8 +50,9 @@ public class InteractorsErrorEvent extends GwtEvent<InteractorsErrorHandler> {
     @Override
     public String toString() {
         return "InteractorsErrorEvent{" +
-                "resource='" + resource + '\'' +
-                ", message='" + message + '\'' +
+                "message='" + message + '\'' +
+                ", resource='" + resource + '\'' +
+                ", level=" + level +
                 '}';
     }
 }
