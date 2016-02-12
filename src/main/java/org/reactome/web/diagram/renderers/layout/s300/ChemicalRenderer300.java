@@ -8,7 +8,6 @@ import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.data.layout.category.ShapeCategory;
-import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
@@ -29,7 +28,14 @@ public class ChemicalRenderer300 extends ChemicalAbstractRenderer {
 
     @Override
     public void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
-        drawChemicalDetails(ctx, item, factor, offset);
+        Node node = (Node) item;
+        double w = node.getProp().getWidth();
+        double h = node.getProp().getHeight();
+        if (h >= 30 && w >= h * 1.25) {
+            drawChemicalDetails(ctx, node, factor, offset, RendererProperties.INTERACTOR_FONT_SIZE);
+        } else {
+            super.drawText(ctx, item, factor, offset);
+        }
     }
 
     @Override
@@ -56,23 +62,23 @@ public class ChemicalRenderer300 extends ChemicalAbstractRenderer {
         return true;
     }
 
-    private void drawChemicalDetails(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset){
+    protected void drawChemicalDetails(AdvancedContext2d ctx, Node node, Double factor, Coordinate offset, double fontSize){
         ctx.save();
-        Node node = (Node) item;
         GraphObject graphObject = node.getGraphObject();
         if(graphObject instanceof GraphSimpleEntity) {
             DiagramBox box = new DiagramBox(node.getProp()).transform(factor, offset);
 
             GraphSimpleEntity se = (GraphSimpleEntity) graphObject;
             if (se.getChemicalImage() != null) {
-                Coordinate pos = CoordinateFactory.get(box.getMinX(), box.getMinY());
-                double delta = box.getHeight() * 0.8; // Shrink the image in order to make it fit into the bubble
-                ctx.drawImage(se.getChemicalImage(), pos.getX(), pos.getY(), delta, delta);
+                double delta = box.getHeight() * 0.7; // Shrink the image in order to make it fit into the bubble
+                Coordinate centre = box.getCentre();
+                // Center the image vertically but keep it more to the left half of the bubble
+                ctx.drawImage(se.getChemicalImage(), centre.getX() - delta , centre.getY() - delta/2, delta, delta);
             }
 
             String displayName = node.getDisplayName();
             DiagramBox textBox = box.splitHorizontally(box.getWidth() / 2).get(1); //box is now the remaining of item box removing the image
-            TextRenderer textRenderer = new TextRenderer(RendererProperties.INTERACTOR_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
+            TextRenderer textRenderer = new TextRenderer(fontSize, RendererProperties.NODE_TEXT_PADDING);
             textRenderer.drawTextMultiLine(ctx, displayName, NodePropertiesFactory.get(textBox));
         }
         ctx.restore();

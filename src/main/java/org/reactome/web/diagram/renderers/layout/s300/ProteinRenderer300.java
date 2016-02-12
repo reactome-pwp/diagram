@@ -40,7 +40,14 @@ public class ProteinRenderer300 extends ProteinAbstractRenderer {
 
     @Override
     public void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
-        drawProteinDetails(ctx, item, factor, offset);
+        Node node = (Node) item;
+        double w = node.getProp().getWidth();
+        double h = node.getProp().getHeight();
+        if (h >= 35 && w >= h * 1.5) {
+            drawProteinDetails(ctx, node, factor, offset, 6.33 * factor);
+        } else {
+            super.drawText(ctx, item, factor, offset);
+        }
     }
 
     @Override
@@ -69,10 +76,9 @@ public class ProteinRenderer300 extends ProteinAbstractRenderer {
         return true;
     }
 
-    private void drawProteinDetails(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset){
+    protected void drawProteinDetails(AdvancedContext2d ctx, Node node, Double factor, Coordinate offset, double fontSize){
         ctx.save();
 
-        Node node = (Node) item;
         GraphObject graphObject = node.getGraphObject();
         if(graphObject instanceof GraphEntityWithAccessionedSequence) {
             //The image size is supposed to fit the height of the box (and it is a SQUARE)
@@ -86,7 +92,7 @@ public class ProteinRenderer300 extends ProteinAbstractRenderer {
             }
 
             box = box.splitHorizontally(box.getHeight()).get(1); //box is now the remaining of item box removing the image
-            TextRenderer textRenderer = new TextRenderer(RendererProperties.INTERACTOR_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
+            TextRenderer textRenderer = new TextRenderer(fontSize, RendererProperties.NODE_TEXT_PADDING);
 
             String details = pe.getDetails();
             if (details == null) {
@@ -100,12 +106,12 @@ public class ProteinRenderer300 extends ProteinAbstractRenderer {
             } else {
                 List<DiagramBox> vBoxes = box.splitVertically(box.getHeight() * 0.3, box.getHeight() * 0.5);
                 //If there is not details it means that we can use the whole right half of the box to write the alias
-                ctx.setFont(RendererProperties.getFont(RendererProperties.INTERACTOR_FONT_SIZE));
+                ctx.setFont(RendererProperties.getFont(fontSize));
                 DiagramBox aliasBox = vBoxes.get(0);
 
                 textRenderer.drawTextMultiLine(ctx, node.getDisplayName(), NodePropertiesFactory.get(aliasBox));
 
-                double fontSize = 3 * factor;
+                fontSize /= 2.11;
                 ctx.setFont(RendererProperties.getFont(fontSize));
                 textRenderer = new TextRenderer(fontSize, RendererProperties.NODE_TEXT_PADDING);
                 textRenderer.drawTextSingleLine(ctx, pe.getIdentifier(), vBoxes.get(1).getCentre());
