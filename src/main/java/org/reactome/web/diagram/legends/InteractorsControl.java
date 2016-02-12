@@ -92,6 +92,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     @Override
     public void onDiagramRequested(DiagramRequestedEvent event) {
         context = null;
+        setVisible(false);
     }
 
     @Override
