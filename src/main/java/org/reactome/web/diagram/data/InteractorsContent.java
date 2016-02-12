@@ -139,8 +139,11 @@ public class InteractorsContent {
     }
 
     public void clearInteractors(String resource){
-        for (InteractorEntity entity : interactorsCache.get(resource).values()) {
-            entity.getLinks().clear();
+        Map<String, InteractorEntity> entities = interactorsCache.get(resource);
+        if(entities!=null) {
+            for (InteractorEntity entity : entities.values()) {
+                entity.getLinks().clear();
+            }
         }
         QuadTree<DiagramInteractor> tree = interactorsTreeCache.get(resource);
         if (tree != null) {
