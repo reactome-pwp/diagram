@@ -81,8 +81,8 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
         ctx.save();
         String displayName = node.getDisplayName();
         DiagramBox box = node.transform(factor, offset);
-        double delta = box.getHeight() * 0.8; // Shrink the image in order to make it fit into the bubble
         if (node.getImage() != null) {
+            double delta = box.getHeight() * 0.8; // Shrink the image in order to make it fit into the bubble
             Coordinate centre = box.getCentre();
             // Center the image vertically but keep it more to the left half of the bubble
             ctx.drawImage(node.getImage(), centre.getX() - delta , centre.getY() - delta/2, delta, delta);
