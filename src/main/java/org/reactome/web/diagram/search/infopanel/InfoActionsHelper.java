@@ -3,7 +3,6 @@ package org.reactome.web.diagram.search.infopanel;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
-import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.events.GraphObjectHoveredEvent;
 import org.reactome.web.diagram.events.GraphObjectSelectedEvent;
 import org.reactome.web.diagram.events.InteractorSelectedEvent;
@@ -44,20 +43,20 @@ abstract class InfoActionsHelper {
     // Interactors //
     /////////////////
 
-    static ClickHandler getInteractorLinkClickHandler(final RawInteractor rawInteractor, final EventBus eventBus, final Object source){
+    static ClickHandler getInteractorLinkClickHandler(final String url, final EventBus eventBus, final Object source){
         return new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                eventBus.fireEventFromSource(new InteractorSelectedEvent(rawInteractor, InteractorSelectedEvent.ObjectType.INTERACTOR), source);
+                eventBus.fireEventFromSource(new InteractorSelectedEvent(url), source);
             }
         };
     }
 
-    static ClickHandler getInteractionLinkClickHandler(final RawInteractor rawInteractor, final EventBus eventBus, final Object source){
+    static ClickHandler getInteractionLinkClickHandler(final String url, final EventBus eventBus, final Object source){
         return new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                eventBus.fireEventFromSource(new InteractorSelectedEvent(rawInteractor, InteractorSelectedEvent.ObjectType.INTERACTION), source);
+                eventBus.fireEventFromSource(new InteractorSelectedEvent(url), source);
             }
         };
     }

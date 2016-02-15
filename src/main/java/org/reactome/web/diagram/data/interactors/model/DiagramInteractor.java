@@ -9,6 +9,8 @@ import uk.ac.ebi.pwp.structures.quadtree.client.QuadTreeBox;
  */
 public abstract class DiagramInteractor implements QuadTreeBox {
 
+    public enum Type {CHEMICAL, PROTEIN, INTERACTION}
+
     protected Double minX, minY, maxX, maxY;
 
     DiagramInteractor() {

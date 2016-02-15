@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.model.images.InteractorImages;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.DiagramObject;
@@ -73,7 +74,8 @@ public class InteractorsListPanel extends FlowPanel {
                     listItemLink.addMouseOutHandler(InfoActionsHelper.getLinkMouseOut(eventBus, this));
                 }
             } else {
-                listItemLink.addClickHandler(InfoActionsHelper.getInteractorLinkClickHandler(rawInteractor, eventBus, this));
+                String url = context.getInteractors().getURL(LoaderManager.INTERACTORS_RESOURCE, rawInteractor, InteractorEntity.getType(rawInteractor.getAcc()));
+                listItemLink.addClickHandler(InfoActionsHelper.getInteractorLinkClickHandler(url, eventBus, this));
 //                The following lines are for enabling highlighting of the interactors
 //                DiagramInteractor diagramInteractor = context.getInteractors().getDiagramInteractor(LoaderManager.INTERACTORS_RESOURCE, rawInteractor.getAcc());
 //                if(diagramInteractor!=null){
@@ -83,7 +85,8 @@ public class InteractorsListPanel extends FlowPanel {
             }
 
             Anchor idItemLink = new Anchor(rawInteractor.getId());
-            idItemLink.addClickHandler(InfoActionsHelper.getInteractionLinkClickHandler(rawInteractor, eventBus, this));
+            String url = context.getInteractors().getURL(LoaderManager.INTERACTORS_RESOURCE, rawInteractor, InteractorEntity.Type.INTERACTION);
+            idItemLink.addClickHandler(InfoActionsHelper.getInteractionLinkClickHandler(url, eventBus, this));
             idItemLink.setStyleName(css.listItemLink());
 
             listItem.add(listItemLink);

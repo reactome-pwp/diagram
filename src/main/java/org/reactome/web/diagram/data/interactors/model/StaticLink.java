@@ -7,6 +7,8 @@ import org.reactome.web.diagram.data.layout.Segment;
 import org.reactome.web.diagram.data.layout.impl.SegmentFactory;
 import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
+import java.util.List;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -15,8 +17,8 @@ public class StaticLink extends InteractorLink {
     private Node to;
     private Coordinate toPoint;
 
-    public StaticLink(Node from, Node to, String id, double score) {
-        super(from, id, score);
+    public StaticLink(Node from, Node to, String id, List<String> cluster, double score) {
+        super(from, id, cluster, score);
         this.to = to;
         setBoundaries();
     }

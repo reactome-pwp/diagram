@@ -11,6 +11,7 @@ import org.reactome.web.diagram.util.pdbe.model.PDBObject;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -30,11 +31,11 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
     public InteractorEntity(String accession, String alias) {
         this.accession = accession;
         this.alias = alias;
-        this.chemical = accession.matches("^(CHEBI|CHEMBL).*");
+        this.chemical = isChemical(accession);
     }
 
-    public InteractorLink addLink(Node node, String id, double score) {
-        InteractorLink link = new DynamicLink(node, this, id, score);
+    public InteractorLink addLink(Node node, String id, List<String> cluster, double score) {
+        InteractorLink link = new DynamicLink(node, this, id, cluster, score);
         links.add(link);
         return link;
     }
@@ -52,8 +53,16 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
         return alias;
     }
 
+    public static Type getType(String acc){
+        return isChemical(acc) ? Type.CHEMICAL : Type.PROTEIN;
+    }
+
     public boolean isChemical() {
         return chemical;
+    }
+
+    private static boolean isChemical(String accession){
+        return accession.matches("^(CHEBI|CHEMBL).*");
     }
 
     public Coordinate getCentre() {

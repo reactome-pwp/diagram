@@ -24,6 +24,8 @@ import java.util.*;
  */
 public class InteractorsContent {
 
+
+
     static final int INTERACTORS_RESOURCE_CACHE_SIZE = 5;
     static final int INTERACTORS_FRAME_OFFSET = 1000;
 
@@ -39,6 +41,7 @@ public class InteractorsContent {
 
     static Map<String, Double> interactorsThreshold = new HashMap<>();
 
+    private Map<String, Map<DiagramInteractor.Type, String>> urlsPerResource = new HashMap<>(); //resource -> (interactor/interaction) -> URL
     private Map<String, MapSet<String, RawInteractor>> rawInteractorsCache; //resource -> node acc -> raw interactors
 
     private MapSet<String, InteractorsSummary> interactorsSummaryMap; //resource -> InteractorsSummary
@@ -59,6 +62,15 @@ public class InteractorsContent {
         this.maxX = maxX + INTERACTORS_FRAME_OFFSET;
         this.minY = minY - INTERACTORS_FRAME_OFFSET;
         this.maxY = maxY + INTERACTORS_FRAME_OFFSET;
+    }
+
+    public void add(String resource, DiagramInteractor.Type type, String url) {
+        Map<DiagramInteractor.Type, String> urls = urlsPerResource.get(resource);
+        if (urls == null) {
+            urls = new HashMap<>();
+            urlsPerResource.put(resource, urls);
+        }
+        urls.put(type, url);
     }
 
     public void cache(String resource, String acc, RawInteractor rawInteractor) {
@@ -158,6 +170,48 @@ public class InteractorsContent {
             Set<InteractorLink> links = cache.getElements(link.getNodeFrom());
             if (links != null) links.remove(link);
         }
+    }
+
+    public String getURL(String resource, DiagramInteractor interactor){
+        Map<DiagramInteractor.Type, String> urls = urlsPerResource.get(resource);
+        if(urls==null) return null;
+        if(interactor instanceof InteractorLink){
+            String url = urls.get(DiagramInteractor.Type.INTERACTION);
+            List<String> cluster = ((InteractorLink) interactor).getCluster();
+            if (url != null && cluster != null && !cluster.isEmpty()) {
+                String id = cluster.toString().replaceAll(", ", "%20OR%20").replace("[","").replace("]","");
+                return url.replaceAll("##ID##", id);
+            }
+        } else {
+            InteractorEntity entity = (InteractorEntity) interactor;
+            String url = entity.isChemical() ? urls.get(DiagramInteractor.Type.CHEMICAL) : urls.get(DiagramInteractor.Type.PROTEIN);
+            if(url!=null){
+                return url.replaceAll("##ID##", entity.getAccession());
+            }
+        }
+        return null;
+    }
+
+    public String getURL(String resource, RawInteractor rawInteractor, DiagramInteractor.Type type){
+        Map<DiagramInteractor.Type, String> urls = urlsPerResource.get(resource);
+        if (urls == null) return null;
+        String url;
+        switch (type){
+            case INTERACTION:
+                url = urls.get(DiagramInteractor.Type.INTERACTION);
+                List<String> cluster = rawInteractor.getCluster();
+                if (url != null && cluster != null && !cluster.isEmpty()) {
+                    String id = rawInteractor.getCluster().toString().replaceAll(", ", "%20OR%20").replace("[","").replace("]","");
+                    return url.replaceAll("##ID##", id);
+                }
+                break;
+            default:
+                url = urls.get(type);
+                if(url!=null){
+                    return url.replaceAll("##ID##", rawInteractor.getAcc());
+                }
+        }
+        return null;
     }
 
     public List<InteractorLink> getInteractorLinks(String resource, Node node) {

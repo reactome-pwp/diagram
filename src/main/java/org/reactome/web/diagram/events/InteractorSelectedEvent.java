@@ -1,10 +1,6 @@
 package org.reactome.web.diagram.events;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
-import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
-import org.reactome.web.diagram.data.interactors.model.InteractorLink;
-import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.handlers.InteractorSelectedHandler;
 
 /**
@@ -13,42 +9,10 @@ import org.reactome.web.diagram.handlers.InteractorSelectedHandler;
 public class InteractorSelectedEvent extends GwtEvent<InteractorSelectedHandler> {
     public static final Type<InteractorSelectedHandler> TYPE = new Type<>();
 
-    public enum ObjectType {
-        INTERACTOR("http://identifiers.org/##RESOURCE##/##ID##"),
-        INTERACTION("http://www.ebi.ac.uk/Tools/webservices/psicquic/view/main.xhtml?query=");
+    private String url;
 
-        String url;
-
-        ObjectType(String url) {
-            this.url = url;
-        }
-    }
-
-    private ObjectType type;
-    private String identifier;
-
-    public InteractorSelectedEvent(DiagramInteractor interactor) {
-        if(interactor instanceof InteractorEntity){
-            InteractorEntity entity = (InteractorEntity) interactor;
-            this.identifier = entity.getAccession();
-            this.type = ObjectType.INTERACTOR;
-        } else {
-            InteractorLink link = (InteractorLink) interactor;
-            this.identifier = link.getId();
-            this.type = ObjectType.INTERACTION;
-        }
-    }
-
-    public InteractorSelectedEvent(RawInteractor interactor, ObjectType type){
-        this.type = type;
-        switch (type){
-            case INTERACTOR:
-                identifier = interactor.getAcc();
-                break;
-            case INTERACTION:
-                identifier = interactor.getId();
-                break;
-        }
+    public InteractorSelectedEvent(String url) {
+        this.url = url;
     }
 
     @Override
@@ -61,45 +25,15 @@ public class InteractorSelectedEvent extends GwtEvent<InteractorSelectedHandler>
         handler.onInteractorSelected(this);
     }
 
-    public ObjectType getType() {
-        return type;
-    }
-
-    public String getIdentifier() {
-        return identifier;
-    }
 
     public String getUrl() {
-        if (identifier == null || identifier.isEmpty()) return null;
-        String url = "";
-        switch (type){
-            case INTERACTION:
-                if(identifier.contains("EBI-")){
-                    url = "http://www.ebi.ac.uk/intact/interaction/" + identifier;
-                } else {
-                    url = type.url + identifier;
-                }
-                break;
-            case INTERACTOR:
-                String acc = identifier;
-                String[] text = acc.split(":");
-                String resource;
-                if (text.length > 1){
-                    resource = text[0].toLowerCase();
-                    url = type.url.replace("##RESOURCE##", resource).replace("##ID##", acc);
-                } else {
-                    url = "http://www.uniprot.org/uniprot/" + acc;
-                }
-                break;
-        }
         return url;
     }
 
     @Override
     public String toString() {
         return "InteractorSelectedEvent{" +
-                "type=" + type +
-                ", identifier='" + identifier + '\'' +
+                "url='" + url + '\'' +
                 '}';
     }
 }

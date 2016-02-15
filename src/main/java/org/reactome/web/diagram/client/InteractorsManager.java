@@ -156,9 +156,9 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
                         for (DiagramObject nodeTo : diagramObjectList) {
                             InteractorLink link = null;
                             if (node.equals(nodeTo)) {
-                                link = new LoopLink(node, rawInteractor.getId(), rawInteractor.getScore());
+                                link = new LoopLink(node, rawInteractor.getId(), rawInteractor.getCluster(), rawInteractor.getScore());
                             } else if (!node.getGraphObject().equals(nodeTo.getGraphObject())) {
-                                link = new StaticLink(node, (Node) nodeTo, rawInteractor.getId(), rawInteractor.getScore());
+                                link = new StaticLink(node, (Node) nodeTo, rawInteractor.getId(), rawInteractor.getCluster(), rawInteractor.getScore());
                             }
                             if (link != null) {
                                 interactors.cache(currentResource, node, link);
@@ -191,7 +191,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
                 }
             }
 
-            InteractorLink link = interactor.addLink(node, rawInteractor.getId(), rawInteractor.getScore());
+            InteractorLink link = interactor.addLink(node, rawInteractor.getId(), rawInteractor.getCluster(), rawInteractor.getScore());
             interactors.cache(currentResource, interactor);
             interactors.cache(currentResource, node, link);
 

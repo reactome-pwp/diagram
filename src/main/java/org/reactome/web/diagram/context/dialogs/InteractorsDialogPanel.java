@@ -18,6 +18,7 @@ import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.loader.LoaderManager;
@@ -128,15 +129,18 @@ public class InteractorsDialogPanel extends Composite implements TableItemSelect
     public void onTableItemSelected(TableItemSelectedEvent event) {
         RawInteractor interactor = event.getValue();
         TableItemSelectedEvent.Selection selectedColumn =  event.getSelectedColumn();
+
+        String url = null;
         switch(selectedColumn) {
             case ACCESSION:
-                eventBus.fireEventFromSource(new InteractorSelectedEvent(interactor, InteractorSelectedEvent.ObjectType.INTERACTOR), this );
+                url = context.getInteractors().getURL(currentResource, interactor, InteractorEntity.getType(interactor.getAcc()));
                 break;
             case ID:
             case SCORE:
-                eventBus.fireEventFromSource(new InteractorSelectedEvent(interactor, InteractorSelectedEvent.ObjectType.INTERACTION), this );
+                url = context.getInteractors().getURL(currentResource, interactor, InteractorEntity.Type.INTERACTION);
                 break;
         }
+        eventBus.fireEventFromSource(new InteractorSelectedEvent(url), this);
     }
 
     private void initialiseWidget(){
@@ -144,7 +148,7 @@ public class InteractorsDialogPanel extends Composite implements TableItemSelect
         container.setStyleName(RESOURCES.getCSS().container());
 
         double threshold = InteractorsContent.getInteractorsThreshold(currentResource);
-        interactorsTable = new InteractorsTable<RawInteractor>("Interactors", threshold, analysisType, expColumns, min, max, selectedExpCol);
+        interactorsTable = new InteractorsTable<>("Interactors", threshold, analysisType, expColumns, min, max, selectedExpCol);
         interactorsTable.setHeight("150px");
         interactorsTable.addTableItemSelectedHandler(this);
 

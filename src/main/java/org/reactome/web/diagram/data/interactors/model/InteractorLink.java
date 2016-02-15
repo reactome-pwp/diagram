@@ -7,6 +7,8 @@ import org.reactome.web.diagram.data.layout.category.SegmentCategory;
 import org.reactome.web.diagram.data.layout.impl.SegmentFactory;
 import org.reactome.web.diagram.data.loader.LoaderManager;
 
+import java.util.List;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -16,11 +18,13 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
     Coordinate fromPoint;
 
     String id;
+    List<String> cluster;
     double score;
 
-    InteractorLink(Node from, String id, double score) {
+    InteractorLink(Node from, String id, List<String> cluster, double score) {
         this.from = from;
         this.id = id;
+        this.cluster = cluster;
         this.score = score;
     }
 
@@ -38,6 +42,10 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
 
     public String getId() {
         return id;
+    }
+
+    public List<String> getCluster() {
+        return cluster;
     }
 
     public double getScore() {
