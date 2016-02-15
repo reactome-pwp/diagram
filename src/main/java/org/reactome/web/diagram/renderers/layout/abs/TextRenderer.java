@@ -65,7 +65,7 @@ public class TextRenderer {
         List<String> textLines = spitText(ctx, message, availableWidth);
 
         double x = properties.getX() + properties.getWidth() / 2;
-        double y = (properties.getY() + properties.getHeight() / 2);
+        double y = properties.getY() + properties.getHeight() / 2;
 
         if(textLines.size()==1){
             drawTextSingleLine(ctx, message, CoordinateFactory.get(x,y));
@@ -147,7 +147,9 @@ public class TextRenderer {
                 }
 
             }
-            rtn.add(singleLine.toString());
+            if(singleLine.length()!=0) {
+                rtn.add(singleLine.toString());
+            }
         }
         return rtn;
     }
