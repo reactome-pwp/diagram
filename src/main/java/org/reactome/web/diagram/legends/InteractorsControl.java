@@ -37,6 +37,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     private static String MSG_NO_INTERACTORS_FOUND = "No interactors found in ";
     @SuppressWarnings("FieldCanBeLocal")
     private static String MSG_DOWNLOAD_TOOLTIP = "Download all diagram interactors from ";
+    private static int DELAY = 5000;
 
     private String currentResource;
 
@@ -46,6 +47,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     private FlowPanel controlsFP;
     private Slider slider;
     private PwpButton downloadBtn;
+    private PwpButton retryBtn;
     private PwpButton closeBtn;
 
     private Timer hideTimer;
@@ -87,6 +89,9 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
                     InteractorsExporter.exportInteractors(filename, interactors);
                 }
             }
+        } else if (source.equals(this.retryBtn)) {
+            // Fire event for a Resource selection to trigger reloading
+            eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(currentResource), this);
         }
     }
 
@@ -134,7 +139,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         int totalInteractorsLoaded = event.getInteractors().getEntities().size();
         if(totalInteractorsLoaded==0) {
             displayWarning(MSG_NO_INTERACTORS_FOUND + ResourceNameFormatter.format(currentResource));
-            setTimer(3000);
+            setTimer(DELAY);
         }else {
             hideTimer.cancel();
             update();
@@ -148,14 +153,16 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         switch (event.getLevel()){
             case WARNING:
                 displayWarning(event.getMessage());
-                setTimer(3000);
+                setTimer(DELAY);
                 break;
             case ERROR:
                 displayError(event.getMessage());
-                setTimer(3000);
+                setTimer(DELAY);
                 break;
             case ERROR_RECOVERABLE:
                 displayError(event.getMessage());
+                retryBtn.setTitle("Retry loading interactors from " + ResourceNameFormatter.format(currentResource) );
+                retryBtn.setVisible(true);
                 break;
         }
 
@@ -178,6 +185,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             setVisible(true);
             setMessage(ResourceNameFormatter.format(currentResource));
             controlsFP.setVisible(true);
+            retryBtn.setVisible(false);
             slider.setValue(InteractorsContent.getInteractorsThreshold(currentResource));
             downloadBtn.setTitle(MSG_DOWNLOAD_TOOLTIP + ResourceNameFormatter.format(currentResource));
         }
@@ -188,29 +196,30 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         addStyleName(RESOURCES.getCSS().interactorsControl());
         addStyleName(RESOURCES.getCSS().unselectable());
 
-        this.loadingIcon = new Image(RESOURCES.loader());
-        this.loadingIcon.setStyleName(RESOURCES.getCSS().interactorsControlLoadingIcon());
+        loadingIcon = new Image(RESOURCES.loader());
+        loadingIcon.setStyleName(RESOURCES.getCSS().interactorsControlLoadingIcon());
+        message = new InlineLabel("");
+        message.setStyleName(RESOURCES.getCSS().interactorsControlMessage());
 
-        this.message = new InlineLabel("");
-        this.message.setStyleName(RESOURCES.getCSS().interactorsControlMessage());
-        this.closeBtn = new PwpButton("Close and clear interactors", RESOURCES.getCSS().close(), this);
+        closeBtn = new PwpButton("Close and clear interactors", RESOURCES.getCSS().close(), this);
+        downloadBtn = new PwpButton(MSG_DOWNLOAD_TOOLTIP, RESOURCES.getCSS().download(), this);
+        retryBtn = new PwpButton("Retry loading interactors", RESOURCES.getCSS().download(), this);
 
-        this.slider = new Slider(100, 24, 0.45, 1, 0.45, true);
-        this.slider.setTooltip("Use this slider to set the confidence threshold");
-        this.slider.addSliderValueChangedHandler(this);
-        this.slider.setStyleName(RESOURCES.getCSS().interactorsControlSlider());
+        slider = new Slider(100, 24, 0.45, 1, 0.45, true);
+        slider.setTooltip("Use this slider to set the confidence threshold");
+        slider.addSliderValueChangedHandler(this);
+        slider.setStyleName(RESOURCES.getCSS().interactorsControlSlider());
 
-        this.downloadBtn = new PwpButton(MSG_DOWNLOAD_TOOLTIP, RESOURCES.getCSS().download(), this);
+        controlsFP = new FlowPanel();
+        controlsFP.setStyleName(RESOURCES.getCSS().interactorsControlControls());
+        controlsFP.add(this.slider);
+        controlsFP.add(this.downloadBtn);
 
-        this.controlsFP = new FlowPanel();
-        this.controlsFP.setStyleName(RESOURCES.getCSS().interactorsControlControls());
-        this.controlsFP.add(this.slider);
-        this.controlsFP.add(this.downloadBtn);
-
-        this.add(this.loadingIcon);
-        this.add(this.message);
-        this.add(this.closeBtn);
-        this.add(this.controlsFP);
+        add(loadingIcon);
+        add(message);
+        add(closeBtn);
+        add(controlsFP);
+        //add(retryBtn);
     }
 
     private void initHandlers() {
@@ -227,6 +236,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         this.removeStyleName(RESOURCES.getCSS().interactorsControlWarning());
         loadingIcon.setVisible(visible);
         controlsFP.setVisible(!visible);
+        retryBtn.setVisible(!visible);
         if (visible) {
             String msg;
             if(resource.equals(DiagramFactory.INTERACTORS_INITIAL_RESOURCE)) {
@@ -253,6 +263,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             this.removeStyleName(RESOURCES.getCSS().interactorsControlWarning());
         }
         controlsFP.setVisible(!visible);
+        retryBtn.setVisible(!visible);
     }
 
     private void displayWarning(String msg) {
@@ -266,6 +277,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
         }
         controlsFP.setVisible(!visible);
+        retryBtn.setVisible(!visible);
     }
 
     private void setMessage(String msg) {

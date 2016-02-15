@@ -72,7 +72,7 @@ public class InteractorsLoader implements RequestCallback {
             try {
                 this.request = requestBuilder.sendRequest(post.toString(), this);
             } catch (RequestException e) {
-                fireDeferredErrorEvent(resource, e.getMessage(), InteractorsErrorEvent.Level.ERROR);
+                fireDeferredErrorEvent(resource, e.getMessage(), InteractorsErrorEvent.Level.ERROR_RECOVERABLE);
             }
         } else {
             fireDeferredErrorEvent(resource, "No target entities for interactors", InteractorsErrorEvent.Level.WARNING);
@@ -106,7 +106,7 @@ public class InteractorsLoader implements RequestCallback {
                 this.handler.interactorsLoaded(interactors, time);
                 break;
             default:
-                this.handler.onInteractorsLoaderError(new InteractorsException(resource, response.getStatusText()));
+                this.handler.onInteractorsLoaderError(new InteractorsException(resource, response.getStatusText(), InteractorsErrorEvent.Level.ERROR_RECOVERABLE));
         }
 
     }
