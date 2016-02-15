@@ -17,7 +17,7 @@ public class InteractorsExporter {
      * a MapSet containing:  DiagramAccession -> Set<RawInteractors>
      *
      * @param filename the name of the file to be saved
-     * @param interactors
+     * @param interactors the interactors to be exported
      */
     public static void exportInteractors(String filename, MapSet<String, RawInteractor> interactors) {
         alertDownload(filename, getFileContent(interactors));
