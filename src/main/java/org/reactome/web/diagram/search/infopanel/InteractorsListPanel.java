@@ -56,8 +56,7 @@ public class InteractorsListPanel extends FlowPanel {
             FlowPanel listItem = new FlowPanel();
             listItem.setStyleName(css.listItem());
 
-            Image icon = new Image(InteractorImages.INSTANCE.interactor());
-            listItem.add(icon);
+            Image icon = null;
 
             Anchor listItemLink = new Anchor(rawInteractor.getAlias()!=null ? rawInteractor.getAlias() : rawInteractor.getAcc());
             listItemLink.setStyleName(css.listItemLink());
@@ -72,10 +71,13 @@ public class InteractorsListPanel extends FlowPanel {
                     listItemLink.addClickHandler(InfoActionsHelper.getLinkClickHandler(graphObject, eventBus, this));
                     listItemLink.addMouseOverHandler(InfoActionsHelper.getLinkMouseOver(graphObject, eventBus, this));
                     listItemLink.addMouseOutHandler(InfoActionsHelper.getLinkMouseOut(eventBus, this));
+                    icon = new Image(graphObject.getImageResource());
                 }
             } else {
                 String url = context.getInteractors().getURL(LoaderManager.INTERACTORS_RESOURCE, rawInteractor, InteractorEntity.getType(rawInteractor.getAcc()));
+                listItemLink.setHref(url);
                 listItemLink.addClickHandler(InfoActionsHelper.getInteractorLinkClickHandler(url, eventBus, this));
+                icon = new Image(InteractorImages.INSTANCE.interactor());
 //                The following lines are for enabling highlighting of the interactors
 //                DiagramInteractor diagramInteractor = context.getInteractors().getDiagramInteractor(LoaderManager.INTERACTORS_RESOURCE, rawInteractor.getAcc());
 //                if(diagramInteractor!=null){
@@ -83,7 +85,7 @@ public class InteractorsListPanel extends FlowPanel {
 //                    listItemLink.addMouseOutHandler(InfoActionsHelper.getInteractorLinkMouseOut(eventBus, this));
 //                }
             }
-
+            listItem.add(icon);
             listItem.add(listItemLink);
 
             if(context.getInteractors().getURL(LoaderManager.INTERACTORS_RESOURCE, InteractorEntity.Type.INTERACTION) != null) {
@@ -91,6 +93,7 @@ public class InteractorsListPanel extends FlowPanel {
                 if (id != null) {
                     Anchor idItemLink = new Anchor(id);
                     String url = context.getInteractors().getURL(LoaderManager.INTERACTORS_RESOURCE, rawInteractor, InteractorEntity.Type.INTERACTION);
+                    idItemLink.setHref(url);
                     idItemLink.addClickHandler(InfoActionsHelper.getInteractionLinkClickHandler(url, eventBus, this));
                     idItemLink.setStyleName(css.listItemLink());
 

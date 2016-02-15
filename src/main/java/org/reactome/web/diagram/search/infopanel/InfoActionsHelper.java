@@ -47,6 +47,7 @@ abstract class InfoActionsHelper {
         return new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                event.stopPropagation(); event.preventDefault();
                 eventBus.fireEventFromSource(new InteractorSelectedEvent(url), source);
             }
         };
@@ -56,6 +57,7 @@ abstract class InfoActionsHelper {
         return new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                event.stopPropagation(); event.preventDefault();
                 eventBus.fireEventFromSource(new InteractorSelectedEvent(url), source);
             }
         };
