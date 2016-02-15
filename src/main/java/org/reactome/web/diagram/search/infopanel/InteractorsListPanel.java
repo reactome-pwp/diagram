@@ -84,14 +84,20 @@ public class InteractorsListPanel extends FlowPanel {
 //                }
             }
 
-            Anchor idItemLink = new Anchor(rawInteractor.getId());
-            String url = context.getInteractors().getURL(LoaderManager.INTERACTORS_RESOURCE, rawInteractor, InteractorEntity.Type.INTERACTION);
-            idItemLink.addClickHandler(InfoActionsHelper.getInteractionLinkClickHandler(url, eventBus, this));
-            idItemLink.setStyleName(css.listItemLink());
-
             listItem.add(listItemLink);
-            listItem.add(new InlineLabel(" -"));
-            listItem.add(idItemLink);
+
+            if(context.getInteractors().getURL(LoaderManager.INTERACTORS_RESOURCE, InteractorEntity.Type.INTERACTION) != null) {
+                String id = rawInteractor.getId() == null || rawInteractor.getId().matches("^\\-\\d+") ? null : rawInteractor.getId();
+                if (id != null) {
+                    Anchor idItemLink = new Anchor(id);
+                    String url = context.getInteractors().getURL(LoaderManager.INTERACTORS_RESOURCE, rawInteractor, InteractorEntity.Type.INTERACTION);
+                    idItemLink.addClickHandler(InfoActionsHelper.getInteractionLinkClickHandler(url, eventBus, this));
+                    idItemLink.setStyleName(css.listItemLink());
+
+                    listItem.add(new InlineLabel(" -"));
+                    listItem.add(idItemLink);
+                }
+            }
             listItem.add(new InlineLabel(" - Score: " + NumberFormat.getFormat("0.000").format(rawInteractor.getScore())));
 
             listPanel.add(listItem);

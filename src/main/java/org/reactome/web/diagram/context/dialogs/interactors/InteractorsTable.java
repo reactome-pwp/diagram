@@ -175,7 +175,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         Column<T, String> columnTitle = new Column<T, String>(new ClickableTextCell()) {
             @Override
             public String getValue(T object) {
-                return "" + object.getId();
+                return object.getId() == null || object.getId().matches("^\\-\\d+") ? "N/A" : object.getId();
             }
         };
         columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {

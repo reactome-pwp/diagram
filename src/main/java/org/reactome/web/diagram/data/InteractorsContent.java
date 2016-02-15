@@ -172,6 +172,12 @@ public class InteractorsContent {
         }
     }
 
+    public String getURL(String resource, DiagramInteractor.Type type){
+        Map<DiagramInteractor.Type, String> urls = urlsPerResource.get(resource);
+        if(urls==null) return null;
+        return urls.get(type);
+    }
+
     public String getURL(String resource, DiagramInteractor interactor){
         Map<DiagramInteractor.Type, String> urls = urlsPerResource.get(resource);
         if(urls==null) return null;
