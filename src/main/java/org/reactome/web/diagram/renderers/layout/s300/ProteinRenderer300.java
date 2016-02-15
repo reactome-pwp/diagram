@@ -117,7 +117,7 @@ public class ProteinRenderer300 extends ProteinAbstractRenderer {
                 textRenderer.drawTextSingleLine(ctx, pe.getIdentifier(), vBoxes.get(1).getCentre());
 
                 DiagramBox detailsBox = vBoxes.get(2);
-                textRenderer.drawPreformattedText(ctx, details, NodePropertiesFactory.get(detailsBox));
+                textRenderer.drawPreformattedText(ctx, details, NodePropertiesFactory.get(detailsBox), true);
             }
         }
         ctx.restore();
