@@ -12,6 +12,10 @@ import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsFactory;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.InteractorsErrorEvent;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -49,18 +53,8 @@ public class InteractorsLoader implements RequestCallback {
         }
         this.resource = resource;
 
-        StringBuilder post = new StringBuilder();
-        for (DiagramObject diagramObject : content.getDiagramObjects()) {
-            GraphObject graphObject = diagramObject.getGraphObject();
-            if(graphObject instanceof GraphPhysicalEntity){
-                GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
-                if (pe.getIdentifier() != null) {
-                    post.append(pe.getIdentifier()).append(",");
-                }
-            }
-        }
-        if(post.length()>0){
-            post.delete(post.length()-1, post.length());
+        String post = getPostData(content.getDiagramObjects());
+        if(post != null){
             String url;
             if (resource.toLowerCase().equals("static")) {
                 url = PREFIX + "static/proteins/details/?v=" + LoaderManager.version;
@@ -70,13 +64,36 @@ public class InteractorsLoader implements RequestCallback {
 
             RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
             try {
-                this.request = requestBuilder.sendRequest(post.toString(), this);
+                this.request = requestBuilder.sendRequest(post, this);
             } catch (RequestException e) {
                 fireDeferredErrorEvent(resource, e.getMessage(), InteractorsErrorEvent.Level.ERROR_RECOVERABLE);
             }
         } else {
             fireDeferredErrorEvent(resource, "No target entities for interactors", InteractorsErrorEvent.Level.WARNING);
         }
+    }
+
+    /**
+     * This method iterates over diagram objects, gets their accession
+     * and creates a comma separated string to be placed in the POST request
+     */
+    private String getPostData(Collection<DiagramObject> items) {
+        Set<String> ids = new HashSet<>(); //this is to avoid duplicate ids in the request
+        StringBuilder post = new StringBuilder();
+        for (DiagramObject diagramObject : items) {
+            GraphObject graphObject = diagramObject.getGraphObject();
+            if(graphObject instanceof GraphPhysicalEntity){
+                GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+                if (pe.getIdentifier() != null && ids.add(pe.getIdentifier())) { //this is to avoid re-iterating the set
+                    post.append(pe.getIdentifier()).append(",");
+                }
+            }
+        }
+        if(post.length()>0) {
+            post.delete(post.length() - 1, post.length());
+            return post.toString();
+        }
+        return null;
     }
 
     private void fireDeferredErrorEvent(final String resource, final String message, final InteractorsErrorEvent.Level level){
