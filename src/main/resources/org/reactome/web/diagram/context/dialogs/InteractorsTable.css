@@ -27,7 +27,7 @@
 .dataGridHeader {
     color: black;
     border-bottom: 2px solid #6f7277;
-    text-align: left;
+    text-align: center;
     overflow: hidden;
     white-space: nowrap;
     padding: 0;
@@ -48,7 +48,7 @@
 }
 
 .dataGridFirstColumnHeader {
-
+    text-align: left;
 }
 
 .dataGridLastColumnFooter {
