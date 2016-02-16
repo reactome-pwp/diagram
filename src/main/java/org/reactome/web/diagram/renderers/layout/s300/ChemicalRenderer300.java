@@ -68,16 +68,17 @@ public class ChemicalRenderer300 extends ChemicalAbstractRenderer {
         if(graphObject instanceof GraphSimpleEntity) {
             DiagramBox box = new DiagramBox(node.getProp()).transform(factor, offset);
 
+            double splitBasis =  box.getHeight() < box.getWidth()/2 ? box.getHeight() : box.getWidth()/2;
             GraphSimpleEntity se = (GraphSimpleEntity) graphObject;
             if (se.getChemicalImage() != null) {
-                double delta = box.getHeight() * 0.7; // Shrink the image in order to make it fit into the bubble
+                double delta = splitBasis * 0.7; // Shrink the image in order to make it fit into the bubble
                 Coordinate centre = box.getCentre();
                 // Center the image vertically but keep it more to the left half of the bubble
                 ctx.drawImage(se.getChemicalImage(), centre.getX() - delta , centre.getY() - delta/2, delta, delta);
             }
 
             String displayName = node.getDisplayName();
-            DiagramBox textBox = box.splitHorizontally(box.getWidth() / 2).get(1); //box is now the remaining of item box removing the image
+            DiagramBox textBox = box.splitHorizontally(splitBasis).get(1); //box is now the remaining of item box removing the image
             TextRenderer textRenderer = new TextRenderer(fontSize, RendererProperties.NODE_TEXT_PADDING);
             textRenderer.drawTextMultiLine(ctx, displayName, NodePropertiesFactory.get(textBox));
         }

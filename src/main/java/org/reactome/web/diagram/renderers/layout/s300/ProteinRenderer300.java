@@ -5,7 +5,6 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.common.DiagramBox;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.category.ShapeCategory;
-import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
@@ -83,15 +82,16 @@ public class ProteinRenderer300 extends ProteinAbstractRenderer {
         if(graphObject instanceof GraphEntityWithAccessionedSequence) {
             //The image size is supposed to fit the height of the box (and it is a SQUARE)
             DiagramBox box = (new DiagramBox(node.getProp())).transform(factor, offset);
+            double splitBasis =  box.getHeight() < box.getWidth()/2 ? box.getHeight() : box.getWidth()/2;
 
             GraphEntityWithAccessionedSequence pe = (GraphEntityWithAccessionedSequence) graphObject;
             if (pe.getProteinImage() != null) {
-                Coordinate pos = CoordinateFactory.get(box.getMinX(), box.getMinY());
-                double delta = box.getHeight();
-                ctx.drawImage(pe.getProteinImage(), pos.getX(), pos.getY(), delta, delta);
+                Coordinate centre = box.getCentre();
+                double delta = splitBasis * 0.95;
+                ctx.drawImage(pe.getProteinImage(), box.getMinX() + factor , centre.getY() - delta/1.9, delta, delta);
             }
 
-            box = box.splitHorizontally(box.getHeight()).get(1); //box is now the remaining of item box removing the image
+            box = box.splitHorizontally(splitBasis).get(1); //box is now the remaining of item box removing the image
             TextRenderer textRenderer = new TextRenderer(fontSize, RendererProperties.NODE_TEXT_PADDING);
 
             String details = pe.getDetails();
