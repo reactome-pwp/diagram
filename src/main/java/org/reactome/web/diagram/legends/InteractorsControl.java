@@ -47,7 +47,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     private FlowPanel controlsFP;
     private Slider slider;
     private PwpButton downloadBtn;
-    private PwpButton retryBtn;
+    private PwpButton reloadBtn;
     private PwpButton closeBtn;
 
     private Timer hideTimer;
@@ -89,7 +89,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
                     InteractorsExporter.exportInteractors(filename, interactors);
                 }
             }
-        } else if (source.equals(this.retryBtn)) {
+        } else if (source.equals(this.reloadBtn)) {
             // Fire event for a Resource selection to trigger reloading
             eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(currentResource), this);
         }
@@ -161,8 +161,8 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
                 break;
             case ERROR_RECOVERABLE:
                 displayError(event.getMessage());
-                retryBtn.setTitle("Retry loading interactors from " + ResourceNameFormatter.format(currentResource) );
-                retryBtn.setVisible(true);
+                reloadBtn.setTitle("Retry loading interactors from " + ResourceNameFormatter.format(currentResource) );
+                reloadBtn.setVisible(true);
                 break;
         }
 
@@ -185,7 +185,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             setVisible(true);
             setMessage(ResourceNameFormatter.format(currentResource));
             controlsFP.setVisible(true);
-            retryBtn.setVisible(false);
+            reloadBtn.setVisible(false);
             slider.setValue(InteractorsContent.getInteractorsThreshold(currentResource));
             downloadBtn.setTitle(MSG_DOWNLOAD_TOOLTIP + ResourceNameFormatter.format(currentResource));
         }
@@ -203,7 +203,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
         closeBtn = new PwpButton("Close and clear interactors", RESOURCES.getCSS().close(), this);
         downloadBtn = new PwpButton(MSG_DOWNLOAD_TOOLTIP, RESOURCES.getCSS().download(), this);
-        retryBtn = new PwpButton("Retry loading interactors", RESOURCES.getCSS().download(), this);
+        reloadBtn = new PwpButton("Retry loading interactors", RESOURCES.getCSS().reload(), this);
 
         slider = new Slider(100, 24, 0.45, 1, 0.45, true);
         slider.setTooltip("Use this slider to set the confidence threshold");
@@ -219,7 +219,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         add(message);
         add(closeBtn);
         add(controlsFP);
-        //add(retryBtn);
+        add(reloadBtn);
     }
 
     private void initHandlers() {
@@ -236,7 +236,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         this.removeStyleName(RESOURCES.getCSS().interactorsControlWarning());
         loadingIcon.setVisible(visible);
         controlsFP.setVisible(!visible);
-        retryBtn.setVisible(!visible);
+        reloadBtn.setVisible(!visible);
         if (visible) {
             String msg;
             if(resource.equals(DiagramFactory.INTERACTORS_INITIAL_RESOURCE)) {
@@ -263,7 +263,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             this.removeStyleName(RESOURCES.getCSS().interactorsControlWarning());
         }
         controlsFP.setVisible(!visible);
-        retryBtn.setVisible(!visible);
+        reloadBtn.setVisible(!visible);
     }
 
     private void displayWarning(String msg) {
@@ -277,7 +277,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
         }
         controlsFP.setVisible(!visible);
-        retryBtn.setVisible(!visible);
+        reloadBtn.setVisible(!visible);
     }
 
     private void setMessage(String msg) {

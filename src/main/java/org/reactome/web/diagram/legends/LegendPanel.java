@@ -131,6 +131,18 @@ public abstract class LegendPanel extends AbsolutePanel {
 
         @Source("images/download_normal.png")
         ImageResource downloadNormal();
+
+        @Source("images/reload_clicked.png")
+        ImageResource reloadClicked();
+
+        @Source("images/reload_disabled.png")
+        ImageResource reloadDisabled();
+
+        @Source("images/reload_hovered.png")
+        ImageResource reloadHovered();
+
+        @Source("images/reload_normal.png")
+        ImageResource reloadNormal();
     }
 
     /**
@@ -198,6 +210,8 @@ public abstract class LegendPanel extends AbsolutePanel {
         String interactorsControlControls();
 
         String download();
+
+        String reload();
 
         String unselectable();
     }

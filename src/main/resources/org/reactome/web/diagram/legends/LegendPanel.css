@@ -340,6 +340,28 @@
     gwt-image: 'downloadDisabled';
 }
 
+@sprite .reload {
+    gwt-image:'reloadNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: right;
+    margin: 2px 0 0 10px;
+}
+
+@sprite .reload:hover {
+    gwt-image:'reloadHovered';
+}
+
+@sprite .reload:active:hover {
+    gwt-image: 'reloadClicked';
+}
+
+@sprite .reload:disabled {
+    gwt-image: 'reloadDisabled';
+}
+
 .unselectable {
     -webkit-touch-callout: none; /* Prevents selection */
     -webkit-user-select: none;
