@@ -8,21 +8,6 @@ import java.util.List;
 public interface RawInteractors {
 
     /**
-     * (e.g http://identifier.org/chebi/CHEBI:##ID##)
-     */
-    String getChemicalURL();
-
-    /**
-     *  (e.g. http://identifier.org/UNIPROT/##ID##)
-     */
-    String getProteinURL();
-
-    /**
-     * (e.g. http://www.ebi.ac.uk/intact/pages/interactions/interactions.xhtml?query=##ID##)
-     */
-    String getInteractionURL();
-
-    /**
      * It is the PSICQUIC resource (e.g. IntAct, MINT, etc)
      */
     String getResource();

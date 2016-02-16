@@ -9,6 +9,7 @@ import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.util.MapSet;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,21 +21,23 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     private String resource;
     private String accession;
     private String alias;
-    private Map<String, Double> interaction;
-    private MapSet<String, GraphObject> interactsWith;
+    private String evidences;
+    private Map<Long, Double> interaction;
+    private MapSet<Long, GraphObject> interactsWith;
 
     private String primary;
     private String secondary;
 
-    public InteractorSearchResult(String resource, String accession, String alias) {
+    public InteractorSearchResult(String resource, String accession, String alias, List<String> evidences) {
         this.resource = resource;
         this.accession = accession;
         this.alias = alias;
+        this.evidences = evidences == null ? "[]" : evidences.toString();
         this.interactsWith = new MapSet<>();
         this.interaction = new HashMap<>();
     }
 
-    public void addInteractsWith(String interactionId, Set<GraphObject> interactsWith){
+    public void addInteractsWith(Long interactionId, Set<GraphObject> interactsWith){
         this.interactsWith.add(interactionId, interactsWith);
     }
 
@@ -44,7 +47,7 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
 
     public boolean containsTerm(String term){
         String alias = this.alias != null ? this.alias : ""; //Alias can be null
-        return alias.toLowerCase().contains(term) || accession.toLowerCase().contains(term) || interaction.keySet().toString().toLowerCase().contains(term);
+        return alias.toLowerCase().contains(term) || accession.toLowerCase().contains(term) || evidences.toLowerCase().contains(term);
     }
 
     public String getResource() {
@@ -63,11 +66,11 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
         return alias !=null ? alias : accession;
     }
 
-    public Double getInteractionScore(String interactionId) {
+    public Double getInteractionScore(Long interactionId) {
         return interaction.get(interactionId);
     }
 
-    public MapSet<String, GraphObject> getInteractsWith() {
+    public MapSet<Long, GraphObject> getInteractsWith() {
         return interactsWith;
     }
 
@@ -88,9 +91,14 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
 
     @Override
     public void setSearchDisplay(String[] searchTerms) {
-        primary = alias;
-        secondary = interaction.keySet().toString(); secondary = secondary.substring(1, secondary.length()-1);
-        secondary = accession + " " + secondary;
+        if (alias != null) {
+            primary = alias;
+            secondary = evidences.substring(1, evidences.length() - 1);
+            secondary = accession + " " + secondary;
+        } else {
+            primary = accession;
+            secondary = evidences.substring(1, evidences.length() - 1);
+        }
 
         if (searchTerms == null || searchTerms.length == 0) return;
 

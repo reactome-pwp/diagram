@@ -13,10 +13,17 @@ public abstract class DiagramInteractor implements QuadTreeBox {
 
     protected Double minX, minY, maxX, maxY;
 
-    DiagramInteractor() {
+    private String url;
+
+    DiagramInteractor(String url) {
+        this.url = url;
     }
 
     public abstract String getAccession();
+
+    public String getUrl() {
+        return url;
+    }
 
     @Override
     public double getMinX() {

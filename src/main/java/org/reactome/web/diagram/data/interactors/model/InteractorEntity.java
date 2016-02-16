@@ -28,14 +28,15 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
 
     private Set<InteractorLink> links = new HashSet<>();
 
-    public InteractorEntity(String accession, String alias) {
+    public InteractorEntity(String accession, String alias, String url) {
+        super(url);
         this.accession = accession;
         this.alias = alias;
         this.chemical = isChemical(accession);
     }
 
-    public InteractorLink addLink(Node node, String id, List<String> cluster, double score) {
-        InteractorLink link = new DynamicLink(node, this, id, cluster, score);
+    public InteractorLink addLink(Node node, Long id, List<String> cluster, String url, double score) {
+        InteractorLink link = new DynamicLink(node, this, id, cluster, url, score);
         links.add(link);
         return link;
     }

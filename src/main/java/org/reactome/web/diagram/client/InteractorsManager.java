@@ -156,9 +156,9 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
                         for (DiagramObject nodeTo : diagramObjectList) {
                             InteractorLink link = null;
                             if (node.equals(nodeTo)) {
-                                link = new LoopLink(node, rawInteractor.getId(), rawInteractor.getCluster(), rawInteractor.getScore());
+                                link = new LoopLink(node, rawInteractor.getId(), rawInteractor.getEvidences(), rawInteractor.getEvidencesURL(), rawInteractor.getScore());
                             } else if (!node.getGraphObject().equals(nodeTo.getGraphObject())) {
-                                link = new StaticLink(node, (Node) nodeTo, rawInteractor.getId(), rawInteractor.getCluster(), rawInteractor.getScore());
+                                link = new StaticLink(node, (Node) nodeTo, rawInteractor.getId(), rawInteractor.getEvidences(), rawInteractor.getEvidencesURL(), rawInteractor.getScore());
                             }
                             if (link != null) {
                                 interactors.cache(currentResource, node, link);
@@ -180,7 +180,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         for (int i = 0; i < n; i++) {
             RawInteractor rawInteractor = dynamicInteractors.get(i);
 
-            InteractorEntity interactor = getOrCreateInteractorEntity(rawInteractor.getAcc(), rawInteractor.getAlias());
+            InteractorEntity interactor = getOrCreateInteractorEntity(rawInteractor.getAcc(), rawInteractor.getAlias(), rawInteractor.getAccURL());
 
             //the maximum number of elements (n) is used here for layout beauty purposes
             if (layoutBuilder.doLayout(interactor, i, n)) {
@@ -191,7 +191,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
                 }
             }
 
-            InteractorLink link = interactor.addLink(node, rawInteractor.getId(), rawInteractor.getCluster(), rawInteractor.getScore());
+            InteractorLink link = interactor.addLink(node, rawInteractor.getId(), rawInteractor.getEvidences(), rawInteractor.getEvidencesURL(), rawInteractor.getScore());
             interactors.cache(currentResource, interactor);
             interactors.cache(currentResource, node, link);
 
@@ -237,10 +237,10 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         return true;
     }
 
-    private InteractorEntity getOrCreateInteractorEntity(String acc, String alias) {
+    private InteractorEntity getOrCreateInteractorEntity(String acc, String alias, String url) {
         InteractorEntity interactor = context.getInteractors().getInteractorEntity(currentResource, acc);
         if (interactor == null) {
-            interactor = new InteractorEntity(acc, alias);
+            interactor = new InteractorEntity(acc, alias, url);
             context.getInteractors().cache(currentResource, interactor);
         }
         return interactor;

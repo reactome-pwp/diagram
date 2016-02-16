@@ -68,7 +68,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
 
         //We need to add the extra columns only once
         if(getColumnCount() == 1) {
-            insertColumn(1, buildIDColumn(), "ID");
+            insertColumn(1, buildEvidencesColumn(), "#Evidences");
             insertColumn(2, buildScoreColumn(), "Score");
 
             this.setColumnWidth(0, 120, Unit.PX);
@@ -171,13 +171,15 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         return columnTitle;
     }
 
-    private Column<T, String> buildIDColumn() {
+    private Column<T, String> buildEvidencesColumn() {
         Column<T, String> columnTitle = new Column<T, String>(new ClickableTextCell()) {
             @Override
             public String getValue(T object) {
-                return object.getId() == null || object.getId().matches("^\\-\\d+") ? "N/A" : object.getId();
+                List<String> evidences = object.getEvidences();
+                return ( evidences == null || evidences.isEmpty() ) ? "N/A" : "" + evidences.size();
             }
         };
+        columnTitle.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
         columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {
             public void update(int index, T object, String value) {
                 fireEvent(new TableItemSelectedEvent(object, TableItemSelectedEvent.Selection.ID));
@@ -194,7 +196,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
             }
         };
         // This is for setting the column text alignment BUT
-        // to to the same for the header you have to go to the CSS
+        // to do the same for the header you have to go to the CSS
         columnTitle.setHorizontalAlignment(HasHorizontalAlignment.HorizontalAlignmentConstant.endOf(HasDirection.Direction.LTR));
         columnTitle.setFieldUpdater(new FieldUpdater<T, String>() {
             public void update(int index, T object, String value) {

@@ -739,8 +739,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     public void setSelection(boolean zoom, boolean fireExternally) {
         DiagramInteractor interactor = getHoveredInteractor();
         if (interactor != null) {
-            String url = context.getInteractors().getURL(interactorsManager.getCurrentResource(), interactor);
-            eventBus.fireEventFromSource(new InteractorSelectedEvent(url), this);
+            eventBus.fireEventFromSource(new InteractorSelectedEvent(interactor.getUrl()), this);
         } else {
             setSelection(this.getHoveredDiagramObject(), zoom, fireExternally);
         }

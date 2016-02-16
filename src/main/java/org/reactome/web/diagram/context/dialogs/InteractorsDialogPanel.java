@@ -18,7 +18,6 @@ import org.reactome.web.diagram.data.analysis.AnalysisType;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
-import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.loader.LoaderManager;
@@ -133,11 +132,11 @@ public class InteractorsDialogPanel extends Composite implements TableItemSelect
         String url = null;
         switch(selectedColumn) {
             case ACCESSION:
-                url = context.getInteractors().getURL(currentResource, interactor, InteractorEntity.getType(interactor.getAcc()));
+                url = interactor.getAccURL();
                 break;
             case ID:
             case SCORE:
-                url = context.getInteractors().getURL(currentResource, interactor, InteractorEntity.Type.INTERACTION);
+                url = interactor.getEvidencesURL();
                 break;
         }
         eventBus.fireEventFromSource(new InteractorSelectedEvent(url), this);

@@ -17,8 +17,8 @@ public class StaticLink extends InteractorLink {
     private Node to;
     private Coordinate toPoint;
 
-    public StaticLink(Node from, Node to, String id, List<String> cluster, double score) {
-        super(from, id, cluster, score);
+    public StaticLink(Node from, Node to, Long id, List<String> evidences, String url, double score) {
+        super(from, id, evidences, url, score);
         this.to = to;
         setBoundaries();
     }

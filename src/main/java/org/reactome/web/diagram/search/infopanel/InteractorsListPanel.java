@@ -6,7 +6,6 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
-import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.model.images.InteractorImages;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.DiagramObject;
@@ -74,7 +73,7 @@ public class InteractorsListPanel extends FlowPanel {
                     icon = new Image(graphObject.getImageResource());
                 }
             } else {
-                String url = context.getInteractors().getURL(LoaderManager.INTERACTORS_RESOURCE, rawInteractor, InteractorEntity.getType(rawInteractor.getAcc()));
+                String url = rawInteractor.getAccURL();
                 listItemLink.setHref(url);
                 listItemLink.addClickHandler(InfoActionsHelper.getInteractorLinkClickHandler(url, eventBus, this));
                 icon = new Image(InteractorImages.INSTANCE.interactor());
@@ -88,18 +87,15 @@ public class InteractorsListPanel extends FlowPanel {
             listItem.add(icon);
             listItem.add(listItemLink);
 
-            if(context.getInteractors().getURL(LoaderManager.INTERACTORS_RESOURCE, InteractorEntity.Type.INTERACTION) != null) {
-                String id = rawInteractor.getId() == null || rawInteractor.getId().matches("^\\-\\d+") ? null : rawInteractor.getId();
-                if (id != null) {
-                    Anchor idItemLink = new Anchor(id);
-                    String url = context.getInteractors().getURL(LoaderManager.INTERACTORS_RESOURCE, rawInteractor, InteractorEntity.Type.INTERACTION);
-                    idItemLink.setHref(url);
-                    idItemLink.addClickHandler(InfoActionsHelper.getInteractionLinkClickHandler(url, eventBus, this));
-                    idItemLink.setStyleName(css.listItemLink());
+            String url = rawInteractor.getEvidencesURL();
+            if(url != null) {
+                Anchor idItemLink = new Anchor(rawInteractor.getId().toString());
+                idItemLink.setHref(url);
+                idItemLink.addClickHandler(InfoActionsHelper.getInteractionLinkClickHandler(url, eventBus, this));
+                idItemLink.setStyleName(css.listItemLink());
 
-                    listItem.add(new InlineLabel(" -"));
-                    listItem.add(idItemLink);
-                }
+                listItem.add(new InlineLabel(" -"));
+                listItem.add(idItemLink);
             }
             listItem.add(new InlineLabel(" - Score: " + NumberFormat.getFormat("0.000").format(rawInteractor.getScore())));
 

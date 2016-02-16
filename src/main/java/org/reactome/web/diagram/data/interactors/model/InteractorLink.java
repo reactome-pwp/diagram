@@ -17,14 +17,15 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
     final Node from;
     Coordinate fromPoint;
 
-    String id;
-    List<String> cluster;
+    Long id;
+    List<String> evidences;
     double score;
 
-    InteractorLink(Node from, String id, List<String> cluster, double score) {
+    InteractorLink(Node from, Long id, List<String> evidences, String url, double score) {
+        super(url);
         this.from = from;
         this.id = id;
-        this.cluster = cluster;
+        this.evidences = evidences;
         this.score = score;
     }
 
@@ -40,12 +41,12 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
 
     public abstract String getToAccession();
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public List<String> getCluster() {
-        return cluster;
+    public List<String> getEvidences() {
+        return evidences;
     }
 
     public double getScore() {

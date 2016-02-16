@@ -5,7 +5,6 @@ import org.reactome.web.diagram.data.graph.raw.EntityNode;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
 import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
-import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractorEntity;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
@@ -158,10 +157,6 @@ public abstract class DiagramContentFactory {
         String resource = rawInteractors.getResource();
         //The next line creates an empty entry in the cache
         interactors.getOrCreateRawInteractorCachedResource(resource);
-
-        interactors.add(resource, InteractorEntity.Type.CHEMICAL, rawInteractors.getChemicalURL());
-        interactors.add(resource, InteractorEntity.Type.PROTEIN, rawInteractors.getProteinURL());
-        interactors.add(resource, InteractorEntity.Type.INTERACTION, rawInteractors.getInteractionURL());
 
         MapSet<String, GraphObject> identifierMap = context.getContent().getIdentifierMap();
         for (RawInteractorEntity interactorEntity : rawInteractors.getEntities()) {

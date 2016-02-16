@@ -20,8 +20,8 @@ public class LoopLink extends InteractorLink {
     public static final double START_ANGLE = Math.PI / 2.0;
     public static final double END_ANGLE = 2 * Math.PI;
 
-    public LoopLink(Node node, String id, List<String> cluster, double score) {
-        super(node, id, cluster, score);
+    public LoopLink(Node node, Long id, List<String> evidences, String url, double score) {
+        super(node, id, evidences, url, score);
         this.id = id;
         this.score = score;
         setBoundaries();

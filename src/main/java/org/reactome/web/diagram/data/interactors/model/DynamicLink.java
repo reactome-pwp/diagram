@@ -16,8 +16,8 @@ public class DynamicLink extends InteractorLink {
     private InteractorEntity to;
     private Coordinate toPoint;
 
-    public DynamicLink(Node from, InteractorEntity to, String id, List<String> cluster, double score) {
-        super(from, id, cluster, score);
+    public DynamicLink(Node from, InteractorEntity to, Long id, List<String> evidences, String url, double score) {
+        super(from, id, evidences, url, score);
         this.to = to;
         setBoundaries();
     }
