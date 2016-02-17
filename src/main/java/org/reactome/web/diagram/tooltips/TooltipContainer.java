@@ -6,6 +6,9 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.graph.model.GraphEntityWithAccessionedSequence;
+import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.graph.model.GraphSimpleEntity;
 import org.reactome.web.diagram.data.interactors.common.DiagramBox;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
@@ -175,8 +178,15 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
                     return;
                 }
                 Node node = (Node) hovered;
-                tooltip.setText(node.getDisplayName());
                 NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+                GraphPhysicalEntity obj = node.getGraphObject();
+                if (obj instanceof GraphEntityWithAccessionedSequence) {
+                    tooltip.setText(node.getDisplayName() + (obj.getIdentifier() != null ? " (" + obj.getIdentifier() + ")" : ""));
+                }else if (obj instanceof GraphSimpleEntity) {
+                    tooltip.setText(node.getDisplayName() + (obj.getIdentifier() != null ? " (CHEBI:" + obj.getIdentifier() + ")" : ""));
+                } else {
+                    tooltip.setText(node.getDisplayName());
+                }
                 tooltip.setPositionAndShow(this, prop.getX(), prop.getY(), prop.getHeight() + 8.0 * factor);
             } else if (hovered instanceof Edge) {
                 Edge edge = (Edge) hovered;
