@@ -47,16 +47,17 @@ public class InteractorsExporter {
         // Add Header
         builder.append("Interactor A").append("\t")
                 .append("Interactor B").append("\t")
-                .append("InteractionID").append("\t")
-                .append("miScore").append("\t\n");
+                .append("miScore").append("\t")
+                .append("Evidences").append("\t\n");
         for (String diagramAcc : interactors.keySet()) {
             Set<RawInteractor> rawInteractors = interactors.getElements(diagramAcc);
             if(rawInteractors != null) {
                 for (RawInteractor rawInteractor : rawInteractors) {
                     builder.append(diagramAcc).append("\t")
                             .append(rawInteractor.getAcc()).append("\t")
-                            .append(rawInteractor.getId()).append("\t")
-                            .append(rawInteractor.getScore()).append("\t\n");
+                            .append(rawInteractor.getScore()).append("\t")
+//                            .append(rawInteractor.getEvidences().toString()).append("\t\n");
+                            .append(rawInteractor.getEvidences().toString().replaceAll("(\\]|\\[|,)", "").replaceAll("  *",";")).append("\t\n");
                 }
             }
         }
