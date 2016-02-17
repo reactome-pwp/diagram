@@ -45,7 +45,14 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
 
     public boolean containsTerm(String term){
         String alias = this.alias != null ? this.alias : ""; //Alias can be null
-        return alias.toLowerCase().contains(term) || accession.toLowerCase().contains(term);
+        return alias.toLowerCase().contains(term) || accession.toLowerCase().contains(term) || evidencesContainTerm(term);
+    }
+
+    private boolean evidencesContainTerm(String term) {
+        for (RawInteractor interactor : interaction.values()) {
+            if (interactor.getEvidences().toString().toLowerCase().contains(term)) return true;
+        }
+        return false;
     }
 
     public String getResource() {
