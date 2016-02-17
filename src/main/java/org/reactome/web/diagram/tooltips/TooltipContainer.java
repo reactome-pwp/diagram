@@ -242,8 +242,10 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
                 infoTimer.schedule(1500);
             } else if (hovered instanceof InteractorLink) {
                 InteractorLink interactorLink = (InteractorLink) hovered;
+                int e = interactorLink.getEvidences() != null ? interactorLink.getEvidences().size() : 0;
+                String evidences = e == 0 ? "" : (e == 1 ? e + " evidence - " : e + " evidences - ");
                 Coordinate centre = interactorLink.transform(factor, offset).getCentre();
-                tooltip.setText("Score: " + numberFormat.format(interactorLink.getScore()));
+                tooltip.setText(evidences + "Score: " + numberFormat.format(interactorLink.getScore()));
                 tooltip.setPositionAndShow(
                         TooltipContainer.this,
                         centre.getX(),
