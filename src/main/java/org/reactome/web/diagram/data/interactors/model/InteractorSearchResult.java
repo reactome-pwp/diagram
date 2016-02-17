@@ -8,10 +8,7 @@ import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.util.MapSet;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -21,18 +18,18 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     private String resource;
     private String accession;
     private String alias;
-    private String evidences;
-    private Map<Long, Double> interaction;
+    private int evidences = 0;
+    private Map<Long, RawInteractor> interaction;
     private MapSet<Long, GraphObject> interactsWith;
 
     private String primary;
     private String secondary;
 
-    public InteractorSearchResult(String resource, String accession, String alias, List<String> evidences) {
+    public InteractorSearchResult(String resource, String accession, String alias) {
         this.resource = resource;
         this.accession = accession;
         this.alias = alias;
-        this.evidences = evidences == null ? "[]" : evidences.toString();
+//        this.evidences = evidences == null ? "[]" : evidences.toString();
         this.interactsWith = new MapSet<>();
         this.interaction = new HashMap<>();
     }
@@ -42,12 +39,13 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     }
 
     public void addInteraction(RawInteractor rawInteractor){
-        this.interaction.put(rawInteractor.getId(), rawInteractor.getScore());
+        this.interaction.put(rawInteractor.getId(), rawInteractor);
+        evidences += rawInteractor.getEvidences().size();
     }
 
     public boolean containsTerm(String term){
         String alias = this.alias != null ? this.alias : ""; //Alias can be null
-        return alias.toLowerCase().contains(term) || accession.toLowerCase().contains(term) || evidences.toLowerCase().contains(term);
+        return alias.toLowerCase().contains(term) || accession.toLowerCase().contains(term);
     }
 
     public String getResource() {
@@ -66,8 +64,14 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
         return alias !=null ? alias : accession;
     }
 
+    public List<String> getEvidences(Long interactionId) {
+        RawInteractor rawInteractor = interaction.get(interactionId);
+        return rawInteractor!=null ? interaction.get(interactionId).getEvidences() : Collections.<String>emptyList();
+    }
+
     public Double getInteractionScore(Long interactionId) {
-        return interaction.get(interactionId);
+        RawInteractor rawInteractor = interaction.get(interactionId);
+        return rawInteractor!=null ? rawInteractor.getScore() : null;
     }
 
     public MapSet<Long, GraphObject> getInteractsWith() {
@@ -93,11 +97,10 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     public void setSearchDisplay(String[] searchTerms) {
         if (alias != null) {
             primary = alias;
-            secondary = evidences.substring(1, evidences.length() - 1);
-            secondary = accession + " " + secondary;
+            secondary = accession + " " + evidences + " evidences";
         } else {
             primary = accession;
-            secondary = evidences.substring(1, evidences.length() - 1);
+            secondary = evidences + " evidences";
         }
 
         if (searchTerms == null || searchTerms.length == 0) return;
@@ -125,4 +128,6 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     public int compareTo(InteractorSearchResult o) {
         return accession.compareTo(o.accession);
     }
+
+
 }

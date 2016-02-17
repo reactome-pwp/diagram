@@ -42,7 +42,7 @@ public class InteractorInfoPanel extends Composite {
             if (!interactors.isEmpty()) {
                 Double score = interactor.getInteractionScore(interactionId);
                 String title = "Interacts with ";
-                title = title + "score: " + (score!=null ? NumberFormat.getFormat("0.000").format(score): "-");
+                title = title + "score: " + (score!=null ? NumberFormat.getFormat("0.000").format(score): "-") + " (" + interactor.getEvidences(interactionId).size() + ")" ;
                 this.add(new DatabaseObjectListPanel(title, interactors, eventBus));
             }
         }
