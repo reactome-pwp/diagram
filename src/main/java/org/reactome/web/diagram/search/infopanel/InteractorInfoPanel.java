@@ -40,9 +40,12 @@ public class InteractorInfoPanel extends Composite {
         for(Long interactionId:interactsWith.keySet()) {
             Set<GraphObject> interactors = interactsWith.getElements(interactionId);
             if (!interactors.isEmpty()) {
+                int interactorsSize = interactor.getEvidences(interactionId) != null ? interactor.getEvidences(interactionId).size() : 0;
+                String evidences = interactorsSize == 0 ? "" : (interactorsSize == 1 ? interactorsSize + " evidence" : interactorsSize + " evidences");
+                
                 Double score = interactor.getInteractionScore(interactionId);
                 String title = "Interacts with ";
-                title = title + "score: " + (score!=null ? NumberFormat.getFormat("0.000").format(score): "-") + " (" + interactor.getEvidences(interactionId).size() + ")" ;
+                title = title + "score: " + (score!=null ? NumberFormat.getFormat("0.000").format(score): "-") + " (" + evidences+ ")";
                 this.add(new DatabaseObjectListPanel(title, interactors, eventBus));
             }
         }
