@@ -153,7 +153,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        if(context!=null) {
+        if(context!=null && downloadBtn!=null) {
             String resourceName = ResourceNameFormatter.format(event.getResource());
             downloadBtn.setText(resourceName);
             downloadBtn.setTitle("Click to download all diagram interactors from " + resourceName);
@@ -236,17 +236,19 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
      * @param visible
      */
     private void showDownloadButton(boolean visible){
-        if(visible) {
-            if (context != null) {
-                MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(selectedResource);
-                if (hasContents(interactors)) {
-                    downloadBtn.setVisible(true);
-                } else {
-                    downloadBtn.setVisible(false);
+        if(downloadBtn!=null) {
+            if (visible) {
+                if (context != null) {
+                    MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(selectedResource);
+                    if (hasContents(interactors)) {
+                        downloadBtn.setVisible(true);
+                    } else {
+                        downloadBtn.setVisible(false);
+                    }
                 }
+            } else {
+                downloadBtn.setVisible(false);
             }
-        } else {
-            downloadBtn.setVisible(false);
         }
     }
 
