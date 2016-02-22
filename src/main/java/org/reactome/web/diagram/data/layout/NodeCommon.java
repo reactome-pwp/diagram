@@ -7,6 +7,8 @@ public interface NodeCommon extends DiagramObject {
 
     NodeProperties getProp();
 
+    NodeProperties getInnerProp();
+
     Identifier getIdentifier();
 
     Coordinate getTextPosition();

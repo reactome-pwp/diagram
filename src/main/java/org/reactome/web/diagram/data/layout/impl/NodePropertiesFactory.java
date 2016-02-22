@@ -24,6 +24,10 @@ public class NodePropertiesFactory implements NodeProperties {
         return new NodePropertiesFactory(x, y, width, height);
     }
 
+    public static NodeProperties get(NodeProperties prop){
+        return new NodePropertiesFactory(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight());
+    }
+
     public static NodeProperties get(DiagramBox box){
         return new NodePropertiesFactory(box.getMinX(), box.getMinY(), box.getWidth(), box.getHeight());
     }

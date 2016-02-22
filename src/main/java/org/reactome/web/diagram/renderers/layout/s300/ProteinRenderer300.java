@@ -81,7 +81,7 @@ public class ProteinRenderer300 extends ProteinAbstractRenderer {
         GraphObject graphObject = node.getGraphObject();
         if(graphObject instanceof GraphEntityWithAccessionedSequence) {
             //The image size is supposed to fit the height of the box (and it is a SQUARE)
-            DiagramBox box = (new DiagramBox(node.getProp())).transform(factor, offset);
+            DiagramBox box = (new DiagramBox(node.getInnerProp()!= null ? node.getInnerProp() : node.getProp())).transform(factor, offset);
             double splitBasis =  box.getHeight() < box.getWidth()/2 ? box.getHeight() : box.getWidth()/2;
 
             GraphEntityWithAccessionedSequence pe = (GraphEntityWithAccessionedSequence) graphObject;
