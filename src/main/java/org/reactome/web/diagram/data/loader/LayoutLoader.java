@@ -16,7 +16,9 @@ public class LayoutLoader implements RequestCallback {
         void onLayoutLoaderError(Throwable exception);
     }
 
-    private final static String PREFIX = DiagramFactory.SERVER + "/download/current/diagram/";
+    public static String PREFIX = DiagramFactory.SERVER + "/download/current/diagram/";
+    public static String SUFFIX = ".json?v=" + LoaderManager.version;
+
 
     private Handler handler;
     private Request request;
@@ -32,7 +34,7 @@ public class LayoutLoader implements RequestCallback {
     }
 
     void load(String stId){
-        String url = PREFIX + stId + ".json?v=" + LoaderManager.version;
+        String url = PREFIX + stId + SUFFIX;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             this.request = requestBuilder.sendRequest(null, this);
