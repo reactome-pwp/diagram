@@ -57,9 +57,9 @@ public class InteractorsLoader implements RequestCallback {
         if(post != null){
             String url;
             if (resource.toLowerCase().equals("static")) {
-                url = PREFIX + "static/proteins/details/?v=" + LoaderManager.version;
+                url = PREFIX + "static/molecules/details/?v=" + LoaderManager.version;
             } else {
-                url = PREFIX + "psicquic/proteins/" + resource + "/details?v=" + LoaderManager.version;
+                url = PREFIX + "psicquic/molecules/" + resource + "/details?v=" + LoaderManager.version;
             }
 
             RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
