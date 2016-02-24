@@ -85,7 +85,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             if (context != null) {
                 MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(currentResource);
                 if(interactors != null && !interactors.isEmpty()) {
-                    String filename = context.getContent().getStableId() + "_Interactors_" + ResourceNameFormatter.format(currentResource)+ ".tsv";
+                    String filename = context.getContent().getStableId() + "_Interactors_" + ResourceNameFormatter.format(currentResource)+ ".csv";
                     InteractorsExporter.exportInteractors(filename, interactors);
                 }
             }
@@ -203,7 +203,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
         closeBtn = new PwpButton("Close and clear interactors", RESOURCES.getCSS().close(), this);
         downloadBtn = new PwpButton(MSG_DOWNLOAD_TOOLTIP, RESOURCES.getCSS().download(), this);
-        downloadBtn.setEnabled(InteractorsExporter.fileSaveScriptAvailable());
+//        downloadBtn.setEnabled(InteractorsExporter.isFileSaveScriptAvailable());
         reloadBtn = new PwpButton("Retry loading interactors", RESOURCES.getCSS().reload(), this);
 
         slider = new Slider(100, 24, 0.45, 1, 0.45, true);

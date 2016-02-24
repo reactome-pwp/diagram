@@ -1,5 +1,8 @@
 package org.reactome.web.diagram.util.interactors;
 
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.util.MapSet;
 
@@ -12,18 +15,39 @@ import java.util.Set;
  */
 public class InteractorsExporter {
 
+    final static String DOWNLOAD_URL = DiagramFactory.SERVER + "/ContentService/download/";
+    final static String SEPARATOR = ",";
+    final static String LINE_BREAK = "#NL#";
+
     /***
      * This method takes as input the name of the file to be saved and
      * a MapSet containing:  DiagramAccession -> Set<RawInteractors>
+     *
+     * If Blob.js and FileSaver.js are present then this class utilises them to
+     * store the file. Otherwise, when the widget runs as standalone, the class
+     * calls a method in the Content Service to generate the file.
      *
      * @param filename the name of the file to be saved
      * @param interactors the interactors to be exported
      */
     public static void exportInteractors(String filename, MapSet<String, RawInteractor> interactors) {
-        alertDownload(filename, getFileContent(interactors));
+        if(isFileSaveScriptAvailable()) {
+            alertDownload(filename, getFileContent(interactors, SEPARATOR, "\r\n"));
+        } else {
+            FormPanel form = new FormPanel();
+            form.setMethod(FormPanel.METHOD_POST);
+            form.setEncoding("text/plain;");
+            form.setAction(DOWNLOAD_URL + filename.replaceAll("  *", "_"));
+
+            TextBox tb = new TextBox();
+            tb.setName("content");
+            tb.setText(getFileContent(interactors, SEPARATOR, LINE_BREAK));
+            form.add(tb);
+            form.submit();
+        }
     }
 
-    public static native boolean fileSaveScriptAvailable() /*-{
+    public static native boolean isFileSaveScriptAvailable() /*-{
         return !!$wnd.saveAs;
     }-*/;
 
@@ -42,22 +66,22 @@ public class InteractorsExporter {
         );
     }-*/;
 
-    private static String getFileContent(MapSet<String, RawInteractor> interactors) {
+    private static String getFileContent(MapSet<String, RawInteractor> interactors, String separator, String lineBreak) {
         StringBuilder builder = new StringBuilder();
         // Add Header
-        builder.append("Interactor A").append("\t")
-                .append("Interactor B").append("\t")
-                .append("miScore").append("\t")
-                .append("Evidences").append("\t\n");
+        builder.append("Interactor A").append(separator)
+                .append("Interactor B").append(separator)
+                .append("miScore").append(separator)
+                .append("Evidences").append(lineBreak);
         for (String diagramAcc : interactors.keySet()) {
             Set<RawInteractor> rawInteractors = interactors.getElements(diagramAcc);
             if(rawInteractors != null) {
                 for (RawInteractor rawInteractor : rawInteractors) {
-                    builder.append(diagramAcc).append("\t")
-                            .append(rawInteractor.getAcc()).append("\t")
-                            .append(rawInteractor.getScore()).append("\t")
+                    builder.append(diagramAcc).append(separator)
+                            .append(rawInteractor.getAcc()).append(separator)
+                            .append(rawInteractor.getScore()).append(separator)
 //                            .append(rawInteractor.getEvidences().toString()).append("\t\n");
-                            .append(rawInteractor.getEvidences().toString().replaceAll("(\\]|\\[|,)", "").replaceAll("  *",";")).append("\t\n");
+                            .append(rawInteractor.getEvidences().toString().replaceAll("(\\]|\\[|,)", "").replaceAll("  *",";")).append(lineBreak);
                 }
             }
         }

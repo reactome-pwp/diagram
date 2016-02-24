@@ -29,7 +29,6 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
         this.resource = resource;
         this.accession = accession;
         this.alias = alias;
-//        this.evidences = evidences == null ? "[]" : evidences.toString();
         this.interactsWith = new MapSet<>();
         this.interaction = new HashMap<>();
     }

@@ -99,7 +99,7 @@
         <init-param>
             <param-name>proxyPath</param-name>
             <!--<param-value>/</param-value>-->
-            <param-value>/ContentService/</param-value>
+            <param-value>/ContentService</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

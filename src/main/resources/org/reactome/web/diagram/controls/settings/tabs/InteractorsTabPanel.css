@@ -108,3 +108,7 @@
     background-color: #07558b;
     cursor: pointer !important;
 }
+
+.downloadBtn:disabled {
+    background-color: #a39da6;
+}

@@ -22,7 +22,6 @@ import org.reactome.web.diagram.data.interactors.raw.factory.ResourcesException;
 import org.reactome.web.diagram.data.loader.InteractorsResourceLoader;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.interactors.InteractorsExporter;
 import org.reactome.web.diagram.util.interactors.ResourceNameFormatter;
@@ -84,17 +83,15 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         main.add(liveResourcesLabel);
         main.add(loadingPanel);
         main.add(getOptionsPanel());
-        if (InteractorsExporter.fileSaveScriptAvailable()) {
-            String resourceName = ResourceNameFormatter.format(selectedResource);
-            downloadBtn = new IconButton(resourceName, RESOURCES.downloadNormal());
-            downloadBtn.addClickHandler(this);
-            downloadBtn.setTitle("Click to download all diagram interactors from " + resourceName);
-            downloadBtn.setStyleName(RESOURCES.getCSS().downloadBtn());
-            downloadBtn.setVisible(false);
-            main.add(downloadBtn);
-        } else {
-            Console.warn("FileSaver script has not been not loaded");
-        }
+
+        String resourceName = ResourceNameFormatter.format(selectedResource);
+        downloadBtn = new IconButton(resourceName, RESOURCES.downloadNormal());
+        downloadBtn.addClickHandler(this);
+        downloadBtn.setTitle("Click to download all diagram interactors from " + resourceName);
+        downloadBtn.setStyleName(RESOURCES.getCSS().downloadBtn());
+        downloadBtn.setEnabled(false);
+
+        main.add(downloadBtn);
         initWidget(main);
         initialiseHandlers();
 
@@ -113,7 +110,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         if (context != null) {
             MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(selectedResource);
             if(hasContents(interactors)) {
-                String filename = context.getContent().getStableId() + "_Interactors_" + ResourceNameFormatter.format(selectedResource)+ ".tsv";
+                String filename = context.getContent().getStableId() + "_Interactors_" + ResourceNameFormatter.format(selectedResource)+ ".csv";
                 InteractorsExporter.exportInteractors(filename, interactors);
             }
         }
@@ -122,7 +119,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     @Override
     public void onDiagramRequested(DiagramRequestedEvent event) {
         context = null;
-        showDownloadButton(false);
+        enableDownloadButton(false);
     }
 
     @Override
@@ -143,22 +140,22 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
     @Override
     public void onInteractorsError(InteractorsErrorEvent event) {
-        showDownloadButton(false);
+        enableDownloadButton(false);
     }
 
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
-        showDownloadButton(true);
+        enableDownloadButton(true);
     }
 
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        if(context!=null && downloadBtn!=null) {
+        if(context!=null) {
             String resourceName = ResourceNameFormatter.format(event.getResource());
             downloadBtn.setText(resourceName);
             downloadBtn.setTitle("Click to download all diagram interactors from " + resourceName);
             // check
-            showDownloadButton(context.getInteractors().isResourceLoaded(event.getResource()));
+            enableDownloadButton(context.getInteractors().isResourceLoaded(event.getResource()));
         }
     }
 
@@ -231,23 +228,23 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     }
 
     /***
-     * Show the download button only if the rawInteractors mapset
+     * Enable the download button only if the rawInteractors mapset
      * for the selected resource contains entries
-     * @param visible
+     * @param enable
      */
-    private void showDownloadButton(boolean visible){
+    private void enableDownloadButton(boolean enable){
         if(downloadBtn!=null) {
-            if (visible) {
+            if (enable) {
                 if (context != null) {
                     MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(selectedResource);
                     if (hasContents(interactors)) {
-                        downloadBtn.setVisible(true);
+                        downloadBtn.setEnabled(true);
                     } else {
-                        downloadBtn.setVisible(false);
+                        downloadBtn.setEnabled(false);
                     }
                 }
             } else {
-                downloadBtn.setVisible(false);
+                downloadBtn.setEnabled(false);
             }
         }
     }
