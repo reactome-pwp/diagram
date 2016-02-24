@@ -16,7 +16,8 @@ public class GraphLoader implements RequestCallback {
         void onGraphLoaderError(Throwable exception);
     }
 
-    private final static String PREFIX = DiagramFactory.SERVER + "/download/current/diagram/";
+    public static String PREFIX = DiagramFactory.SERVER + "/download/current/diagram/";
+    public static String SUFFIX = ".graph.json?v=" + LoaderManager.version;
 
     private Handler handler;
     private Request request;
@@ -32,7 +33,7 @@ public class GraphLoader implements RequestCallback {
     }
 
     public void load(String stId){
-        String url = PREFIX + stId + ".graph.json?v=" + LoaderManager.version;
+        String url = PREFIX + stId + SUFFIX;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             this.request = requestBuilder.sendRequest(null, this);
