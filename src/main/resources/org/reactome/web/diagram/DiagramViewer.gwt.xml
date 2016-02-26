@@ -9,6 +9,7 @@
 
     <!-- Default GWT style sheet (modified version of the Standard theme) -->
     <inherits name='org.reactome.web.diagram.style.DiagramStyle'/>
+    <inherits name="org.reactome.web.analysis.Analysis"/>
 
     <source path="client"/>
     <source path="common"/>

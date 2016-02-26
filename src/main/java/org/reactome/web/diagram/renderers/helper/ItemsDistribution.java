@@ -1,6 +1,6 @@
 package org.reactome.web.diagram.renderers.helper;
 
-import org.reactome.web.diagram.data.analysis.AnalysisType;
+import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;

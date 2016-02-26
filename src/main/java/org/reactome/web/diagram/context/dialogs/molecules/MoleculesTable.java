@@ -17,7 +17,7 @@ import com.google.gwt.user.client.ui.CustomScrollPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HeaderPanel;
 import com.google.gwt.view.client.ListDataProvider;
-import org.reactome.web.diagram.data.analysis.AnalysisType;
+import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 

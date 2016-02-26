@@ -2,8 +2,8 @@ package org.reactome.web.diagram.data;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.Widget;
+import org.reactome.web.analysis.client.model.*;
 import org.reactome.web.diagram.context.ContextDialogPanel;
-import org.reactome.web.diagram.data.analysis.*;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;

@@ -2,9 +2,9 @@ package org.reactome.web.diagram.data;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.URL;
-import org.reactome.web.diagram.data.analysis.AnalysisSummary;
-import org.reactome.web.diagram.data.analysis.AnalysisType;
-import org.reactome.web.diagram.data.analysis.ExpressionSummary;
+import org.reactome.web.analysis.client.model.AnalysisSummary;
+import org.reactome.web.analysis.client.model.AnalysisType;
+import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
 import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
 
