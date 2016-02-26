@@ -1,9 +1,10 @@
 package org.reactome.web.diagram.data.loader;
 
-import org.reactome.web.diagram.data.analysis.AnalysisSummary;
-import org.reactome.web.diagram.data.analysis.ExpressionSummary;
-import org.reactome.web.diagram.data.analysis.PathwayIdentifiers;
-import org.reactome.web.diagram.data.analysis.PathwaySummary;
+
+import org.reactome.web.analysis.client.model.AnalysisSummary;
+import org.reactome.web.analysis.client.model.ExpressionSummary;
+import org.reactome.web.analysis.client.model.PathwayIdentifiers;
+import org.reactome.web.analysis.client.model.PathwaySummary;
 
 import java.util.List;
 

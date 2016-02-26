@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.events;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.reactome.web.diagram.data.analysis.*;
+import org.reactome.web.analysis.client.model.*;
 import org.reactome.web.diagram.handlers.AnalysisResultLoadedHandler;
 
 import java.util.LinkedList;
