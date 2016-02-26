@@ -18,6 +18,7 @@
     overflow: visible;
 
     font-family: Arial Unicode MS, Arial, sans-serif !important;
+    line-height: normal;
 
     /* Used to animate the width of panel */
     -webkit-transition: width 0.3s ease;
