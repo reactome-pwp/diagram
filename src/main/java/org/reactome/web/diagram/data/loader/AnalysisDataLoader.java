@@ -3,10 +3,7 @@ package org.reactome.web.diagram.data.loader;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.analysis.client.AnalysisClient;
 import org.reactome.web.analysis.client.AnalysisHandler;
-import org.reactome.web.analysis.client.model.AnalysisSummary;
-import org.reactome.web.analysis.client.model.ExpressionSummary;
-import org.reactome.web.analysis.client.model.PathwayIdentifiers;
-import org.reactome.web.analysis.client.model.PathwaySummary;
+import org.reactome.web.analysis.client.model.*;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContent;
@@ -88,7 +85,7 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
             identifiers = null;
             getPathwaySummaries();
         } else {
-            AnalysisClient.getPahtwayIdentifiers(analysisStatus.getToken(), analysisStatus.getResource(), diagramContent.getDbId(), this);
+            AnalysisClient.getPathwayIdentifiers(analysisStatus.getToken(), analysisStatus.getResource(), diagramContent.getDbId(), this);
         }
     }
 
@@ -98,8 +95,8 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
     }
 
     @Override
-    public void onResultSummaryError(String message) {
-        eventBus.fireEventFromSource(new DiagramInternalErrorEvent(message), this);
+    public void onResultSummaryError(AnalysisError error) {
+        eventBus.fireEventFromSource(new DiagramInternalErrorEvent(error.getReason()), this);
     }
 
     @Override
@@ -115,8 +112,8 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
     }
 
     @Override
-    public void onPathwayIdentifiersError(String message) {
-        eventBus.fireEventFromSource(new DiagramInternalErrorEvent(message), this);
+    public void onPathwayIdentifiersError(AnalysisError error) {
+        eventBus.fireEventFromSource(new DiagramInternalErrorEvent(error.getReason()), this);
     }
 
     private void loadPathwaySummaries(long time) {
@@ -138,8 +135,8 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
     }
 
     @Override
-    public void onPathwaySummariesError(String message) {
-        eventBus.fireEventFromSource(new DiagramInternalErrorEvent(message), this);
+    public void onPathwaySummariesError(AnalysisError error) {
+        eventBus.fireEventFromSource(new DiagramInternalErrorEvent(error.getReason()), this);
     }
 
     @Override
