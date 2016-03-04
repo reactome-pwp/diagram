@@ -5,7 +5,7 @@ import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
-import org.reactome.web.diagram.util.chemical.Chemical_ImageLoader;
+import org.reactome.web.diagram.util.chemical.ChemicalImageLoader;
 import org.reactome.web.diagram.util.pdbe.PDBeLoader;
 import org.reactome.web.diagram.util.pdbe.model.PDBObject;
 
@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class InteractorEntity extends DiagramInteractor implements Draggable, PDBeLoader.Handler, Chemical_ImageLoader.Handler {
+public class InteractorEntity extends DiagramInteractor implements Draggable, PDBeLoader.Handler, ChemicalImageLoader.Handler {
 
     private String accession;
     private String alias;
@@ -178,9 +178,9 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
     }
 
     private void setImageURL() {
-        image = ImageElement.as(Chemical_ImageLoader.LOADING.getElement());
+        image = ImageElement.as(ChemicalImageLoader.LOADING.getElement());
         if (chemical) {
-            Chemical_ImageLoader.get().loadImage(this, accession);
+            ChemicalImageLoader.get().loadImage(this, accession);
         } else {
             PDBeLoader.get().loadBestStructure(this, accession);
         }

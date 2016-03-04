@@ -5,12 +5,12 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.diagram.data.graph.model.images.GraphObjectImages;
 import org.reactome.web.diagram.data.graph.raw.EntityNode;
-import org.reactome.web.diagram.util.chemical.Chemical_ImageLoader;
+import org.reactome.web.diagram.util.chemical.ChemicalImageLoader;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class GraphSimpleEntity extends GraphPhysicalEntity implements Chemical_ImageLoader.Handler {
+public class GraphSimpleEntity extends GraphPhysicalEntity implements ChemicalImageLoader.Handler {
 
     private ImageElement chemicalImage;
 
@@ -25,9 +25,9 @@ public class GraphSimpleEntity extends GraphPhysicalEntity implements Chemical_I
 
     public ImageElement getChemicalImage() {
         if(chemicalImage == null){
-            chemicalImage = ImageElement.as(Chemical_ImageLoader.LOADING.getElement());
+            chemicalImage = ImageElement.as(ChemicalImageLoader.LOADING.getElement());
             //In Reactome, small molecules identifier are from CHEBI
-            Chemical_ImageLoader.get().loadImage(this, "CHEBI:" + getIdentifier());
+            ChemicalImageLoader.get().loadImage(this, "CHEBI:" + getIdentifier());
         }
         return chemicalImage;
     }

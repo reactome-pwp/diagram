@@ -16,9 +16,9 @@ import org.reactome.web.diagram.util.Console;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class Chemical_ImageLoader {
+public class ChemicalImageLoader {
 
-    private static Chemical_ImageLoader loader;
+    private static ChemicalImageLoader loader;
 
     public static final Image LOADING = new Image(ChemicalImages.INSTANCE.loading());
     public static final Image NOT_FOUND = new Image(ChemicalImages.INSTANCE.notFound());
@@ -29,7 +29,7 @@ public class Chemical_ImageLoader {
 
     private EventBus eventBus;
 
-    private Chemical_ImageLoader(EventBus eventBus) {
+    private ChemicalImageLoader(EventBus eventBus) {
         this.eventBus = eventBus;
     }
 
@@ -38,10 +38,10 @@ public class Chemical_ImageLoader {
             throw new RuntimeException("Chemical Image Loader has already been initialised. " +
                     "Only one initialisation is permitted per Diagram Viewer instance.");
         }
-        loader = new Chemical_ImageLoader(eventBus);
+        loader = new ChemicalImageLoader(eventBus);
     }
 
-    public static Chemical_ImageLoader get() {
+    public static ChemicalImageLoader get() {
         if (loader == null) {
             throw new RuntimeException("Chemical Image Loader has not been initialised yet. " +
                     "Please call initialise before using 'get'");
@@ -50,7 +50,6 @@ public class Chemical_ImageLoader {
     }
 
     public void loadImage(final Handler handler, String identifier){
-        Console.info(identifier);
         if(identifier.startsWith("CHEBI")){
             loadChEBI(handler, identifier);
         } else if(identifier.startsWith("CHEMBL")) {
@@ -63,13 +62,11 @@ public class Chemical_ImageLoader {
     }
 
     public void loadCHEMBL(final Handler handler, String identifier){
-        String id = identifier.replaceAll("^CHEMBL[-:_]?", "");
-        String url = "http://www.ebi.ac.uk/chembl/api/data/image/" + id + "?format=png";
-//        String url = "https://www.ebi.ac.uk/chembl/api/data/image/CHEMBL209793?format=png";
+        String url = "https://www.ebi.ac.uk/chembl/api/data/image/" + identifier + "?format=png";
         forceLoadImage(handler, url);
     }
 
-    public void loadChEBI(final Handler handler, String identifier){
+    private void loadChEBI(final Handler handler, String identifier){
         String id = identifier.replaceAll("^CHEBI[-:_]?", "");
         String url = "http://www.ebi.ac.uk/chebi/displayImage.do?defaultImage=true&chebiId=" + id + "&dimensions=200&transbg=true";
         forceLoadImage(handler, url);
@@ -90,7 +87,7 @@ public class Chemical_ImageLoader {
                 image.getElement().removeFromParent();
                 image.setVisible(true);
                 handler.onChemicalImageLoaded(image);
-                eventBus.fireEventFromSource(new StructureImageLoadedEvent(image), Chemical_ImageLoader.this);
+                eventBus.fireEventFromSource(new StructureImageLoadedEvent(image), ChemicalImageLoader.this);
             }
         });
         image.addErrorHandler(new ErrorHandler() {
@@ -98,7 +95,7 @@ public class Chemical_ImageLoader {
             public void onError(ErrorEvent errorEvent) {
                 image.getElement().removeFromParent();
                 handler.onChemicalImageLoaded(NOT_FOUND);
-                eventBus.fireEventFromSource(new StructureImageLoadedEvent(NOT_FOUND), Chemical_ImageLoader.this);
+                eventBus.fireEventFromSource(new StructureImageLoadedEvent(NOT_FOUND), ChemicalImageLoader.this);
             }
         });
         //Making it invisible and attaching it to the DOM forces the loading of the image (so the previous handler is called)
