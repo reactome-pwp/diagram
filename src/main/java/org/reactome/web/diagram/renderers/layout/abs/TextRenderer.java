@@ -6,6 +6,7 @@ import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -71,9 +72,13 @@ public class TextRenderer {
         double x = properties.getX() + properties.getWidth() / 2;
         double y = properties.getY() + properties.getHeight() / 2;
 
-        if(textLines.size()==1){
-            drawTextSingleLine(ctx, message, CoordinateFactory.get(x,y));
-            return;
+        if(textLines.size() == 1){
+            //Attempt to split at the end of CHEMBL
+            textLines = splitAfterPrefix(message, "CHEMBL");
+            if (textLines.size() == 1) {
+                drawTextSingleLine(ctx, message, CoordinateFactory.get(x, y));
+                return;
+            }
         }
         // If multiple lines start drawing a bit higher
         y = y - ((textLines.size()-1) * fontSize)/2;
@@ -213,6 +218,20 @@ public class TextRenderer {
                 allLines.add(longWord);
             }
         }
+    }
+
+    private static List<String> splitAfterPrefix(String fullName, final String prefix) {
+        List<String> rtn = new LinkedList<>();
+
+        boolean startsWithPrefix = fullName.toLowerCase().startsWith(prefix.toLowerCase());
+        if(startsWithPrefix) {
+            rtn.clear();
+            rtn.add(fullName.substring(0, prefix.length())); //first part
+            rtn.add(fullName.substring(prefix.length())); //second part
+        } else {
+            rtn = Collections.singletonList(fullName);
+        }
+        return rtn;
     }
 
     private static double measureText(AdvancedContext2d ctx, String message){
