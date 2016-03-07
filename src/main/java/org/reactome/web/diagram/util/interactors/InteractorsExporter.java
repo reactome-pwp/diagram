@@ -80,7 +80,7 @@ public class InteractorsExporter {
                     builder.append(diagramAcc).append(separator)
                             .append(rawInteractor.getAcc()).append(separator)
                             .append(rawInteractor.getScore()).append(separator)
-                            .append(rawInteractor.getEvidences()).append(lineBreak);
+                            .append(rawInteractor.getEvidences()!=null ? rawInteractor.getEvidences() : "N/A").append(lineBreak);
                 }
             }
         }
