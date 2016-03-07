@@ -6,8 +6,6 @@ import org.reactome.web.diagram.data.layout.Segment;
 import org.reactome.web.diagram.data.layout.impl.SegmentFactory;
 import org.reactome.web.diagram.util.interactors.InteractorsLayout;
 
-import java.util.List;
-
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -16,7 +14,7 @@ public class DynamicLink extends InteractorLink {
     private InteractorEntity to;
     private Coordinate toPoint;
 
-    public DynamicLink(Node from, InteractorEntity to, Long id, List<String> evidences, String url, double score) {
+    public DynamicLink(Node from, InteractorEntity to, Long id, Integer evidences, String url, double score) {
         super(from, id, evidences, url, score);
         this.to = to;
         setBoundaries();

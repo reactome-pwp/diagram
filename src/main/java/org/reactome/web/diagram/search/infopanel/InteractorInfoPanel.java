@@ -40,7 +40,7 @@ public class InteractorInfoPanel extends Composite {
         for(Long interactionId:interactsWith.keySet()) {
             Set<GraphObject> interactors = interactsWith.getElements(interactionId);
             if (!interactors.isEmpty()) {
-                int interactorsSize = interactor.getEvidences(interactionId) != null ? interactor.getEvidences(interactionId).size() : 0;
+                int interactorsSize = interactor.getEvidences(interactionId) != null ? interactor.getEvidences(interactionId) : 0;
                 String evidences = interactorsSize == 0 ? "" : (interactorsSize == 1 ? interactorsSize + " evidence" : interactorsSize + " evidences");
 
                 Double score = interactor.getInteractionScore(interactionId);

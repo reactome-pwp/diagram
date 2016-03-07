@@ -89,7 +89,7 @@ public class InteractorsListPanel extends FlowPanel {
 
             String url = rawInteractor.getEvidencesURL();
             if(url != null) {
-                Anchor idItemLink = new Anchor(rawInteractor.getEvidences().size() + " evidences");
+                Anchor idItemLink = new Anchor(rawInteractor.getEvidences() + " evidences");
                 idItemLink.setHref(url);
                 idItemLink.addClickHandler(InfoActionsHelper.getInteractionLinkClickHandler(url, eventBus, this));
                 idItemLink.setStyleName(css.listItemLink());

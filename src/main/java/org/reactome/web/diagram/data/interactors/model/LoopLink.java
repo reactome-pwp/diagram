@@ -6,8 +6,6 @@ import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.NodeProperties;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 
-import java.util.List;
-
 /**
  * This is a specific link for those proteins/chemicals that interact with themselves
  *
@@ -20,7 +18,7 @@ public class LoopLink extends InteractorLink {
     public static final double START_ANGLE = Math.PI / 2.0;
     public static final double END_ANGLE = 2 * Math.PI;
 
-    public LoopLink(Node node, Long id, List<String> evidences, String url, double score) {
+    public LoopLink(Node node, Long id, Integer evidences, String url, double score) {
         super(node, id, evidences, url, score);
         this.id = id;
         this.score = score;

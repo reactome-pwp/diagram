@@ -8,7 +8,9 @@ import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.util.MapSet;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -39,19 +41,14 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
 
     public void addInteraction(RawInteractor rawInteractor){
         this.interaction.put(rawInteractor.getId(), rawInteractor);
-        evidences += rawInteractor.getEvidences().size();
+        if(rawInteractor.getEvidences()!=null) {
+            evidences += rawInteractor.getEvidences();
+        }
     }
 
     public boolean containsTerm(String term){
         String alias = this.alias != null ? this.alias : ""; //Alias can be null
-        return alias.toLowerCase().contains(term) || accession.toLowerCase().contains(term) || evidencesContainTerm(term);
-    }
-
-    private boolean evidencesContainTerm(String term) {
-        for (RawInteractor interactor : interaction.values()) {
-            if (interactor.getEvidences().toString().toLowerCase().contains(term)) return true;
-        }
-        return false;
+        return alias.toLowerCase().contains(term) || accession.toLowerCase().contains(term);
     }
 
     public String getResource() {
@@ -70,9 +67,13 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
         return alias !=null ? alias : accession;
     }
 
-    public List<String> getEvidences(Long interactionId) {
+    public Integer getEvidences(Long interactionId) {
         RawInteractor rawInteractor = interaction.get(interactionId);
-        return rawInteractor!=null ? interaction.get(interactionId).getEvidences() : Collections.<String>emptyList();
+        if(rawInteractor!=null && rawInteractor.getEvidences() != null) {
+            return rawInteractor.getEvidences();
+        } else {
+            return 0;
+        }
     }
 
     public Double getInteractionScore(Long interactionId) {

@@ -175,8 +175,8 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         Column<T, String> columnTitle = new Column<T, String>(new ClickableTextCell()) {
             @Override
             public String getValue(T object) {
-                List<String> evidences = object.getEvidences();
-                return ( evidences == null || evidences.isEmpty() ) ? "N/A" : "" + evidences.size();
+                Integer evidenceSize = object.getEvidences();
+                return ( evidenceSize == null || evidenceSize.equals(0) ) ? "N/A" : "" + evidenceSize;
             }
         };
         columnTitle.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);

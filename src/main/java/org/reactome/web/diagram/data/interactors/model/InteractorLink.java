@@ -7,8 +7,6 @@ import org.reactome.web.diagram.data.layout.category.SegmentCategory;
 import org.reactome.web.diagram.data.layout.impl.SegmentFactory;
 import org.reactome.web.diagram.data.loader.LoaderManager;
 
-import java.util.List;
-
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -18,10 +16,10 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
     Coordinate fromPoint;
 
     Long id;
-    List<String> evidences;
+    Integer evidences;
     double score;
 
-    InteractorLink(Node from, Long id, List<String> evidences, String url, double score) {
+    InteractorLink(Node from, Long id, Integer evidences, String url, double score) {
         super(url);
         this.from = from;
         this.id = id;
@@ -45,7 +43,7 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
         return id;
     }
 
-    public List<String> getEvidences() {
+    public Integer getEvidences() {
         return evidences;
     }
 

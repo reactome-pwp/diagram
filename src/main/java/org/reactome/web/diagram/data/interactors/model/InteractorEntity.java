@@ -11,7 +11,6 @@ import org.reactome.web.diagram.util.pdbe.model.PDBObject;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -35,8 +34,8 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
         this.chemical = isChemical(accession);
     }
 
-    public InteractorLink addLink(Node node, Long id, List<String> cluster, String url, double score) {
-        InteractorLink link = new DynamicLink(node, this, id, cluster, url, score);
+    public InteractorLink addLink(Node node, Long id, Integer evidences, String url, double score) {
+        InteractorLink link = new DynamicLink(node, this, id, evidences, url, score);
         links.add(link);
         return link;
     }

@@ -72,7 +72,7 @@ public class InteractorsExporter {
         builder.append("Interactor A").append(separator)
                 .append("Interactor B").append(separator)
                 .append("miScore").append(separator)
-                .append("Evidences").append(lineBreak);
+                .append("#Evidences").append(lineBreak);
         for (String diagramAcc : interactors.keySet()) {
             Set<RawInteractor> rawInteractors = interactors.getElements(diagramAcc);
             if(rawInteractors != null) {
@@ -80,8 +80,7 @@ public class InteractorsExporter {
                     builder.append(diagramAcc).append(separator)
                             .append(rawInteractor.getAcc()).append(separator)
                             .append(rawInteractor.getScore()).append(separator)
-//                            .append(rawInteractor.getEvidences().toString()).append("\t\n");
-                            .append(rawInteractor.getEvidences().toString().replaceAll("(\\]|\\[|,)", "").replaceAll("  *",";")).append(lineBreak);
+                            .append(rawInteractor.getEvidences()).append(lineBreak);
                 }
             }
         }
