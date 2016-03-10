@@ -14,8 +14,11 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.common.IconButton;
+import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.controls.settings.common.InfoLabel;
 import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.interactors.custom.ResourcesManager;
+import org.reactome.web.diagram.data.interactors.custom.model.CustomResource;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.interactors.raw.RawResource;
 import org.reactome.web.diagram.data.interactors.raw.factory.ResourcesException;
@@ -32,6 +35,7 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class InteractorsTabPanel extends Composite implements ClickHandler, ValueChangeHandler, InteractorsResourceLoader.Handler,
         InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler,
         DiagramLoadedHandler, DiagramRequestedHandler {
@@ -43,12 +47,15 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
     private RadioButton staticResourceBtn;
     private FlowPanel liveResourcesFP;
+    private FlowPanel customResourcesFP;
     private FlowPanel loadingPanel;
     private IconButton downloadBtn;
+    private IconButton addCustomResourceBtn;
     private String selectedResource;
 
     public InteractorsTabPanel(EventBus eventBus) {
         this.eventBus = eventBus;
+        ResourcesManager.initialise();
 
         InfoLabel tabHeader = new InfoLabel("Interactor Overlays", RESOURCES.aboutThis());
 
@@ -75,14 +82,9 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         liveResourcesLabel.setTitle("Select one of the PSICQUIC resources");
         liveResourcesLabel.setStyleName(RESOURCES.getCSS().interactorResourceBtn());
 
-        FlowPanel main = new FlowPanel();
-        main.setStyleName(RESOURCES.getCSS().interactorsPanel());
-        main.add(tabHeader);
-        main.add(lb);
-        main.add(staticResourceBtn);
-        main.add(liveResourcesLabel);
-        main.add(loadingPanel);
-        main.add(getOptionsPanel());
+        Label customResourcesLabel = new Label("Custom Resources:");
+        customResourcesLabel.setTitle("Select one of the custom PSICQUIC resources");
+        customResourcesLabel.setStyleName(RESOURCES.getCSS().interactorResourceBtn());
 
         String resourceName = ResourceNameFormatter.format(selectedResource);
         downloadBtn = new IconButton(resourceName, RESOURCES.downloadNormal());
@@ -91,7 +93,23 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         downloadBtn.setStyleName(RESOURCES.getCSS().downloadBtn());
         downloadBtn.setEnabled(false);
 
+        addCustomResourceBtn = new IconButton("Add a new resource",RESOURCES.downloadNormal());
+        addCustomResourceBtn.addClickHandler(this);
+        addCustomResourceBtn.setTitle("Click to add a new PSICQUIC resource");
+        addCustomResourceBtn.setStyleName(RESOURCES.getCSS().downloadBtn());
+
+        FlowPanel main = new FlowPanel();
+        main.setStyleName(RESOURCES.getCSS().interactorsPanel());
+        main.add(tabHeader);
+        main.add(lb);
+        main.add(staticResourceBtn);
+        main.add(liveResourcesLabel);
+        main.add(loadingPanel);
+        main.add(getOptionsPanel());
+        main.add(customResourcesLabel);
+        main.add(getCustomResourcesPanel());
         main.add(downloadBtn);
+
         initWidget(main);
         initialiseHandlers();
 
@@ -103,16 +121,24 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
             }
         };
         refreshTimer.scheduleRepeating(RESOURCES_REFRESH);
+
+        populateCustomResourceListPanel();
     }
 
     @Override
     public void onClick(ClickEvent event) {
-        if (context != null) {
-            MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(selectedResource);
-            if(hasContents(interactors)) {
-                String filename = context.getContent().getStableId() + "_Interactors_" + ResourceNameFormatter.format(selectedResource)+ ".csv";
-                InteractorsExporter.exportInteractors(filename, interactors);
+        Button btn = (Button) event.getSource();
+        if (btn.equals(downloadBtn)) {
+            if (context != null) {
+                MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(selectedResource);
+                if (hasContents(interactors)) {
+                    String filename = context.getContent().getStableId() + "_Interactors_" + ResourceNameFormatter.format(selectedResource) + ".csv";
+                    InteractorsExporter.exportInteractors(filename, interactors);
+                }
             }
+        } else if (btn.equals(addCustomResourceBtn)) {
+            ResourcesManager.get().createAndAddResource("BCD", "" + Math.random());
+            populateCustomResourceListPanel();
         }
     }
 
@@ -207,6 +233,40 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         }
     }
 
+    private void populateCustomResourceListPanel() {
+        customResourcesFP.clear();
+        List<CustomResource> customResourcesList = ResourcesManager.get().getResources();
+        if (!customResourcesList.isEmpty()) {
+            for (CustomResource resource : customResourcesList) {
+                final RadioButton radioBtn = new RadioButton("Resources", resource.getName());
+                radioBtn.setFormValue(resource.getToken()); //use FormValue to keep the value
+//                radioBtn.addValueChangeHandler(this);
+                radioBtn.setStyleName(RESOURCES.getCSS().interactorResourceListBtn());
+                radioBtn.setTitle("Select " + resource.getName() + " as a resource");
+
+                // Restore previous selection
+                if (radioBtn.getFormValue().equals(selectedResource)) {
+                    radioBtn.setValue(true);
+                }
+                //TODO clean this up
+                Button deleteBtn = new PwpButton("Click here to delete this item", RESOURCES.getCSS().delete(), new ClickHandler() {
+                    @Override
+                    public void onClick(ClickEvent clickEvent) {
+                        ResourcesManager.get().deleteResource(radioBtn.getFormValue());
+                        populateCustomResourceListPanel();
+                    }
+                });
+                FlowPanel row = new FlowPanel();
+                row.add(radioBtn);
+                row.add(deleteBtn);
+
+                customResourcesFP.add(row);
+            }
+        }
+        //Add the "add new custom resource" button
+        customResourcesFP.add(addCustomResourceBtn);
+    }
+
     private Widget getOptionsPanel() {
         liveResourcesFP = new FlowPanel();
         liveResourcesFP.setStyleName(RESOURCES.getCSS().liveResourcesInnerPanel());
@@ -214,6 +274,16 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         SimplePanel sp = new SimplePanel();
         sp.setStyleName(RESOURCES.getCSS().liveResourcesOuterPanel());
         sp.add(liveResourcesFP);
+        return sp;
+    }
+
+    private Widget getCustomResourcesPanel() {
+        customResourcesFP = new FlowPanel();
+        customResourcesFP.setStyleName(RESOURCES.getCSS().customResourcesInnerPanel());
+
+        SimplePanel sp = new SimplePanel();
+        sp.setStyleName(RESOURCES.getCSS().customResourcesOuterPanel());
+        sp.add(customResourcesFP);
         return sp;
     }
 
@@ -281,6 +351,9 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
         @Source("../images/download_normal.png")
         ImageResource downloadNormal();
+
+        @Source("../images/info_normal.png")
+        ImageResource deleteNormal();
     }
 
     @CssResource.ImportedWithPrefix("diagram-InteractorsTabPanel")
@@ -297,6 +370,10 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
         String liveResourcesInnerPanel();
 
+        String customResourcesOuterPanel();
+
+        String customResourcesInnerPanel();
+
         String loadingPanel();
 
         String interactorResourceListBtn();
@@ -304,6 +381,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         String interactorResourceListBtnDisabled();
 
         String downloadBtn();
+
+        String delete();
 
     }
 }

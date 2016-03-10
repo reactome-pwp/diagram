@@ -5,7 +5,7 @@
 }
 
 .interactorLabel {
-    margin-top: 5px;
+    margin-top: 2px;
     color: rgb(0, 90, 117);
 }
 
@@ -28,7 +28,7 @@
 }
 
 .liveResourcesOuterPanel {
-    height: 145px;
+    height: 68px;
     width: 245px;
     margin-left: 10px;
     background-color: transparent;
@@ -37,6 +37,21 @@
 }
 
 .liveResourcesInnerPanel {
+    color: white;
+    height: auto;
+    width: 244px;
+}
+
+.customResourcesOuterPanel {
+    height: 68px;
+    width: 245px;
+    margin-left: 10px;
+    background-color: transparent;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.customResourcesInnerPanel {
     color: white;
     height: auto;
     width: 244px;
@@ -111,4 +126,22 @@
 
 .downloadBtn:disabled {
     background-color: #a39da6;
+}
+
+@sprite .delete {
+    gwt-image:'deleteNormal';
+    outline: none;
+    background-repeat:no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: right;
+    margin-right:15px;
+}
+
+@sprite .delete:hover {
+    gwt-image:'deleteNormal';
+}
+
+@sprite .delete:active:hover {
+    gwt-image: 'deleteNormal';
 }
