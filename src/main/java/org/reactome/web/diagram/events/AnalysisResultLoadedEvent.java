@@ -11,15 +11,15 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class AnalysisResultLoadedEvent extends GwtEvent<AnalysisResultLoadedHandler> {
-    public static Type<AnalysisResultLoadedHandler> TYPE = new Type<AnalysisResultLoadedHandler>();
+    public static Type<AnalysisResultLoadedHandler> TYPE = new Type<>();
 
     private AnalysisSummary summary;
     private ExpressionSummary expressionSummary;
-    private PathwayIdentifiers pathwayIdentifiers;
+    private PathwayEntities pathwayIdentifiers;
     private List<PathwaySummary> pathwaySummaries;
     private long time;
 
-    public AnalysisResultLoadedEvent(AnalysisSummary summary, ExpressionSummary expressionSummary, PathwayIdentifiers pathwayIdentifiers, List<PathwaySummary> pathwaySummaries, long time) {
+    public AnalysisResultLoadedEvent(AnalysisSummary summary, ExpressionSummary expressionSummary, PathwayEntities pathwayIdentifiers, List<PathwaySummary> pathwaySummaries, long time) {
         this.summary = summary;
         this.expressionSummary = expressionSummary;
         this.pathwayIdentifiers = pathwayIdentifiers;
@@ -37,7 +37,7 @@ public class AnalysisResultLoadedEvent extends GwtEvent<AnalysisResultLoadedHand
         handler.onAnalysisResultLoaded(this);
     }
 
-    public PathwayIdentifiers getPathwayIdentifiers() {
+    public PathwayEntities getPathwayIdentifiers() {
         return pathwayIdentifiers;
     }
 

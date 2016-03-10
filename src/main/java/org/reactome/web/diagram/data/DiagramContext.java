@@ -53,19 +53,19 @@ public class DiagramContext {
         }
     }
 
-    public void setAnalysisOverlay(AnalysisStatus analysisStatus, PathwayIdentifiers pathwayIdentifiers, List<PathwaySummary> pathwaySummaries) {
+    public void setAnalysisOverlay(AnalysisStatus analysisStatus, PathwayEntities pathwayIdentifiers, List<PathwaySummary> pathwaySummaries) {
         this.analysisStatus = analysisStatus;
         MapSet<String, GraphObject> map = this.content.getIdentifierMap();
         if (pathwayIdentifiers != null) {
-            for (PathwayIdentifier identifier : pathwayIdentifiers.getIdentifiers()) {
-                for (IdentifierMap identifierMap : identifier.getMapsTo()) {
+            for (PathwayEntity entity : pathwayIdentifiers.getIdentifiers()) {
+                for (IdentifierMap identifierMap : entity.getMapsTo()) {
                     for (String id : identifierMap.getIds()) {
                         Set<GraphObject> elements = map.getElements(id);
                         if (elements == null) continue;
                         for (GraphObject graphObject : elements) {
                             if (graphObject instanceof GraphPhysicalEntity) {
                                 GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
-                                pe.setIsHit(identifier.getIdentifier(), identifier.getExp());
+                                pe.setIsHit(entity.getIdentifier(), entity.getExp());
                             }
                         }
                     }

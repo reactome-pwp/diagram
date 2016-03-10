@@ -3,7 +3,7 @@ package org.reactome.web.diagram.data.loader;
 
 import org.reactome.web.analysis.client.model.AnalysisSummary;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
-import org.reactome.web.analysis.client.model.PathwayIdentifiers;
+import org.reactome.web.analysis.client.model.PathwayEntities;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 
 import java.util.List;
@@ -19,7 +19,7 @@ interface AnalysisLoaderHandler {
 
     void onResultSummaryError(Throwable e);
 
-    void onPathwayIdentifiersLoaded(PathwayIdentifiers identifiers, long time);
+    void onPathwayIdentifiersLoaded(PathwayEntities entities, long time);
 
     void onPathwayIdentifiersNotFound(long time);
 
