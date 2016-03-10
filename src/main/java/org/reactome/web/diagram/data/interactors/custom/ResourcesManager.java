@@ -16,16 +16,19 @@ import java.util.List;
  */
 @SuppressWarnings("Duplicates")
 public class ResourcesManager {
-    private static final String CUSTOM_RESOURCES_KEY = "customResources";
+    private static final String CUSTOM_RESOURCES_KEY = "Reactome.Diagram.CustomResources";
+    private static final String TUPLES_KEY = "Reactome.Diagram.customTuples";
 
     private static ResourcesManager instance;
     private StorageSolution storageSolution;
 
     private List<CustomResource> resources;
+    private List<CustomResource> tuples;
 
     private ResourcesManager() {
         storageSolution = StorageSolutionFactory.getStorage();
-        this.resources = loadResources(CUSTOM_RESOURCES_KEY);
+        this.resources = loadItems(CUSTOM_RESOURCES_KEY);
+        this.tuples = loadItems(TUPLES_KEY);
     }
 
     public static void initialise(){
@@ -46,6 +49,14 @@ public class ResourcesManager {
         return resources;
     }
 
+    public List<CustomResource> getTuples() {
+        return tuples;
+    }
+
+    /////////////////////////
+    // ==== Resources =====//
+    /////////////////////////
+
     public void createAndAddResource(String name, String token){
         try {
             CustomResource cr = StoredResourcesModelFactory.create(CustomResource.class);
@@ -53,7 +64,7 @@ public class ResourcesManager {
             cr.setToken(token);
 
             resources.add(cr);
-            saveResources(CUSTOM_RESOURCES_KEY, resources);
+            saveItems(CUSTOM_RESOURCES_KEY, resources);
         } catch (StoredResourcesModelException e) {
             e.printStackTrace();
         }
@@ -69,19 +80,55 @@ public class ResourcesManager {
         }
         if(toBeDeleted!=null) {
             resources.remove(toBeDeleted);
-            saveResources(CUSTOM_RESOURCES_KEY, resources);
+            saveItems(CUSTOM_RESOURCES_KEY, resources);
         }
     }
 
     public void deleteAllResources() {
         resources = new LinkedList<>();
-        saveResources(CUSTOM_RESOURCES_KEY, resources);
+        saveItems(CUSTOM_RESOURCES_KEY, resources);
+    }
+
+    /////////////////////////
+    // ====== Tuples ======//
+    /////////////////////////
+
+    public void createAndAddTuple(String name, String token){
+        try {
+            CustomResource cr = StoredResourcesModelFactory.create(CustomResource.class);
+            cr.setName(name);
+            cr.setToken(token);
+
+            tuples.add(cr);
+            saveItems(TUPLES_KEY, tuples);
+        } catch (StoredResourcesModelException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteTuple(String token) {
+        CustomResource toBeDeleted = null;
+        for (CustomResource tuple : tuples) {
+            if(tuple.getToken().equals(token)) {
+                toBeDeleted = tuple;
+                break;
+            }
+        }
+        if(toBeDeleted!=null) {
+            tuples.remove(toBeDeleted);
+            saveItems(TUPLES_KEY, tuples);
+        }
+    }
+
+    public void deleteAllTuples() {
+        tuples = new LinkedList<>();
+        saveItems(TUPLES_KEY, tuples);
     }
 
     /***
-     * Load all locally stored resources (if any)
+     * Load all locally stored resources/tuples (if any)
      */
-    private List<CustomResource> loadResources(String key){
+    private List<CustomResource> loadItems(String key){
         List<CustomResource> rtn = new LinkedList<>();
 
         if(storageSolution!=null) {
@@ -90,10 +137,10 @@ public class ResourcesManager {
                 try {
                     CustomResources resources = StoredResourcesModelFactory.getModelObject(CustomResources.class, json);
                     rtn.addAll(resources.getCustomResources());
-                    Console.info("Loaded " + rtn.size() + " custom resources.");
+                    Console.info("Loaded " + rtn.size() + " custom items.");
                 } catch (StoredResourcesModelException e) {
                     //TODO propagate the exception upwards
-                    Console.info("Failed to load locally stored custom resources");
+                    Console.info("Failed to load locally stored custom items");
                     e.printStackTrace();
                 }
             }
@@ -102,9 +149,9 @@ public class ResourcesManager {
     }
 
     /***
-     * Persist resources to local storage
+     * Persist resources/tuples to local storage
      */
-    private void saveResources(String key, List<CustomResource> resources) {
+    private void saveItems(String key, List<CustomResource> resources) {
         if(storageSolution!=null) {
             try {
                 CustomResources container = StoredResourcesModelFactory.create(CustomResources.class);
