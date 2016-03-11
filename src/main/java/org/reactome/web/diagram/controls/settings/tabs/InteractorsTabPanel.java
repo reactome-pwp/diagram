@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.context.popups.InsertItemDialog;
 import org.reactome.web.diagram.controls.settings.common.InfoLabel;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.interactors.custom.ResourcesManager;
@@ -162,8 +163,11 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
             ResourcesManager.get().createAndAddResource("BCD", "" + Math.random());
             populateCustomResourceListPanel();
         } else if (btn.equals(addTupleBtn)) {
-            ResourcesManager.get().createAndAddTuple("Tuple1", "" + Math.random());
-            populateTupleListPanel();
+            InsertItemDialog dialog = new InsertItemDialog();
+            dialog.show();
+
+//            ResourcesManager.get().createAndAddTuple("Tuple1", "" + Math.random());
+//            populateTupleListPanel();
         }
     }
 
