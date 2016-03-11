@@ -3,11 +3,17 @@
   "chemical": {
     "fill": "#B2EBF2",
     "stroke": "#000000",
-    "text": "#000000"
+    "lighterFill" : "#E0F7FA",
+    "lighterStroke" : "#006064",
+    "text": "#000000",
+    "lighterText": "#424242"
   },
   "protein": {
     "fill": "#26C6DA",
     "stroke": "#616161",
-    "text": "#000000"
+    "lighterFill" : "#80DEEA",
+    "lighterStroke" : "#9E9E9E",
+    "text": "#000000",
+    "lighterText": "#424242"
   }
 }
