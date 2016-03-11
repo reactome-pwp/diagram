@@ -16,6 +16,16 @@ public class InteractorEntityRenderer000 extends InteractorEntityAbstractRendere
     }
 
     @Override
+    public void drawEnrichment(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
+        //Nothing here
+    }
+
+    @Override
+    public void drawExpression(AdvancedContext2d ctx, DiagramInteractor item, int t, double min, double max, Double factor, Coordinate offset) {
+        //Nothing here
+    }
+
+    @Override
     public void drawText(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
         //Nothing here
     }
