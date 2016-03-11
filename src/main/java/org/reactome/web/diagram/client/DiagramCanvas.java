@@ -417,7 +417,6 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                         renderer.draw(interactors, entity, factor, offset);
                         break;
                     case OVERREPRESENTATION:
-                        Console.warn("Here for " + entity.getAccession() + " is " + entity.getIsHit());
                         renderer.drawEnrichment(interactors, entity, factor, offset);
                         break;
                     case EXPRESSION:
