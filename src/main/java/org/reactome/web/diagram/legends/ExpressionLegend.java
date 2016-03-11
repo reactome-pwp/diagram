@@ -15,6 +15,10 @@ import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.graph.model.GraphComplex;
 import org.reactome.web.diagram.data.graph.model.GraphEntitySet;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.model.DynamicLink;
+import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
+import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
@@ -36,7 +40,7 @@ import java.util.List;
 public class ExpressionLegend extends LegendPanel implements ClickHandler, MouseOverHandler, MouseOutHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, DiagramRequestedHandler,
         ExpressionValueHoveredHandler, AnalysisProfileChangedHandler, ExpressionColumnChangedHandler,
-        GraphObjectSelectedHandler, GraphObjectHoveredHandler {
+        GraphObjectSelectedHandler, GraphObjectHoveredHandler, InteractorHoveredHandler {
 
     private Canvas gradient;
     private Canvas flag;
@@ -47,6 +51,7 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
     private Double expHovered;
     private GraphObject hovered;
     private GraphObject selected;
+    private InteractorEntity interactor;
 
     private int column;
     private double min;
@@ -131,6 +136,33 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
     }
 
     @Override
+    public void onInteractorHovered(InteractorHoveredEvent event) {
+        expHovered = null;
+        hovered = null;
+        interactor = null;
+        if (event.getInteractor() != null) {
+            DiagramInteractor diagramInteractor = event.getInteractor();
+            if (diagramInteractor instanceof InteractorEntity) {
+                interactor = (InteractorEntity) diagramInteractor;
+            } else if (diagramInteractor instanceof DynamicLink) {
+                DynamicLink link = (DynamicLink) diagramInteractor;
+                interactor = link.getInteractorEntity();
+            } else {
+                hovered = ((InteractorLink) diagramInteractor).getNodeFrom().getGraphObject();
+                try {
+                    expHovered = hovered.getExpression(column);
+                } catch (NullPointerException ex){
+                    //Nothing here
+                }
+            }
+            if (interactor != null && interactor.getExp() != null) {
+                expHovered = interactor.getExp().get(this.column);
+            }
+        }
+        draw();
+    }
+
+    @Override
     public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
         this.selected = event.getGraphObject();
         draw();
@@ -147,8 +179,14 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
 
     @Override
     public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
-        this.expHovered = null;
         this.column = e.getColumn();
+        if(interactor!=null && interactor.getExp()!=null) {
+            expHovered = interactor.getExp().get(this.column);
+        } else if (hovered != null && hovered.getExpression()!=null) {
+            expHovered = hovered.getExpression(column);
+        } else {
+            expHovered = null;
+        }
         draw();
     }
 
@@ -298,15 +336,16 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
 
 
     private void initHandlers() {
-        this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
-        this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
-        this.eventBus.addHandler(ExpressionValueHoveredEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
-        this.eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
+        eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
+        eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
+        eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
+        eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
+        eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
+        eventBus.addHandler(AnalysisResetEvent.TYPE, this);
+        eventBus.addHandler(ExpressionValueHoveredEvent.TYPE, this);
+        eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
+        eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
     }
 
     /*########### HELP INFO ##############*/

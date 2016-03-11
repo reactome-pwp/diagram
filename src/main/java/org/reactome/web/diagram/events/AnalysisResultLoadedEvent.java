@@ -15,14 +15,14 @@ public class AnalysisResultLoadedEvent extends GwtEvent<AnalysisResultLoadedHand
 
     private AnalysisSummary summary;
     private ExpressionSummary expressionSummary;
-    private PathwayEntities pathwayIdentifiers;
+    private PathwayElements pathwayElements;
     private List<PathwaySummary> pathwaySummaries;
     private long time;
 
-    public AnalysisResultLoadedEvent(AnalysisSummary summary, ExpressionSummary expressionSummary, PathwayEntities pathwayIdentifiers, List<PathwaySummary> pathwaySummaries, long time) {
+    public AnalysisResultLoadedEvent(AnalysisSummary summary, ExpressionSummary expressionSummary, PathwayElements pathwayElements, List<PathwaySummary> pathwaySummaries, long time) {
         this.summary = summary;
         this.expressionSummary = expressionSummary;
-        this.pathwayIdentifiers = pathwayIdentifiers;
+        this.pathwayElements = pathwayElements;
         this.pathwaySummaries = pathwaySummaries == null ? new LinkedList<PathwaySummary>() : pathwaySummaries;
         this.time = time;
     }
@@ -37,8 +37,8 @@ public class AnalysisResultLoadedEvent extends GwtEvent<AnalysisResultLoadedHand
         handler.onAnalysisResultLoaded(this);
     }
 
-    public PathwayEntities getPathwayIdentifiers() {
-        return pathwayIdentifiers;
+    public PathwayElements getPathwayElements() {
+        return pathwayElements;
     }
 
     public ExpressionSummary getExpressionSummary() {
@@ -69,9 +69,10 @@ public class AnalysisResultLoadedEvent extends GwtEvent<AnalysisResultLoadedHand
     public String toString() {
         return "AnalysisResultLoadedEvent{" +
                 "time=" + time +
-                ", pathwayIdentifiers=" + (pathwayIdentifiers != null ? pathwayIdentifiers.getIdentifiers().size() : "null") +
+                ", pathwayEntities=" + (pathwayElements != null ? pathwayElements.getEntities().size() : "null") +
+                ", pathwayInteractors=" + (pathwayElements != null ? pathwayElements.getInteractors().size() : "null") +
                 ", type=" + (summary != null ?  summary.getType() : "null") +
-                ", resource=" + (pathwayIdentifiers != null ? pathwayIdentifiers.getResources() : "null") +
+                ", resource=" + (pathwayElements != null ? pathwayElements.getResources() : "null") +
                 '}';
     }
 }

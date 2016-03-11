@@ -8,6 +8,8 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.util.MapSet;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
@@ -43,21 +45,28 @@ public class DiagramContext {
     }
 
     public void clearAnalysisOverlay() {
-        this.analysisStatus = null;
-        for (GraphObject graphObject : this.content.getDatabaseObjects()) {
+        analysisStatus = null;
+        for (GraphObject graphObject : content.getDatabaseObjects()) {
             if (graphObject instanceof GraphPhysicalEntity) {
                 ((GraphPhysicalEntity) graphObject).resetHit();
+                for (DiagramObject diagramObject : graphObject.getDiagramObjects()) {
+                    Node node = (Node) diagramObject;
+                    SummaryItem summaryItem = node.getInteractorsSummary();
+                    if (summaryItem != null) {
+                        summaryItem.setHit(null);
+                    }
+                }
             } else if (graphObject instanceof GraphPathway) {
                 ((GraphPathway) graphObject).resetHit();
             }
         }
     }
 
-    public void setAnalysisOverlay(AnalysisStatus analysisStatus, PathwayEntities pathwayIdentifiers, List<PathwaySummary> pathwaySummaries) {
+    public void setAnalysisOverlay(AnalysisStatus analysisStatus, PathwayElements pathwayElements, List<PathwaySummary> pathwaySummaries) {
         this.analysisStatus = analysisStatus;
         MapSet<String, GraphObject> map = this.content.getIdentifierMap();
-        if (pathwayIdentifiers != null) {
-            for (PathwayEntity entity : pathwayIdentifiers.getIdentifiers()) {
+        if (pathwayElements != null) {
+            for (PathwayEntity entity : pathwayElements.getEntities()) {
                 for (IdentifierMap identifierMap : entity.getMapsTo()) {
                     for (String id : identifierMap.getIds()) {
                         Set<GraphObject> elements = map.getElements(id);
