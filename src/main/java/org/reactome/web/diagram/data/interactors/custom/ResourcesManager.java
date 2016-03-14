@@ -17,18 +17,15 @@ import java.util.List;
 @SuppressWarnings("Duplicates")
 public class ResourcesManager {
     private static final String CUSTOM_RESOURCES_KEY = "Reactome.Diagram.CustomResources";
-    private static final String TUPLES_KEY = "Reactome.Diagram.customTuples";
 
     private static ResourcesManager instance;
     private StorageSolution storageSolution;
 
     private List<CustomResource> resources;
-    private List<CustomResource> tuples;
 
     private ResourcesManager() {
         storageSolution = StorageSolutionFactory.getStorage();
         this.resources = loadItems(CUSTOM_RESOURCES_KEY);
-        this.tuples = loadItems(TUPLES_KEY);
     }
 
     public static void initialise(){
@@ -47,10 +44,6 @@ public class ResourcesManager {
 
     public List<CustomResource> getResources() {
         return resources;
-    }
-
-    public List<CustomResource> getTuples() {
-        return tuples;
     }
 
     /////////////////////////
@@ -87,42 +80,6 @@ public class ResourcesManager {
     public void deleteAllResources() {
         resources = new LinkedList<>();
         saveItems(CUSTOM_RESOURCES_KEY, resources);
-    }
-
-    /////////////////////////
-    // ====== Tuples ======//
-    /////////////////////////
-
-    public void createAndAddTuple(String name, String token){
-        try {
-            CustomResource cr = StoredResourcesModelFactory.create(CustomResource.class);
-            cr.setName(name);
-            cr.setToken(token);
-
-            tuples.add(cr);
-            saveItems(TUPLES_KEY, tuples);
-        } catch (StoredResourcesModelException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void deleteTuple(String token) {
-        CustomResource toBeDeleted = null;
-        for (CustomResource tuple : tuples) {
-            if(tuple.getToken().equals(token)) {
-                toBeDeleted = tuple;
-                break;
-            }
-        }
-        if(toBeDeleted!=null) {
-            tuples.remove(toBeDeleted);
-            saveItems(TUPLES_KEY, tuples);
-        }
-    }
-
-    public void deleteAllTuples() {
-        tuples = new LinkedList<>();
-        saveItems(TUPLES_KEY, tuples);
     }
 
     /***
