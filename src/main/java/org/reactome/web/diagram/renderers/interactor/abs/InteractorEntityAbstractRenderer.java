@@ -48,6 +48,7 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
 
     @Override
     public void drawEnrichment(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
+        if(!item.isVisible()) return;
         Boolean isHIt = ((InteractorEntity) item).getIsHit();
         shape(ctx, item, factor, offset);
         boolean isHit = isHIt != null && isHIt;
@@ -68,6 +69,7 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
 
     @Override
     public void drawExpression(AdvancedContext2d ctx, DiagramInteractor item, int t, double min, double max, Double factor, Coordinate offset) {
+        if(!item.isVisible()) return;
         draw(ctx, item, factor, offset);
         Boolean isHIt = ((InteractorEntity) item).getIsHit();
         shape(ctx, item, factor, offset);
