@@ -49,11 +49,9 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     private RadioButton staticResourceBtn;
     private FlowPanel liveResourcesFP;
     private FlowPanel customResourcesFP;
-    private FlowPanel tuplesFP;
     private FlowPanel loadingPanel;
     private IconButton downloadBtn;
     private IconButton addCustomResourceBtn;
-    private IconButton addTupleBtn;
     private String selectedResource;
 
     public InteractorsTabPanel(EventBus eventBus) {
@@ -83,11 +81,11 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
         Label liveResourcesLabel = new Label("PSICQUIC:");
         liveResourcesLabel.setTitle("Select one of the PSICQUIC resources");
-        liveResourcesLabel.setStyleName(RESOURCES.getCSS().interactorResourceBtn());
+        liveResourcesLabel.setStyleName(RESOURCES.getCSS().liveInteractorLabel());
 
         Label customResourcesLabel = new Label("Custom Resources:");
         customResourcesLabel.setTitle("Select one of the custom PSICQUIC resources");
-        customResourcesLabel.setStyleName(RESOURCES.getCSS().interactorResourceBtn());
+        customResourcesLabel.setStyleName(RESOURCES.getCSS().liveInteractorLabel());
 
         Label tuplesLabel = new Label("Custom Tuples:");
         tuplesLabel.setTitle("Select one of the custom tuples");
@@ -100,15 +98,10 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         downloadBtn.setStyleName(RESOURCES.getCSS().downloadBtn());
         downloadBtn.setEnabled(false);
 
-        addCustomResourceBtn = new IconButton("Add a new resource",RESOURCES.downloadNormal());
+        addCustomResourceBtn = new IconButton("Add a new resource",RESOURCES.addNewItem());
         addCustomResourceBtn.addClickHandler(this);
-        addCustomResourceBtn.setTitle("Click to add a new PSICQUIC resource");
-        addCustomResourceBtn.setStyleName(RESOURCES.getCSS().downloadBtn());
-
-        addTupleBtn = new IconButton("Add a new tuple",RESOURCES.downloadNormal());
-        addTupleBtn.addClickHandler(this);
-        addTupleBtn.setTitle("Click to add a new tuple to be overlaid");
-        addTupleBtn.setStyleName(RESOURCES.getCSS().downloadBtn());
+        addCustomResourceBtn.setTitle("Click to add a new resource");
+        addCustomResourceBtn.setStyleName(RESOURCES.getCSS().addNewResourceBtn());
 
         FlowPanel main = new FlowPanel();
         main.setStyleName(RESOURCES.getCSS().interactorsPanel());
@@ -120,8 +113,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         main.add(getOptionsPanel());
         main.add(customResourcesLabel);
         main.add(getCustomResourcesPanel());
-        main.add(tuplesLabel);
-        main.add(getTuplesPanel());
         main.add(downloadBtn);
 
         initWidget(main);
@@ -142,7 +133,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 //        ResourcesManager.get().createAndAddResource("Ant", "765433");
 
         populateCustomResourceListPanel();
-        populateTupleListPanel();
     }
 
     @Override
@@ -157,17 +147,11 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                 }
             }
         } else if (btn.equals(addCustomResourceBtn)) {
-//            InsertItemDialog dialog = new InsertItemDialog();
-//            dialog.show();
-
             ResourcesManager.get().createAndAddResource("BCD", "" + Math.random());
             populateCustomResourceListPanel();
-        } else if (btn.equals(addTupleBtn)) {
+
             InsertItemDialog dialog = new InsertItemDialog();
             dialog.show();
-
-//            ResourcesManager.get().createAndAddTuple("Tuple1", "" + Math.random());
-//            populateTupleListPanel();
         }
     }
 
@@ -277,7 +261,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                     radioBtn.setValue(true);
                 }
                 //TODO clean this up
-                Button deleteBtn = new PwpButton("Click here to delete this rsource", RESOURCES.getCSS().delete(), new ClickHandler() {
+                Button deleteBtn = new PwpButton("Click here to delete this resource", RESOURCES.getCSS().delete(), new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent clickEvent) {
                         ResourcesManager.get().deleteResource(radioBtn.getFormValue());
@@ -293,40 +277,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         }
         //Add the "add new custom resource" button
         customResourcesFP.add(addCustomResourceBtn);
-    }
-
-    private void populateTupleListPanel() {
-        tuplesFP.clear();
-        List<CustomResource> tuplesList = ResourcesManager.get().getTuples();
-        if (!tuplesList.isEmpty()) {
-            for (CustomResource resource : tuplesList) {
-                final RadioButton radioBtn = new RadioButton("Resources", resource.getName());
-                radioBtn.setFormValue(resource.getToken()); //use FormValue to keep the value
-//                radioBtn.addValueChangeHandler(this);
-                radioBtn.setStyleName(RESOURCES.getCSS().interactorResourceListBtn());
-                radioBtn.setTitle("Select " + resource.getName() + " as a tuple");
-
-                // Restore previous selection
-                if (radioBtn.getFormValue().equals(selectedResource)) {
-                    radioBtn.setValue(true);
-                }
-                //TODO clean this up
-                Button deleteBtn = new PwpButton("Click here to delete this tuple", RESOURCES.getCSS().delete(), new ClickHandler() {
-                    @Override
-                    public void onClick(ClickEvent clickEvent) {
-                        ResourcesManager.get().deleteTuple(radioBtn.getFormValue());
-                        populateTupleListPanel();
-                    }
-                });
-                FlowPanel row = new FlowPanel();
-                row.add(radioBtn);
-                row.add(deleteBtn);
-
-                tuplesFP.add(row);
-            }
-        }
-        //Add the "add new tuple" button
-        tuplesFP.add(addTupleBtn);
     }
 
     private Widget getOptionsPanel() {
@@ -346,16 +296,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         SimplePanel sp = new SimplePanel();
         sp.setStyleName(RESOURCES.getCSS().customResourcesOuterPanel());
         sp.add(customResourcesFP);
-        return sp;
-    }
-
-    private Widget getTuplesPanel() {
-        tuplesFP = new FlowPanel();
-        tuplesFP.setStyleName(RESOURCES.getCSS().tuplesInnerPanel());
-
-        SimplePanel sp = new SimplePanel();
-        sp.setStyleName(RESOURCES.getCSS().tuplesOuterPanel());
-        sp.add(tuplesFP);
         return sp;
     }
 
@@ -424,8 +364,14 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         @Source("../images/download_normal.png")
         ImageResource downloadNormal();
 
-        @Source("../images/info_normal.png")
+        @Source("../images/addNewItem.png")
+        ImageResource addNewItem();
+
+        @Source("../images/bin_normal.png")
         ImageResource deleteNormal();
+
+        @Source("../images/bin_hovered.png")
+        ImageResource deleteHovered();
     }
 
     @CssResource.ImportedWithPrefix("diagram-InteractorsTabPanel")
@@ -435,6 +381,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         String interactorsPanel();
 
         String interactorLabel();
+
+        String liveInteractorLabel();
 
         String interactorResourceBtn();
 
@@ -446,10 +394,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
         String customResourcesInnerPanel();
 
-        String tuplesOuterPanel();
-
-        String tuplesInnerPanel();
-
         String loadingPanel();
 
         String interactorResourceListBtn();
@@ -457,6 +401,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         String interactorResourceListBtnDisabled();
 
         String downloadBtn();
+
+        String addNewResourceBtn();
 
         String delete();
 

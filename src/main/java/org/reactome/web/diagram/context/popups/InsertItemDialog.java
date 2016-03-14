@@ -112,7 +112,7 @@ public class InsertItemDialog extends PopupPanel implements ClickHandler, FormPa
 
     private void initUI() {
         FlowPanel vp = new FlowPanel();                         // Main panel
-        vp.addStyleName(RESOURCES.getCSS().analysisPanel());
+        vp.addStyleName(RESOURCES.getCSS().containerPanel());
         vp.add(setTitlePanel());                                // Title panel with label & button
 
         Label nameLabel = new Label("Name:");
@@ -178,10 +178,10 @@ public class InsertItemDialog extends PopupPanel implements ClickHandler, FormPa
         copyPanel.add(pasteTA);
         copyPanel.setVisible(false);
 
-        submitBtn = new IconButton("Submit", RESOURCES.headerIcon());
+        submitBtn = new IconButton("Submit", RESOURCES.submitNormal());
         submitBtn.setStyleName(RESOURCES.getCSS().submitBtn());
         submitBtn.addClickHandler(this);
-        cancelBtn = new IconButton("Cancel", RESOURCES.headerIcon());
+        cancelBtn = new IconButton("Cancel", RESOURCES.cancelNormal());
         cancelBtn.setStyleName(RESOURCES.getCSS().submitBtn());
         cancelBtn.addClickHandler(this);
         FlowPanel actionPanel = new FlowPanel();
@@ -258,7 +258,7 @@ public class InsertItemDialog extends PopupPanel implements ClickHandler, FormPa
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
 
-        @Source("images/header_icon.png")
+        @Source("images/addNewResources.png")
         ImageResource headerIcon();
 
         @Source("images/close_clicked.png")
@@ -270,11 +270,11 @@ public class InsertItemDialog extends PopupPanel implements ClickHandler, FormPa
         @Source("images/close_normal.png")
         ImageResource closeNormal();
 
-        @Source("images/download_normal.png")
-        ImageResource downloadNormal();
+        @Source("images/ok.png")
+        ImageResource submitNormal();
 
-        @Source("images/upload_normal.png")
-        ImageResource uploadNormal();
+        @Source("images/cancel.png")
+        ImageResource cancelNormal();
     }
 
     /**
@@ -289,7 +289,7 @@ public class InsertItemDialog extends PopupPanel implements ClickHandler, FormPa
 
         String popupPanel();
 
-        String analysisPanel();
+        String containerPanel();
 
         String header();
 
@@ -302,8 +302,6 @@ public class InsertItemDialog extends PopupPanel implements ClickHandler, FormPa
         String unselectable();
 
         String undraggable();
-
-        String downloadPNG();
 
         String namePanel();
 

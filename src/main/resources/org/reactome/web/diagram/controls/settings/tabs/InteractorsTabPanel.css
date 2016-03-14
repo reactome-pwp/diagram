@@ -1,12 +1,20 @@
 .interactorsPanel {
     padding: 0 10px 0 10px;
     font-family: Arial Unicode MS, Arial, sans-serif !important;
-    font-size: medium !important;
+    font-size: small !important;
 }
 
 .interactorLabel {
     margin-top: 2px;
     color: rgb(0, 90, 117);
+    font-size: medium !important;
+}
+
+.liveInteractorLabel {
+    margin-left: 10px;
+    display: block;
+    color:rgb(0, 90, 117);
+    font-size: medium !important;
 }
 
 .interactorResourceBtn {
@@ -28,7 +36,7 @@
 }
 
 .liveResourcesOuterPanel {
-    height: 46px;
+    height: 85px;
     width: 245px;
     margin-left: 10px;
     background-color: transparent;
@@ -43,7 +51,7 @@
 }
 
 .customResourcesOuterPanel {
-    height: 30px;
+    height: 45px;
     width: 245px;
     margin-left: 10px;
     background-color: transparent;
@@ -52,21 +60,6 @@
 }
 
 .customResourcesInnerPanel {
-    color: white;
-    height: auto;
-    width: 244px;
-}
-
-.tuplesOuterPanel {
-    height: 30px;
-    width: 245px;
-    margin-left: 10px;
-    background-color: transparent;
-    overflow-x: hidden;
-    overflow-y: scroll;
-}
-
-.tuplesInnerPanel {
     color: white;
     height: auto;
     width: 244px;
@@ -143,6 +136,44 @@
     background-color: #a39da6;
 }
 
+.addNewResourceBtn {
+    background-color: rgb(30, 148, 208); /*#45b0d8;*/
+    border: none;
+    border-radius: 15px;
+    color: white;
+    margin-top: 5px;
+    /*margin-left: 30px;*/
+    padding: 1px 5px 4px 3px;
+    outline: none;
+    font-size: small !important;
+}
+
+.addNewResourceBtn span {
+    vertical-align: middle !important;
+    display: inline-block;
+    min-width: 60px;
+    max-width: 160px;
+}
+
+.addNewResourceBtn img {
+    vertical-align: middle !important;
+    padding-right: 3px;
+}
+
+.addNewResourceBtn:hover {
+    background-color: #177dc0;
+    cursor: pointer !important;
+}
+
+.addNewResourceBtn:active:hover {
+    background-color: #07558b;
+    cursor: pointer !important;
+}
+
+.addNewResourceBtn:disabled {
+    background-color: #a39da6;
+}
+
 @sprite .delete {
     gwt-image:'deleteNormal';
     outline: none;
@@ -154,9 +185,9 @@
 }
 
 @sprite .delete:hover {
-    gwt-image:'deleteNormal';
+    gwt-image:'deleteHovered';
 }
 
 @sprite .delete:active:hover {
-    gwt-image: 'deleteNormal';
+    gwt-image: 'deleteHovered';
 }

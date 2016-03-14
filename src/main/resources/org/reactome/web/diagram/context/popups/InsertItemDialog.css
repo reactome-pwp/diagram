@@ -15,14 +15,14 @@
     font-size: medium !important;
 }
 
-.analysisPanel {
+.containerPanel {
     max-width: 600px;
     max-height: 400px;
     width: 100%;
     padding: 2px 0 0 2px;
     /*background-color: rgb(88, 195, 229) !important;*/
-
 }
+
 .header {
     float: left;
     padding: 2px 0 0 0;
@@ -77,32 +77,6 @@
 
 .undraggable {
     -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
-}
-
-.downloadPNG {
-    background-color: #45b0d8;
-    border: none;
-    border-radius: 15px;
-    color: white;
-    float:left;
-    font-size: large;
-    margin-top: 6px;
-    padding: 6px;
-}
-
-.downloadPNG img {
-    vertical-align: middle !important;
-    padding-right: 3px;
-}
-
-.downloadPNG:hover {
-    background-color: #177dc0;
-    cursor: pointer !important;
-}
-
-.downloadPNG:active:hover {
-    background-color: #07558b;
-    cursor: pointer !important;
 }
 
 .namePanel {
@@ -184,7 +158,6 @@
     border-radius: 15px;
     color: white;
     float:right;
-    /*margin-left: 30px;*/
     padding: 2px 5px 2px 5px;
     outline: none;
     font-size: medium !important;
