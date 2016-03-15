@@ -73,7 +73,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
 
     public void addExpressionColumns(List<String> expression, Double min, Double max, int sel) {
         if (expression != null && min!=null && max!=null) {
-            this.setColumnWidth(0, 80, Unit.PX); // Resize the 1st column
+            this.setColumnWidth(0, 80, Unit.PX); // Resize the columns
             this.setColumnWidth(1, 80, Unit.PX);
             this.setColumnWidth(2, 30, Unit.PX);
             for (int i = 0; i < expression.size(); i++) {
@@ -98,6 +98,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
             insertColumn(2, buildScoreColumn(), "Score");
 
             this.setColumnWidth(0, 120, Unit.PX);
+            this.setColumnWidth(1, 80, Unit.PX);
             this.setColumnWidth(2, 50, Unit.PX);
         }
     }
