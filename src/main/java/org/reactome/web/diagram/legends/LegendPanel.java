@@ -214,8 +214,6 @@ public abstract class LegendPanel extends AbsolutePanel {
         String reload();
 
         String unselectable();
-
-        String summaryLabel();
     }
 
     protected EventBus eventBus;
