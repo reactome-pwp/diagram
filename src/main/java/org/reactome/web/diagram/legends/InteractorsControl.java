@@ -8,6 +8,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.DiagramContext;
@@ -49,6 +50,8 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     private PwpButton downloadBtn;
     private PwpButton reloadBtn;
     private PwpButton closeBtn;
+
+    private Label summaryLb;
 
     private Timer hideTimer;
 
@@ -188,6 +191,13 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             reloadBtn.setVisible(false);
             slider.setValue(InteractorsContent.getInteractorsThreshold(currentResource));
             downloadBtn.setTitle(MSG_DOWNLOAD_TOOLTIP + ResourceNameFormatter.format(currentResource));
+            updateSummary();
+        }
+    }
+
+    private void updateSummary() {
+        if (context != null) {
+            summaryLb.setText("" + context.getInteractors().getUniqueRawInteractorsCountPerResource(currentResource));
         }
     }
 
@@ -203,8 +213,11 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
         closeBtn = new PwpButton("Close and clear interactors", RESOURCES.getCSS().close(), this);
         downloadBtn = new PwpButton(MSG_DOWNLOAD_TOOLTIP, RESOURCES.getCSS().download(), this);
-//        downloadBtn.setEnabled(InteractorsExporter.isFileSaveScriptAvailable());
         reloadBtn = new PwpButton("Retry loading interactors", RESOURCES.getCSS().reload(), this);
+
+        summaryLb = new Label("90");
+        summaryLb.setStyleName(RESOURCES.getCSS().summaryLabel());
+        summaryLb.setTitle("Total number of unique interactors present in the diagram");
 
         slider = new Slider(100, 24, 0.45, 1, 0.45, true);
         slider.setTooltip("Use this slider to set the confidence threshold");
@@ -213,6 +226,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
         controlsFP = new FlowPanel();
         controlsFP.setStyleName(RESOURCES.getCSS().interactorsControlControls());
+        controlsFP.add(summaryLb);
         controlsFP.add(this.slider);
         controlsFP.add(this.downloadBtn);
 

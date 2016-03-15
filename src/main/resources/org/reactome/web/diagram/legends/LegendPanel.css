@@ -370,3 +370,20 @@
     -ms-user-select: none;
     user-select: none;
 }
+
+.summaryLabel {
+    background-color: #009688;
+    color: white;
+    border: 0 solid;
+    height: 20px;
+    padding: 1px 3px 1px 3px;
+    margin: 3px 1px 1px 3px;
+    border-radius: 10px;
+    float: left;
+    cursor: pointer;
+
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: small !important;
+    font-weight: bold;
+
+}

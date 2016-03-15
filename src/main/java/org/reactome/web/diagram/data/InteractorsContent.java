@@ -319,6 +319,19 @@ public class InteractorsContent {
         return rawInteractorsCache.get(resource);
     }
 
+    public int getUniqueRawInteractorsCountPerResource(String resource){
+        Set<String> superSet = new HashSet<>();
+        MapSet<String, RawInteractor> rawMap = getRawInteractorsPerResource(resource);
+        if(rawMap!=null) {
+            for (String key : rawMap.keySet()) {
+                for (RawInteractor interactor : rawMap.getElements(key)) {
+                    superSet.add(interactor.getAcc());
+                }
+            }
+        }
+        return superSet.size();
+    }
+
     public boolean isResourceLoaded(String resource) {
         return rawInteractorsCache.keySet().contains(resource);
     }
