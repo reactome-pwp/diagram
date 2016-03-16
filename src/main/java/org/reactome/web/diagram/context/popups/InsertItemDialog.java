@@ -18,7 +18,8 @@ import org.reactome.web.diagram.util.Console;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 @SuppressWarnings("Duplicates")
-public class InsertItemDialog extends PopupPanel implements ClickHandler, FormPanel.SubmitHandler, FormPanel.SubmitCompleteHandler, ValueChangeHandler {
+public class InsertItemDialog extends PopupPanel implements FormPanel.SubmitHandler, FormPanel.SubmitCompleteHandler,
+        ValueChangeHandler, ClickHandler {
 
     private static final String FORM_ACTION = "/AnalysisService/identifiers/form?page=1";
     private static final String URL = "url";
@@ -46,7 +47,7 @@ public class InsertItemDialog extends PopupPanel implements ClickHandler, FormPa
         this.setAnimationEnabled(true);
         this.setGlassEnabled(true);
         this.setAutoHideOnHistoryEventsEnabled(true);
-        this.addStyleName(RESOURCES.getCSS().popupPanel());
+        this.setStyleName(RESOURCES.getCSS().popupPanel());
 
         initUI();
     }
