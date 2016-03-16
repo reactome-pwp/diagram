@@ -131,7 +131,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("Exp 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNjAzMTYwNzA4MDhfNQ%253D%253D","TOTAL");
+                diagram.setAnalysisToken("MjAxNjAzMTYwNzEyMjZfNg%253D%253D","TOTAL");
             }
         }));
 
