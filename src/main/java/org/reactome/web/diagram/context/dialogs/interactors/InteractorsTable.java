@@ -4,7 +4,9 @@ import com.google.gwt.cell.client.ClickableTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.HasDirection;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -19,17 +21,22 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HeaderPanel;
 import com.google.gwt.view.client.ListDataProvider;
 import org.reactome.web.analysis.client.model.AnalysisType;
+import org.reactome.web.diagram.context.dialogs.molecules.ExpressionCell;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
+import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
+    private List<Column<T, String>> expression = new ArrayList<>();
     private ListDataProvider<T> dataProvider;
     private Column<T, String> type;
     private AnalysisType analysisType;
@@ -38,6 +45,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
     private T hoveredItem;
     private double threshold;
     private static String  HIGHLIGHT_COLOUR = "#FFFF00";
+    private static String  HIGHLIGHT_COLOUR_ORA = "#00AA00";
 
     public InteractorsTable(String name, double threshold, AnalysisType analysisType, List<String> expression, Double min, Double max, int sel) {
         super(0, (MoleculesTableResource) GWT.create(MoleculesTableResource.class));
@@ -51,6 +59,8 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         dataProvider.addDataDisplay(this);
         setInteractorsLabels(false); // Show names by default
 
+        addExpressionColumns(expression, min, max, sel);
+
         // Make the scrollbars invisible
         HeaderPanel panel = (HeaderPanel) this.getWidget();
         CustomScrollPanel scrollPanel = (CustomScrollPanel) panel.getContentWidget();
@@ -59,6 +69,22 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
 
     public HandlerRegistration addTableItemSelectedHandler(TableItemSelectedHandler handler){
         return addHandler(handler, TableItemSelectedEvent.TYPE);
+    }
+
+    public void addExpressionColumns(List<String> expression, Double min, Double max, int sel) {
+        if (expression != null && min!=null && max!=null) {
+            this.setColumnWidth(0, 80, Unit.PX); // Resize the columns
+            this.setColumnWidth(1, 80, Unit.PX);
+            this.setColumnWidth(2, 30, Unit.PX);
+            for (int i = 0; i < expression.size(); i++) {
+                Column<T, String> exp = buildColumnExpression(i, min, max);
+                exp.setHorizontalAlignment(HasHorizontalAlignment.HorizontalAlignmentConstant.endOf(HasDirection.Direction.LTR));
+                this.expression.add(exp);
+                this.addColumn(exp, expression.get(i));
+                this.setColumnWidth(exp, 60, Unit.PX);
+            }
+        }
+            highlightExpColumn(sel);
     }
 
     public void setInteractorsLabels(boolean showIds){
@@ -72,6 +98,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
             insertColumn(2, buildScoreColumn(), "Score");
 
             this.setColumnWidth(0, 120, Unit.PX);
+            this.setColumnWidth(1, 80, Unit.PX);
             this.setColumnWidth(2, 50, Unit.PX);
         }
     }
@@ -120,18 +147,36 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         applyThreshold();
     }
 
+    public void highlightExpColumn(int col) {
+        col = col + 3; //This correction is needed since there is a column in front of the expression columns
+        for (int i = 0; i <= expression.size(); i++) {
+            removeColumnStyleName(i + 3, RESOURCES.getCSS().selectedExpression());
+            addColumnStyleName(i + 3, RESOURCES.getCSS().unselectedExpression());
+            if (i + 3 == col) {
+                addColumnStyleName(i + 3, RESOURCES.getCSS().selectedExpression());
+            }
+        }
+        try {
+            getRowElement(0).getCells().getItem(col).scrollIntoView();
+        } catch (Exception e) {
+            //Nothing here
+        }
+    }
+
     private void highlightHoveredItem(){
+        String highlightColour = analysisType == null ? HIGHLIGHT_COLOUR : HIGHLIGHT_COLOUR_ORA;
         List<T> list = dataProvider.getList();
         for(int i=0;i<list.size();i++){
             T object = dataProvider.getList().get(i);
             if(object.equals(hoveredItem)){
-                getRowElement(i).getStyle().setBackgroundColor(HIGHLIGHT_COLOUR);
+                getRowElement(i).getCells().getItem(0).scrollIntoView();
+                getRowElement(i).getCells().getItem(0).getStyle().setBackgroundColor(highlightColour);
+                getRowElement(i).getCells().getItem(1).getStyle().setBackgroundColor(highlightColour);
+                getRowElement(i).getCells().getItem(2).getStyle().setBackgroundColor(highlightColour);
+
                 getRowElement(i).getCells().getItem(0).getStyle().setColor("#000000");
                 getRowElement(i).getCells().getItem(1).getStyle().setColor("#000000");
                 getRowElement(i).getCells().getItem(2).getStyle().setColor("#000000");
-                getRowElement(i).scrollIntoView();
-            }else{
-                getRowElement(i).getStyle().clearBackgroundColor();
             }
         }
     }
@@ -140,15 +185,30 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         List<T> list = dataProvider.getList();
         for(int i=0;i<list.size();i++){
             T object = dataProvider.getList().get(i);
-            if(object.getScore()<threshold ){
-                getRowElement(i).getCells().getItem(0).getStyle().setColor("#AAAAAA");
-                getRowElement(i).getCells().getItem(1).getStyle().setColor("#AAAAAA");
-                getRowElement(i).getCells().getItem(2).getStyle().setColor("#AAAAAA");
-            }else{
-                getRowElement(i).getCells().getItem(0).getStyle().setColor("#FFFFFF");
-                getRowElement(i).getCells().getItem(1).getStyle().setColor("#FFFFFF");
-                getRowElement(i).getCells().getItem(2).getStyle().setColor("#FFFFFF");
+            boolean isHit = object.getIsHit() == null ? false : object.getIsHit();
+            NodeList<TableCellElement> cells = getRowElement(i).getCells();
+            String foreColour;
+            String backColour;
+            if(object.getScore() < threshold) {
+                foreColour = "#AAAAAA";
+                backColour = "transparent";
+            } else {
+                if(isHit && (analysisType==AnalysisType.OVERREPRESENTATION || analysisType==AnalysisType.SPECIES_COMPARISON)) {
+                    foreColour = "#000000";
+                    backColour = AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax();
+                } else {
+                    foreColour = "#FFFFFF";
+                    backColour = "transparent";
+                }
             }
+
+            cells.getItem(0).getStyle().setColor(foreColour);
+            cells.getItem(1).getStyle().setColor(foreColour);
+            cells.getItem(2).getStyle().setColor(foreColour);
+
+            cells.getItem(0).getStyle().setBackgroundColor(backColour);
+            cells.getItem(1).getStyle().setBackgroundColor(backColour);
+            cells.getItem(2).getStyle().setBackgroundColor(backColour);
         }
     }
 
@@ -206,6 +266,16 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         return columnTitle;
     }
 
+    private Column<T, String> buildColumnExpression(final int col, double min, double max) {
+        return new Column<T, String>(new ExpressionCell(min, max)) {
+            @Override
+            public String getValue(T object) {
+                Double exp = (object.getExp() != null) ? object.getExp().get(col) : null;
+                return exp != null ? NumberFormat.getFormat("#.##E0").format(exp) : "";
+            }
+        };
+    }
+
     @Override
     public void redraw() {
         super.redraw();
@@ -215,6 +285,24 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
                 applyThreshold();
             }
         });
+    }
+
+    public void removeExpressionColumns() {
+        for (Column<T, String> expColumn : expression) {
+            removeColumn(expColumn);
+        }
+        expression.clear();
+        if(getColumnCount() == 3) {
+            // Resize the 3 column to get all the available space
+            this.setColumnWidth(0, 120, Unit.PX);
+            this.setColumnWidth(2, 50, Unit.PX);
+        }
+        redraw();
+    }
+
+    public void setAnalysisType(AnalysisType analysisType){
+        this.analysisType = analysisType;
+        redraw();
     }
 
 
