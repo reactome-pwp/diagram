@@ -7,7 +7,10 @@ import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.common.InteractorsSummary;
-import org.reactome.web.diagram.data.interactors.model.*;
+import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
+import org.reactome.web.diagram.data.interactors.model.InteractorLink;
+import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
@@ -324,27 +327,6 @@ public class InteractorsContent {
             for (String key : rawMap.keySet()) {
                 for (RawInteractor interactor : rawMap.getElements(key)) {
                     superSet.add(interactor.getAcc());
-                }
-            }
-        }
-        return superSet.size();
-    }
-
-    public int getVisibleInteractorEntitiesCountPerResource(String resource) {
-        Set<String> superSet = new HashSet<>();
-
-        MapSet<Node, InteractorLink> linkMapSet = interactionsPerNode.get(resource);
-        if(linkMapSet!=null) {
-            for (Node node : linkMapSet.keySet()) {
-                for (InteractorLink interactorLink : linkMapSet.getElements(node)) {
-                    if(interactorLink.isVisible()) {
-                        if (interactorLink instanceof StaticLink) {
-                            superSet.add(interactorLink.getToAccession());
-                            superSet.add(interactorLink.getAccession());
-                        } else {
-                            superSet.add(interactorLink.getToAccession());
-                        }
-                    }
                 }
             }
         }
