@@ -6,10 +6,12 @@ import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
+import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.profiles.interactors.InteractorColours;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.layout.abs.TextRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
+import org.reactome.web.diagram.util.gradient.ThreeColorGradient;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -42,6 +44,50 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
             ctx.fill();
             ctx.stroke();
         }
+    }
+
+    @Override
+    public void drawEnrichment(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
+        if(!item.isVisible()) return;
+        Boolean isHIt = ((InteractorEntity) item).getIsHit();
+        shape(ctx, item, factor, offset);
+        boolean isHit = isHIt != null && isHIt;
+        ctx.save();
+        if (isHit) {
+            ctx.setFillStyle(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax());
+        } else {
+            if (((InteractorEntity) item).isChemical()) {
+                ctx.setFillStyle(InteractorColours.get().PROFILE.getChemical().getLighterFill());
+            } else {
+                ctx.setFillStyle(InteractorColours.get().PROFILE.getProtein().getLighterFill());
+            }
+        }
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    @Override
+    public void drawExpression(AdvancedContext2d ctx, DiagramInteractor item, int t, double min, double max, Double factor, Coordinate offset) {
+        if(!item.isVisible()) return;
+        draw(ctx, item, factor, offset);
+        Boolean isHIt = ((InteractorEntity) item).getIsHit();
+        shape(ctx, item, factor, offset);
+        boolean isHit = isHIt != null && isHIt;
+        ctx.save();
+        if(isHit){
+            ThreeColorGradient a = new ThreeColorGradient(AnalysisColours.get().PROFILE.getExpression().getGradient());
+            ctx.setFillStyle(a.getColor(((InteractorEntity) item).getExp().get(t), min, max));
+        }else{
+            if(((InteractorEntity) item).isChemical()) {
+                ctx.setFillStyle(InteractorColours.get().PROFILE.getChemical().getLighterFill());
+            }else{
+                ctx.setFillStyle(InteractorColours.get().PROFILE.getProtein().getLighterFill());
+            }
+        }
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
     }
 
     @Override

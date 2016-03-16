@@ -379,6 +379,18 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
     public void renderInteractors(Collection<DiagramInteractor> items, DiagramContext context){
         cleanCanvas(interactors);
+
+        AnalysisStatus analysisStatus = context.getAnalysisStatus();
+        Double minExp = 0.0; Double maxExp = 0.0;
+        AnalysisType analysisType = AnalysisType.NONE;
+        if (analysisStatus != null) {
+            analysisType = AnalysisType.getType(analysisStatus.getAnalysisSummary().getType());
+            if (analysisStatus.getExpressionSummary() != null) {
+                minExp = analysisStatus.getExpressionSummary().getMin();
+                maxExp = analysisStatus.getExpressionSummary().getMax();
+            }
+        }
+
         //By default we use the protein colour profile (NOTE: renderers will change it for chemicals and leave it for proteins save/restore)
         interactors.setFillStyle(InteractorColours.get().PROFILE.getProtein().getFill());
         interactors.setStrokeStyle(InteractorColours.get().PROFILE.getProtein().getStroke());
@@ -399,7 +411,18 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         if (renderer != null) {
             interactors.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
             for (InteractorEntity entity : entities) {
-                renderer.draw(interactors, entity, factor, offset);
+                switch (analysisType){
+                    case NONE:
+                    case SPECIES_COMPARISON:
+                        renderer.draw(interactors, entity, factor, offset);
+                        break;
+                    case OVERREPRESENTATION:
+                        renderer.drawEnrichment(interactors, entity, factor, offset);
+                        break;
+                    case EXPRESSION:
+                        renderer.drawExpression(interactors, entity, column, minExp, maxExp, factor, offset);
+                        break;
+                }
                 interactors.save();
                 InteractorProfile profile = InteractorColours.get().PROFILE;
                 InteractorProfileNode node = entity.isChemical() ? profile.getChemical() : profile.getProtein();

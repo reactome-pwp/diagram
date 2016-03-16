@@ -1,6 +1,8 @@
 package org.reactome.web.diagram.client;
 
 import com.google.gwt.event.shared.EventBus;
+import org.reactome.web.analysis.client.model.PathwayElements;
+import org.reactome.web.analysis.client.model.PathwayInteractor;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
@@ -38,6 +40,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     private String currentResource;
 
     private DiagramInteractor hovered;
+    private Set<Node> hitNodes = new HashSet<>();
 
     public InteractorsManager(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -45,10 +48,10 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     }
 
     private void addHandlers() {
-        this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
-        this.eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
-        this.eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
+        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
     }
 
     public void drag(InteractorEntity entity, double deltaX, double deltaY){
@@ -113,6 +116,10 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         currentResource = event.getResource();
+        boolean isStaticResource = DiagramFactory.INTERACTORS_INITIAL_RESOURCE.equals(currentResource);
+        for (Node hitNode : hitNodes) {
+            hitNode.getInteractorsSummary().setHit(isStaticResource);
+        }
     }
 
     public InteractorHoveredEvent setHovered(DiagramInteractor hovered) {
@@ -121,6 +128,48 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
             return new InteractorHoveredEvent(hovered);
         }
         return null;
+    }
+
+    public void clearAnalysisOverlay(){
+        for (Node hitNode : hitNodes) {
+            hitNode.getInteractorsSummary().setHit(false);
+        }
+        hitNodes = new HashSet<>();
+        if (context != null) {
+            context.getInteractors().clearAnalysisResults();
+        }
+    }
+
+    public void setAnalysisOverlay(PathwayElements pathwayElements, MapSet<String, GraphObject> map){
+        //noinspection ConstantConditions
+        List<PathwayInteractor> interactors = pathwayElements.getInteractors();
+
+        if (context != null) context.getInteractors().setAnalysisResult(interactors);
+
+        //The next bit is needed to populate the hitNodes set for the given analysis
+        if (interactors != null) {
+            for (PathwayInteractor pathwayInteractor : interactors) {
+                String acc = pathwayInteractor.getIdentifier();
+                Set<GraphObject> elements = map.getElements(acc);
+                if (elements != null) {
+                    for (GraphObject graphObject : elements) {
+                        if (graphObject instanceof GraphPhysicalEntity) {
+                            GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+                            for (DiagramObject diagramObject : pe.getDiagramObjects()) {
+                                if(diagramObject instanceof Node){
+                                    Node node = (Node) diagramObject;
+                                    SummaryItem summaryItem = node.getInteractorsSummary();
+                                    if (summaryItem != null) {
+                                        hitNodes.add(node);
+                                        summaryItem.setHit(DiagramFactory.INTERACTORS_INITIAL_RESOURCE.equals(currentResource));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public boolean update(SummaryItem summaryItem, Node node) {
@@ -180,7 +229,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         for (int i = 0; i < n; i++) {
             RawInteractor rawInteractor = dynamicInteractors.get(i);
 
-            InteractorEntity interactor = getOrCreateInteractorEntity(rawInteractor.getAcc(), rawInteractor.getAlias(), rawInteractor.getAccURL());
+            InteractorEntity interactor = getOrCreateInteractorEntity(rawInteractor);
 
             //the maximum number of elements (n) is used here for layout beauty purposes
             if (layoutBuilder.doLayout(interactor, i, n)) {
@@ -237,10 +286,10 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         return true;
     }
 
-    private InteractorEntity getOrCreateInteractorEntity(String acc, String alias, String url) {
-        InteractorEntity interactor = context.getInteractors().getInteractorEntity(currentResource, acc);
+    private InteractorEntity getOrCreateInteractorEntity(RawInteractor rawInteractor) {
+        InteractorEntity interactor = context.getInteractors().getInteractorEntity(currentResource, rawInteractor.getAcc());
         if (interactor == null) {
-            interactor = new InteractorEntity(acc, alias, url);
+            interactor = new InteractorEntity(rawInteractor);
             context.getInteractors().cache(currentResource, interactor);
         }
         return interactor;

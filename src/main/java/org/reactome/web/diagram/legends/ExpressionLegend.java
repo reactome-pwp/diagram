@@ -15,6 +15,10 @@ import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.graph.model.GraphComplex;
 import org.reactome.web.diagram.data.graph.model.GraphEntitySet;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.interactors.model.DynamicLink;
+import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
+import org.reactome.web.diagram.data.interactors.model.InteractorLink;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
@@ -36,7 +40,7 @@ import java.util.List;
 public class ExpressionLegend extends LegendPanel implements ClickHandler, MouseOverHandler, MouseOutHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, DiagramRequestedHandler,
         ExpressionValueHoveredHandler, AnalysisProfileChangedHandler, ExpressionColumnChangedHandler,
-        GraphObjectSelectedHandler, GraphObjectHoveredHandler {
+        GraphObjectSelectedHandler, GraphObjectHoveredHandler, InteractorHoveredHandler {
 
     private Canvas gradient;
     private Canvas flag;
@@ -47,6 +51,7 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
     private Double expHovered;
     private GraphObject hovered;
     private GraphObject selected;
+    private InteractorEntity interactor;
 
     private int column;
     private double min;
@@ -125,8 +130,33 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
     @Override
     public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
         List<DiagramObject> hoveredObjects = event.getHoveredObjects();
-        DiagramObject item = hoveredObjects!=null && !hoveredObjects.isEmpty()? hoveredObjects.get(0) : null;
+        DiagramObject item = hoveredObjects != null && !hoveredObjects.isEmpty() ? hoveredObjects.get(0) : null;
         this.hovered = item != null ? item.getGraphObject() : null;
+        draw();
+    }
+
+    @Override
+    public void onInteractorHovered(InteractorHoveredEvent event) {
+        expHovered = null;
+        hovered = null;
+        interactor = null;
+        if (event.getInteractor() != null) {
+            DiagramInteractor diagramInteractor = event.getInteractor();
+            if (diagramInteractor instanceof InteractorEntity) {
+                interactor = (InteractorEntity) diagramInteractor;
+            } else if (diagramInteractor instanceof DynamicLink) {
+                DynamicLink link = (DynamicLink) diagramInteractor;
+                interactor = link.getInteractorEntity();
+            } else {
+                hovered = ((InteractorLink) diagramInteractor).getNodeFrom().getGraphObject();
+                if (hovered.getExpression() != null) {
+                    expHovered = hovered.getExpression(column);
+                }
+            }
+            if (interactor != null && interactor.getExp() != null) {
+                expHovered = interactor.getExp().get(this.column);
+            }
+        }
         draw();
     }
 
@@ -147,8 +177,14 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
 
     @Override
     public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
-        this.expHovered = null;
         this.column = e.getColumn();
+        if (interactor != null && interactor.getExp() != null) {
+            expHovered = interactor.getExp().get(this.column);
+        } else if (hovered != null && hovered.getExpression() != null) {
+            expHovered = hovered.getExpression(column);
+        } else {
+            expHovered = null;
+        }
         draw();
     }
 
@@ -298,22 +334,23 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
 
 
     private void initHandlers() {
-        this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
-        this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
-        this.eventBus.addHandler(ExpressionValueHoveredEvent.TYPE, this);
-        this.eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
-        this.eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
+        eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
+        eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
+        eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
+        eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
+        eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
+        eventBus.addHandler(AnalysisResetEvent.TYPE, this);
+        eventBus.addHandler(ExpressionValueHoveredEvent.TYPE, this);
+        eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
+        eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
     }
 
     /*########### HELP INFO ##############*/
 
     private FlowPanel helpPanel;
 
-    private void addHelp(){
+    private void addHelp() {
         LegendPanelCSS css = RESOURCES.getCSS();
         PwpButton helpBtn = new PwpButton("Show help", css.help(), this);
         helpBtn.addMouseOverHandler(this);
@@ -336,9 +373,9 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
         this.helpPanel.add(close);
 
         String showLegend = Cookies.getCookie("pwp-diagram-expression-legend");
-        if(showLegend==null || showLegend.isEmpty() || showLegend.toLowerCase().equals("true")){
+        if (showLegend == null || showLegend.isEmpty() || showLegend.toLowerCase().equals("true")) {
             this.showHelp();
-        }else{
+        } else {
             this.hideHelp();
         }
         this.add(this.helpPanel);
@@ -346,9 +383,9 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
 
     @Override
     public void onClick(ClickEvent event) {
-        if(this.helpPanel.getOffsetWidth()>0){
+        if (this.helpPanel.getOffsetWidth() > 0) {
             this.hideHelp();
-        }else{
+        } else {
             this.showHelp();
         }
     }
@@ -363,13 +400,13 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
         this.hideHelp();
     }
 
-    private void showHelp(){
+    private void showHelp() {
         LegendPanelCSS css = RESOURCES.getCSS();
         this.helpPanel.setStyleName(css.expressionLegendHelp());
         this.helpPanel.addStyleName(css.expressionLegendHelpVisible());
     }
 
-    private void hideHelp(){
+    private void hideHelp() {
         LegendPanelCSS css = RESOURCES.getCSS();
         this.helpPanel.setStyleName(css.expressionLegendHelp());
         this.helpPanel.addStyleName(css.expressionLegendHelpHidden());

@@ -16,4 +16,8 @@ public interface SummaryItem {
     Integer getNumber();
 
     void setNumber(Integer number);
+
+    void setHit(Boolean hit);
+
+    Boolean getHit();
 }

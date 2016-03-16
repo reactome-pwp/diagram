@@ -79,7 +79,9 @@ public abstract class SummaryItemAbstractRenderer {
                         ctx.fill();
                     } else {
                         ctx.save();
-                        if (summaryItem.getPressed() != null && summaryItem.getPressed()) {
+                        if (summaryItem.getHit()!=null && summaryItem.getHit()){
+                            ctx.setFillStyle("#0000FF");
+                        } else if (summaryItem.getPressed() != null && summaryItem.getPressed()) {
                             ctx.setFillStyle(type.selColour);
                         } else {
                             ctx.setFillStyle(type.stdColour);

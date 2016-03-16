@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHandler.Summaries, AnalysisHandler.Identifiers {
+public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHandler.Summaries, AnalysisHandler.Elements {
     private static AnalysisDataLoader analysisDataLoader;
     protected final static String PREFIX = DiagramFactory.SERVER + "/AnalysisService/token/";
 
@@ -42,7 +42,7 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
     private AnalysisSummary analysisSummary;
     private ExpressionSummary expressionSummary;
 
-    private PathwayIdentifiers identifiers;
+    private PathwayElements elements;
 
     AnalysisDataLoader(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -82,10 +82,10 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
         this.analysisSummary = summary;
         this.expressionSummary = expressionSummary;
         if (diagramContent.containsOnlyEncapsulatedPathways()) {
-            identifiers = null;
+            elements = null;
             getPathwaySummaries();
         } else {
-            AnalysisClient.getPathwayIdentifiers(analysisStatus.getToken(), analysisStatus.getResource(), diagramContent.getDbId(), this);
+            AnalysisClient.getPathwayFoundElements(analysisStatus.getToken(), analysisStatus.getResource(), diagramContent.getDbId(), this);
         }
     }
 
@@ -100,19 +100,19 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
     }
 
     @Override
-    public void onPathwayIdentifiersLoaded(PathwayIdentifiers identifiers, long time) {
-        this.identifiers = identifiers;
+    public void onPathwayElementsLoaded(PathwayElements identifiers, long time) {
+        elements = identifiers;
         loadPathwaySummaries(time);
     }
 
     @Override
-    public void onPathwayIdentifiersNotFound(long time) {
-        this.identifiers = null;
+    public void onPathwayElementsNotFound(long time) {
+        elements = null;
         loadPathwaySummaries(time);
     }
 
     @Override
-    public void onPathwayIdentifiersError(AnalysisError error) {
+    public void onPathwayElementsError(AnalysisError error) {
         eventBus.fireEventFromSource(new DiagramInternalErrorEvent(error.getReason()), this);
     }
 
@@ -120,18 +120,18 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
         if (diagramContent.containsEncapsulatedPathways()) {
             getPathwaySummaries();
         } else {
-            eventBus.fireEventFromSource(new AnalysisResultLoadedEvent(analysisSummary, expressionSummary, identifiers, null, time), this);
+            eventBus.fireEventFromSource(new AnalysisResultLoadedEvent(analysisSummary, expressionSummary, elements, null, time), this);
         }
     }
 
     @Override
     public void onPathwaySummariesLoaded(List<PathwaySummary> pathwaySummaries, long time) {
-        eventBus.fireEventFromSource(new AnalysisResultLoadedEvent(analysisSummary, expressionSummary, identifiers, pathwaySummaries, time), this);
+        eventBus.fireEventFromSource(new AnalysisResultLoadedEvent(analysisSummary, expressionSummary, elements, pathwaySummaries, time), this);
     }
 
     @Override
     public void onPathwaySummariesNotFound(long time) {
-        eventBus.fireEventFromSource(new AnalysisResultLoadedEvent(analysisSummary, expressionSummary, identifiers, null, time), this);
+        eventBus.fireEventFromSource(new AnalysisResultLoadedEvent(analysisSummary, expressionSummary, elements, null, time), this);
     }
 
     @Override

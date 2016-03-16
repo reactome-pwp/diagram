@@ -11,6 +11,10 @@ public interface InteractorRenderer {
 
     void draw(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset);
 
+    void drawEnrichment(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset);
+
+    void drawExpression(AdvancedContext2d ctx, DiagramInteractor item, int t, double min, double max, Double factor, Coordinate offset);
+
     void drawText(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset);
 
     void highlight(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset);

@@ -1,6 +1,8 @@
 package org.reactome.web.diagram.data.interactors.raw;
 
 
+import java.util.List;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -40,5 +42,17 @@ public interface RawInteractor {
      * (e.g. http://www.ebi.ac.uk/intact/pages/interactions/interactions.xhtml?query=EBI-9029183%20OR%20EBI-9029146%20OR%20EBI-9029639)
      */
     String getEvidencesURL();
+
+
+
+    //NEXT methods are not part of the original interface, but are added to ease access to analysis data
+
+    void setIsHit(Boolean isHit);
+
+    Boolean getIsHit();
+
+    void setExp(List<Double> exp);
+
+    List<Double> getExp();
 
 }

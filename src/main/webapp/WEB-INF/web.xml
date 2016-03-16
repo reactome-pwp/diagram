@@ -52,6 +52,7 @@
         </init-param>
         <init-param>
             <param-name>proxyPort</param-name>
+            <!--<param-value>8080</param-value>-->
             <param-value>80</param-value>
             <!--<param-value>7080</param-value>-->
         </init-param>

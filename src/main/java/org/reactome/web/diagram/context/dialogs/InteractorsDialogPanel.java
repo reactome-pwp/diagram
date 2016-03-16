@@ -8,11 +8,13 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.analysis.client.model.AnalysisType;
+import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.diagram.context.dialogs.interactors.InteractorsTable;
 import org.reactome.web.diagram.context.dialogs.interactors.TableItemSelectedEvent;
 import org.reactome.web.diagram.context.dialogs.interactors.TableItemSelectedHandler;
 import org.reactome.web.diagram.context.dialogs.molecules.ChangeLabelsEvent;
 import org.reactome.web.diagram.context.dialogs.molecules.ChangeLabelsHandler;
+import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
@@ -32,6 +34,7 @@ import java.util.List;
  */
 public class InteractorsDialogPanel extends Composite implements TableItemSelectedHandler, InteractorsLoadedHandler,
         InteractorsResourceChangedHandler, InteractorsErrorHandler, InteractorHoveredHandler, InteractorsFilteredHandler,
+        AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler, AnalysisProfileChangedHandler,
         GraphObjectHoveredHandler, ChangeLabelsHandler {
 
     private EventBus eventBus;
@@ -58,6 +61,18 @@ public class InteractorsDialogPanel extends Composite implements TableItemSelect
         this.currentResource = LoaderManager.INTERACTORS_RESOURCE;
         this.interactions = new LinkedList<>();
 
+        AnalysisStatus analysisStatus = context.getAnalysisStatus();
+        if(analysisStatus != null){
+            this.analysisType = analysisStatus.getAnalysisType();
+            ExpressionSummary expressionSummary = analysisStatus.getExpressionSummary();
+            if(expressionSummary!=null) {
+                this.expColumns = expressionSummary.getColumnNames();
+                this.max = expressionSummary.getMax();
+                this.min = expressionSummary.getMin();
+                this.selectedExpCol = analysisStatus.getColumn();
+            }
+        }
+
         initialiseWidget();
         initHandlers();
     }
@@ -70,12 +85,51 @@ public class InteractorsDialogPanel extends Composite implements TableItemSelect
         this.eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
         this.eventBus.addHandler(InteractorsFilteredEvent.TYPE, this);
         this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
+        this.eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
+        this.eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
     }
 
     public void forceDraw(){
         if(interactorsTable!=null) {
             interactorsTable.redraw();
         }
+    }
+
+    @Override
+    public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
+        interactorsTable.addExpressionColumns(expColumns, min, max, selectedExpCol);
+        interactorsTable.removeExpressionColumns();
+        loadExpressionValues();
+    }
+
+    @Override
+    public void onAnalysisReset(AnalysisResetEvent event) {
+        interactorsTable.removeExpressionColumns();
+        interactorsTable.setAnalysisType(null);
+    }
+
+    @Override
+    public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
+        if(event.getSummary().getInteractors()) {
+            analysisType = event.getType();
+            interactorsTable.setAnalysisType(analysisType);
+            ExpressionSummary expressionSummary = event.getExpressionSummary();
+            interactorsTable.removeExpressionColumns();
+            if(expressionSummary!=null) {
+                expColumns = expressionSummary.getColumnNames();
+                min = expressionSummary.getMin();
+                max = expressionSummary.getMax();
+                loadExpressionValues();
+            }
+        }
+    }
+
+    @Override
+    public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
+        selectedExpCol = e.getColumn();
+        interactorsTable.highlightExpColumn(selectedExpCol);
     }
 
     @Override
@@ -160,6 +214,14 @@ public class InteractorsDialogPanel extends Composite implements TableItemSelect
         showLoading(false);
     }
 
+    private void loadExpressionValues(){
+        if(min==null || max==null) return;
+        if(interactorsTable!=null) {
+            interactorsTable.addExpressionColumns(expColumns, min, max, selectedExpCol);
+            interactorsTable.highlightExpColumn(selectedExpCol);
+        }
+
+    }
 
     private void updateDialogContent(){
         if(context==null) return;

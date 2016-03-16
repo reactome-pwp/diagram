@@ -2,6 +2,7 @@ package org.reactome.web.diagram.data.interactors.model;
 
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.user.client.ui.Image;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
@@ -11,6 +12,7 @@ import org.reactome.web.diagram.util.pdbe.model.PDBObject;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,12 +27,17 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
     private PDBObject pdbObject;
     private ImageElement image;
 
+    private boolean isHit = false;
+    private List<Double> exp = null;
+
     private Set<InteractorLink> links = new HashSet<>();
 
-    public InteractorEntity(String accession, String alias, String url) {
-        super(url);
-        this.accession = accession;
-        this.alias = alias;
+    public InteractorEntity(RawInteractor rawInteractor) {
+        super(rawInteractor.getAccURL());
+        this.accession = rawInteractor.getAcc();
+        this.alias = rawInteractor.getAlias();
+        this.isHit = rawInteractor.getIsHit() == null ? false : rawInteractor.getIsHit();
+        this.exp = rawInteractor.getExp();
         this.chemical = isChemical(accession);
     }
 
@@ -93,6 +100,14 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
         return links;
     }
 
+    public Boolean getIsHit() {
+        return isHit;
+    }
+
+    public List<Double> getExp() {
+        return exp;
+    }
+
     /**
      * Creates a string with the names of the nodes that
      * this entity interacts with (comma separated)
@@ -126,9 +141,18 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
         return false;
     }
 
-//    public PDBObject getPdbObject() {
-//        return pdbObject;
-//    }
+    public void resetAnalysis(){
+        this.isHit = false;
+        this.exp = null;
+    }
+
+    public void setIsHit(boolean ishit) {
+        isHit = ishit;
+    }
+
+    public void setExp(List<Double> exp) {
+        this.exp = exp;
+    }
 
     @Override
     public void setMinX(double minX) {

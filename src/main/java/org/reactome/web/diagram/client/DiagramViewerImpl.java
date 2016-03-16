@@ -295,6 +295,11 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         }
     }
 
+    private void clearAnalysisOverlay(){
+        context.clearAnalysisOverlay();
+        interactorsManager.clearAnalysisOverlay();
+    }
+
     private void loadAnalysis(AnalysisStatus analysisStatus) {
         if (analysisStatus == null) {
             if (this.analysisStatus != null) {
@@ -302,7 +307,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
             }
         } else if (!analysisStatus.equals(this.context.getAnalysisStatus())) {
             this.analysisStatus = analysisStatus;
-            this.context.clearAnalysisOverlay();
+            clearAnalysisOverlay();
             AnalysisDataLoader.get().loadAnalysisResult(analysisStatus, this.context.getContent());
         }
     }
@@ -318,16 +323,17 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     @Override
     public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
-        this.analysisStatus.setAnalysisSummary(event.getSummary());
-        this.analysisStatus.setExpressionSummary(event.getExpressionSummary());
-        this.context.setAnalysisOverlay(analysisStatus, event.getPathwayIdentifiers(), event.getPathwaySummaries());
+        analysisStatus.setAnalysisSummary(event.getSummary());
+        analysisStatus.setExpressionSummary(event.getExpressionSummary());
+        context.setAnalysisOverlay(analysisStatus, event.getPathwayElements(), event.getPathwaySummaries());
+        interactorsManager.setAnalysisOverlay(event.getPathwayElements(), context.getContent().getIdentifierMap());
         this.canvas.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
         forceDraw = true;
     }
 
     @Override
     public void onAnalysisResultRequested(AnalysisResultRequestedEvent event) {
-        this.context.clearAnalysisOverlay();
+        clearAnalysisOverlay();
         this.analysisStatus.setExpressionSummary(null);
         forceDraw = true;
     }
@@ -569,7 +575,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     @Override
     public void resetAnalysis() {
         this.analysisStatus = null;
-        this.context.clearAnalysisOverlay();
+        clearAnalysisOverlay();
         forceDraw = true;
     }
 
@@ -712,7 +718,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         if (this.context != null) {
             //this.resetAnalysis(); !IMPORTANT! Do not use this method here
             //Once a context is due to be replaced, the analysis overlay has to be cleaned up
-            this.context.clearAnalysisOverlay();
+            clearAnalysisOverlay();
             this.context = null;
         }
         GraphObjectFactory.content = null;

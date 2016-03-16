@@ -44,6 +44,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     private DiagramContext context;
     private Image loadingIcon;
     private InlineLabel message;
+    private InlineLabel summaryLb;
     private FlowPanel controlsFP;
     private Slider slider;
     private PwpButton downloadBtn;
@@ -173,6 +174,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         double threshold = event.getPercentage();
         InteractorsContent.setInteractorsThreshold(currentResource, threshold);
         eventBus.fireEventFromSource(new InteractorsFilteredEvent(threshold), this);
+        updateSummary();
     }
 
     private void update() {
@@ -188,6 +190,14 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             reloadBtn.setVisible(false);
             slider.setValue(InteractorsContent.getInteractorsThreshold(currentResource));
             downloadBtn.setTitle(MSG_DOWNLOAD_TOOLTIP + ResourceNameFormatter.format(currentResource));
+            updateSummary();
+        }
+    }
+
+    private void updateSummary() {
+        if (context != null) {
+            summaryLb.setVisible(true);
+            summaryLb.setText("(" + context.getInteractors().getUniqueRawInteractorsCountPerResource(currentResource) + ")");
         }
     }
 
@@ -200,10 +210,12 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         loadingIcon.setStyleName(RESOURCES.getCSS().interactorsControlLoadingIcon());
         message = new InlineLabel("");
         message.setStyleName(RESOURCES.getCSS().interactorsControlMessage());
+        summaryLb = new InlineLabel();
+        summaryLb.setStyleName(RESOURCES.getCSS().interactorsControlMessage());
+        summaryLb.setTitle("Total number of unique interactors present in the diagram");
 
         closeBtn = new PwpButton("Close and clear interactors", RESOURCES.getCSS().close(), this);
         downloadBtn = new PwpButton(MSG_DOWNLOAD_TOOLTIP, RESOURCES.getCSS().download(), this);
-//        downloadBtn.setEnabled(InteractorsExporter.isFileSaveScriptAvailable());
         reloadBtn = new PwpButton("Retry loading interactors", RESOURCES.getCSS().reload(), this);
 
         slider = new Slider(100, 24, 0.45, 1, 0.45, true);
@@ -213,11 +225,12 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
         controlsFP = new FlowPanel();
         controlsFP.setStyleName(RESOURCES.getCSS().interactorsControlControls());
-        controlsFP.add(this.slider);
-        controlsFP.add(this.downloadBtn);
+        controlsFP.add(slider);
+        controlsFP.add(downloadBtn);
 
         add(loadingIcon);
         add(message);
+        add(summaryLb);
         add(closeBtn);
         add(controlsFP);
         add(reloadBtn);
@@ -236,6 +249,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
         this.removeStyleName(RESOURCES.getCSS().interactorsControlWarning());
         loadingIcon.setVisible(visible);
+        summaryLb.setVisible(false);
         controlsFP.setVisible(!visible);
         reloadBtn.setVisible(!visible);
         if (visible) {
@@ -263,6 +277,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             this.addStyleName(RESOURCES.getCSS().interactorsControlError());
             this.removeStyleName(RESOURCES.getCSS().interactorsControlWarning());
         }
+        summaryLb.setVisible(!visible);
         controlsFP.setVisible(!visible);
         reloadBtn.setVisible(!visible);
     }
@@ -277,6 +292,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             this.addStyleName(RESOURCES.getCSS().interactorsControlWarning());
             this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
         }
+        summaryLb.setVisible(!visible);
         controlsFP.setVisible(!visible);
         reloadBtn.setVisible(!visible);
     }
