@@ -18,6 +18,7 @@ import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.context.popups.InsertItemDialog;
 import org.reactome.web.diagram.controls.settings.common.InfoLabel;
 import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.interactors.custom.ResourcesManager;
 import org.reactome.web.diagram.data.interactors.custom.model.CustomResource;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
@@ -47,6 +48,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     private List<RawResource> resourcesList = new ArrayList<>();
 
     private RadioButton staticResourceBtn;
+    private Label staticSummaryLb;
     private FlowPanel liveResourcesFP;
     private FlowPanel customResourcesFP;
     private FlowPanel loadingPanel;
@@ -71,6 +73,11 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         staticResourceBtn.addValueChangeHandler(this);
 
         selectedResource = staticResourceBtn.getFormValue();
+
+        staticSummaryLb = new Label();
+        staticSummaryLb.setStyleName(RESOURCES.getCSS().summaryLb());
+        staticSummaryLb.setTitle("Total number of unique interactors for this diagram");
+        staticSummaryLb.setVisible(false);
 
         // Loading panel
         Image loadingSpinner = new Image(RESOURCES.loadingSpinner());
@@ -108,6 +115,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         main.add(tabHeader);
         main.add(lb);
         main.add(staticResourceBtn);
+        main.add(staticSummaryLb);
         main.add(liveResourcesLabel);
         main.add(loadingPanel);
         main.add(getOptionsPanel());
@@ -127,11 +135,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         };
         refreshTimer.scheduleRepeating(RESOURCES_REFRESH);
 
-//        ResourcesManager.get().deleteAllResources();
-//        ResourcesManager.get().createAndAddResource("ABC", "123456");
-//        ResourcesManager.get().createAndAddResource("Kos", "234567");
-//        ResourcesManager.get().createAndAddResource("Ant", "765433");
-
         populateCustomResourceListPanel();
     }
 
@@ -147,8 +150,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                 }
             }
         } else if (btn.equals(addCustomResourceBtn)) {
-            ResourcesManager.get().createAndAddResource("BCD", "" + Math.random());
-            populateCustomResourceListPanel();
+//            ResourcesManager.get().createAndAddResource("BCD", "" + Math.random());
+//            populateCustomResourceListPanel();
 
             InsertItemDialog dialog = new InsertItemDialog();
             dialog.show();
@@ -185,6 +188,9 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
         enableDownloadButton(true);
+        updateStaticSummary();
+        populateResourceListPanel();
+
     }
 
     @Override
@@ -194,6 +200,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
             downloadBtn.setText(resourceName);
             downloadBtn.setTitle("Click to download all diagram interactors from " + resourceName);
             enableDownloadButton(context.getInteractors().isResourceLoaded(event.getResource()));
+            updateStaticSummary();
+            populateResourceListPanel();
         }
     }
 
@@ -240,7 +248,21 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                 if (radioBtn.getFormValue().equals(selectedResource)) {
                     radioBtn.setValue(true);
                 }
-                liveResourcesFP.add(radioBtn);
+
+                FlowPanel row = new FlowPanel();
+                row.add(radioBtn);
+
+                //Check if this resource is already loaded
+                InteractorsContent iContent = context.getInteractors();
+                if (iContent.isResourceLoaded(resource.getName())) {
+                    Label summaryLb = new Label();
+                    summaryLb.setStyleName(RESOURCES.getCSS().summaryLb());
+                    summaryLb.setTitle("Total number of unique interactors for this diagram");
+                    summaryLb.setText("" + 90); //Call the actual method from iContent
+                    row.add(summaryLb);
+                }
+
+                liveResourcesFP.add(row);
             }
         }
     }
@@ -260,7 +282,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                 if (radioBtn.getFormValue().equals(selectedResource)) {
                     radioBtn.setValue(true);
                 }
-                //TODO clean this up
                 Button deleteBtn = new PwpButton("Click here to delete this resource", RESOURCES.getCSS().delete(), new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent clickEvent) {
@@ -277,6 +298,18 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         }
         //Add the "add new custom resource" button
         customResourcesFP.add(addCustomResourceBtn);
+    }
+
+    private void updateStaticSummary(){
+        if(context!=null) {
+            InteractorsContent iContent = context.getInteractors();
+            if (iContent.isResourceLoaded(DiagramFactory.INTERACTORS_INITIAL_RESOURCE)) {
+                staticSummaryLb.setVisible(true);
+                staticSummaryLb.setText("" + 12); //Call the actual method from iContent
+            } else {
+                staticSummaryLb.setVisible(false);
+            }
+        }
     }
 
     private Widget getOptionsPanel() {
@@ -399,6 +432,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         String interactorResourceListBtn();
 
         String interactorResourceListBtnDisabled();
+
+        String summaryLb();
 
         String downloadBtn();
 
