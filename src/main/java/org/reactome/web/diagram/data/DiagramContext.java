@@ -74,7 +74,7 @@ public class DiagramContext {
                         for (GraphObject graphObject : elements) {
                             if (graphObject instanceof GraphPhysicalEntity) {
                                 GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
-                                pe.setIsHit(entity.getIdentifier(), entity.getExp());
+                                pe.setIsHit(entity.getId(), entity.getExp());
                             }
                         }
                     }

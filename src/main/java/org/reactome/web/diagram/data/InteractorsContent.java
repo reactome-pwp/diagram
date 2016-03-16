@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.data;
 
-import org.reactome.web.analysis.client.model.Identifier;
+import org.reactome.web.analysis.client.model.IdentifierSummary;
+import org.reactome.web.analysis.client.model.InteractorEvidence;
 import org.reactome.web.analysis.client.model.PathwayInteractor;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
@@ -40,7 +41,7 @@ public class InteractorsContent {
     static Map<String, Double> interactorsThreshold = new HashMap<>();
 
     private Map<String, MapSet<String, RawInteractor>> rawInteractorsCache; //resource -> node acc -> raw interactors
-    private Map<String, Identifier> interactorsAnalysis; // interactor acc -> interactor analysis
+    private Map<String, IdentifierSummary> interactorsAnalysis; // interactor acc -> interactor analysis
 
     private MapSet<String, InteractorsSummary> interactorsSummaryMap; //resource -> InteractorsSummary
     private Map<String, Map<String, InteractorEntity>> interactorsCache; //resource -> interactor acc -> interactors
@@ -65,7 +66,7 @@ public class InteractorsContent {
     }
 
     public void cache(String resource, String acc, RawInteractor rawInteractor) {
-        Identifier identifier = interactorsAnalysis.get(rawInteractor.getAcc());
+        IdentifierSummary identifier = interactorsAnalysis.get(rawInteractor.getAcc());
         if (identifier != null) {
             rawInteractor.setIsHit(true);
             rawInteractor.setExp(identifier.getExp());
@@ -112,18 +113,18 @@ public class InteractorsContent {
             Map<String, InteractorEntity> map = interactorsCache.get(DiagramFactory.INTERACTORS_INITIAL_RESOURCE);
             if (map == null) map = new HashMap<>();
             for (PathwayInteractor entity : interactors) {
-                for (Identifier identifier : entity.getInteractors()) {
-                    interactorsAnalysis.put(identifier.getIdentifier(), identifier);
+                for (InteractorEvidence identifier : entity.getInteractors()) {
+                    interactorsAnalysis.put(identifier.getId(), identifier);
                     if (cache == null) continue;
                     Set<RawInteractor> rawInteractors = cache.getElements(entity.getIdentifier());
-                    InteractorEntity interactor = map.get(identifier.getIdentifier());
+                    InteractorEntity interactor = map.get(identifier.getMapsTo());
                     if(interactor!=null){
                         interactor.setIsHit(true);
                         interactor.setExp(identifier.getExp());
                     }
                     if (rawInteractors != null) {
                         for (RawInteractor rawInteractor : rawInteractors) {
-                            if (rawInteractor.getAcc().equals(identifier.getIdentifier())) {
+                            if (rawInteractor.getAcc().equals(identifier.getMapsTo())) {
                                 rawInteractor.setIsHit(true);
                                 rawInteractor.setExp(identifier.getExp());
                             }
