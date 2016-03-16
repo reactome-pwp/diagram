@@ -258,7 +258,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                     Label summaryLb = new Label();
                     summaryLb.setStyleName(RESOURCES.getCSS().summaryLb());
                     summaryLb.setTitle("Total number of unique interactors for this diagram");
-                    summaryLb.setText("" + 90); //Call the actual method from iContent
+                    summaryLb.setText("" + iContent.getUniqueRawInteractorsCountPerResource(resource.getName()));
                     row.add(summaryLb);
                 }
 
@@ -305,7 +305,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
             InteractorsContent iContent = context.getInteractors();
             if (iContent.isResourceLoaded(DiagramFactory.INTERACTORS_INITIAL_RESOURCE)) {
                 staticSummaryLb.setVisible(true);
-                staticSummaryLb.setText("" + 12); //Call the actual method from iContent
+                staticSummaryLb.setText("" + iContent.getUniqueRawInteractorsCountPerResource(DiagramFactory.INTERACTORS_INITIAL_RESOURCE));
             } else {
                 staticSummaryLb.setVisible(false);
             }
