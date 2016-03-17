@@ -123,7 +123,7 @@ public class InteractorsContent {
                 } else {
                     //If the interactors for the initial resource are not present, caching is necessary so analysis
                     //data will be set once they are retrieved
-                    interactorsAnalysis.put(interactor.getId(), interactor);
+                    for (String s : interactor.getMapsTo()) interactorsAnalysis.put(s, interactor);
                 }
 
                 if (map != null) {
@@ -161,7 +161,7 @@ public class InteractorsContent {
         }
     }
 
-    public void clearAnalysisResults(){
+    public void clearAnalysisResults() {
         interactorsAnalysis = new HashMap<>();
         MapSet<String, RawInteractor> cache = rawInteractorsCache.get(DiagramFactory.INTERACTORS_INITIAL_RESOURCE);
         if (cache != null) {
@@ -203,9 +203,9 @@ public class InteractorsContent {
         if (tree != null) tree.remove(interactor);
     }
 
-    public void clearInteractors(String resource){
+    public void clearInteractors(String resource) {
         Map<String, InteractorEntity> entities = interactorsCache.get(resource);
-        if(entities!=null) {
+        if (entities != null) {
             for (InteractorEntity entity : entities.values()) {
                 entity.getLinks().clear();
             }
@@ -217,7 +217,7 @@ public class InteractorsContent {
         interactionsPerNode.remove(resource);
     }
 
-    public void removeInteractorLink(String resource, InteractorLink link){
+    public void removeInteractorLink(String resource, InteractorLink link) {
         MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource);
         if (cache != null) {
             Set<InteractorLink> links = cache.getElements(link.getNodeFrom());
@@ -252,6 +252,7 @@ public class InteractorsContent {
 
     //We keep this cache to avoid creating it every time
     private Map<String, List<InteractorSearchResult>> interactorsSearchItemsPerResource = new HashMap<>();
+
     public List<InteractorSearchResult> getInteractorSearchResult(String resource, DiagramContent content) {
         // IMPORTANT: First check whether the rawInteractors have been loaded
         // If not then there is no point in searching for a term and caching the results
@@ -314,10 +315,10 @@ public class InteractorsContent {
         return rawInteractorsCache.get(resource);
     }
 
-    public int getUniqueRawInteractorsCountPerResource(String resource){
+    public int getUniqueRawInteractorsCountPerResource(String resource) {
         Set<String> superSet = new HashSet<>();
         MapSet<String, RawInteractor> rawMap = getRawInteractorsPerResource(resource);
-        if(rawMap!=null) {
+        if (rawMap != null) {
             for (String key : rawMap.keySet()) {
                 for (RawInteractor interactor : rawMap.getElements(key)) {
                     superSet.add(interactor.getAcc());
@@ -331,10 +332,10 @@ public class InteractorsContent {
         Set<String> superSet = new HashSet<>();
 
         MapSet<Node, InteractorLink> linkMapSet = interactionsPerNode.get(resource);
-        if(linkMapSet!=null) {
+        if (linkMapSet != null) {
             for (Node node : linkMapSet.keySet()) {
                 for (InteractorLink interactorLink : linkMapSet.getElements(node)) {
-                    if(interactorLink.isVisible()) {
+                    if (interactorLink.isVisible()) {
                         if (interactorLink instanceof StaticLink) {
                             superSet.add(interactorLink.getToAccession());
                             superSet.add(interactorLink.getAccession());
