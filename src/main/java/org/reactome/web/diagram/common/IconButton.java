@@ -24,8 +24,7 @@ public class IconButton extends Button {
         fp.add(image);
         fp.add(label);
 
-        SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(fp.toString());
-        this.setHTML(safeHtml);
+        updateHTML();
     }
 
     public void setText(String text) {
