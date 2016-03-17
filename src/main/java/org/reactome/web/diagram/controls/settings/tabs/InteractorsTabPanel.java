@@ -53,7 +53,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     private FlowPanel customResourcesFP;
     private FlowPanel loadingPanel;
     private IconButton downloadBtn;
-    private IconButton addCustomResourceBtn;
+    private IconButton addNewResourceBtn;
     private String selectedResource;
 
     public InteractorsTabPanel(EventBus eventBus) {
@@ -105,10 +105,10 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         downloadBtn.setStyleName(RESOURCES.getCSS().downloadBtn());
         downloadBtn.setEnabled(false);
 
-        addCustomResourceBtn = new IconButton("Add a new resource",RESOURCES.addNewItem());
-        addCustomResourceBtn.addClickHandler(this);
-        addCustomResourceBtn.setTitle("Click to add a new resource");
-        addCustomResourceBtn.setStyleName(RESOURCES.getCSS().addNewResourceBtn());
+        addNewResourceBtn = new IconButton("Add a new resource",RESOURCES.addNewItem());
+        addNewResourceBtn.addClickHandler(this);
+        addNewResourceBtn.setTitle("Click to add a new resource");
+        addNewResourceBtn.setStyleName(RESOURCES.getCSS().addNewResourceBtn());
 
         FlowPanel main = new FlowPanel();
         main.setStyleName(RESOURCES.getCSS().interactorsPanel());
@@ -149,7 +149,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                     InteractorsExporter.exportInteractors(filename, interactors);
                 }
             }
-        } else if (btn.equals(addCustomResourceBtn)) {
+        } else if (btn.equals(addNewResourceBtn)) {
 //            ResourcesManager.get().createAndAddResource("BCD", "" + Math.random());
 //            populateCustomResourceListPanel();
 
@@ -297,7 +297,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
             }
         }
         //Add the "add new custom resource" button
-        customResourcesFP.add(addCustomResourceBtn);
+        customResourcesFP.add(addNewResourceBtn);
     }
 
     private void updateStaticSummary(){

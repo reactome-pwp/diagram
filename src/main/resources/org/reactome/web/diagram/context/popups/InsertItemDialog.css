@@ -16,7 +16,7 @@
 }
 
 .containerPanel {
-    max-width: 600px;
+    max-width: 650px;
     max-height: 400px;
     width: 100%;
     padding: 2px 0 0 2px;
@@ -86,6 +86,7 @@
 
 .rowPanel {
     width: 95%;
+    margin-top: 5px;
     overflow: hidden;
 }
 
@@ -93,6 +94,53 @@
     margin-top: 10px;
     width: 95%;
     overflow: hidden;
+}
+
+.tabPanel {
+    margin-top: 10px;
+    height: 220px;
+    /*min-height: 180px;*/
+    width: auto;
+    overflow: auto;
+}
+
+.tabButton {
+    color: white;
+    border-radius: 10px 10px 0 0;
+    background: none rgb(88, 195, 229);
+    font-size: medium;
+    outline: none;
+    width: 175px;
+    height: 65px;
+    cursor: pointer;
+}
+
+.tabButton:hover {
+    background: none rgb(30, 148, 208);
+}
+
+.tabButton:disabled {
+    background: none rgb(88, 195, 229);
+}
+
+.tabButton div {
+    text-align: center !important;
+}
+
+.tabButtonSelected {
+    background: none rgb(6, 107, 158) !important;
+}
+
+.addDataPanel {
+    padding: 3px;
+    height: auto;
+    width: auto;
+}
+
+.addServicePanel {
+    padding: 3px;
+    height: auto;
+    width: auto;
 }
 
 .infoLabel {
@@ -107,7 +155,7 @@
 
 .inputTB {
     float: left;
-    width: 498px;
+    width: 490px;
     color: #07558b;
     font-weight: bolder;
     font-size: medium;
@@ -141,14 +189,15 @@
 }
 
 .textArea {
-    width: 501px;
-    max-width: 501px;
+    width: 535px;
+    max-width: 535px;
     min-height: 60px;
     margin-top: 7px;
     outline: none;
     border: none;
-    border-radius: 10px;
-    font-size: medium;
+    border-radius: 5px;
+    font-size: small;
+    padding: 0 3px 0 5px;
     color: rgb(6, 107, 158);
 }
 
