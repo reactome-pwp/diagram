@@ -325,8 +325,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
         analysisStatus.setAnalysisSummary(event.getSummary());
         analysisStatus.setExpressionSummary(event.getExpressionSummary());
-        context.setAnalysisOverlay(analysisStatus, event.getPathwayElements(), event.getPathwaySummaries());
-        interactorsManager.setAnalysisOverlay(event.getPathwayElements(), context.getContent().getIdentifierMap());
+        context.setAnalysisOverlay(analysisStatus, event.getFoundElements(), event.getPathwaySummaries());
+        interactorsManager.setAnalysisOverlay(event.getFoundElements(), context.getContent().getIdentifierMap());
         this.canvas.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
         forceDraw = true;
     }

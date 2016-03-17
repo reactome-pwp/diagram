@@ -42,7 +42,7 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
     private AnalysisSummary analysisSummary;
     private ExpressionSummary expressionSummary;
 
-    private PathwayElements elements;
+    private FoundElements elements;
 
     AnalysisDataLoader(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -100,8 +100,8 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
     }
 
     @Override
-    public void onPathwayElementsLoaded(PathwayElements identifiers, long time) {
-        elements = identifiers;
+    public void onPathwayElementsLoaded(FoundElements foundElements, long time) {
+        elements = foundElements;
         loadPathwaySummaries(time);
     }
 

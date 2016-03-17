@@ -1,8 +1,7 @@
 package org.reactome.web.diagram.data;
 
+import org.reactome.web.analysis.client.model.FoundInteractor;
 import org.reactome.web.analysis.client.model.IdentifierSummary;
-import org.reactome.web.analysis.client.model.InteractorEvidence;
-import org.reactome.web.analysis.client.model.PathwayInteractor;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
@@ -101,33 +100,39 @@ public class InteractorsContent {
         cache.add(node, link);
     }
 
-    public void setAnalysisResult(List<PathwayInteractor> interactors) {
+    public void setAnalysisResult(List<FoundInteractor> interactors) {
+        clearAnalysisResults();
         if (interactors != null) {
             MapSet<String, RawInteractor> cache = rawInteractorsCache.get(DiagramFactory.INTERACTORS_INITIAL_RESOURCE);
-            if(cache!=null) {
-                for (RawInteractor rawInteractor : cache.values()) {
-                    rawInteractor.setIsHit(null);
-                    rawInteractor.setExp(null);
-                }
-            }
             Map<String, InteractorEntity> map = interactorsCache.get(DiagramFactory.INTERACTORS_INITIAL_RESOURCE);
-            if (map == null) map = new HashMap<>();
-            for (PathwayInteractor entity : interactors) {
-                for (InteractorEvidence identifier : entity.getInteractors()) {
-                    interactorsAnalysis.put(identifier.getId(), identifier);
-                    if (cache == null) continue;
-                    Set<RawInteractor> rawInteractors = cache.getElements(entity.getIdentifier());
-                    InteractorEntity interactor = map.get(identifier.getMapsTo());
-                    if(interactor!=null){
-                        interactor.setIsHit(true);
-                        interactor.setExp(identifier.getExp());
-                    }
-                    if (rawInteractors != null) {
-                        for (RawInteractor rawInteractor : rawInteractors) {
-                            if (rawInteractor.getAcc().equals(identifier.getMapsTo())) {
-                                rawInteractor.setIsHit(true);
-                                rawInteractor.setExp(identifier.getExp());
+
+            for (FoundInteractor interactor : interactors) {
+                if (cache != null) {
+                    //If the interactors for the initial resource are present, then the analysis data is "injected"
+                    for (String nodeAcc : interactor.getInteractsWith().getIds()) {
+                        Set<RawInteractor> rawInteractors = cache.getElements(nodeAcc);
+                        if (rawInteractors != null) {
+                            for (RawInteractor rawInteractor : rawInteractors) {
+                                if (interactor.getMapsTo().contains(rawInteractor.getAcc())) {
+                                    rawInteractor.setIsHit(true);
+                                    rawInteractor.setExp(interactor.getExp());
+                                }
                             }
+                        }
+                    }
+                } else {
+                    //If the interactors for the initial resource are not present, caching is necessary so analysis
+                    //data will be set once they are retrieved
+                    interactorsAnalysis.put(interactor.getId(), interactor);
+                }
+
+                if (map != null) {
+                    //If there are any InteractorEntity for the initial resource, the analysis data is "injected"
+                    for (String acc : interactor.getMapsTo()) {
+                        InteractorEntity interactorEntity = map.get(acc);
+                        if (interactorEntity != null) {
+                            interactorEntity.setIsHit(true);
+                            interactorEntity.setExp(interactor.getExp());
                         }
                     }
                 }
@@ -211,7 +216,7 @@ public class InteractorsContent {
         }
         interactionsPerNode.remove(resource);
     }
-    
+
     public void removeInteractorLink(String resource, InteractorLink link){
         MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource);
         if (cache != null) {
@@ -219,14 +224,6 @@ public class InteractorsContent {
             if (links != null) links.remove(link);
         }
     }
-
-//    public Identifier getAnalysisResult(String resource, String acc){
-//        if (DiagramFactory.INTERACTORS_INITIAL_RESOURCE.equals(resource)) {
-//            return interactorsAnalysis.get(acc);
-//        } else {
-//            return null;
-//        }
-//    }
 
     public List<InteractorLink> getInteractorLinks(String resource, Node node) {
         MapSet<Node, InteractorLink> cache = interactionsPerNode.get(resource);
