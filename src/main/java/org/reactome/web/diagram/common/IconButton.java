@@ -34,7 +34,7 @@ public class IconButton extends Button {
     }
 
     public void setImage(ImageResource imageResource) {
-        image = new Image(imageResource);
+        image.setResource(imageResource);
         updateHTML();
     }
 
