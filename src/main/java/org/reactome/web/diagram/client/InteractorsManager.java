@@ -141,6 +141,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     }
 
     public void setAnalysisOverlay(FoundElements foundElements, MapSet<String, GraphObject> map){
+        if (foundElements == null || foundElements.getInteractors() == null) return;
 
         List<FoundInteractor> interactors = foundElements.getInteractors();
 

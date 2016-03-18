@@ -65,7 +65,7 @@ public class DiagramContext {
     public void setAnalysisOverlay(AnalysisStatus analysisStatus, FoundElements foundElements, List<PathwaySummary> pathwaySummaries) {
         this.analysisStatus = analysisStatus;
         MapSet<String, GraphObject> map = this.content.getIdentifierMap();
-        if (foundElements != null) {
+        if (foundElements != null && foundElements.getEntities() != null) {
             for (FoundEntity entity : foundElements.getEntities()) {
                 for (IdentifierMap identifierMap : entity.getMapsTo()) {
                     for (String id : identifierMap.getIds()) {
