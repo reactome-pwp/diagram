@@ -122,8 +122,8 @@ public class GraphObjectInfoPanel extends Composite {
             this.add(new DatabaseObjectListPanel(title, participatesIn, eventBus));
         }
 
-        // Include information about the interactors of this entity
-        if(context!=null && (graphObject instanceof GraphEntityWithAccessionedSequence || graphObject instanceof GraphSimpleEntity) ){
+        // Include information about the interactors of this entity only if it appears directly in the diagram
+        if(context!=null && !graphObject.getDiagramObjects().isEmpty() && (graphObject instanceof GraphEntityWithAccessionedSequence || graphObject instanceof GraphSimpleEntity) ){
             String resource = ResourceNameFormatter.format(LoaderManager.INTERACTORS_RESOURCE);
             this.add(new InteractorsListPanel("According to " + resource + ", it interacts with:", context, (GraphPhysicalEntity) graphObject, eventBus));
         }
