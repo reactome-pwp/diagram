@@ -5,18 +5,42 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public abstract class AbstractValidator extends FlowPanel{
 
-    public AbstractValidator() {
+    private Image icon;
 
+    public AbstractValidator() {
+        setStyleName(RESOURCES.getCSS().container());
+        icon = new Image(RESOURCES.inValid());
+        icon.setStyleName(RESOURCES.getCSS().icon());
+        add(icon);
+        icon.setVisible(false);
     }
 
     public abstract boolean validate(String input);
 
+    protected void showIcon(boolean isValid) {
+        if(isValid) {
+            icon.setResource(RESOURCES.valid());
+            icon.setTitle(null);
+        } else {
+            icon.setResource(RESOURCES.inValid());
+        }
+        icon.setVisible(true);
+    }
+
+    protected void setTooltip(String message) {
+        icon.setTitle(message);
+    }
+
+    public void clear(){
+        icon.setVisible(false);
+    }
 
     public static Resources RESOURCES;
     static {
@@ -34,11 +58,11 @@ public abstract class AbstractValidator extends FlowPanel{
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
 
-        @Source("images/header_icon.png")
-        ImageResource headerIcon();
+        @Source("images/ok.png")
+        ImageResource valid();
 
-        @Source("images/close_clicked.png")
-        ImageResource closeClicked();
+        @Source("images/cancel.png")
+        ImageResource inValid();
 
     }
 
@@ -50,7 +74,10 @@ public abstract class AbstractValidator extends FlowPanel{
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String CSS = "org/reactome/web/diagram/context/popups/InsertItemDialog.css";
+        String CSS = "org/reactome/web/diagram/common/validation/Validator.css";
 
+        String container();
+
+        String icon();
     }
 }

@@ -1,0 +1,13 @@
+.container {
+    width: 20px;
+    height: 20px;
+    float: left;
+    margin-top: 8px;
+    margin-left: 4px;
+}
+
+.icon {
+    cursor: help;
+    width: 100%;
+    height: auto;
+}
