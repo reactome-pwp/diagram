@@ -185,12 +185,23 @@
 }
 
 .fileUpload {
-    margin-top: 10px;
+    position: absolute;
+    top: 44px;
+    left: 66px;
+    z-index: 100;
+    width: 490px;
+    /*margin-top: 10px;*/
+    /* start of transparency styles */
+    opacity:0;
+    -moz-opacity:0;
+    filter:alpha(opacity:0);
+    /* end of transparency styles */
 }
 
 .textArea {
-    width: 535px;
-    max-width: 535px;
+    float: left;
+    width: 500px;
+    max-width: 510px;
     min-height: 60px;
     margin-top: 7px;
     outline: none;
