@@ -46,6 +46,16 @@ public class ResourcesManager {
         return resources;
     }
 
+    public List<String> getResourceNames() {
+        List<String> rtn = new LinkedList<>();
+        if(!resources.isEmpty()) {
+            for (CustomResource resource : resources) {
+                rtn.add(resource.getName());
+            }
+        }
+        return rtn;
+    }
+
     /////////////////////////
     // ==== Resources =====//
     /////////////////////////
