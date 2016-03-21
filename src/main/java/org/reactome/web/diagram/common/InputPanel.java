@@ -56,6 +56,4 @@ public class InputPanel<T extends TextBoxBase, V extends AbstractValidator> exte
             validator.clear();
         }
     }
-
-
 }
