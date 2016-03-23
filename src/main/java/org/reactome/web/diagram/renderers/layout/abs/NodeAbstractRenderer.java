@@ -18,6 +18,26 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public abstract class NodeAbstractRenderer extends AbstractRenderer {
+
+    @Override
+    public void drawHitInteractors(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
+        Node node = (Node) item;
+        SummaryItem summaryItem = node.getInteractorsSummary();
+        if (summaryItem != null && summaryItem.getHit() != null && summaryItem.getHit()) {
+            NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+            ctx.beginPath();
+            double l = 25 * factor;
+            double c = 10 * factor;
+            double x = prop.getX() + prop.getWidth();
+            ctx.moveTo(x - l, prop.getY() + factor);
+            ctx.lineTo(x - c, prop.getY() + factor);
+            ctx.lineTo(x - factor, prop.getY() + c);
+            ctx.lineTo(x - factor, prop.getY() + l);
+            ctx.closePath();
+            ctx.fill();
+        }
+    }
+
     @Override
     public void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset){
         if(item.getDisplayName() == null || item.getDisplayName().isEmpty()) { return; }

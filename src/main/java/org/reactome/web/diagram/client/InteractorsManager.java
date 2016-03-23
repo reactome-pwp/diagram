@@ -132,6 +132,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
 
     public void clearAnalysisOverlay(){
         for (Node hitNode : hitNodes) {
+            ((GraphPhysicalEntity) hitNode.getGraphObject()).setInteractorsHit(false);
             hitNode.getInteractorsSummary().setHit(false);
         }
         hitNodes = new HashSet<>();
@@ -155,6 +156,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
                     for (GraphObject graphObject : elements) {
                         if (graphObject instanceof GraphPhysicalEntity) {
                             GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+                            pe.setInteractorsHit(true);
                             for (DiagramObject diagramObject : pe.getDiagramObjects()) {
                                 if(diagramObject instanceof Node){
                                     Node node = (Node) diagramObject;

@@ -518,6 +518,11 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                     ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
                     renderExpression(renderer, ctx, expressionDisease, column, minExp, maxExp, factor, offset);
                 }
+                Set<DiagramObject> hitInteractors = target.getElements(RenderType.HIT_INTERACTORS);
+                if(hitInteractors != null) {
+                    ctx.setFillStyle(AnalysisColours.get().PROFILE.getRibbon());
+                    renderHitInteractors(renderer, ctx, hitInteractors, factor, offset);
+                }
             }
         }
 
@@ -609,6 +614,12 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                 Node node = (Node) item;
                 connectorRenderer.draw(this.reactions, this.fadeOut, this.reactionDecorators, node, factor, offset);
             }
+        }
+    }
+
+    private void renderHitInteractors(Renderer renderer, AdvancedContext2d ctx, Set<DiagramObject> objects, double factor, Coordinate offset){
+        for (DiagramObject object : objects) {
+            renderer.drawHitInteractors(ctx, object, factor, offset);
         }
     }
 

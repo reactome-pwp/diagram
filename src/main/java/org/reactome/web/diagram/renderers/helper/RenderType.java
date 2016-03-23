@@ -9,6 +9,8 @@ public enum RenderType {
     NORMAL,
     DISEASE,
 
+    HIT_INTERACTORS,
+
     NOT_HIT_BY_ANALYSIS_NORMAL,
     NOT_HIT_BY_ANALYSIS_DISEASE,
 

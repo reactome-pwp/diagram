@@ -48,7 +48,11 @@ public class ItemsDistribution {
                     boolean isHit = false;
                     if (dbObject != null) {
                         if (dbObject instanceof GraphPhysicalEntity) {
-                            isHit = ((GraphPhysicalEntity) dbObject).isHit();
+                            GraphPhysicalEntity pe = (GraphPhysicalEntity) dbObject;
+                            isHit = pe.isHit();
+                            if (pe.isInteractorsHit()) {
+                                getOrCreate(renderableClass).add(RenderType.HIT_INTERACTORS, item);
+                            }
                         }else if (dbObject instanceof GraphPathway) {
                             isHit = ((GraphPathway) dbObject).isHit();
                         }

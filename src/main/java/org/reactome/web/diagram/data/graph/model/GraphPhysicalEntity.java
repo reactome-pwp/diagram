@@ -20,6 +20,8 @@ public abstract class GraphPhysicalEntity extends GraphObject {
     private List<GraphReactionLikeEvent> isActivatorIn = new ArrayList<>();
     private List<GraphReactionLikeEvent> isInhibitorIn = new ArrayList<>();
 
+    private boolean interactorsHit = false;
+
     public GraphPhysicalEntity(EntityNode node) {
         super(node);
         this.identifier = node.getIdentifier();
@@ -54,6 +56,14 @@ public abstract class GraphPhysicalEntity extends GraphObject {
         return isInhibitorIn.add(rle);
     }
 
+
+    public boolean isInteractorsHit() {
+        return interactorsHit;
+    }
+
+    public void setInteractorsHit(boolean interactorsHit) {
+        this.interactorsHit = interactorsHit;
+    }
 
     public boolean isHit() {
         return sampleIdentifier!=null;

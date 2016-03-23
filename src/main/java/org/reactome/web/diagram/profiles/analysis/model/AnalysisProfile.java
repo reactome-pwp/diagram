@@ -13,4 +13,6 @@ public interface AnalysisProfile extends Serializable {
 
     OverlayNode getExpression();
 
+    String getRibbon();
+
 }

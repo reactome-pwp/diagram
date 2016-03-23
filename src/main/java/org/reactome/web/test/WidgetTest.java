@@ -119,7 +119,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("ORA 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNjAzMTYwNTA3NDhfMg%3D%3D","TOTAL");
+                diagram.setAnalysisToken("MjAxNjAzMjIxMzM5NDFfMTA%253D","TOTAL");
             }
         }));
 
@@ -131,7 +131,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("Exp 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNjAzMTYwNzEyMjZfNg%253D%253D","TOTAL");
+                diagram.setAnalysisToken("MjAxNjAzMjIxNjM0NTdfMTI%253D","TOTAL");
             }
         }));
 
