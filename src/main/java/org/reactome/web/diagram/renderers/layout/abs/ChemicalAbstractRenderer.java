@@ -2,7 +2,10 @@ package org.reactome.web.diagram.renderers.layout.abs;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.TextMetrics;
-import org.reactome.web.diagram.data.layout.*;
+import org.reactome.web.diagram.data.layout.Coordinate;
+import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.NodeProperties;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
@@ -30,7 +33,7 @@ public abstract class ChemicalAbstractRenderer extends NodeAbstractRenderer {
 
     @Override
     public void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset){
-        if(item.getDisplayName() == null || item.getDisplayName().isEmpty()) { return; }
+        if(item.getDisplayName() == null || item.getDisplayName().isEmpty())  return;
         TextMetrics metrics = ctx.measureText(item.getDisplayName());
 
         Node node = (Node) item;
@@ -44,29 +47,6 @@ public abstract class ChemicalAbstractRenderer extends NodeAbstractRenderer {
             textRenderer.drawTextSingleLine(ctx, item.getDisplayName(), CoordinateFactory.get(x, y));
         }else{
             textRenderer.drawTextMultiLine(ctx, item.getDisplayName(), prop);
-        }
-    }
-
-    @Override
-    public void drawHitInteractors(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
-        Node node = (Node) item;
-        SummaryItem summaryItem = node.getInteractorsSummary();
-        if (summaryItem != null && summaryItem.getHit() != null && summaryItem.getHit()) {
-            ctx.save();
-            NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
-            shape(ctx, prop, false);
-            ctx.clip();
-            ctx.beginPath();
-            double l = 40 * factor;
-            double c = 20 * factor;
-            double x = prop.getX() + prop.getWidth();
-            ctx.moveTo(x - l, prop.getY() + factor);
-            ctx.lineTo(x - c, prop.getY() + factor);
-            ctx.lineTo(x - factor, prop.getY() + c);
-            ctx.lineTo(x - factor, prop.getY() + l);
-            ctx.closePath();
-            ctx.fill();
-            ctx.restore();
         }
     }
 

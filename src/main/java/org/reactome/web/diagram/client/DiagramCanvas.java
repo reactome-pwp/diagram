@@ -520,7 +520,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                 }
                 Set<DiagramObject> hitInteractors = target.getElements(RenderType.HIT_INTERACTORS);
                 if(hitInteractors != null) {
-                    ctx.setFillStyle(AnalysisColours.get().PROFILE.getRibbon());
+                    ctx.setStrokeStyle(AnalysisColours.get().PROFILE.getRibbon());
+                    ctx.setLineWidth(16 * factor);
                     renderHitInteractors(renderer, ctx, hitInteractors, factor, offset);
                 }
             }

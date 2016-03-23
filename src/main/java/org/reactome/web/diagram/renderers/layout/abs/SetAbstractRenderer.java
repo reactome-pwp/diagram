@@ -17,7 +17,7 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
 public abstract class SetAbstractRenderer extends NodeAbstractRenderer {
     @Override
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
-        if(!isVisible(item)) return;
+        if (!isVisible(item)) return;
 
         Node node = (Node) item;
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
@@ -47,27 +47,26 @@ public abstract class SetAbstractRenderer extends NodeAbstractRenderer {
 
     @Override
     public void shape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed) {
-        if(needsDashed!=null){
+        if (needsDashed != null) {
             ctx.dashedRoundedRectangle(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight(), RendererProperties.ROUND_RECT_ARC_WIDTH, RendererProperties.DASHED_LINE_PATTERN);
-        }else {
+        } else {
             ctx.roundedRectangle(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight(), RendererProperties.ROUND_RECT_ARC_WIDTH);
         }
     }
 
-    protected void fillShape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed){
-        ctx.beginPath();
-        if(needsDashed!=null){
+    protected void fillShape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed) {
+        if (needsDashed != null && needsDashed) {
             //This is needed since the dashed rounded rectangle will always be filled
             ctx.roundedRectangle(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight(), RendererProperties.ROUND_RECT_ARC_WIDTH);
             ctx.fill();
             ctx.dashedRoundedRectangle(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight(), RendererProperties.ROUND_RECT_ARC_WIDTH, RendererProperties.DASHED_LINE_PATTERN);
-        }else {
+        } else {
             ctx.roundedRectangle(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight(), RendererProperties.ROUND_RECT_ARC_WIDTH);
         }
     }
 
-    protected void innerShape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed){
-        if(needsDashed!=null){
+    protected void innerShape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed) {
+        if (needsDashed != null) {
             ctx.dashedRoundedRectangle(
                     prop.getX() + RendererProperties.SEPARATION,
                     prop.getY() + RendererProperties.SEPARATION,
@@ -75,7 +74,7 @@ public abstract class SetAbstractRenderer extends NodeAbstractRenderer {
                     prop.getHeight() - RendererProperties.SEPARATION * 2,
                     RendererProperties.ROUND_RECT_ARC_WIDTH,
                     RendererProperties.DASHED_LINE_PATTERN);
-        }else {
+        } else {
             ctx.roundedRectangle(
                     prop.getX() + RendererProperties.SEPARATION,
                     prop.getY() + RendererProperties.SEPARATION,
@@ -92,7 +91,7 @@ public abstract class SetAbstractRenderer extends NodeAbstractRenderer {
     }
 
     @Override
-    public void setTextProperties(AdvancedContext2d ctx, ColourProfileType type){
+    public void setTextProperties(AdvancedContext2d ctx, ColourProfileType type) {
         ctx.setTextAlign(Context2d.TextAlign.CENTER);
         ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
         ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
