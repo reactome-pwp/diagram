@@ -108,9 +108,9 @@
     color: white;
     border-radius: 10px 10px 0 0;
     background: none rgb(88, 195, 229);
-    font-size: medium;
+    font-size: small;
     outline: none;
-    width: 175px;
+    width: 185px;
     height: 65px;
     cursor: pointer;
 }
@@ -141,6 +141,7 @@
     padding: 3px;
     height: auto;
     width: auto;
+    color: white; /* this is temporary */
 }
 
 .infoLabel {

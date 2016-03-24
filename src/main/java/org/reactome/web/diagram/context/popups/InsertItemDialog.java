@@ -229,12 +229,12 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         urlBtn.setTitle("Provide the URL of your data");
         urlBtn.setStyleName(css.uploadOptionBtn());
         urlBtn.addValueChangeHandler(this);
-        urlBtn.setValue(true); selectedOption = URL;
         RadioButton fileBtn = new RadioButton("UploadOption", "File");
         fileBtn.setFormValue(FILE); //use FormValue to keep the value
         fileBtn.setTitle("Provide the file of your data");
         fileBtn.setStyleName(css.uploadOptionBtn());
         fileBtn.addValueChangeHandler(this);
+        fileBtn.setValue(true); selectedOption = FILE;
         RadioButton pasteBtn = new RadioButton("UploadOption", "Copy & Paste");
         pasteBtn.setFormValue(CONTENT); //use FormValue to keep the value
         pasteBtn.setTitle("Copy and paste your data directly");
@@ -242,19 +242,20 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         pasteBtn.addValueChangeHandler(this);
         FlowPanel uploadOptionsPanel = new FlowPanel();
         uploadOptionsPanel.setStyleName(css.rowPanel());
-        uploadOptionsPanel.add(urlBtn);
         uploadOptionsPanel.add(fileBtn);
         uploadOptionsPanel.add(pasteBtn);
+        uploadOptionsPanel.add(urlBtn);
 
         urlInput = new InputPanel("URL:", new TextBox(), new UrlValidator(), css.rowPanel(), css.infoLabel(), css.inputTB(), css.explanation());
         urlInput.setHintMessage("Enter the URL of your data");
         urlInput.setExplanation("this is the URL explanation");
+        urlInput.setVisible(false);
 
         fileInput = new InputPanel("File:", new TextBox(), new FileValidator(), css.rowPanel(), css.infoLabel(), css.inputTB(), css.explanation());
         fileInput.setHintMessage("Click here to choose your file");
         fileInput.setExplanation("this is the file explanation");
         fileInput.setReaOnly(true);
-        fileInput.setVisible(false);
+        fileInput.setVisible(true);
 
         formPanel = getFormPanel();
         formPanel.setVisible(false);
@@ -279,12 +280,12 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         FlowPanel addServiceFP = new FlowPanel();
         addServiceFP.setStyleName(css.addServicePanel());
 //        addServiceFP.add(urlServiceInput);
-        addServiceFP.add(new Label("Under construction - Coming soon."));
+        addServiceFP.add(new Label("Under construction - Thank you for your patience."));
 
         tabPanel = new TabLayoutPanel(4, Style.Unit.EM);
         tabPanel.setStyleName(css.tabPanel());
         tabPanel.add(addDataFP, addDataTabBtn = getButton("Add your data", RESOURCES.submitNormal()));
-        tabPanel.add(addServiceFP, addServiceTabBtn = getButton("Add a custom service", RESOURCES.submitNormal()));
+        tabPanel.add(addServiceFP, addServiceTabBtn = getButton("Add your PSICQUIC service", RESOURCES.submitNormal()));
         tabPanel.addSelectionHandler(this);
         tabPanel.selectTab(0);
         addDataTabBtn.addStyleName(css.tabButtonSelected());
