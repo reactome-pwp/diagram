@@ -60,7 +60,7 @@ public abstract class InteractorLink extends DiagramInteractor implements Compar
 
     @Override
     public boolean isVisible() {
-        double threshold = InteractorsContent.getInteractorsThreshold(LoaderManager.INTERACTORS_RESOURCE);
+        double threshold = InteractorsContent.getInteractorsThreshold(LoaderManager.INTERACTORS_RESOURCE.getIdentifier());
         return score >= threshold;
     }
 

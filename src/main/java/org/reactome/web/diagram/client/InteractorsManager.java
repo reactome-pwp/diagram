@@ -115,7 +115,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
 
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        currentResource = event.getResource();
+        currentResource = event.getResource().getIdentifier();
         boolean isStaticResource = DiagramFactory.INTERACTORS_INITIAL_RESOURCE.equals(currentResource);
         for (Node hitNode : hitNodes) {
             hitNode.getInteractorsSummary().setHit(isStaticResource);

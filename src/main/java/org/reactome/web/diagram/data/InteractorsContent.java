@@ -7,6 +7,7 @@ import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.common.InteractorsSummary;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorLink;
@@ -258,13 +259,13 @@ public class InteractorsContent {
 
     //We keep this cache to avoid creating it every time
     private Map<String, List<InteractorSearchResult>> interactorsSearchItemsPerResource = new HashMap<>();
-    public List<InteractorSearchResult> getInteractorSearchResult(String resource, DiagramContent content) {
+    public List<InteractorSearchResult> getInteractorSearchResult(OverlayResource resource, DiagramContent content) {
         // IMPORTANT: First check whether the rawInteractors have been loaded
         // If not then there is no point in searching for a term and caching the results
-        MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource);
+        MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.getIdentifier());
         if (map == null || map.isEmpty()) return new ArrayList<>();
 
-        List<InteractorSearchResult> rtn = interactorsSearchItemsPerResource.get(resource);
+        List<InteractorSearchResult> rtn = interactorsSearchItemsPerResource.get(resource.getIdentifier());
         if (rtn != null) return rtn;
         rtn = new ArrayList<>();
         Map<String, InteractorSearchResult> cache = new HashMap<>();
@@ -286,7 +287,7 @@ public class InteractorsContent {
                 }
             }
         }
-        interactorsSearchItemsPerResource.put(resource, rtn);
+        interactorsSearchItemsPerResource.put(resource.getIdentifier(), rtn);
         return rtn;
     }
 

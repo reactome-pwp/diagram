@@ -7,6 +7,7 @@ import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.DiagramContentFactory;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.raw.Graph;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsException;
 import org.reactome.web.diagram.data.layout.Diagram;
@@ -32,7 +33,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
 
     //It has a value by default but it can be set to a different one so in every load
     //the "user preferred" interactors resource will be selected
-    public static String INTERACTORS_RESOURCE = DiagramFactory.INTERACTORS_INITIAL_RESOURCE;
+    public static OverlayResource INTERACTORS_RESOURCE = new OverlayResource(DiagramFactory.INTERACTORS_INITIAL_RESOURCE, DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME, OverlayResource.ResourceType.STATIC);
 
     private EventBus eventBus;
 
@@ -116,7 +117,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         INTERACTORS_RESOURCE = event.getResource();
         interactorsLoader.cancel();
-        if (INTERACTORS_RESOURCE != null && !context.getInteractors().isInteractorResourceCached(INTERACTORS_RESOURCE)) {
+        if (INTERACTORS_RESOURCE != null && !context.getInteractors().isInteractorResourceCached(INTERACTORS_RESOURCE.getIdentifier())) {
             interactorsLoader.load(content, INTERACTORS_RESOURCE);
         }
     }

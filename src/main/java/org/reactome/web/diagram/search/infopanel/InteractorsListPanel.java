@@ -23,7 +23,7 @@ import java.util.Set;
 public class InteractorsListPanel extends FlowPanel {
 
     public InteractorsListPanel(String title, DiagramContext context, GraphPhysicalEntity obj, EventBus eventBus) {
-        List<RawInteractor> rawInteractors = context.getInteractors().getRawInteractors(LoaderManager.INTERACTORS_RESOURCE, obj.getIdentifier() );
+        List<RawInteractor> rawInteractors = context.getInteractors().getRawInteractors(LoaderManager.INTERACTORS_RESOURCE.getIdentifier(), obj.getIdentifier() );
         if(rawInteractors==null || rawInteractors.isEmpty()) return;
 
         GraphObjectInfoPanel.SuggestionPanelCSS css = GraphObjectInfoPanel.OBJECT_INFO_RESOURCES.getCSS();

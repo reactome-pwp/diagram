@@ -3,6 +3,7 @@ package org.reactome.web.diagram.data.interactors.model;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.resources.client.ImageResource;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.images.InteractorImages;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.search.SearchResultObject;
@@ -17,7 +18,7 @@ import java.util.Set;
  */
 public class InteractorSearchResult implements Comparable<InteractorSearchResult>, SearchResultObject {
 
-    private String resource;
+    private OverlayResource resource;
     private String accession;
     private String alias;
     private int evidences = 0;
@@ -27,7 +28,7 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     private String primary;
     private String secondary;
 
-    public InteractorSearchResult(String resource, String accession, String alias) {
+    public InteractorSearchResult(OverlayResource resource, String accession, String alias) {
         this.resource = resource;
         this.accession = accession;
         this.alias = alias;
@@ -51,7 +52,7 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
         return alias.toLowerCase().contains(term) || accession.toLowerCase().contains(term);
     }
 
-    public String getResource() {
+    public OverlayResource getResource() {
         return resource;
     }
 

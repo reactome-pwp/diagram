@@ -6,6 +6,7 @@ import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsException;
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsFactory;
@@ -31,7 +32,7 @@ public class InteractorsLoader implements RequestCallback {
     Handler handler;
     Request request;
 
-    String resource;
+    OverlayResource resource;
 
     public InteractorsLoader(Handler handler) {
         this.handler = handler;
@@ -43,7 +44,7 @@ public class InteractorsLoader implements RequestCallback {
         }
     }
 
-    public void load(DiagramContent content, String resource){
+    public void load(DiagramContent content, OverlayResource resource){
         // Any previous request has to be canceled
         cancel();
 
@@ -55,21 +56,28 @@ public class InteractorsLoader implements RequestCallback {
 
         String post = getPostData(content.getDiagramObjects());
         if(post != null){
-            String url;
-            if (resource.toLowerCase().equals("static")) {
-                url = PREFIX + "static/molecules/details/?v=" + LoaderManager.version;
-            } else {
-                url = PREFIX + "psicquic/molecules/" + resource + "/details?v=" + LoaderManager.version;
+            String url = "";
+            switch (resource.getType()) {
+                case CUSTOM:
+                    url = PREFIX + "token/" + resource.getIdentifier();
+                    break;
+                case STATIC:
+                    url = PREFIX + "static/molecules/details/";
+                    break;
+                case PSICQUIC:
+                    url = PREFIX + "psicquic/molecules/" + resource.getIdentifier() + "/details";
+                    break;
             }
+            url += "?v=" + LoaderManager.version;
 
             RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, url);
             try {
                 this.request = requestBuilder.sendRequest(post, this);
             } catch (RequestException e) {
-                fireDeferredErrorEvent(resource, e.getMessage(), InteractorsErrorEvent.Level.ERROR_RECOVERABLE);
+                fireDeferredErrorEvent(resource.getIdentifier(), e.getMessage(), InteractorsErrorEvent.Level.ERROR_RECOVERABLE); //TODO
             }
         } else {
-            fireDeferredErrorEvent(resource, "No target entities for interactors", InteractorsErrorEvent.Level.WARNING);
+            fireDeferredErrorEvent(resource.getIdentifier(), "No target entities for interactors", InteractorsErrorEvent.Level.WARNING);
         }
     }
 
@@ -123,13 +131,13 @@ public class InteractorsLoader implements RequestCallback {
                 this.handler.interactorsLoaded(interactors, time);
                 break;
             default:
-                this.handler.onInteractorsLoaderError(new InteractorsException(resource, response.getStatusText(), InteractorsErrorEvent.Level.ERROR_RECOVERABLE));
+                this.handler.onInteractorsLoaderError(new InteractorsException(resource.getIdentifier(), response.getStatusText(), InteractorsErrorEvent.Level.ERROR_RECOVERABLE));
         }
 
     }
 
     @Override
     public void onError(Request request, Throwable exception) {
-        this.handler.onInteractorsLoaderError(new InteractorsException(resource, exception.getMessage()));
+        this.handler.onInteractorsLoaderError(new InteractorsException(resource.getIdentifier(), exception.getMessage()));
     }
 }

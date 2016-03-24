@@ -58,7 +58,7 @@ public class InteractorsDialogPanel extends Composite implements TableItemSelect
         this.eventBus = eventBus;
         this.context = context;
         this.physicalEntity = diagramObject.getGraphObject();
-        this.currentResource = LoaderManager.INTERACTORS_RESOURCE;
+        this.currentResource = LoaderManager.INTERACTORS_RESOURCE.getIdentifier();
         this.interactions = new LinkedList<>();
 
         AnalysisStatus analysisStatus = context.getAnalysisStatus();
@@ -173,7 +173,7 @@ public class InteractorsDialogPanel extends Composite implements TableItemSelect
 
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        currentResource = event.getResource();
+        currentResource = event.getResource().getIdentifier();
         showLoading(true);
         updateDialogContent();
     }

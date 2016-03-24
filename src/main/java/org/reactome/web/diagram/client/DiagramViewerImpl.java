@@ -508,8 +508,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         context.getContent().clearDisplayedInteractors();
-        if(context.getInteractors().isInteractorResourceCached(event.getResource())) {
-            context.getInteractors().restoreInteractorsSummary(event.getResource(), context.getContent());
+        if(context.getInteractors().isInteractorResourceCached(event.getResource().getIdentifier())) {
+            context.getInteractors().restoreInteractorsSummary(event.getResource().getIdentifier(), context.getContent());
         }
         forceDraw = true;
     }

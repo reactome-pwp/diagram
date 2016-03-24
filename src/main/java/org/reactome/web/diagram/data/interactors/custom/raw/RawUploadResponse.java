@@ -7,10 +7,8 @@ import java.util.List;
  */
 public interface RawUploadResponse {
 
-    RawToken getToken();
+    RawSummary getSummary();
 
     List<String> getWarningMessages();
-
-    List<String> getErrorMessages();
 
 }

@@ -12,12 +12,12 @@ import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.InteractorsContent;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.interactors.InteractorsExporter;
-import org.reactome.web.diagram.util.interactors.ResourceNameFormatter;
 import org.reactome.web.diagram.util.slider.Slider;
 import org.reactome.web.diagram.util.slider.SliderValueChangedEvent;
 import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
@@ -39,7 +39,9 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     private static String MSG_DOWNLOAD_TOOLTIP = "Download all diagram interactors from ";
     private static int DELAY = 5000;
 
-    private String currentResource;
+//    private String currentResource;
+//    private String currentResourceName;
+    private OverlayResource currentOverlayResource;
 
     private DiagramContext context;
     private Image loadingIcon;
@@ -79,30 +81,29 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             if (loadingIcon.isVisible()) {
                 eventBus.fireEventFromSource(new InteractorsRequestCanceledEvent(), this);
             } else {
-                eventBus.fireEventFromSource(new InteractorsCollapsedEvent(currentResource), this);
+                eventBus.fireEventFromSource(new InteractorsCollapsedEvent(currentOverlayResource.getIdentifier()), this);
             }
             setVisible(false);
         } else if(source.equals(this.downloadBtn)) {
             if (context != null) {
-                MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(currentResource);
+                MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(currentOverlayResource.getIdentifier());
                 if(interactors != null && !interactors.isEmpty()) {
-                    String filename = context.getContent().getStableId() + "_Interactors_" + ResourceNameFormatter.format(currentResource)+ ".csv";
+                    String filename = context.getContent().getStableId() + "_Interactors_" + currentOverlayResource.getName()+ ".csv";
                     InteractorsExporter.exportInteractors(filename, interactors);
                 }
             }
         } else if (source.equals(this.reloadBtn)) {
             // Fire event for a Resource selection to trigger reloading
-            eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(currentResource), this);
+            eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(currentOverlayResource), this);
         }
     }
 
     @Override
     public void onDiagramLoaded(DiagramLoadedEvent event) {
         context = event.getContext();
-        if (context.getInteractors().isInteractorResourceCached(currentResource)) {
+        if (currentOverlayResource!=null && context.getInteractors().isInteractorResourceCached(currentOverlayResource.getIdentifier())) {
             update();
         }
-
     }
 
     @Override
@@ -118,12 +119,12 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        currentResource = event.getResource();
+        currentOverlayResource = event.getResource();
         hideTimer.cancel();
         //context is null when the diagram is in the process of loading (loading message is meant to be displayed)
-        if (context == null || !context.getInteractors().isInteractorResourceCached(event.getResource())) {
+        if (context == null || !context.getInteractors().isInteractorResourceCached(currentOverlayResource.getIdentifier())) {
             setVisible(true);
-            displayLoader(true, event.getResource());
+            displayLoader(true, currentOverlayResource.getIdentifier());
         } else {
             Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                 @Override
@@ -136,10 +137,12 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
-        currentResource = event.getInteractors().getResource();
+//        currentResource = event.getInteractors().getResource();
+//        CustomResource customResource = ResourcesManager.get().getResource(currentResource);
+//        currentResourceName = customResource == null ? currentResource : customResource.getName();
         int totalInteractorsLoaded = event.getInteractors().getEntities().size();
         if(totalInteractorsLoaded==0) {
-            displayWarning(MSG_NO_INTERACTORS_FOUND + ResourceNameFormatter.format(currentResource));
+            displayWarning(MSG_NO_INTERACTORS_FOUND + currentOverlayResource.getName());
             setTimer(DELAY);
         }else {
             hideTimer.cancel();
@@ -162,7 +165,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
                 break;
             case ERROR_RECOVERABLE:
                 displayError(event.getMessage());
-                reloadBtn.setTitle("Retry loading interactors from " + ResourceNameFormatter.format(currentResource) );
+                reloadBtn.setTitle("Retry loading interactors from " + currentOverlayResource.getName() );
                 reloadBtn.setVisible(true);
                 break;
         }
@@ -172,7 +175,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     @Override
     public void onSliderValueChanged(SliderValueChangedEvent event) {
         double threshold = event.getPercentage();
-        InteractorsContent.setInteractorsThreshold(currentResource, threshold);
+        InteractorsContent.setInteractorsThreshold(currentOverlayResource.getIdentifier(), threshold);
         eventBus.fireEventFromSource(new InteractorsFilteredEvent(threshold), this);
         updateSummary();
     }
@@ -185,11 +188,11 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
             this.removeStyleName(RESOURCES.getCSS().interactorsControlWarning());
             setVisible(true);
-            setMessage(ResourceNameFormatter.format(currentResource));
+            setMessage(currentOverlayResource.getName());
             controlsFP.setVisible(true);
             reloadBtn.setVisible(false);
-            slider.setValue(InteractorsContent.getInteractorsThreshold(currentResource));
-            downloadBtn.setTitle(MSG_DOWNLOAD_TOOLTIP + ResourceNameFormatter.format(currentResource));
+            slider.setValue(InteractorsContent.getInteractorsThreshold(currentOverlayResource.getIdentifier()));
+            downloadBtn.setTitle(MSG_DOWNLOAD_TOOLTIP + currentOverlayResource.getName());
             updateSummary();
         }
     }
@@ -197,7 +200,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     private void updateSummary() {
         if (context != null) {
             summaryLb.setVisible(true);
-            summaryLb.setText("(" + context.getInteractors().getUniqueRawInteractorsCountPerResource(currentResource) + ")");
+            summaryLb.setText("(" + context.getInteractors().getUniqueRawInteractorsCountPerResource(currentOverlayResource.getIdentifier()) + ")");
         }
     }
 
@@ -255,9 +258,9 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         if (visible) {
             String msg;
             if(resource.equals(DiagramFactory.INTERACTORS_INITIAL_RESOURCE)) {
-                msg = MSG_LOADING + ResourceNameFormatter.format(DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME);
+                msg = MSG_LOADING + DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME;
             } else {
-                msg = MSG_LOADING_PSICQUIC + ResourceNameFormatter.format(resource);
+                msg = MSG_LOADING_PSICQUIC + resource; //todo !important to check this
             }
             message.setText(msg + "...");
         }

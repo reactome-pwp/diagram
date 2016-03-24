@@ -4,7 +4,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanFactory;
-import org.reactome.web.diagram.data.interactors.custom.raw.RawToken;
+import org.reactome.web.diagram.data.interactors.custom.raw.RawSummary;
+import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadError;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadResponse;
 
 /**
@@ -14,8 +15,9 @@ public abstract class UploadResponseFactory {
 
     @SuppressWarnings("UnusedDeclaration")
     interface ModelAutoBeanFactory extends AutoBeanFactory {
-        AutoBean<RawToken> token();
+        AutoBean<RawSummary> token();
         AutoBean<RawUploadResponse> response();
+        AutoBean<RawUploadError> error();
     }
 
     public static <T> T getUploadResponseObject(Class<T> cls, String json) throws UploadResponseException {

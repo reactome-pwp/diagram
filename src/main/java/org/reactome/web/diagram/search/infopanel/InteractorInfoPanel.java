@@ -6,7 +6,6 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
 import org.reactome.web.diagram.util.MapSet;
-import org.reactome.web.diagram.util.interactors.ResourceNameFormatter;
 
 import java.util.Set;
 
@@ -35,7 +34,7 @@ public class InteractorInfoPanel extends Composite {
             this.add(new Label("Accession: " + interactor.getAccession()));
         }
         this.add(new Label("Type: Interactor"));
-        this.add(new Label("Resource: " + ResourceNameFormatter.format(interactor.getResource())));
+        this.add(new Label("Resource: " + interactor.getResource().getName()));
         MapSet<Long, GraphObject> interactsWith = interactor.getInteractsWith();
         for(Long interactionId:interactsWith.keySet()) {
             Set<GraphObject> interactors = interactsWith.getElements(interactionId);
