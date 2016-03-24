@@ -258,7 +258,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         fileInput.setVisible(true);
 
         formPanel = getFormPanel();
-        formPanel.setVisible(false);
+        formPanel.setVisible(true);
 
         copyPasteInput = new InputPanel("Paste:", new TextArea(), new ContentValidator(), css.rowPanel(), css.infoLabel(), css.textArea(), css.explanation());
         copyPasteInput.setHintMessage("Copy & paste your data here e.g. lalala");
