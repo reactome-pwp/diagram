@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.util.interactors;
 
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import org.reactome.web.diagram.client.DiagramFactory;
@@ -37,7 +38,7 @@ public class InteractorsExporter {
             FormPanel form = new FormPanel();
             form.setMethod(FormPanel.METHOD_POST);
             form.setEncoding("text/plain;");
-            form.setAction(DOWNLOAD_URL + filename.replaceAll("  *", "_"));
+            form.setAction(DOWNLOAD_URL + URL.encode(filename.replaceAll("  *", "_").replaceAll("\\/","-")));
 
             TextBox tb = new TextBox();
             tb.setName("content");
