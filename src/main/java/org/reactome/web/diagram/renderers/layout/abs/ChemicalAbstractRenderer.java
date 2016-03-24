@@ -18,6 +18,7 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public abstract class ChemicalAbstractRenderer extends NodeAbstractRenderer {
+
     @Override
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         if (!isVisible(item)) return;
@@ -32,7 +33,7 @@ public abstract class ChemicalAbstractRenderer extends NodeAbstractRenderer {
 
     @Override
     public void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset){
-        if(item.getDisplayName() == null || item.getDisplayName().isEmpty()) { return; }
+        if(item.getDisplayName() == null || item.getDisplayName().isEmpty())  return;
         TextMetrics metrics = ctx.measureText(item.getDisplayName());
 
         Node node = (Node) item;

@@ -42,9 +42,14 @@ public abstract class AbstractRenderer implements Renderer {
     }
 
     @Override
+    public void drawHitInteractors(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
+        //Nothing here
+    }
+
+    @Override
     public void focus(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset){}
 
-    private void setExpressionColour(AdvancedContext2d ctx, List<Double> expression, Double min, Double max, int t){
+    protected void setExpressionColour(AdvancedContext2d ctx, List<Double> expression, Double min, Double max, int t){
         try {
             double value = min;
             if(expression!=null) {

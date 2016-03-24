@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.loader.LoaderManager;
+import org.reactome.web.diagram.util.interactors.ResourceNameFormatter;
 
 import java.util.Collection;
 import java.util.Collections;

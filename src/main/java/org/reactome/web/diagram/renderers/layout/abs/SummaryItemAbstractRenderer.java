@@ -13,7 +13,7 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
  */
 public abstract class SummaryItemAbstractRenderer {
     enum Type {
-        TL("#FFFFFF", "#FF0000", "#B80000"),
+        TL("#FFFFFF", "#FF8A65", "#B80000"),
         TR("#FFFFFF", "#F44336", "#B71C1C"),
         BR("#FFFFFF", "#ABABAB", "#ABABAB"),
         BL("#FFFFFF", "#ABABAB", "#ABABAB");
@@ -79,9 +79,7 @@ public abstract class SummaryItemAbstractRenderer {
                         ctx.fill();
                     } else {
                         ctx.save();
-                        if (summaryItem.getHit()!=null && summaryItem.getHit()){
-                            ctx.setFillStyle("#0000FF");
-                        } else if (summaryItem.getPressed() != null && summaryItem.getPressed()) {
+                        if (summaryItem.getPressed() != null && summaryItem.getPressed()) {
                             ctx.setFillStyle(type.selColour);
                         } else {
                             ctx.setFillStyle(type.stdColour);

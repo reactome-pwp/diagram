@@ -9,6 +9,7 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class ProteinRenderer000 extends ProteinAbstractRenderer {
+
     @Override
     public void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         //No text at this level

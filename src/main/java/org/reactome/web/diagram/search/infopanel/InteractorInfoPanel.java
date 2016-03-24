@@ -7,6 +7,7 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
 import org.reactome.web.diagram.util.MapSet;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -37,7 +38,14 @@ public class InteractorInfoPanel extends Composite {
         this.add(new Label("Resource: " + interactor.getResource().getName()));
         MapSet<Long, GraphObject> interactsWith = interactor.getInteractsWith();
         for(Long interactionId:interactsWith.keySet()) {
-            Set<GraphObject> interactors = interactsWith.getElements(interactionId);
+            Set<GraphObject> interactors = new HashSet<>();
+            // Identify only those entities that are directly in the
+            // diagram and not part of a complex or a set
+            for (GraphObject graphObject : interactsWith.getElements(interactionId)) {
+                if(!graphObject.getDiagramObjects().isEmpty()){
+                    interactors.add(graphObject);
+                }
+            }
             if (!interactors.isEmpty()) {
                 int interactorsSize = interactor.getEvidences(interactionId) != null ? interactor.getEvidences(interactionId) : 0;
                 String evidences = interactorsSize == 0 ? "" : (interactorsSize == 1 ? interactorsSize + " evidence" : interactorsSize + " evidences");

@@ -16,7 +16,7 @@ import java.util.List;
 public abstract class ProteinAbstractRenderer extends NodeAbstractRenderer {
     @Override
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
-        if(!isVisible(item)) return;
+        if (!isVisible(item)) return;
 
         Node node = (Node) item;
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
@@ -32,9 +32,8 @@ public abstract class ProteinAbstractRenderer extends NodeAbstractRenderer {
         return true;
     }
 
-    private void fillShape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed){
-        ctx.beginPath();
-        if(needsDashed!=null){
+    private void fillShape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed) {
+        if (needsDashed != null && needsDashed) {
             //This is needed since the dashed rounded rectangle will always be filled
             ctx.roundedRectangle(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight(), RendererProperties.ROUND_RECT_ARC_WIDTH);
             ctx.fill();
@@ -46,7 +45,7 @@ public abstract class ProteinAbstractRenderer extends NodeAbstractRenderer {
                     RendererProperties.ROUND_RECT_ARC_WIDTH,
                     RendererProperties.DASHED_LINE_PATTERN
             );
-        }else {
+        } else {
             ctx.roundedRectangle(
                     prop.getX(),
                     prop.getY(),
@@ -59,8 +58,7 @@ public abstract class ProteinAbstractRenderer extends NodeAbstractRenderer {
 
     @Override
     public void shape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed) {
-        ctx.beginPath();
-        if(needsDashed!=null){
+        if (needsDashed != null && needsDashed) {
             ctx.dashedRoundedRectangle(
                     prop.getX(),
                     prop.getY(),
@@ -69,7 +67,7 @@ public abstract class ProteinAbstractRenderer extends NodeAbstractRenderer {
                     RendererProperties.ROUND_RECT_ARC_WIDTH,
                     RendererProperties.DASHED_LINE_PATTERN
             );
-        }else {
+        } else {
             ctx.roundedRectangle(
                     prop.getX(),
                     prop.getY(),
@@ -86,16 +84,16 @@ public abstract class ProteinAbstractRenderer extends NodeAbstractRenderer {
     }
 
     @Override
-    public void setTextProperties(AdvancedContext2d ctx, ColourProfileType type){
+    public void setTextProperties(AdvancedContext2d ctx, ColourProfileType type) {
         ctx.setTextAlign(Context2d.TextAlign.CENTER);
         ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
         ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
         type.setTextProfile(ctx, DiagramColours.get().PROFILE.getProtein());
     }
 
-    protected void drawAttachments(AdvancedContext2d ctx, Node node, Double factor, Coordinate offset, boolean fill){
+    protected void drawAttachments(AdvancedContext2d ctx, Node node, Double factor, Coordinate offset, boolean fill) {
         List<NodeAttachment> atList = node.getNodeAttachments();
-        if(atList!=null){
+        if (atList != null) {
             for (NodeAttachment nodeAttachment : atList) {
                 AttachmentAbstractRenderer.draw(ctx, nodeAttachment, factor, offset, fill);
             }

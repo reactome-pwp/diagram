@@ -21,6 +21,8 @@ public interface Renderer {
 
     void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset);
 
+    void drawHitInteractors(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset);
+
     void focus(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset);
 
     void highlight(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset);

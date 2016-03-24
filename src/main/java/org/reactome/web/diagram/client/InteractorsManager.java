@@ -1,8 +1,8 @@
 package org.reactome.web.diagram.client;
 
 import com.google.gwt.event.shared.EventBus;
-import org.reactome.web.analysis.client.model.PathwayElements;
-import org.reactome.web.analysis.client.model.PathwayInteractor;
+import org.reactome.web.analysis.client.model.FoundElements;
+import org.reactome.web.analysis.client.model.FoundInteractor;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
@@ -132,6 +132,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
 
     public void clearAnalysisOverlay(){
         for (Node hitNode : hitNodes) {
+            ((GraphPhysicalEntity) hitNode.getGraphObject()).setInteractorsHit(false);
             hitNode.getInteractorsSummary().setHit(false);
         }
         hitNodes = new HashSet<>();
@@ -140,21 +141,22 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
         }
     }
 
-    public void setAnalysisOverlay(PathwayElements pathwayElements, MapSet<String, GraphObject> map){
-        //noinspection ConstantConditions
-        List<PathwayInteractor> interactors = pathwayElements.getInteractors();
+    public void setAnalysisOverlay(FoundElements foundElements, MapSet<String, GraphObject> map){
+        if (foundElements == null || foundElements.getInteractors() == null) return;
+
+        List<FoundInteractor> interactors = foundElements.getInteractors();
 
         if (context != null) context.getInteractors().setAnalysisResult(interactors);
 
         //The next bit is needed to populate the hitNodes set for the given analysis
-        if (interactors != null) {
-            for (PathwayInteractor pathwayInteractor : interactors) {
-                String acc = pathwayInteractor.getIdentifier();
+        for (FoundInteractor foundInteractor : interactors) {
+            for (String acc : foundInteractor.getInteractsWith().getIds()) {
                 Set<GraphObject> elements = map.getElements(acc);
                 if (elements != null) {
                     for (GraphObject graphObject : elements) {
                         if (graphObject instanceof GraphPhysicalEntity) {
                             GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+                            pe.setInteractorsHit(true);
                             for (DiagramObject diagramObject : pe.getDiagramObjects()) {
                                 if(diagramObject instanceof Node){
                                     Node node = (Node) diagramObject;

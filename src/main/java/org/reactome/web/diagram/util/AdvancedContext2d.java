@@ -41,7 +41,7 @@ public class AdvancedContext2d extends Context2d {
         quadraticCurveTo(x, bottom, x, bottom - arcWidth);
         lineTo(x, y + arcWidth);
         quadraticCurveTo(x, y, x + arcWidth, y);
-//        closePath();
+        closePath();
     }
 
     /**
@@ -74,6 +74,7 @@ public class AdvancedContext2d extends Context2d {
 
         moveTo(x + arcWidth, y + height);
         quadraticCurveTo(x, y + height, x, y + height - arcWidth);
+        closePath();
     }
 
 
