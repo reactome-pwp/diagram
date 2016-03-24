@@ -212,6 +212,14 @@
     color: rgb(6, 107, 158);
 }
 
+.explanation {
+    float: left;
+    width: 474px;
+    margin-top: 4px;
+    margin-left: 10px;
+    color: white;
+}
+
 .submitBtn {
     background-color: rgb(30, 148, 208); /*#45b0d8;*/
     border: none;
@@ -233,6 +241,8 @@
 .submitBtn img {
     vertical-align: middle !important;
     padding-right: 3px;
+    height: 24px;
+    width: auto;
 }
 
 .submitBtn:hover {
@@ -247,4 +257,32 @@
 
 .submitBtn:disabled {
     background-color: #a39da6;
+}
+
+.errorPanel {
+    background-color: rgb(197, 91, 88);
+    border: 1px solid rgb(197, 39, 34);
+    border-radius: 5px;
+
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 30px;
+    width: 400px;
+    color: white;
+
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.errorPanel img {
+    margin-top: 2px;
+    margin-left: 2px;
+    float: left;
+}
+
+.errorText {
+    float: left;
+    margin-left: 4px;
+    height: auto;
 }

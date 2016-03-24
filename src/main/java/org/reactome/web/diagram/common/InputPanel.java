@@ -13,20 +13,23 @@ public class InputPanel<T extends TextBoxBase, V extends AbstractValidator> exte
     private Label titleLb;
     private T input;
     private V validator;
+    private Label explanation;
 
-    public InputPanel(String title, T T, V V, String style, String titleStyle, String inputStyle) {
+    public InputPanel(String title, T T, V V, String style, String titleStyle, String inputStyle, String explanationStyle) {
         setStyleName(style);
         titleLb = new Label(title);
         titleLb.setStyleName(titleStyle);
-
         input = T;
         input.setStyleName(inputStyle);
 
         validator = V;
+        explanation = new Label();
+        explanation.setStyleName(explanationStyle);
 
         add(titleLb);
         add(input);
         add(validator);
+        add(explanation);
     }
 
 
@@ -37,6 +40,10 @@ public class InputPanel<T extends TextBoxBase, V extends AbstractValidator> exte
 
     public void setHintMessage(String tip) {
         input.getElement().setPropertyString("placeholder", tip);
+    }
+
+    public void setExplanation(String text) {
+        explanation.setText(text);
     }
 
     public void setText(String text) {

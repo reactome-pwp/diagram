@@ -4,9 +4,11 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.http.client.*;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.FormPanel;
+import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadError;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadResponse;
 import org.reactome.web.diagram.data.interactors.custom.raw.factory.UploadResponseException;
 import org.reactome.web.diagram.data.interactors.custom.raw.factory.UploadResponseFactory;
+import org.reactome.web.diagram.util.Console;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -14,8 +16,10 @@ import org.reactome.web.diagram.data.interactors.custom.raw.factory.UploadRespon
 public class CustomResourceSubmitter implements FormPanel.SubmitHandler, FormPanel.SubmitCompleteHandler, RequestCallback {
 
     public interface Handler {
+        void onSubmission();
         void onSubmissionCompleted(RawUploadResponse response, long time);
-        void onSubmissionError(UploadResponseException exception);
+        void onSubmissionException(String message);
+        void onSubmissionError(RawUploadError error);
     }
 
     private Handler handler;
@@ -32,6 +36,7 @@ public class CustomResourceSubmitter implements FormPanel.SubmitHandler, FormPan
     }
 
     public void submit(String data, String url){
+        handler.onSubmission();
         // Any previous request has to be canceled
         cancel();
 
@@ -40,8 +45,8 @@ public class CustomResourceSubmitter implements FormPanel.SubmitHandler, FormPan
         requestBuilder.setHeader("Accept", "application/json");
         try {
             this.request = requestBuilder.sendRequest(data, this);
-        } catch (RequestException ex) {
-            handler.onSubmissionError(new UploadResponseException());
+        } catch (RequestException e) {
+            handler.onSubmissionException(e.getMessage());
         }
     }
 
@@ -49,8 +54,6 @@ public class CustomResourceSubmitter implements FormPanel.SubmitHandler, FormPan
         formPanel.setMethod(FormPanel.METHOD_POST);
         formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
         formPanel.setAction(url);
-        formPanel.addSubmitHandler(this);
-        formPanel.addSubmitCompleteHandler(this);
         formPanel.submit();
     }
 
@@ -62,22 +65,26 @@ public class CustomResourceSubmitter implements FormPanel.SubmitHandler, FormPan
                 RawUploadResponse uploadResponse;
                 try {
                     uploadResponse = UploadResponseFactory.getUploadResponseObject(RawUploadResponse.class, response.getText());
+                    long time = System.currentTimeMillis() - start;
+                    this.handler.onSubmissionCompleted(uploadResponse, time);
                 } catch (UploadResponseException e) {
-                    this.handler.onSubmissionError(e);
+                    this.handler.onSubmissionException(e.getMessage());
                     return;
                 }
-                long time = System.currentTimeMillis() - start;
-
-                this.handler.onSubmissionCompleted(uploadResponse, time);
                 break;
             default:
-                this.handler.onSubmissionError(new UploadResponseException());
+                try {
+                    RawUploadError error = UploadResponseFactory.getUploadResponseObject(RawUploadError.class, response.getText());
+                    this.handler.onSubmissionError(error);
+                } catch (UploadResponseException e) {
+                    this.handler.onSubmissionException(e.getMessage());
+                }
         }
     }
 
     @Override
     public void onError(Request request, Throwable throwable) {
-        this.handler.onSubmissionError(new UploadResponseException());
+        this.handler.onSubmissionException(throwable.getMessage());
     }
 
     @Override
@@ -89,17 +96,21 @@ public class CustomResourceSubmitter implements FormPanel.SubmitHandler, FormPan
         RawUploadResponse uploadResponse;
         try {
             uploadResponse = UploadResponseFactory.getUploadResponseObject(RawUploadResponse.class, label.getInnerText());
+            long time = System.currentTimeMillis() - start;
+            this.handler.onSubmissionCompleted(uploadResponse, time);
         } catch (UploadResponseException e) {
-            this.handler.onSubmissionError(e);
-            return;
+            try {
+                RawUploadError error = UploadResponseFactory.getUploadResponseObject(RawUploadError.class, label.getInnerText());
+                this.handler.onSubmissionError(error);
+            } catch (UploadResponseException e1) {
+                Console.error("Oops! This is unexpected", this);
+            }
         }
-        long time = System.currentTimeMillis() - start;
-        this.handler.onSubmissionCompleted(uploadResponse, time);
     }
 
     @Override
     public void onSubmit(FormPanel.SubmitEvent event) {
-
+        handler.onSubmission();
     }
 
 }

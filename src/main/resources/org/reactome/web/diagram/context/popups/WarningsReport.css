@@ -1,0 +1,76 @@
+.popupPanel {
+    border: 3px solid gray !important;
+    border-radius: 15px;
+    padding: 5px 10px 5px 10px;
+
+    background-color: rgb(88, 195, 229);
+
+    background: -webkit-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* Standard syntax */
+    background-image: -ms-linear-gradient(135deg, rgb(88, 195, 229), rgb(30, 148, 208)); /* For IE10 */
+
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: medium !important;
+    color: white;
+}
+
+.containerPanel {
+    /*max-width: 650px;*/
+    /*max-height: 400px;*/
+    width: 350px;
+    padding: 2px 0 0 2px;
+    height: 100%;
+    /*background-color: rgb(88, 195, 229) !important;*/
+}
+
+.containerPanel img {
+    float: left;
+    margin-bottom: 5px;
+}
+
+.title {
+    float: left;
+    margin-left: 5px;
+}
+
+.messagesOuter {
+    clear: left;
+    height: auto;
+    width: 320px;
+    max-height: 70px;
+    min-height: 20px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.messagesInner {
+    color: white;
+    height: auto;
+    width: 100%;
+}
+
+.messageline{
+    white-space: pre;
+    overflow: scroll;
+    font-size: smaller;
+}
+
+@sprite .close {
+    gwt-image: 'closeNormal';
+    outline: none;
+    background-repeat: no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: right;
+    margin-bottom: 10px;
+}
+
+@sprite .close:hover {
+    gwt-image: 'closeHovered';
+}
+
+@sprite .close:active:hover {
+    gwt-image: 'closeClicked';
+}

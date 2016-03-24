@@ -24,8 +24,8 @@ import org.reactome.web.diagram.common.validation.ContentValidator;
 import org.reactome.web.diagram.common.validation.FileValidator;
 import org.reactome.web.diagram.common.validation.NameValidator;
 import org.reactome.web.diagram.common.validation.UrlValidator;
+import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadError;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadResponse;
-import org.reactome.web.diagram.data.interactors.custom.raw.factory.UploadResponseException;
 import org.reactome.web.diagram.util.Console;
 
 import java.util.LinkedList;
@@ -38,10 +38,14 @@ import java.util.List;
 public class InsertItemDialog extends PopupPanel implements CustomResourceSubmitter.Handler,
         ValueChangeHandler, ClickHandler, SelectionHandler<Integer> {
 
-    private static final String SERVICE_URL_ACTION = "/ContentService/interactors/upload/tuple/url";
-    private static final String TUPLE_URL_ACTION = "/ContentService/interactors/upload/tuple/url";
-    private static final String TUPLE_CONTENT_ACTION = "/ContentService/interactors/upload/tuple/content";
-    private static final String TUPLE_FILE_ACTION = "/ContentService/interactors/upload/tuple/form";
+    public interface Handler {
+        void onResourceAdded(String name, String token);
+    }
+
+    private static final String SERVICE_URL_ACTION = "/ContentService/interactors/upload/tuple/url?name=";
+    private static final String TUPLE_URL_ACTION = "/ContentService/interactors/upload/tuple/url?name=";
+    private static final String TUPLE_CONTENT_ACTION = "/ContentService/interactors/upload/tuple/content?name=";
+    private static final String TUPLE_FILE_ACTION = "/ContentService/interactors/upload/tuple/form?name=";
 
     private static final String URL = "url";
     private static final String FILE = "file";
@@ -55,9 +59,11 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
     private InputPanel copyPasteInput;
     private InputPanel urlServiceInput;
 
+    private FlowPanel errorPanel;
+    private Label errorTitle;
+
     private FileUpload fileUpload;
     private FormPanel formPanel;
-    private TextArea pasteTA;
     private TabLayoutPanel tabPanel;
 
     private List<Button> tabButtons = new LinkedList<>();
@@ -67,10 +73,13 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
     private Button submitBtn;
     private Button cancelBtn;
 
+    private WarningsReport warningsReport;
     private String selectedOption;
+    private Handler handler;
 
-    public InsertItemDialog() {
+    public InsertItemDialog(Handler handler) {
         super();
+        this.handler = handler;
         this.setAutoHideEnabled(true);
         this.setModal(true);
         this.setAnimationEnabled(true);
@@ -79,6 +88,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         this.setStyleName(RESOURCES.getCSS().popupPanel());
 
         submitter = new CustomResourceSubmitter(this);
+        warningsReport = new WarningsReport();
 
         initUI();
     }
@@ -107,26 +117,25 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         boolean validationResult;
         if(btn.equals(submitBtn)) {
             validationResult = nameInput.validate();
-            showLoading(true);
+            String name = nameInput.getText().trim();
             if(selectedIndex == 0) {        //Tuple tab
                 switch (selectedOption) {
                     case URL:
                         validationResult = validationResult && urlInput.validate();
-                        if (validationResult) submitter.submit(urlInput.getText(), TUPLE_URL_ACTION);
+                        if (validationResult) submitter.submit(urlInput.getText(), TUPLE_URL_ACTION + name);
                         break;
                     case FILE:
-                        Console.info(fileUpload.getFilename());
                         validationResult = validationResult && fileInput.validate();
-                        if (validationResult) submitter.submit(formPanel, TUPLE_FILE_ACTION);
+                        if (validationResult) submitter.submit(formPanel, TUPLE_FILE_ACTION + name);
                         break;
                     case CONTENT:
                         validationResult = validationResult && copyPasteInput.validate();
-                        if (validationResult) submitter.submit(copyPasteInput.getText(), TUPLE_CONTENT_ACTION);
+                        if (validationResult) submitter.submit(copyPasteInput.getText(), TUPLE_CONTENT_ACTION + name);
                         break;
                 }
             } else {                        //Service tab
                 validationResult = validationResult && urlServiceInput.validate();
-                if (validationResult) submitter.submit(urlServiceInput.getText(), SERVICE_URL_ACTION);
+                if (validationResult) submitter.submit(urlServiceInput.getText(), SERVICE_URL_ACTION + name);
             }
 
         } else if (btn.equals(cancelBtn)) {
@@ -149,23 +158,39 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
     }
 
     @Override
-    public void onSubmissionCompleted(RawUploadResponse response, long time) {
-        showLoading(false);
-
-        List<String> errors = response.getErrorMessages();
-        List<String> warnings = response.getWarningMessages();
-        if(errors!=null && !errors.isEmpty()) {
-            Console.info(errors);
-        } else {
-            Console.info("New Token:" + response.getToken().getId());
-            Console.info((warnings));
-
-        }
+    public void onSubmission() {
+        showErrors(false);
+        showLoading(true);
     }
 
     @Override
-    public void onSubmissionError(UploadResponseException exception) {
-        Console.info(exception.getMessage());
+    public void onSubmissionCompleted(RawUploadResponse response, long time) {
+        showLoading(false);
+        this.hide();
+        List<String> warnings = response.getWarningMessages();
+        if(warnings!=null && !warnings.isEmpty()) {
+            Console.info(warnings);
+            warningsReport.setTitle("Successful submission with warnings (" + warnings.size() + ")");
+            warningsReport.setMessages(warnings);
+            warningsReport.show();
+        } else {
+            Console.info("New Token:" + response.getSummary().getToken());
+        }
+        handler.onResourceAdded(nameInput.getText().trim(), response.getSummary().getToken());
+    }
+
+    @Override
+    public void onSubmissionException(String message) {
+        showLoading(false);
+        errorTitle.setText(message);
+        showErrors(true);
+    }
+
+    @Override
+    public void onSubmissionError(RawUploadError error) {
+        showLoading(false);
+        errorTitle.setText(error.getReason() + " (" + error.getCode() + ")");
+        showErrors(true);
     }
 
     @Override
@@ -191,89 +216,111 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
     }
 
     private void initUI() {
+        ResourceCSS css = RESOURCES.getCSS();
         FlowPanel vp = new FlowPanel();                         // Main panel
-        vp.addStyleName(RESOURCES.getCSS().containerPanel());
+        vp.addStyleName(css.containerPanel());
         vp.add(setTitlePanel());                                // Title panel with label & button
 
-        nameInput = new InputPanel("Name:", new TextBox(), new NameValidator(), RESOURCES.getCSS().namePanel(), RESOURCES.getCSS().infoLabel(), RESOURCES.getCSS().inputTB());
+        nameInput = new InputPanel("Name:", new TextBox(), new NameValidator(), css.namePanel(), css.infoLabel(), css.inputTB(), css.explanation());
         nameInput.setHintMessage("Enter the name of your resource");
 
         RadioButton urlBtn = new RadioButton("UploadOption", "URL");
         urlBtn.setFormValue(URL); //use FormValue to keep the value
         urlBtn.setTitle("Provide the URL of your data");
-        urlBtn.setStyleName(RESOURCES.getCSS().uploadOptionBtn());
+        urlBtn.setStyleName(css.uploadOptionBtn());
         urlBtn.addValueChangeHandler(this);
         urlBtn.setValue(true); selectedOption = URL;
         RadioButton fileBtn = new RadioButton("UploadOption", "File");
         fileBtn.setFormValue(FILE); //use FormValue to keep the value
         fileBtn.setTitle("Provide the file of your data");
-        fileBtn.setStyleName(RESOURCES.getCSS().uploadOptionBtn());
+        fileBtn.setStyleName(css.uploadOptionBtn());
         fileBtn.addValueChangeHandler(this);
         RadioButton pasteBtn = new RadioButton("UploadOption", "Copy & Paste");
         pasteBtn.setFormValue(CONTENT); //use FormValue to keep the value
         pasteBtn.setTitle("Copy and paste your data directly");
-        pasteBtn.setStyleName(RESOURCES.getCSS().uploadOptionBtn());
+        pasteBtn.setStyleName(css.uploadOptionBtn());
         pasteBtn.addValueChangeHandler(this);
         FlowPanel uploadOptionsPanel = new FlowPanel();
-        uploadOptionsPanel.setStyleName(RESOURCES.getCSS().rowPanel());
+        uploadOptionsPanel.setStyleName(css.rowPanel());
         uploadOptionsPanel.add(urlBtn);
         uploadOptionsPanel.add(fileBtn);
         uploadOptionsPanel.add(pasteBtn);
 
-        urlInput = new InputPanel("URL:", new TextBox(), new UrlValidator(), RESOURCES.getCSS().rowPanel(), RESOURCES.getCSS().infoLabel(), RESOURCES.getCSS().inputTB());
+        urlInput = new InputPanel("URL:", new TextBox(), new UrlValidator(), css.rowPanel(), css.infoLabel(), css.inputTB(), css.explanation());
         urlInput.setHintMessage("Enter the URL of your data");
+        urlInput.setExplanation("this is the URL explanation");
 
-        fileInput = new InputPanel("File:", new TextBox(), new FileValidator(), RESOURCES.getCSS().rowPanel(), RESOURCES.getCSS().infoLabel(), RESOURCES.getCSS().inputTB());
+        fileInput = new InputPanel("File:", new TextBox(), new FileValidator(), css.rowPanel(), css.infoLabel(), css.inputTB(), css.explanation());
         fileInput.setHintMessage("Click here to choose your file");
+        fileInput.setExplanation("this is the file explanation");
         fileInput.setReaOnly(true);
         fileInput.setVisible(false);
 
         formPanel = getFormPanel();
         formPanel.setVisible(false);
 
-        copyPasteInput = new InputPanel("Paste:", new TextArea(), new ContentValidator(), RESOURCES.getCSS().rowPanel(), RESOURCES.getCSS().infoLabel(), RESOURCES.getCSS().textArea());
+        copyPasteInput = new InputPanel("Paste:", new TextArea(), new ContentValidator(), css.rowPanel(), css.infoLabel(), css.textArea(), css.explanation());
         copyPasteInput.setHintMessage("Copy & paste your data here e.g. lalala");
+        copyPasteInput.setExplanation("this is the content explanation");
         copyPasteInput.setVisible(false);
 
         FlowPanel addDataFP = new FlowPanel();
-        addDataFP.setStyleName(RESOURCES.getCSS().addDataPanel());
+        addDataFP.setStyleName(css.addDataPanel());
         addDataFP.add(uploadOptionsPanel);
         addDataFP.add(urlInput);
         addDataFP.add(formPanel);
         addDataFP.add(fileInput);
         addDataFP.add(copyPasteInput);
 
-        urlServiceInput = new InputPanel("URL:", new TextBox(), new UrlValidator(), RESOURCES.getCSS().rowPanel(), RESOURCES.getCSS().infoLabel(), RESOURCES.getCSS().inputTB());
+        urlServiceInput = new InputPanel("URL:", new TextBox(), new UrlValidator(), css.rowPanel(), css.infoLabel(), css.inputTB(), css.explanation());
         urlServiceInput.setHintMessage("Enter the URL of your PSICQUIC service");
+        urlServiceInput.setExplanation("this is the service url explanation");
 
         FlowPanel addServiceFP = new FlowPanel();
-        addServiceFP.setStyleName(RESOURCES.getCSS().addServicePanel());
-        addServiceFP.add(urlServiceInput);
+        addServiceFP.setStyleName(css.addServicePanel());
+//        addServiceFP.add(urlServiceInput);
+        addServiceFP.add(new Label("Under construction - Coming soon."));
 
         tabPanel = new TabLayoutPanel(4, Style.Unit.EM);
-        tabPanel.setStyleName(RESOURCES.getCSS().tabPanel());
+        tabPanel.setStyleName(css.tabPanel());
         tabPanel.add(addDataFP, addDataTabBtn = getButton("Add your data", RESOURCES.submitNormal()));
         tabPanel.add(addServiceFP, addServiceTabBtn = getButton("Add a custom service", RESOURCES.submitNormal()));
         tabPanel.addSelectionHandler(this);
         tabPanel.selectTab(0);
-        addDataTabBtn.addStyleName(RESOURCES.getCSS().tabButtonSelected());
+        addDataTabBtn.addStyleName(css.tabButtonSelected());
 
         submitBtn = new IconButton("Submit", RESOURCES.submitNormal());
-        submitBtn.setStyleName(RESOURCES.getCSS().submitBtn());
+        submitBtn.setStyleName(css.submitBtn());
         submitBtn.addClickHandler(this);
         cancelBtn = new IconButton("Cancel", RESOURCES.cancelNormal());
-        cancelBtn.setStyleName(RESOURCES.getCSS().submitBtn());
+        cancelBtn.setStyleName(css.submitBtn());
         cancelBtn.addClickHandler(this);
+
+        Image errorImage = new Image(RESOURCES.headerIcon());
+        errorTitle = new Label("This is the Error Title");
+        FlowPanel errorText = new FlowPanel();
+        errorText.setStyleName(css.errorText());
+        errorText.add(errorTitle);
+
+        errorPanel = new FlowPanel();
+        errorPanel.setStyleName(css.errorPanel());
+        errorPanel.add(errorImage);
+        errorPanel.add(errorText);
+
         FlowPanel actionPanel = new FlowPanel();
-        actionPanel.setStyleName(RESOURCES.getCSS().actionPanel());
+        actionPanel.setStyleName(css.actionPanel());
         actionPanel.setVisible(true);
         actionPanel.add(submitBtn);
         actionPanel.add(cancelBtn);
+        actionPanel.add(errorPanel);
 
         vp.add(nameInput);
         vp.add(tabPanel);
         vp.add(actionPanel);
         this.add(vp);
+
+        showLoading(false);
+        showErrors(false);
     }
 
     private Widget setTitlePanel(){
@@ -283,7 +330,6 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         Image image = new Image(RESOURCES.headerIcon());
         image.setStyleName(RESOURCES.getCSS().headerIcon());
         image.addStyleName(RESOURCES.getCSS().undraggable());
-        header.add(image);
         Label title = new Label("Add a new resource");
         title.setStyleName(RESOURCES.getCSS().headerText());
         Button closeBtn = new PwpButton("Close this dialog", RESOURCES.getCSS().close(), new ClickHandler() {
@@ -292,6 +338,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
                 InsertItemDialog.this.hide();
             }
         });
+        header.add(image);
         header.add(title);
         header.add(closeBtn);
         return header;
@@ -335,17 +382,22 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         });
 //        fileUpload.getElement().setAttribute("accept", ".txt");
         FormPanel form = new FormPanel();
-        form.add(this.fileUpload);
+        form.addSubmitHandler(submitter);
+        form.addSubmitCompleteHandler(submitter);
+        form.add(fileUpload);
         return form;
     }
 
     private void showLoading(boolean loading){
         if(loading) {
-            ((IconButton) submitBtn).setImage(RESOURCES.cancelNormal());
+            ((IconButton) submitBtn).setImage(RESOURCES.loader());
         } else {
             ((IconButton) submitBtn).setImage(RESOURCES.submitNormal());
         }
+    }
 
+    private void showErrors(boolean showErrors){
+        errorPanel.setVisible(showErrors);
     }
 
 
@@ -382,6 +434,9 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
 
         @Source("images/cancel.png")
         ImageResource cancelNormal();
+
+        @Source("images/loader.gif")
+        ImageResource loader();
     }
 
     /**
@@ -435,7 +490,13 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         String fileUpload();
 
         String textArea();
+        
+        String explanation();
 
         String submitBtn();
+
+        String errorPanel();
+
+        String errorText();
     }
 }
