@@ -2,6 +2,7 @@ package org.reactome.web.diagram.renderers.layout.abs;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.TextMetrics;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
@@ -10,6 +11,7 @@ import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
+import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
@@ -22,6 +24,31 @@ public abstract class GeneAbstractRenderer extends NodeAbstractRenderer{
         if(!isVisible(item)) return;
         Node node = (Node) item;
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+        fillTextHolder(ctx, prop);
+        shape(ctx, prop, node.getNeedDashedBorder());
+        ctx.stroke();
+    }
+
+    @Override
+    public void drawEnrichment(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, Double factor, Coordinate offset) {
+        if(!isVisible(item)) return;
+        Node node = (Node) item;
+        NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+        ctx.setStrokeStyle(DiagramColours.get().PROFILE.getGene().getStroke());
+        fillTextHolder(ctx, prop);
+        shape(ctx, prop, node.getNeedDashedBorder());
+        ctx.stroke();
+    }
+
+    @Override
+    public void drawExpression(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset) {
+        if(!isVisible(item)) return;
+        GraphObject graphObject = item.getGraphObject();
+        setExpressionColour(ctx, graphObject.getExpression(), min, max, t);
+
+        Node node = (Node) item;
+        NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+        ctx.setStrokeStyle(DiagramColours.get().PROFILE.getGene().getStroke());
         fillTextHolder(ctx, prop);
         shape(ctx, prop, node.getNeedDashedBorder());
         ctx.stroke();
@@ -59,10 +86,7 @@ public abstract class GeneAbstractRenderer extends NodeAbstractRenderer{
                 RendererProperties.GENE_SYMBOL_WIDTH,
                 RendererProperties.ROUND_RECT_ARC_WIDTH
         );
-        ctx.save();
-        ctx.setFillStyle(DiagramColours.get().PROFILE.getGene().getFill());
         ctx.fill();
-        ctx.restore();
     }
 
     @Override
