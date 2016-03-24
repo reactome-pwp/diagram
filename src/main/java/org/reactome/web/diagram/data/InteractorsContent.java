@@ -148,13 +148,16 @@ public class InteractorsContent {
                 if (graphObject instanceof GraphPhysicalEntity) {
                     GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
                     for (DiagramObject diagramObject : pe.getDiagramObjects()) {
+                        //TODO: Check what is going on here!
                         InteractorsSummary summary = new InteractorsSummary(acc, diagramObject.getId(), number);
                         interactorsSummaryMap.add(resource, summary);
                         Node node = (Node) diagramObject;
-                        node.getInteractorsSummary().setNumber(summary.getNumber());
-                        node.getInteractorsSummary().setPressed(summary.isPressed());
-                        //The changes need to be updated in the cache, so when restoring, the pressed ones are known
-                        node.setDiagramEntityInteractorsSummary(summary);
+                        if (node.getInteractorsSummary() != null) {
+                            node.getInteractorsSummary().setNumber(summary.getNumber());
+                            node.getInteractorsSummary().setPressed(summary.isPressed());
+                            //The changes need to be updated in the cache, so when restoring, the pressed ones are known
+                            node.setDiagramEntityInteractorsSummary(summary);
+                        }
                     }
                 }
             }
@@ -389,10 +392,13 @@ public class InteractorsContent {
         if (items == null) return;
         for (InteractorsSummary summary : items) {
             Node node = (Node) content.getDiagramObject(summary.getDiagramId());
-            node.getInteractorsSummary().setNumber(summary.getNumber());
-            node.getInteractorsSummary().setPressed(summary.isPressed());
-            //The changes need to be updated in the cache, so when restoring, the pressed ones are known
-            node.setDiagramEntityInteractorsSummary(summary);
+            //The node can be "inside" a process node (subpathway)
+            if (node != null) {
+                node.getInteractorsSummary().setNumber(summary.getNumber());
+                node.getInteractorsSummary().setPressed(summary.isPressed());
+                //The changes need to be updated in the cache, so when restoring, the pressed ones are known
+                node.setDiagramEntityInteractorsSummary(summary);
+            }
         }
     }
 
