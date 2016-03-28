@@ -259,31 +259,3 @@
 .submitBtn:disabled {
     background-color: #a39da6;
 }
-
-.errorPanel {
-    background-color: rgb(197, 91, 88);
-    border: 1px solid rgb(197, 39, 34);
-    border-radius: 5px;
-
-    position: relative;
-    top: 0;
-    left: 0;
-    height: 30px;
-    width: 400px;
-    color: white;
-
-    overflow-x: hidden;
-    overflow-y: scroll;
-}
-
-.errorPanel img {
-    margin-top: 2px;
-    margin-left: 2px;
-    float: left;
-}
-
-.errorText {
-    float: left;
-    margin-left: 4px;
-    height: auto;
-}

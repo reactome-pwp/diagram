@@ -28,6 +28,7 @@ import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadError;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadResponse;
 import org.reactome.web.diagram.util.Console;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -59,9 +60,6 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
     private InputPanel copyPasteInput;
     private InputPanel urlServiceInput;
 
-    private FlowPanel errorPanel;
-    private Label errorTitle;
-
     private FileUpload fileUpload;
     private FormPanel formPanel;
     private TabLayoutPanel tabPanel;
@@ -73,7 +71,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
     private Button submitBtn;
     private Button cancelBtn;
 
-    private WarningsReport warningsReport;
+    private StatusReport statusReport;
     private String selectedOption;
     private Handler handler;
 
@@ -88,7 +86,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         this.setStyleName(RESOURCES.getCSS().popupPanel());
 
         submitter = new CustomResourceSubmitter(this);
-        warningsReport = new WarningsReport();
+        statusReport = new StatusReport();
 
         initUI();
     }
@@ -159,7 +157,6 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
 
     @Override
     public void onSubmission() {
-        showErrors(false);
         showLoading(true);
     }
 
@@ -170,10 +167,15 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         List<String> warnings = response.getWarningMessages();
         if(warnings!=null && !warnings.isEmpty()) {
             Console.info(warnings);
-            warningsReport.setTitle("Successful submission with warnings (" + warnings.size() + ")");
-            warningsReport.setMessages(warnings);
-            warningsReport.show();
+            statusReport.displayWarningIcon();
+            statusReport.setTitle("Successful submission with warnings (" + warnings.size() + ")");
+            statusReport.setMessages(warnings);
+            statusReport.show();
         } else {
+            statusReport.displaySuccessIcon();
+            statusReport.setTitle("Successful submission");
+            statusReport.setMessages(Collections.singletonList(response.getSummary().getName() + " has been added to your custom resources"));
+            statusReport.show();
             Console.info("New Token:" + response.getSummary().getToken());
         }
         handler.onResourceAdded(nameInput.getText().trim(), response.getSummary().getToken());
@@ -182,15 +184,19 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
     @Override
     public void onSubmissionException(String message) {
         showLoading(false);
-        errorTitle.setText(message);
-        showErrors(true);
+        statusReport.displayErrorIcon();
+        statusReport.setTitle("Error on submission");
+        statusReport.setMessages(Collections.singletonList(message));
+        statusReport.show();
     }
 
     @Override
     public void onSubmissionError(RawUploadError error) {
         showLoading(false);
-        errorTitle.setText(error.getReason() + " (" + error.getCode() + ")");
-        showErrors(true);
+        statusReport.displayErrorIcon();
+        statusReport.setTitle( error.getReason() + "(" + error.getCode() + ")");
+        statusReport.setMessages(error.getMessages());
+        statusReport.show();
     }
 
     @Override
@@ -284,36 +290,24 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
 
         tabPanel = new TabLayoutPanel(4, Style.Unit.EM);
         tabPanel.setStyleName(css.tabPanel());
-        tabPanel.add(addDataFP, addDataTabBtn = getButton("Add your data", RESOURCES.submitNormal()));
-        tabPanel.add(addServiceFP, addServiceTabBtn = getButton("Add your PSICQUIC service", RESOURCES.submitNormal()));
+        tabPanel.add(addDataFP, addDataTabBtn = getButton("Add your data", RESOURCES.newDataIcon()));
+        tabPanel.add(addServiceFP, addServiceTabBtn = getButton("Add your PSICQUIC service", RESOURCES.newServiceIcon()));
         tabPanel.addSelectionHandler(this);
         tabPanel.selectTab(0);
         addDataTabBtn.addStyleName(css.tabButtonSelected());
 
-        submitBtn = new IconButton("Submit", RESOURCES.submitNormal());
+        submitBtn = new IconButton("Submit", RESOURCES.submitIcon());
         submitBtn.setStyleName(css.submitBtn());
         submitBtn.addClickHandler(this);
-        cancelBtn = new IconButton("Cancel", RESOURCES.cancelNormal());
+        cancelBtn = new IconButton("Cancel", RESOURCES.cancelIcon());
         cancelBtn.setStyleName(css.submitBtn());
         cancelBtn.addClickHandler(this);
-
-        Image errorImage = new Image(RESOURCES.headerIcon());
-        errorTitle = new Label("This is the Error Title");
-        FlowPanel errorText = new FlowPanel();
-        errorText.setStyleName(css.errorText());
-        errorText.add(errorTitle);
-
-        errorPanel = new FlowPanel();
-        errorPanel.setStyleName(css.errorPanel());
-        errorPanel.add(errorImage);
-        errorPanel.add(errorText);
 
         FlowPanel actionPanel = new FlowPanel();
         actionPanel.setStyleName(css.actionPanel());
         actionPanel.setVisible(true);
         actionPanel.add(submitBtn);
         actionPanel.add(cancelBtn);
-        actionPanel.add(errorPanel);
 
         vp.add(nameInput);
         vp.add(tabPanel);
@@ -321,7 +315,6 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         this.add(vp);
 
         showLoading(false);
-        showErrors(false);
     }
 
     private Widget setTitlePanel(){
@@ -393,12 +386,8 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         if(loading) {
             ((IconButton) submitBtn).setImage(RESOURCES.loader());
         } else {
-            ((IconButton) submitBtn).setImage(RESOURCES.submitNormal());
+            ((IconButton) submitBtn).setImage(RESOURCES.submitIcon());
         }
-    }
-
-    private void showErrors(boolean showErrors){
-        errorPanel.setVisible(showErrors);
     }
 
 
@@ -421,6 +410,12 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         @Source("images/addNewResources.png")
         ImageResource headerIcon();
 
+        @Source("images/addNewData.png")
+        ImageResource newDataIcon();
+
+        @Source("images/addNewService.png")
+        ImageResource newServiceIcon();
+
         @Source("images/close_clicked.png")
         ImageResource closeClicked();
 
@@ -431,10 +426,10 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         ImageResource closeNormal();
 
         @Source("images/ok.png")
-        ImageResource submitNormal();
+        ImageResource submitIcon();
 
         @Source("images/cancel.png")
-        ImageResource cancelNormal();
+        ImageResource cancelIcon();
 
         @Source("images/loader.gif")
         ImageResource loader();
@@ -495,9 +490,5 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         String explanation();
 
         String submitBtn();
-
-        String errorPanel();
-
-        String errorText();
     }
 }

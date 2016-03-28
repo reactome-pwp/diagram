@@ -15,15 +15,13 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class WarningsReport extends PopupPanel {
+public class StatusReport extends PopupPanel {
 
     private Image icon;
     private Label titleLb;
     private Label messagesLb;
 
-    private List<String> warnings;
-
-    public WarningsReport() {
+    public StatusReport() {
         super();
         this.setAutoHideEnabled(true);
         this.setModal(true);
@@ -33,6 +31,18 @@ public class WarningsReport extends PopupPanel {
         this.setStyleName(RESOURCES.getCSS().popupPanel());
 
         initUI();
+    }
+
+    public void displaySuccessIcon() {
+        icon.setResource(RESOURCES.success());
+    }
+
+    public void displayWarningIcon() {
+        icon.setResource(RESOURCES.successWithWarnings());
+    }
+
+    public void displayErrorIcon() {
+        icon.setResource(RESOURCES.failure());
     }
 
     public void setTitle(String title){
@@ -61,13 +71,13 @@ public class WarningsReport extends PopupPanel {
     }
 
     private void initUI(){
-        icon = new Image(RESOURCES.icon());
+        icon = new Image(RESOURCES.success());
         titleLb = new Label();
         titleLb.setStyleName(RESOURCES.getCSS().title());
         Button closeBtn = new PwpButton("Close this dialog", RESOURCES.getCSS().close(), new ClickHandler() {
             @Override
             public void onClick(ClickEvent clickEvent) {
-                WarningsReport.this.hide();
+                StatusReport.this.hide();
             }
         });
 
@@ -91,6 +101,7 @@ public class WarningsReport extends PopupPanel {
 
         add(container);
     }
+
 
     public static Resources RESOURCES;
     static {
@@ -119,6 +130,16 @@ public class WarningsReport extends PopupPanel {
 
         @Source("images/close_normal.png")
         ImageResource closeNormal();
+
+        @Source("images/success.png")
+        ImageResource success();
+
+        @Source("images/successWithWarnings.png")
+        ImageResource successWithWarnings();
+
+        @Source("images/failure.png")
+        ImageResource failure();
+
     }
 
     /**
@@ -129,7 +150,7 @@ public class WarningsReport extends PopupPanel {
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String CSS = "org/reactome/web/diagram/context/popups/WarningsReport.css";
+        String CSS = "org/reactome/web/diagram/context/popups/StatusReport.css";
 
         String popupPanel();
 

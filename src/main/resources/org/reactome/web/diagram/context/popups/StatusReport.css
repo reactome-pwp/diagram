@@ -19,7 +19,7 @@
 .containerPanel {
     /*max-width: 650px;*/
     /*max-height: 400px;*/
-    width: 350px;
+    width: 370px;
     padding: 2px 0 0 2px;
     height: 100%;
     /*background-color: rgb(88, 195, 229) !important;*/
@@ -38,7 +38,7 @@
 .messagesOuter {
     clear: left;
     height: auto;
-    width: 320px;
+    width: 360px;
     max-height: 70px;
     min-height: 20px;
     overflow-x: hidden;

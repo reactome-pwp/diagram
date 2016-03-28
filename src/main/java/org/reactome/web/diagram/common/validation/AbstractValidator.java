@@ -58,10 +58,10 @@ public abstract class AbstractValidator extends FlowPanel{
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
 
-        @Source("images/ok.png")
+        @Source("images/valid.png")
         ImageResource valid();
 
-        @Source("images/cancel.png")
+        @Source("images/invalid.png")
         ImageResource inValid();
 
     }
