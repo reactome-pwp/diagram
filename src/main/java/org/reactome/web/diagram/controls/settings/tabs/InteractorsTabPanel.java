@@ -324,11 +324,17 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                 if (radioBtn.getFormValue().equals(selectedResource.getIdentifier())) {
                     radioBtn.setValue(true);
                 }
-                Button deleteBtn = new PwpButton("Click here to delete this resource", RESOURCES.getCSS().delete(), new ClickHandler() {
+                final Button deleteBtn = new PwpButton("Click here to delete this resource", RESOURCES.getCSS().delete(), new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent clickEvent) {
                         ResourcesManager.get().deleteResource(radioBtn.getFormValue());
                         addCustomResources(ResourcesManager.get().getResources());
+                        if(radioBtn.getFormValue().equals(selectedResource.getIdentifier())) {
+                            selectedResource = staticResource;
+                            staticResourceBtn.setValue(true);
+                            // Fire event for static resource selection
+                            eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(selectedResource), this);
+                        }
                     }
                 });
                 FlowPanel row = new FlowPanel();
