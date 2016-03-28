@@ -167,15 +167,9 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         List<String> warnings = response.getWarningMessages();
         if(warnings!=null && !warnings.isEmpty()) {
             Console.info(warnings);
-            statusReport.displayWarningIcon();
-            statusReport.setTitle("Successful submission with warnings (" + warnings.size() + ")");
-            statusReport.setMessages(warnings);
-            statusReport.show();
+            statusReport.showWarnings("Successful submission with warnings (" + warnings.size() + ")", warnings);
         } else {
-            statusReport.displaySuccessIcon();
-            statusReport.setTitle("Successful submission");
-            statusReport.setMessages(Collections.singletonList(response.getSummary().getName() + " has been added to your custom resources"));
-            statusReport.show();
+            statusReport.showSuccess("Successful submission", response.getSummary());
             Console.info("New Token:" + response.getSummary().getToken());
         }
         handler.onResourceAdded(nameInput.getText().trim(), response.getSummary().getToken());
@@ -184,19 +178,13 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
     @Override
     public void onSubmissionException(String message) {
         showLoading(false);
-        statusReport.displayErrorIcon();
-        statusReport.setTitle("Error on submission");
-        statusReport.setMessages(Collections.singletonList(message));
-        statusReport.show();
+        statusReport.showErrors("Error on submission", Collections.singletonList(message));
     }
 
     @Override
     public void onSubmissionError(RawUploadError error) {
         showLoading(false);
-        statusReport.displayErrorIcon();
-        statusReport.setTitle( error.getReason() + "(" + error.getCode() + ")");
-        statusReport.setMessages(error.getMessages());
-        statusReport.show();
+        statusReport.showErrors(error.getReason() + "(" + error.getCode() + ")" , error.getMessages());
     }
 
     @Override

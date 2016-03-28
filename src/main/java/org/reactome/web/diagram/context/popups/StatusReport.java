@@ -9,7 +9,9 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.data.interactors.custom.raw.RawSummary;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,33 +34,6 @@ public class StatusReport extends PopupPanel {
 
         initUI();
     }
-
-    public void displaySuccessIcon() {
-        icon.setResource(RESOURCES.success());
-    }
-
-    public void displayWarningIcon() {
-        icon.setResource(RESOURCES.successWithWarnings());
-    }
-
-    public void displayErrorIcon() {
-        icon.setResource(RESOURCES.failure());
-    }
-
-    public void setTitle(String title){
-        this.titleLb.setText(title);
-    }
-
-    public void setMessages(List<String> messages) {
-        if(messages!=null && !messages.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            for (String message : messages) {
-                sb.append("\t- ").append(message).append("\n");
-            }
-            messagesLb.setText(sb.toString());
-        }
-    }
-
     @Override
     public void show() {
         super.show();
@@ -68,6 +43,53 @@ public class StatusReport extends PopupPanel {
                 center();
             }
         });
+    }
+
+    public void showSuccess(String title, RawSummary summary){
+        displaySuccessIcon();
+        setReportTitle(title);
+        setMessages(Collections.singletonList(summary.getName() + " has been added to your custom resources"));
+        show();
+    }
+
+    public void showWarnings(String title, List<String> warnings) {
+        displayWarningIcon();
+        setReportTitle(title);
+        setMessages(warnings);
+        show();
+    }
+
+    public void showErrors(String title, List<String> errors) {
+        displayErrorIcon();
+        setReportTitle(title);
+        setMessages(errors);
+        show();
+    }
+
+    private void displaySuccessIcon() {
+        icon.setResource(RESOURCES.success());
+    }
+
+    private void displayWarningIcon() {
+        icon.setResource(RESOURCES.successWithWarnings());
+    }
+
+    private void displayErrorIcon() {
+        icon.setResource(RESOURCES.failure());
+    }
+
+    private void setReportTitle(String title){
+        this.titleLb.setText(title);
+    }
+
+    private void setMessages(List<String> messages) {
+        if(messages!=null && !messages.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (String message : messages) {
+                sb.append("\t- ").append(message).append("\n");
+            }
+            messagesLb.setText(sb.toString());
+        }
     }
 
     private void initUI(){
