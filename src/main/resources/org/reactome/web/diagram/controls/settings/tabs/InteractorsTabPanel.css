@@ -70,6 +70,7 @@
     margin-left: 13px;
     color: rgb(6, 107, 158);
     font-size: small;
+    white-space:pre; /* this is to handle line breaks */
 }
 
 .interactorResourceListBtn{
