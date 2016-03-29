@@ -97,8 +97,8 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
             insertColumn(1, buildEvidencesColumn(), "#Evidences");
             insertColumn(2, buildScoreColumn(), "Score");
 
-            this.setColumnWidth(0, 120, Unit.PX);
-            this.setColumnWidth(1, 80, Unit.PX);
+            this.setColumnWidth(0, 140, Unit.PX);
+            this.setColumnWidth(1, 60, Unit.PX);
             this.setColumnWidth(2, 50, Unit.PX);
         }
     }
@@ -294,7 +294,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         expression.clear();
         if(getColumnCount() == 3) {
             // Resize the 3 column to get all the available space
-            this.setColumnWidth(0, 120, Unit.PX);
+            this.setColumnWidth(0, 140, Unit.PX);
             this.setColumnWidth(2, 50, Unit.PX);
         }
         redraw();
