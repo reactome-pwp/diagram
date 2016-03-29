@@ -79,7 +79,6 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
 
     private void drawChemicalDetails(AdvancedContext2d ctx, InteractorEntity node, Double factor, Coordinate offset){
         ctx.save();
-        String displayName = node.getDisplayName();
         DiagramBox box = node.transform(factor, offset);
         if (node.getImage() != null) {
             double delta = box.getHeight() * 0.8; // Shrink the image in order to make it fit into the bubble
@@ -87,9 +86,19 @@ public class InteractorEntityRenderer300 extends InteractorEntityAbstractRendere
             // Center the image vertically but keep it more to the left half of the bubble
             ctx.drawImage(node.getImage(), centre.getX() - delta , centre.getY() - delta/2, delta, delta);
         }
-        DiagramBox textBox = box.splitHorizontally( box.getWidth()/2 ).get(1); //box is now the remaining of item box removing the image
+        DiagramBox textBox = box.splitHorizontally( box.getWidth() * 0.5 ).get(1); //box is now the remaining of item box removing the image
         TextRenderer textRenderer = new TextRenderer(RendererProperties.INTERACTOR_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
-        textRenderer.drawTextMultiLine(ctx, displayName, NodePropertiesFactory.get(textBox));
+        if(node.getAlias() == null || node.getAccession().length()<30) {
+            textRenderer.drawTextMultiLine(ctx, node.getAccession(), NodePropertiesFactory.get(textBox));
+        } else {
+            List<DiagramBox> vBoxes = textBox.splitVertically(box.getHeight() * 0.6);
+            textRenderer.drawTextMultiLine(ctx, node.getAlias(), NodePropertiesFactory.get(vBoxes.get(0)));
+
+            double fontSize = 3 * factor;
+            ctx.setFont(RendererProperties.getFont(fontSize));
+            textRenderer = new TextRenderer(fontSize, RendererProperties.NODE_TEXT_PADDING);
+            textRenderer.drawTextSingleLine(ctx, node.getAccession(), vBoxes.get(1).getCentre());
+        }
         ctx.restore();
     }
 }
