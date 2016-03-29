@@ -66,6 +66,11 @@ public abstract class ProcessNodeAbstractRenderer extends NodeAbstractRenderer {
     }
 
     @Override
+    public void focus(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
+        //Nothing here
+    }
+
+    @Override
     public boolean isVisible(DiagramObject item) {
         return true;
     }

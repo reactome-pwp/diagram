@@ -213,7 +213,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
     }
 
     private Column<T, String> buildColumnTitle(final boolean showIds) {
-        Column<T, String> columnTitle = new Column<T, String>(new ClickableTextCell()) {
+        Column<T, String> columnTitle = new Column<T, String>(new InteractorClickableCell()) {
             @Override
             public String getValue(T object) {
                 if(showIds){
