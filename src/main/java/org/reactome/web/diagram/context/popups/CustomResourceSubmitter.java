@@ -4,7 +4,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.http.client.*;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.FormPanel;
-import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadError;
+import org.reactome.web.diagram.data.interactors.custom.raw.RawInteractorError;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadResponse;
 import org.reactome.web.diagram.data.interactors.custom.raw.factory.UploadResponseException;
 import org.reactome.web.diagram.data.interactors.custom.raw.factory.UploadResponseFactory;
@@ -19,7 +19,7 @@ public class CustomResourceSubmitter implements FormPanel.SubmitHandler, FormPan
         void onSubmission();
         void onSubmissionCompleted(RawUploadResponse response, long time);
         void onSubmissionException(String message);
-        void onSubmissionError(RawUploadError error);
+        void onSubmissionError(RawInteractorError error);
     }
 
     private Handler handler;
@@ -74,7 +74,7 @@ public class CustomResourceSubmitter implements FormPanel.SubmitHandler, FormPan
                 break;
             default:
                 try {
-                    RawUploadError error = UploadResponseFactory.getUploadResponseObject(RawUploadError.class, response.getText());
+                    RawInteractorError error = UploadResponseFactory.getUploadResponseObject(RawInteractorError.class, response.getText());
                     this.handler.onSubmissionError(error);
                 } catch (UploadResponseException e) {
                     this.handler.onSubmissionException(e.getMessage());
@@ -100,7 +100,7 @@ public class CustomResourceSubmitter implements FormPanel.SubmitHandler, FormPan
             this.handler.onSubmissionCompleted(uploadResponse, time);
         } catch (UploadResponseException e) {
             try {
-                RawUploadError error = UploadResponseFactory.getUploadResponseObject(RawUploadError.class, label.getInnerText());
+                RawInteractorError error = UploadResponseFactory.getUploadResponseObject(RawInteractorError.class, label.getInnerText());
                 this.handler.onSubmissionError(error);
             } catch (UploadResponseException e1) {
                 Console.error("Oops! This is unexpected", this);

@@ -22,9 +22,9 @@ import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.custom.ResourcesManager;
 import org.reactome.web.diagram.data.interactors.custom.model.CustomResource;
+import org.reactome.web.diagram.data.interactors.custom.raw.RawInteractorError;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.interactors.raw.RawResource;
-import org.reactome.web.diagram.data.interactors.raw.factory.ResourcesException;
 import org.reactome.web.diagram.data.loader.InteractorsResourceLoader;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
@@ -41,7 +41,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler,
         DiagramLoadedHandler, DiagramRequestedHandler,
         InsertItemDialog.Handler {
-    private static int RESOURCES_REFRESH = 60000; // Update every 10 minutes
+    private static int RESOURCES_REFRESH = 600000; // Update every 10 minutes
 
     private EventBus eventBus;
     private DiagramContext context;
@@ -176,8 +176,26 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     }
 
     @Override
-    public void onInteractorsResourcesLoadError(ResourcesException exception) {
+    public void onInteractorsResourcesLoadError(RawInteractorError error) {
         showLoading(false);
+        StringBuilder sb = new StringBuilder(error.getReason()).append("(").append(error.getCode()).append(") \n");
+        List<String> messages = error.getMessages();
+        if(messages!=null && !messages.isEmpty()) {
+            for (String line : messages) {
+                sb.append("-").append(line).append("\n");
+            }
+        }
+        Label errorLb = new Label(error.getReason());
+        errorLb.setStyleName(RESOURCES.getCSS().loadingPanel());
+        liveResourcesFP.add(errorLb);
+    }
+
+    @Override
+    public void onInteractorsResourcesLoadException(String message) {
+        showLoading(false);
+        Label errorLb = new Label(message);
+        errorLb.setStyleName(RESOURCES.getCSS().loadingPanel());
+        liveResourcesFP.add(errorLb);
     }
 
     @Override

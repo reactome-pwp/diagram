@@ -24,7 +24,7 @@ import org.reactome.web.diagram.common.validation.ContentValidator;
 import org.reactome.web.diagram.common.validation.FileValidator;
 import org.reactome.web.diagram.common.validation.NameValidator;
 import org.reactome.web.diagram.common.validation.UrlValidator;
-import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadError;
+import org.reactome.web.diagram.data.interactors.custom.raw.RawInteractorError;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadResponse;
 import org.reactome.web.diagram.util.Console;
 
@@ -182,7 +182,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
     }
 
     @Override
-    public void onSubmissionError(RawUploadError error) {
+    public void onSubmissionError(RawInteractorError error) {
         showLoading(false);
         statusReport.showErrors(error.getReason() + "(" + error.getCode() + ")" , error.getMessages());
     }

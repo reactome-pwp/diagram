@@ -5,10 +5,12 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import org.reactome.web.diagram.client.DiagramFactory;
+import org.reactome.web.diagram.data.interactors.custom.raw.RawInteractorError;
+import org.reactome.web.diagram.data.interactors.custom.raw.factory.UploadResponseException;
+import org.reactome.web.diagram.data.interactors.custom.raw.factory.UploadResponseFactory;
 import org.reactome.web.diagram.data.interactors.raw.RawResource;
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsException;
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsFactory;
-import org.reactome.web.diagram.data.interactors.raw.factory.ResourcesException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +23,9 @@ public class InteractorsResourceLoader implements RequestCallback {
     public interface Handler {
         void interactorsResourcesLoaded(List<RawResource> resourceList, long time);
 
-        void onInteractorsResourcesLoadError(ResourcesException exception);
+        void onInteractorsResourcesLoadError(RawInteractorError error);
+
+        void onInteractorsResourcesLoadException(String message);
     }
 
     final static String PREFIX = DiagramFactory.SERVER + "/ContentService/interactors/";
@@ -46,7 +50,7 @@ public class InteractorsResourceLoader implements RequestCallback {
         try {
             this.request = requestBuilder.sendRequest(null, this);
         } catch (RequestException e) {
-            this.handler.onInteractorsResourcesLoadError(new ResourcesException(e.getMessage()));
+            this.handler.onInteractorsResourcesLoadException(e.getMessage());
         }
     }
 
@@ -63,19 +67,23 @@ public class InteractorsResourceLoader implements RequestCallback {
                         resources.add(InteractorsFactory.getInteractorObject(RawResource.class, object.toString()));
                     }
                 } catch (InteractorsException e) {
-                    this.handler.onInteractorsResourcesLoadError(new ResourcesException(e.getMessage()));
+                    this.handler.onInteractorsResourcesLoadException(e.getMessage());
                     return;
                 }
                 this.handler.interactorsResourcesLoaded(resources, System.currentTimeMillis() - start);
                 break;
             default:
-                this.handler.onInteractorsResourcesLoadError(new ResourcesException(response.getStatusText()));
+                try {
+                    RawInteractorError error = UploadResponseFactory.getUploadResponseObject(RawInteractorError.class, response.getText());
+                    this.handler.onInteractorsResourcesLoadError(error);
+                } catch (UploadResponseException e) {
+                    this.handler.onInteractorsResourcesLoadException(e.getMessage());
+                }
         }
-
     }
 
     @Override
     public void onError(Request request, Throwable throwable) {
-        this.handler.onInteractorsResourcesLoadError(new ResourcesException(throwable.getMessage()));
+        this.handler.onInteractorsResourcesLoadException(throwable.getMessage());
     }
 }

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public interface RawUploadError {
+public interface RawInteractorError {
 
     /**
      * The error code e/g 500 or 404
