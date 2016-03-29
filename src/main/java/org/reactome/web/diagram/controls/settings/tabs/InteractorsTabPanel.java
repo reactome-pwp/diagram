@@ -136,7 +136,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         };
         refreshTimer.scheduleRepeating(RESOURCES_REFRESH);
 
-        addCustomResources(ResourcesManager.get().getResources());
+        updateCustomResources(ResourcesManager.get().getResources());
+        populateCustomResourceListPanel();
     }
 
     @Override
@@ -169,7 +170,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
     @Override
     public void interactorsResourcesLoaded(List<RawResource> resourceList, long time) {
-        addLiveResources(resourceList);
+        updateLiveResources(resourceList);
+        populateResourceListPanel();
         showLoading(false);
     }
 
@@ -207,7 +209,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     public void onValueChange(ValueChangeEvent event) {
         RadioButton selectedBtn = (RadioButton) event.getSource();
         selectedResource = resourcesMap.get(selectedBtn.getFormValue());
-        // Check whether this is a custom resource or not.
         if(selectedResource !=null) {
             // Fire event for a Resource selection
             eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(selectedResource), this);
@@ -216,8 +217,15 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
     @Override
     public void onResourceAdded(String name, String token) {
+        //Add the new custom resource and select it
         ResourcesManager.get().createAndAddResource(name, token);
-        addCustomResources(ResourcesManager.get().getResources());
+        updateCustomResources(ResourcesManager.get().getResources());
+        selectedResource = resourcesMap.get(token);
+        populateCustomResourceListPanel();
+        if(selectedResource !=null) {
+            // Fire event for a Resource selection
+            eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(selectedResource), this);
+        }
     }
 
     private void initialiseHandlers() {
@@ -228,7 +236,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
     }
 
-    private void addLiveResources(List<RawResource> inputList) {
+    private void updateLiveResources(List<RawResource> inputList) {
         // Clean up all previously added PSIQUIC resources
         List<OverlayResource> toBeDeleted = new LinkedList<>();
         for (OverlayResource resource : resourcesMap.values()) {
@@ -244,10 +252,9 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
             OverlayResource resource = new OverlayResource(rawResource.getName(), rawResource.getName(), OverlayResource.ResourceType.PSICQUIC, rawResource.getActive());
             resourcesMap.put(resource.getIdentifier(), resource);
         }
-        populateResourceListPanel();
     }
 
-    private void addCustomResources(Collection<CustomResource> inputList) {
+    private void updateCustomResources(Collection<CustomResource> inputList) {
         // Clean up all previously added CUSTOM resources
         List<OverlayResource> toBeDeleted = new LinkedList<>();
         for (OverlayResource resource : resourcesMap.values()) {
@@ -264,7 +271,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
             OverlayResource resource = new OverlayResource(customResource.getToken(), customResource.getName(), OverlayResource.ResourceType.CUSTOM);
             resourcesMap.put(resource.getIdentifier(), resource);
         }
-        populateCustomResourceListPanel();
     }
 
     private void populateResourceListPanel() {
@@ -328,7 +334,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                     @Override
                     public void onClick(ClickEvent clickEvent) {
                         ResourcesManager.get().deleteResource(radioBtn.getFormValue());
-                        addCustomResources(ResourcesManager.get().getResources());
+                        updateCustomResources(ResourcesManager.get().getResources());
+                        populateCustomResourceListPanel();
                         if(radioBtn.getFormValue().equals(selectedResource.getIdentifier())) {
                             selectedResource = staticResource;
                             staticResourceBtn.setValue(true);
