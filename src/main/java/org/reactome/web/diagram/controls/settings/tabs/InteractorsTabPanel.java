@@ -41,7 +41,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler,
         DiagramLoadedHandler, DiagramRequestedHandler,
         InsertItemDialog.Handler {
-    private static int RESOURCES_REFRESH = 600000; // Update every 10 minutes
+    private static int RESOURCES_REFRESH = 60000; // Update every 10 minutes
 
     private EventBus eventBus;
     private DiagramContext context;
