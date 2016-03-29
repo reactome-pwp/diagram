@@ -55,7 +55,20 @@ public class InputPanel<T extends TextBoxBase, V extends AbstractValidator> exte
     }
 
     public boolean validate(){
-            return validator.validate(input.getText()) ? validator != null : false;
+        boolean rtn = false;
+        if(validator != null) {
+            rtn = validator.validate(input.getText());
+            highlight(rtn);
+        }
+        return rtn;
+    }
+
+    public void highlight(boolean rtn){
+        if(!rtn) {
+            input.getElement().getStyle().setBackgroundColor("#FFCDD2");
+        } else {
+            input.getElement().getStyle().clearBackgroundColor();
+        }
     }
 
     public void clear() {
