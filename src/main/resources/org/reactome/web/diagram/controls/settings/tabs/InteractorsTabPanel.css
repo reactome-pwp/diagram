@@ -104,6 +104,8 @@
     background-color: white;
     border: none;
     height: 12px;
+    min-width: 12px;
+    text-align: center;
     border-radius: 6px;
     color: rgb(30, 148, 208);
     padding: 0px 1px 3px 1px;
