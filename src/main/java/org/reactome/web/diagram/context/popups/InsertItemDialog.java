@@ -43,7 +43,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         void onResourceAdded(String name, String token);
     }
 
-    private static final String SERVICE_URL_ACTION = "/ContentService/interactors/upload/tuple/url?name=";
+    private static final String SERVICE_URL_ACTION = "/ContentService/interactors/upload/psicquic/url?name=";
     private static final String TUPLE_URL_ACTION = "/ContentService/interactors/upload/tuple/url?name=";
     private static final String TUPLE_CONTENT_ACTION = "/ContentService/interactors/upload/tuple/content?name=";
     private static final String TUPLE_FILE_ACTION = "/ContentService/interactors/upload/tuple/form?name=";
@@ -172,7 +172,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
             statusReport.showSuccess("Successful submission", response.getSummary());
             Console.info("New Token:" + response.getSummary().getToken());
         }
-        handler.onResourceAdded(nameInput.getText().trim(), response.getSummary().getToken());
+        handler.onResourceAdded(response.getSummary().getName(), response.getSummary().getToken());
     }
 
     @Override
@@ -242,12 +242,12 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
 
         urlInput = new InputPanel("URL:", new TextBox(), new UrlValidator(), css.rowPanel(), css.infoLabel(), css.inputTB(), css.explanation());
         urlInput.setHintMessage("Enter the URL of your data");
-        urlInput.setExplanation("this is the URL explanation");
+        urlInput.setExplanation("Use this option to upload a publicly accessible file stored on the network, though its URL.");
         urlInput.setVisible(false);
 
         fileInput = new InputPanel("File:", new TextBox(), new FileValidator(), css.rowPanel(), css.infoLabel(), css.inputTB(), css.explanation());
         fileInput.setHintMessage("Click here to choose your file");
-        fileInput.setExplanation("this is the file explanation");
+        fileInput.setExplanation("Use this option to upload a file stored locally on your computer.");
         fileInput.setReaOnly(true);
         fileInput.setVisible(true);
 
@@ -255,8 +255,8 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         formPanel.setVisible(true);
 
         copyPasteInput = new InputPanel("Paste:", new TextArea(), new ContentValidator(), css.rowPanel(), css.infoLabel(), css.textArea(), css.explanation());
-        copyPasteInput.setHintMessage("Copy & paste your data here e.g. lalala");
-        copyPasteInput.setExplanation("this is the content explanation");
+        copyPasteInput.setHintMessage("Copy & paste your data here");
+        copyPasteInput.setExplanation("Use this option to copy and paste your data in columns. ");
         copyPasteInput.setVisible(false);
 
         FlowPanel addDataFP = new FlowPanel();
@@ -269,12 +269,12 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
 
         urlServiceInput = new InputPanel("URL:", new TextBox(), new UrlValidator(), css.rowPanel(), css.infoLabel(), css.inputTB(), css.explanation());
         urlServiceInput.setHintMessage("Enter the URL of your PSICQUIC service");
-        urlServiceInput.setExplanation("this is the service url explanation");
+        urlServiceInput.setExplanation("Use this option to add your custom PSICQUIC service through its URL.");
 
         FlowPanel addServiceFP = new FlowPanel();
         addServiceFP.setStyleName(css.addServicePanel());
-//        addServiceFP.add(urlServiceInput);
-        addServiceFP.add(new Label("Under construction - Thank you for your patience."));
+        addServiceFP.add(urlServiceInput);
+//        addServiceFP.add(new Label("Under construction - Thank you for your patience."));
 
         tabPanel = new TabLayoutPanel(4, Style.Unit.EM);
         tabPanel.setStyleName(css.tabPanel());
