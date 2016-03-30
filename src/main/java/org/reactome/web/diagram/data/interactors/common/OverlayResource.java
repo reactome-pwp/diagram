@@ -15,18 +15,28 @@ public class OverlayResource {
 
     private String identifier;
     private String name;
+    private String filename;
     private ResourceType type;
     private boolean active;
 
     public OverlayResource(String identifier, String name, ResourceType type) {
-        this(identifier, name, type, true);
+        this(identifier, name, null, type, true);
     }
 
-    public OverlayResource(String identifier, String name, ResourceType type, boolean active) {
+    public OverlayResource(String identifier, String name, String filename, ResourceType type) {
+        this(identifier, name, filename, type, true);
+    }
+
+    public OverlayResource(String identifier, String name, String filename, ResourceType type, boolean active) {
         this.identifier = identifier;
         this.type = type;
         this.active = active;
         this.name = format(name);
+        this.filename = filename;
+    }
+
+    public String getFilename() {
+        return filename;
     }
 
     public String getIdentifier() {

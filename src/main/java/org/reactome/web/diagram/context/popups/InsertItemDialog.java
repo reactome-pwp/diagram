@@ -25,6 +25,7 @@ import org.reactome.web.diagram.common.validation.FileValidator;
 import org.reactome.web.diagram.common.validation.NameValidator;
 import org.reactome.web.diagram.common.validation.UrlValidator;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawInteractorError;
+import org.reactome.web.diagram.data.interactors.custom.raw.RawSummary;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadResponse;
 import org.reactome.web.diagram.util.Console;
 
@@ -40,7 +41,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         ValueChangeHandler, ClickHandler, SelectionHandler<Integer> {
 
     public interface Handler {
-        void onResourceAdded(String name, String token);
+        void onResourceAdded(RawSummary summary);
     }
 
     private static final String SERVICE_URL_ACTION = "/ContentService/interactors/upload/psicquic/url?name=";
@@ -172,7 +173,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
             statusReport.showSuccess("Successful submission", response.getSummary());
             Console.info("New Token:" + response.getSummary().getToken());
         }
-        handler.onResourceAdded(response.getSummary().getName(), response.getSummary().getToken());
+        handler.onResourceAdded(response.getSummary());
     }
 
     @Override

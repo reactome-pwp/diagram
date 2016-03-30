@@ -23,6 +23,7 @@ import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.custom.ResourcesManager;
 import org.reactome.web.diagram.data.interactors.custom.model.CustomResource;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawInteractorError;
+import org.reactome.web.diagram.data.interactors.custom.raw.RawSummary;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.interactors.raw.RawResource;
 import org.reactome.web.diagram.data.loader.InteractorsResourceLoader;
@@ -240,11 +241,11 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     }
 
     @Override
-    public void onResourceAdded(String name, String token) {
+    public void onResourceAdded(RawSummary summary) {
         //Add the new custom resource and select it
-        ResourcesManager.get().createAndAddResource(name, token);
+        ResourcesManager.get().createAndAddResource(summary.getName(), summary.getToken(), summary.getFileName());
         updateCustomResources(ResourcesManager.get().getResources());
-        selectedResource = resourcesMap.get(token);
+        selectedResource = resourcesMap.get(summary.getToken());
         populateCustomResourceListPanel();
         if(selectedResource !=null) {
             // Fire event for a Resource selection
@@ -273,7 +274,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         }
         // Add all new resources;
         for (RawResource rawResource : inputList) {
-            OverlayResource resource = new OverlayResource(rawResource.getName(), rawResource.getName(), OverlayResource.ResourceType.PSICQUIC, rawResource.getActive());
+            OverlayResource resource = new OverlayResource(rawResource.getName(), rawResource.getName(), null, OverlayResource.ResourceType.PSICQUIC, rawResource.getActive());
             resourcesMap.put(resource.getIdentifier(), resource);
         }
     }
@@ -292,7 +293,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
         // Add all new CUSTOM resources
         for (CustomResource customResource : inputList) {
-            OverlayResource resource = new OverlayResource(customResource.getToken(), customResource.getName(), OverlayResource.ResourceType.CUSTOM);
+            OverlayResource resource = new OverlayResource(customResource.getToken(), customResource.getName(), customResource.getFilename(), OverlayResource.ResourceType.CUSTOM);
             resourcesMap.put(resource.getIdentifier(), resource);
         }
     }
@@ -344,7 +345,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         customResourcesFP.clear();
         for (OverlayResource resource : resourcesMap.values()) {
             if (resource.getType().equals(OverlayResource.ResourceType.CUSTOM)) {
-                final RadioButton radioBtn = new RadioButton("Resources", resource.getName());
+                String name = resource.getFilename()==null ? resource.getName() : resource.getName() + " (" + resource.getFilename() + ")";
+                final RadioButton radioBtn = new RadioButton("Resources", name);
                 radioBtn.setFormValue(resource.getIdentifier()); //use FormValue to keep the value
                 radioBtn.addValueChangeHandler(this);
                 radioBtn.setStyleName(RESOURCES.getCSS().interactorResourceListBtn());

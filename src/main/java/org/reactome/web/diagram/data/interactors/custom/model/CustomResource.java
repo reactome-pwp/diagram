@@ -18,4 +18,11 @@ public interface CustomResource {
     String getToken();
 
     void setToken(String token);
+
+    /**
+     * The name of the submitted file
+     */
+    String getFilename();
+
+    void setFilename(String filename);
 }

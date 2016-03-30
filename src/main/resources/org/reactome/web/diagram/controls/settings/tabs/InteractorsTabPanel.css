@@ -74,8 +74,16 @@
 }
 
 .interactorResourceListBtn{
-    display: inline-block;
-    width: 200px;
+    float: left;;
+    width: 211px;
+    white-space: nowrap;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+
+.interactorResourceListBtn input{
+    cursor: pointer;
 }
 
 .interactorResourceListBtn label{

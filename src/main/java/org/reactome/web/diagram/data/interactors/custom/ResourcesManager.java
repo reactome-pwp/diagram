@@ -71,11 +71,12 @@ public class ResourcesManager {
         return rtn;
     }
 
-    public void createAndAddResource(String name, String token) {
+    public void createAndAddResource(String name, String token, String filename) {
         try {
             CustomResource cr = StoredResourcesModelFactory.create(CustomResource.class);
             cr.setName(name);
             cr.setToken(token);
+            cr.setFilename(filename);
 
             resources.put(cr.getToken(), cr);
             saveItems(CUSTOM_RESOURCES_KEY, resources.values());
