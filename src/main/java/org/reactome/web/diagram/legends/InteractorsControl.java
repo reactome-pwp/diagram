@@ -8,7 +8,6 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
-import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.InteractorsContent;
@@ -39,8 +38,6 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     private static String MSG_DOWNLOAD_TOOLTIP = "Download all diagram interactors from ";
     private static int DELAY = 5000;
 
-//    private String currentResource;
-//    private String currentResourceName;
     private OverlayResource currentOverlayResource;
 
     private DiagramContext context;
@@ -124,7 +121,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         //context is null when the diagram is in the process of loading (loading message is meant to be displayed)
         if (context == null || !context.getInteractors().isInteractorResourceCached(currentOverlayResource.getIdentifier())) {
             setVisible(true);
-            displayLoader(true, currentOverlayResource.getIdentifier());
+            displayLoader(true, currentOverlayResource);
         } else {
             Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                 @Override
@@ -137,9 +134,6 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
-//        currentResource = event.getInteractors().getResource();
-//        CustomResource customResource = ResourcesManager.get().getResource(currentResource);
-//        currentResourceName = customResource == null ? currentResource : customResource.getName();
         int totalInteractorsLoaded = event.getInteractors().getEntities().size();
         if(totalInteractorsLoaded==0) {
             displayWarning(MSG_NO_INTERACTORS_FOUND + currentOverlayResource.getName());
@@ -248,7 +242,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         eventBus.addHandler(InteractorsErrorEvent.TYPE, this);
     }
 
-    private void displayLoader(boolean visible, String resource) {
+    private void displayLoader(boolean visible, OverlayResource resource) {
         this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
         this.removeStyleName(RESOURCES.getCSS().interactorsControlWarning());
         loadingIcon.setVisible(visible);
@@ -256,13 +250,19 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         controlsFP.setVisible(!visible);
         reloadBtn.setVisible(!visible);
         if (visible) {
-            String msg;
-            if(resource.equals(DiagramFactory.INTERACTORS_INITIAL_RESOURCE)) {
-                msg = MSG_LOADING + DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME;
-            } else {
-                msg = MSG_LOADING_PSICQUIC + resource; //todo !important to check this
+            String msg = "";
+            switch (resource.getType()) {
+                case PSICQUIC:
+                    msg = MSG_LOADING_PSICQUIC;
+                    break;
+                case STATIC:
+                case CUSTOM:
+                    msg = MSG_LOADING;
+                    break;
             }
-            message.setText(msg + "...");
+
+            msg += resource.getName() + "...";
+            message.setText(msg);
         }
     }
 
