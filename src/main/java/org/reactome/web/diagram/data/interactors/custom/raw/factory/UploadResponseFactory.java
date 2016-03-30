@@ -26,7 +26,7 @@ public abstract class UploadResponseFactory {
             AutoBean<T> bean = AutoBeanCodex.decode(factory, cls, json);
             return bean.as();
         } catch (Throwable e) {
-            throw new UploadResponseException();
+            throw new UploadResponseException(e.getMessage(), e);
         }
     }
 }

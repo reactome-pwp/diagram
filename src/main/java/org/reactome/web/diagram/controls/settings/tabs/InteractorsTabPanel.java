@@ -180,29 +180,21 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     public void onInteractorsResourcesLoadError(RawInteractorError error) {
         showLoading(false);
         updateLiveResources(Collections.EMPTY_LIST);
-        StringBuilder sb = new StringBuilder(error.getReason()).append("(").append(error.getCode()).append(") \n");
+        StringBuilder sb = new StringBuilder();
         List<String> messages = error.getMessages();
         if(messages!=null && !messages.isEmpty()) {
             for (String line : messages) {
-                sb.append("-").append(line).append("\n");
+                sb.append(line).append("\n");
             }
         }
-        Label errorLb = new Label(sb.toString());
-        errorLb.setStyleName(RESOURCES.getCSS().loadingPanel());
-
-        liveResourcesFP.clear();
-        liveResourcesFP.add(errorLb);
+        showError(sb.toString());
     }
 
     @Override
     public void onInteractorsResourcesLoadException(String message) {
         showLoading(false);
         updateLiveResources(Collections.EMPTY_LIST);
-        Label errorLb = new Label("Exception: " + message);
-        errorLb.setStyleName(RESOURCES.getCSS().loadingPanel());
-
-        liveResourcesFP.clear();
-        liveResourcesFP.add(errorLb);
+        showError("Exception: " + message);
     }
 
     @Override
@@ -423,6 +415,14 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
             liveResourcesFP.clear();
             liveResourcesFP.add(loadingPanel);
         }
+    }
+
+    private void showError(String message){
+        Label errorLb = new Label(message);
+        errorLb.setStyleName(RESOURCES.getCSS().loadingPanel());
+
+        liveResourcesFP.clear();
+        liveResourcesFP.add(errorLb);
     }
 
     /***
