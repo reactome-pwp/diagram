@@ -2,6 +2,7 @@ package org.reactome.web.diagram.controls.carousel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
@@ -53,6 +54,7 @@ public class CarouselDialog extends PopupPanel {
     private void initUI(int slideWidth, int slideHeight) {
         ResourceCSS css = RESOURCES.getCSS();
         setStyleName(css.popupPanel());
+        getElement().getStyle().setWidth(slideWidth, Style.Unit.PX);
 
         Button closeBtn = new PwpButton("Close this dialog", RESOURCES.getCSS().close(), new ClickHandler() {
             @Override
@@ -62,6 +64,7 @@ public class CarouselDialog extends PopupPanel {
         });
 
         carousel = new CarouselPanel(slidesList, slideWidth, slideHeight);
+        carousel.addStyleName(css.carousel());
 
         FlowPanel mainPanel = new FlowPanel();              // Main panel
         mainPanel.add(closeBtn);
@@ -111,5 +114,7 @@ public class CarouselDialog extends PopupPanel {
         String popupPanel();
 
         String close();
+
+        String carousel();
     }
 }

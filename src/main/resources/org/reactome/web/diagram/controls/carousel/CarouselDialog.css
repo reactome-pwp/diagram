@@ -13,12 +13,10 @@
 
     font-family: Arial Unicode MS, Arial, sans-serif !important;
     font-size: medium !important;
-}
 
-/*.containerPanel {*/
-    /*width: 650px;*/
-    /*height: 500px;*/
-/*}*/
+    overflow-x: hidden;
+    overflow-y: auto;
+}
 
 @sprite .close {
     gwt-image: 'closeNormal';
@@ -36,4 +34,8 @@
 
 @sprite .close:active:hover {
     gwt-image: 'closeClicked';
+}
+
+.carousel {
+    float: right;
 }

@@ -26,12 +26,21 @@
     margin-top: 5px;
     width: 24px;
     height: 24px;
+    padding: 0 3px 0 0;
     float: left;
     background-color: darkblue;
     border-radius: 12px;
     border: none;
     outline: none;
     cursor: pointer;
+}
+
+.leftBtn:hover {
+    background-color: #00e54c;
+}
+
+.leftBtn:active:hover {
+    background-color: #e50004;
 }
 
 .leftBtn:disabled {
@@ -43,12 +52,21 @@
     margin-top: 5px;
     width: 24px;
     height: 24px;
+    padding: 0 0 0 3px;
     float: right;
     background-color: darkblue;
     border-radius: 12px;
     border: none;
     outline: none;
     cursor: pointer;
+}
+
+.rightBtn:hover {
+    background-color: #00e54c;
+}
+
+.rightBtn:active:hover {
+    background-color: #e50004;
 }
 
 .rightBtn:disabled {
@@ -65,4 +83,12 @@
     border: none;
     outline: none;
     cursor: pointer;
+}
+
+.circleBtn:hover {
+    background-color: #837d86;
+}
+
+.circleBtn:active:hover {
+    background-color: #0764ff;
 }
