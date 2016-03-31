@@ -27,17 +27,24 @@ public class CarouselPanel extends FlowPanel {
     private int currentSlideIndex;
     private int slideWidth;
     private int slideHeight;
+    private String backColour;
 
     public CarouselPanel(List<Slide> slidesList, int slideWidth, int slideHeight) {
+        this(slidesList, slideWidth, slideHeight, "transparent");
+    }
+
+    public CarouselPanel(List<Slide> slidesList, int slideWidth, int slideHeight, String backColour) {
         this.slidesList = slidesList;
         this.slideWidth = slideWidth;
         this.slideHeight = slideHeight;
+        this.backColour = backColour;
         init();
     }
 
     private void init() {
         ResourceCSS css = RESOURCES.getCSS();
         setStyleName(css.carouselPanel());
+        getElement().getStyle().setBackgroundColor(backColour);
 
         sliderPanel = new FlowPanel();                      // Inner panel with the slides
         sliderPanel.setStyleName(css.sliderPanel());

@@ -1,5 +1,6 @@
 .carouselPanel {
     overflow: auto;
+    border-radius: 4px;
 }
 
 .sliderOuterPanel {
@@ -24,6 +25,7 @@
 
 .leftBtn {
     margin-top: 5px;
+    margin-left: 5px;
     width: 24px;
     height: 24px;
     padding: 0 3px 0 0;
@@ -48,8 +50,14 @@
     cursor: default;
 }
 
+.leftBtn:active:disabled {
+    background-color: darkgray;
+    cursor: default;
+}
+
 .rightBtn {
     margin-top: 5px;
+    margin-right: 5px;
     width: 24px;
     height: 24px;
     padding: 0 0 0 3px;
@@ -74,6 +82,11 @@
     cursor: default;
 }
 
+.rightBtn:active:disabled {
+    background-color: darkgray;
+    cursor: default;
+}
+
 .circleBtn {
     width: 12px;
     height: 12px;
@@ -90,5 +103,5 @@
 }
 
 .circleBtn:active:hover {
-    background-color: #0764ff;
+    background-color: white;
 }
