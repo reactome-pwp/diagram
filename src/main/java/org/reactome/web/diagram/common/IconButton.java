@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.common;
 
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -18,19 +19,27 @@ public class IconButton extends Button {
 
     public IconButton(String text, ImageResource imageResource) {
         image = new Image(imageResource);
-        label = new InlineLabel(text);
 
         fp = new FlowPanel();
         fp.add(image);
-        fp.add(label);
+        if(!text.isEmpty()) {
+            label = new InlineLabel(text);
+            fp.add(label);
+        }
 
         updateHTML();
     }
 
-    public void setText(String text) {
-        label.setText(text);
-        updateHTML();
+    public IconButton(String text, ImageResource imageResource, ClickHandler clickHandler) {
+        this(text, imageResource);
+        addClickHandler(clickHandler);
+    }
 
+    public void setText(String text) {
+        if(label!=null) {
+            label.setText(text);
+            updateHTML();
+        }
     }
 
     public void setImage(ImageResource imageResource) {

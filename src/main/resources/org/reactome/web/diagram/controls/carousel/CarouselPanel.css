@@ -1,0 +1,64 @@
+.carouselPanel {
+    display: block;
+    overflow: hidden;
+}
+
+.sliderPanel {
+    -webkit-transition: margin 0.5s ease;
+    -moz-transition: margin 0.5s ease;
+    -o-transition: margin 0.5s ease;
+    transition: margin 0.5s ease;
+}
+
+.buttonsPanel {
+    width: 50%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+}
+
+.leftBtn {
+    margin-top: 5px;
+    width: 24px;
+    height: 24px;
+    float: left;
+    background-color: darkblue;
+    border-radius: 12px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.leftBtn:disabled {
+    background-color: darkgray;
+    cursor: default;
+}
+
+.rightBtn {
+    margin-top: 5px;
+    width: 24px;
+    height: 24px;
+    float: right;
+    background-color: darkblue;
+    border-radius: 12px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.rightBtn:disabled {
+    background-color: darkgray;
+    cursor: default;
+}
+
+.circleBtn {
+    width: 12px;
+    height: 12px;
+    margin-left: 2px;
+    background-color: darkblue;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
