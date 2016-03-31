@@ -30,7 +30,7 @@
     height: 24px;
     padding: 0 3px 0 0;
     float: left;
-    background-color: darkblue;
+    background-color: #177dc0;
     border-radius: 12px;
     border: none;
     outline: none;
@@ -38,11 +38,11 @@
 }
 
 .leftBtn:hover {
-    background-color: rgb(30, 148, 208);
+    background-color:  #07558b;
 }
 
 .leftBtn:active:hover {
-    background-color: #e50004;
+    background-color: #00468b;
 }
 
 .leftBtn:disabled {
@@ -62,7 +62,7 @@
     height: 24px;
     padding: 0 0 0 3px;
     float: right;
-    background-color: darkblue;
+    background-color:  #177dc0;
     border-radius: 12px;
     border: none;
     outline: none;
@@ -70,11 +70,11 @@
 }
 
 .rightBtn:hover {
-    background-color: rgb(30, 148, 208);
+    background-color:  #07558b;
 }
 
 .rightBtn:active:hover {
-    background-color: #e50004;
+    background-color: #00468b;
 }
 
 .rightBtn:disabled {
@@ -91,7 +91,7 @@
     width: 12px;
     height: 12px;
     margin-left: 2px;
-    background-color: darkblue;
+    background-color:  #177dc0;
     border-radius: 6px;
     border: none;
     outline: none;
@@ -99,7 +99,7 @@
 }
 
 .circleBtn:hover {
-    background-color: rgb(30, 148, 208);
+    background-color:  #07558b;
 }
 
 .circleBtn:active:hover {

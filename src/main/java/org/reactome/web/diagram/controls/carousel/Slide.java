@@ -8,16 +8,21 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class Slide extends AbsolutePanel {
     private ImageResource imageResource;
-    private String caption;
+    private Widget caption;
     private boolean isInitialized = false;
 
     public Slide(ImageResource imageResource, String caption, String textColour) {
+        this(imageResource, new Label(caption), textColour);
+    }
+
+    public Slide(ImageResource imageResource, Widget caption, String textColour) {
         this.imageResource = imageResource;
         this.caption = caption;
         getElement().getStyle().setColor(textColour);
@@ -33,15 +38,13 @@ public class Slide extends AbsolutePanel {
 
         Image image = new Image(imageResource);
 
-        Label captionLb = new Label(caption);
-        captionLb.addStyleName(RESOURCES.getCSS().caption());
-        style = captionLb.getElement().getStyle();
+        caption.addStyleName(RESOURCES.getCSS().caption());
+        style = caption.getElement().getStyle();
         style.setWidth(width, Style.Unit.PX);
         style.setTextAlign(Style.TextAlign.CENTER);
 
-
         add(image, 0, 0);
-        add(captionLb, 0, (int) (height * 0.68));
+        add(caption);
         isInitialized = true;
     }
 

@@ -1,4 +1,6 @@
 .caption {
+    position: absolute;
+    bottom: 5px;
     opacity: 0.2;
 
     -webkit-transition: opacity 0.5s ease;
