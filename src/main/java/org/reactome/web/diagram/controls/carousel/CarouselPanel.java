@@ -41,6 +41,10 @@ public class CarouselPanel extends FlowPanel {
     }
 
     private void init() {
+        //Important: set the width of the widget equal
+        // to the width of the slides
+        setWidth(slideWidth + "px");
+
         ResourceCSS css = RESOURCES.getCSS();
         setStyleName(css.carouselPanel());
         getElement().getStyle().setBackgroundColor(backColour);
