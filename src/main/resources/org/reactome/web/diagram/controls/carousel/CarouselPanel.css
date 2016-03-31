@@ -38,7 +38,7 @@
 }
 
 .leftBtn:hover {
-    background-color: #00e54c;
+    background-color: rgb(30, 148, 208);
 }
 
 .leftBtn:active:hover {
@@ -70,7 +70,7 @@
 }
 
 .rightBtn:hover {
-    background-color: #00e54c;
+    background-color: rgb(30, 148, 208);
 }
 
 .rightBtn:active:hover {
@@ -99,7 +99,7 @@
 }
 
 .circleBtn:hover {
-    background-color: #837d86;
+    background-color: rgb(30, 148, 208);
 }
 
 .circleBtn:active:hover {

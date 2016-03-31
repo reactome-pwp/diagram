@@ -20,7 +20,6 @@ public class CarouselPanel extends FlowPanel {
 
     private List<Slide> slidesList;
     private FlowPanel sliderPanel;
-    private FlowPanel buttonsPanel;
     private Button leftBtn;
     private Button rightBtn;
 
@@ -57,7 +56,6 @@ public class CarouselPanel extends FlowPanel {
         sliderOuterPanel.setHeight(slideHeight + "px");
         sliderOuterPanel.add(sliderPanel);
 
-        createButtons();                                    // the circle buttons
         leftBtn = new IconButton("", RESOURCES.leftIcon(), new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -74,10 +72,14 @@ public class CarouselPanel extends FlowPanel {
         });
         rightBtn.setStyleName(css.rightBtn());
 
+        FlowPanel controlsPanel = new FlowPanel();
+        controlsPanel.setWidth(slideWidth + "px");
+        controlsPanel.add(leftBtn);
+        controlsPanel.add(rightBtn);
+        controlsPanel.add(createButtons());
+
         add(sliderOuterPanel);
-        add(leftBtn);
-        add(rightBtn);
-        add(buttonsPanel);
+        add(controlsPanel);
 
         selectSlide(slidesList.get(0));
     }
@@ -88,8 +90,8 @@ public class CarouselPanel extends FlowPanel {
         }
     }
 
-    private void createButtons(){
-        buttonsPanel = new FlowPanel();           // contains the circle buttons
+    private FlowPanel createButtons(){
+        FlowPanel buttonsPanel = new FlowPanel();           // contains the circle buttons
         buttonsPanel.setStyleName(RESOURCES.getCSS().buttonsPanel());
         for (final Slide slide : slidesList) {
             Button btn = new Button("", new ClickHandler() {
@@ -101,6 +103,7 @@ public class CarouselPanel extends FlowPanel {
             btn.setStyleName(RESOURCES.getCSS().circleBtn());
             buttonsPanel.add(btn);
         }
+        return buttonsPanel;
     }
 
     protected void selectSlide(Slide slide){
