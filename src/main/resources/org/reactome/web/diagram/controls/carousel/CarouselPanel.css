@@ -1,4 +1,8 @@
 .carouselPanel {
+    overflow: auto;
+}
+
+.sliderOuterPanel {
     display: block;
     overflow: hidden;
 }

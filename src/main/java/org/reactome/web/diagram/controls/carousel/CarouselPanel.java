@@ -36,11 +36,9 @@ public class CarouselPanel extends FlowPanel {
     }
 
     private void init() {
-        Style style = getElement().getStyle();
-        style.setWidth(slideWidth, Style.Unit.PX);
-        style.setHeight(slideHeight + 30, Style.Unit.PX);
-
         ResourceCSS css = RESOURCES.getCSS();
+        setStyleName(css.carouselPanel());
+
         sliderPanel = new FlowPanel();                      // Inner panel with the slides
         sliderPanel.setStyleName(css.sliderPanel());
         sliderPanel.setWidth(slidesList.size() * slideWidth + "px");
@@ -149,6 +147,8 @@ public class CarouselPanel extends FlowPanel {
         String CSS = "org/reactome/web/diagram/controls/carousel/CarouselPanel.css";
 
         String carouselPanel();
+
+        String sliderOuterPanel();
 
         String sliderPanel();
 
