@@ -38,7 +38,6 @@ public class CarouselPanel extends FlowPanel {
     private void init() {
         Style style = getElement().getStyle();
         style.setWidth(slideWidth, Style.Unit.PX);
-        style.setHeight(slideHeight, Style.Unit.PX);
 
         ResourceCSS css = RESOURCES.getCSS();
         sliderPanel = new FlowPanel();                      // Inner panel with the slides
