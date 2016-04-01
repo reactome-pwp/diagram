@@ -7,7 +7,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -19,7 +19,10 @@ public class Slide extends AbsolutePanel {
     private boolean isInitialized = false;
 
     public Slide(ImageResource imageResource, String caption, String textColour) {
-        this(imageResource, new Label(caption), textColour);
+        this.imageResource = imageResource;
+        this.caption = new SimplePanel();
+        this.caption.getElement().setInnerHTML(caption);
+        getElement().getStyle().setColor(textColour);
     }
 
     public Slide(ImageResource imageResource, Widget caption, String textColour) {
@@ -37,6 +40,8 @@ public class Slide extends AbsolutePanel {
         style.setFloat(Style.Float.LEFT);
 
         Image image = new Image(imageResource);
+        image.setWidth(width + "px");
+        image.setHeight(height + "px");
 
         caption.addStyleName(RESOURCES.getCSS().caption());
         style = caption.getElement().getStyle();
