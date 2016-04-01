@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.context.popups;
 
+import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
@@ -7,10 +8,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
@@ -24,6 +22,8 @@ import org.reactome.web.diagram.common.validation.ContentValidator;
 import org.reactome.web.diagram.common.validation.FileValidator;
 import org.reactome.web.diagram.common.validation.NameValidator;
 import org.reactome.web.diagram.common.validation.UrlValidator;
+import org.reactome.web.diagram.controls.carousel.CarouselPanel;
+import org.reactome.web.diagram.controls.carousel.Slide;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawInteractorError;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawSummary;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadResponse;
@@ -38,7 +38,7 @@ import java.util.List;
  */
 @SuppressWarnings("Duplicates")
 public class InsertItemDialog extends PopupPanel implements CustomResourceSubmitter.Handler,
-        ValueChangeHandler, ClickHandler, SelectionHandler<Integer> {
+        ValueChangeHandler, ClickHandler, SelectionHandler<Integer>, OpenHandler<DisclosurePanel>, CloseHandler<DisclosurePanel> {
 
     public interface Handler {
         void onResourceAdded(RawSummary summary);
@@ -114,10 +114,10 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         IconButton btn = (IconButton) event.getSource();
         int selectedIndex = tabPanel.getSelectedIndex();
         boolean validationResult;
-        if(btn.equals(submitBtn)) {
+        if (btn.equals(submitBtn)) {
             validationResult = nameInput.validate();
             String name = nameInput.getText().trim();
-            if(selectedIndex == 0) {        //Tuple tab
+            if (selectedIndex == 0) {        //Tuple tab
                 switch (selectedOption) {
                     case URL:
                         validationResult = validationResult && urlInput.validate();
@@ -146,9 +146,9 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
     @Override
     public void onSelection(SelectionEvent event) {
         Integer index = (Integer) event.getSelectedItem();
-        for (int i=0;i<tabButtons.size();i++) {
+        for (int i = 0; i < tabButtons.size(); i++) {
             Button btn = tabButtons.get(i);
-            if(index.equals(i)) {
+            if (index.equals(i)) {
                 btn.addStyleName(RESOURCES.getCSS().tabButtonSelected());
             } else {
                 btn.removeStyleName(RESOURCES.getCSS().tabButtonSelected());
@@ -166,7 +166,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         showLoading(false);
         this.hide();
         List<String> warnings = response.getWarningMessages();
-        if(warnings!=null && !warnings.isEmpty()) {
+        if (warnings != null && !warnings.isEmpty()) {
             Console.info(warnings);
             statusReport.showWarnings("Successful submission with warnings (" + warnings.size() + ")", warnings);
         } else {
@@ -185,7 +185,30 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
     @Override
     public void onSubmissionError(RawInteractorError error) {
         showLoading(false);
-        statusReport.showErrors(error.getReason() + "(" + error.getCode() + ")" , error.getMessages());
+        statusReport.showErrors(error.getReason() + "(" + error.getCode() + ")", error.getMessages());
+    }
+
+    @Override
+    public void onOpen(OpenEvent<DisclosurePanel> openEvent) {
+        smoothCenter();
+    }
+
+    @Override
+    public void onClose(CloseEvent<DisclosurePanel> closeEvent) {
+        smoothCenter();
+    }
+
+    private void smoothCenter(){
+        AnimationScheduler.get().requestAnimationFrame(new AnimationScheduler.AnimationCallback() {
+            final long start = System.currentTimeMillis();
+            @Override
+            public void execute(double timestamp) {
+                center();
+                long t = System.currentTimeMillis() - start;
+                //The animation time for the disclosure panel is 350
+                if(t < 400)  AnimationScheduler.get().requestAnimationFrame(this); // Call it again.
+            }
+        });
     }
 
     @Override
@@ -277,6 +300,14 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         addServiceFP.add(urlServiceInput);
 //        addServiceFP.add(new Label("Under construction - Thank you for your patience."));
 
+        DisclosurePanel dp = new DisclosurePanel("Click here to learn more about the custom resources data upload");
+        dp.addStyleName(css.optionsPanelDisclosure());
+        dp.add(getTuplesCarousel());
+        dp.getContent().addStyleName(css.optionsPanelDisclosureContent());
+        dp.addOpenHandler(this);
+        dp.addCloseHandler(this);
+        dp.setAnimationEnabled(true);
+
         tabPanel = new TabLayoutPanel(4, Style.Unit.EM);
         tabPanel.setStyleName(css.tabPanel());
         tabPanel.add(addDataFP, addDataTabBtn = getButton("Add your data", RESOURCES.newDataIcon()));
@@ -300,13 +331,14 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
 
         vp.add(nameInput);
         vp.add(tabPanel);
+        vp.add(dp);
         vp.add(actionPanel);
         this.add(vp);
 
         showLoading(false);
     }
 
-    private Widget setTitlePanel(){
+    private Widget setTitlePanel() {
         FlowPanel header = new FlowPanel();
         header.setStyleName(RESOURCES.getCSS().header());
         header.addStyleName(RESOURCES.getCSS().unselectable());
@@ -327,7 +359,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         return header;
     }
 
-    public Button getButton(String text, ImageResource imageResource){
+    public Button getButton(String text, ImageResource imageResource) {
         Image buttonImg = new Image(imageResource);
         Label buttonLbl = new Label(text);
 
@@ -342,7 +374,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         return btn;
     }
 
-    private FormPanel getFormPanel(){
+    private FormPanel getFormPanel() {
         fileUpload = new FileUpload();
         fileUpload.setStyleName(RESOURCES.getCSS().fileUpload());
         fileUpload.setName("file");
@@ -352,8 +384,8 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
             @Override
             public void onChange(ChangeEvent event) {
                 String filename = fileUpload.getFilename();
-                if(filename!=null && !filename.isEmpty()) {
-                    if(filename.contains("\\")) {
+                if (filename != null && !filename.isEmpty()) {
+                    if (filename.contains("\\")) {
                         fileInput.setText(filename.substring(fileUpload.getFilename().lastIndexOf("\\") + 1));
                     } else {
                         fileInput.setText(filename);
@@ -371,8 +403,21 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         return form;
     }
 
-    private void showLoading(boolean loading){
-        if(loading) {
+    private CarouselPanel getTuplesCarousel() {
+        List<Slide> slidesList = new LinkedList<>();
+        slidesList.add(new Slide(RESOURCES.tuplesSlide01(), "You can import and overlay your data on top of<br>every pathway by defining custom resources", "white"));
+        slidesList.add(new Slide(RESOURCES.tuplesSlide02(), "A custom resource may be defined by providing a<br>local or network-stored file or a PSICQUIC service", "white"));
+        slidesList.add(new Slide(RESOURCES.tuplesSlide03(), "The simplest way to submit your data is in a<br>two-column file (tsv/csv) with the interactors A and B", "white"));
+//        slidesList.add(new Slide(RESOURCES.tuplesSlide04(), "There we go!", "white"));
+
+        CarouselPanel carouselPanel = new CarouselPanel(slidesList, 400, 240, "white");
+        carouselPanel.getElement().getStyle().setMarginLeft(50, Style.Unit.PX);
+        carouselPanel.getElement().getStyle().setFloat(Style.Float.LEFT);
+        return carouselPanel;
+    }
+
+    private void showLoading(boolean loading) {
+        if (loading) {
             ((IconButton) submitBtn).setImage(RESOURCES.loader());
         } else {
             ((IconButton) submitBtn).setImage(RESOURCES.submitIcon());
@@ -381,6 +426,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
 
 
     public static Resources RESOURCES;
+
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
@@ -422,6 +468,18 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
 
         @Source("images/loader.gif")
         ImageResource loader();
+
+        @Source("tuples/slide_01.png")
+        ImageResource tuplesSlide01();
+
+        @Source("tuples/slide_02.png")
+        ImageResource tuplesSlide02();
+
+        @Source("tuples/slide_03.png")
+        ImageResource tuplesSlide03();
+
+//        @Source("tuples/slide_04.png")
+//        ImageResource tulesSlide04();
     }
 
     /**
@@ -475,8 +533,12 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         String fileUpload();
 
         String textArea();
-        
+
         String explanation();
+
+        String optionsPanelDisclosure();
+
+        String optionsPanelDisclosureContent();
 
         String submitBtn();
     }

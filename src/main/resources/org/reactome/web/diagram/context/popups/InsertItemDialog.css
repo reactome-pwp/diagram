@@ -17,7 +17,7 @@
 
 .containerPanel {
     max-width: 650px;
-    max-height: 400px;
+    /*max-height: 400px;*/
     width: 100%;
     padding: 2px 0 0 2px;
     /*background-color: rgb(88, 195, 229) !important;*/
@@ -254,6 +254,15 @@
 .submitBtn:active:hover {
     background-color: #07558b;
     cursor: pointer !important;
+}
+
+.optionsPanelDisclosure {
+    margin-left: 75px;
+}
+
+.optionsPanelDisclosureContent {
+    border: 0 none !important;
+    padding: 0 !important;
 }
 
 .submitBtn:disabled {
