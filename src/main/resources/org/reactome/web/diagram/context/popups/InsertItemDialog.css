@@ -260,6 +260,10 @@
     margin-left: 75px;
 }
 
+.optionsPanelDisclosure td{
+    color: white !important;
+}
+
 .optionsPanelDisclosureContent {
     border: 0 none !important;
     padding: 0 !important;

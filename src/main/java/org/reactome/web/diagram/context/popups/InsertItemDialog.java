@@ -299,7 +299,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         addServiceFP.setStyleName(css.addServicePanel());
         addServiceFP.add(urlServiceInput);
 
-        DisclosurePanel dp = new DisclosurePanel("Click here to learn more about the custom resources data upload");
+        DisclosurePanel dp = new DisclosurePanel(RESOURCES.close(), RESOURCES.open(), "Click here to learn more about the custom resources data upload");
         dp.addStyleName(css.optionsPanelDisclosure());
         dp.add(getTuplesCarousel());
         dp.getContent().addStyleName(css.optionsPanelDisclosureContent());
@@ -466,6 +466,12 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
 
         @Source("images/loader.gif")
         ImageResource loader();
+
+        @Source("images/plus.png")
+        ImageResource open();
+
+        @Source("images/minus.png")
+        ImageResource close();
 
         @Source("tuples/slide_01.png")
         ImageResource tuplesSlide01();
