@@ -55,8 +55,12 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     private FlowPanel liveResourcesFP;
     private FlowPanel customResourcesFP;
     private FlowPanel loadingPanel;
+    private FlowPanel errorPanel;
+    private Label errorLb;
     private IconButton downloadBtn;
     private IconButton addNewResourceBtn;
+
+    private String resourcesError = null;
 
     public InteractorsTabPanel(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -89,12 +93,17 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         loadingPanel.add(new InlineLabel(" Updating resources..."));
         loadingPanel.setStyleName(RESOURCES.getCSS().loadingPanel());
 
+        errorLb = new Label();
+        errorPanel = new FlowPanel();
+        errorPanel.add(errorLb);
+        errorPanel.setStyleName(RESOURCES.getCSS().errorPanel());
+
         Label liveResourcesLabel = new Label("PSICQUIC:");
         liveResourcesLabel.setTitle("Select one of the PSICQUIC resources");
         liveResourcesLabel.setStyleName(RESOURCES.getCSS().liveInteractorLabel());
 
         Label customResourcesLabel = new Label("Custom Resources:");
-        customResourcesLabel.setTitle("Select one of the custom PSICQUIC resources");
+        customResourcesLabel.setTitle("Select one of the custom resources");
         customResourcesLabel.setStyleName(RESOURCES.getCSS().liveInteractorLabel());
 
         Label tuplesLabel = new Label("Custom Tuples:");
@@ -171,6 +180,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
     @Override
     public void interactorsResourcesLoaded(List<RawResource> resourceList, long time) {
+        resourcesError = null;
         updateLiveResources(resourceList);
         populateResourceListPanel();
         showLoading(false);
@@ -187,14 +197,16 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                 sb.append(line).append("\n");
             }
         }
-        showError(sb.toString());
+        resourcesError = sb.toString();
+        populateResourceListPanel();
     }
 
     @Override
     public void onInteractorsResourcesLoadException(String message) {
         showLoading(false);
         updateLiveResources(Collections.EMPTY_LIST);
-        showError("Exception: " + message);
+        resourcesError = message;
+        populateResourceListPanel();
     }
 
     @Override
@@ -292,6 +304,13 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
     private void populateResourceListPanel() {
         liveResourcesFP.clear();
+        // In case of an error simply show the message
+        if(resourcesError!=null) {
+            errorLb.setText(resourcesError);
+            liveResourcesFP.add(errorPanel);
+            return;
+        }
+
         for (OverlayResource resource : resourcesMap.values()) {
             if(resource.getType().equals(OverlayResource.ResourceType.PSICQUIC)) {
                 RadioButton radioBtn = new RadioButton("Resources", resource.getName());
@@ -330,7 +349,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                 liveResourcesFP.add(row);
             }
         }
-
     }
 
     private void populateCustomResourceListPanel() {
@@ -415,14 +433,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
             liveResourcesFP.clear();
             liveResourcesFP.add(loadingPanel);
         }
-    }
-
-    private void showError(String message){
-        Label errorLb = new Label(message);
-        errorLb.setStyleName(RESOURCES.getCSS().loadingPanel());
-
-        liveResourcesFP.clear();
-        liveResourcesFP.add(errorLb);
     }
 
     /***
@@ -511,6 +521,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         String customResourcesInnerPanel();
 
         String loadingPanel();
+
+        String errorPanel();
 
         String interactorResourceListBtn();
 

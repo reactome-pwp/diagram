@@ -73,6 +73,13 @@
     white-space:pre; /* this is to handle line breaks */
 }
 
+.errorPanel {
+    margin-left: 13px;
+    color: rgb(158, 50, 43);
+    font-size: small;
+    white-space:pre; /* this is to handle line breaks */
+}
+
 .interactorResourceListBtn{
     float: left;;
     width: 211px;
