@@ -298,7 +298,6 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         FlowPanel addServiceFP = new FlowPanel();
         addServiceFP.setStyleName(css.addServicePanel());
         addServiceFP.add(urlServiceInput);
-//        addServiceFP.add(new Label("Under construction - Thank you for your patience."));
 
         DisclosurePanel dp = new DisclosurePanel("Click here to learn more about the custom resources data upload");
         dp.addStyleName(css.optionsPanelDisclosure());
@@ -408,7 +407,7 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         slidesList.add(new Slide(RESOURCES.tuplesSlide01(), "You can import and overlay your data on top of<br>every pathway by defining custom resources", "white"));
         slidesList.add(new Slide(RESOURCES.tuplesSlide02(), "A custom resource may be defined by providing a<br>local or network-stored file or a PSICQUIC service", "white"));
         slidesList.add(new Slide(RESOURCES.tuplesSlide03(), "The simplest way to submit your data is in a<br>two-column file (tsv/csv) with the interactors A and B", "white"));
-//        slidesList.add(new Slide(RESOURCES.tuplesSlide04(), "There we go!", "white"));
+        slidesList.add(new Slide(RESOURCES.tuplesSlide04(), "The extended tuple format offers a<br>wider variety of options", "white"));
 
         CarouselPanel carouselPanel = new CarouselPanel(slidesList, 400, 240, "white");
         carouselPanel.getElement().getStyle().setMarginLeft(50, Style.Unit.PX);
@@ -426,7 +425,6 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
 
 
     public static Resources RESOURCES;
-
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
@@ -478,8 +476,8 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         @Source("tuples/slide_03.png")
         ImageResource tuplesSlide03();
 
-//        @Source("tuples/slide_04.png")
-//        ImageResource tulesSlide04();
+        @Source("tuples/slide_04.png")
+        ImageResource tuplesSlide04();
     }
 
     /**
