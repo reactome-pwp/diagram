@@ -16,24 +16,6 @@ public class InteractorsResourceChangedEvent extends GwtEvent<InteractorsResourc
         this.resource = resource;
     }
 
-//    public InteractorsResourceChangedEvent() {
-//        this.resource = DiagramFactory.INTERACTORS_INITIAL_RESOURCE;
-//        this.name = DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME;
-//        this.resourceType = ResourceType.STATIC;
-//    }
-//
-//    public InteractorsResourceChangedEvent(String resource) {
-//        this.resource = resource;
-//        this.name = resource;
-//        this.resourceType = ResourceType.PSICQUIC;
-//    }
-//
-//    public InteractorsResourceChangedEvent(String token, String name) {
-//        this.resource = token;
-//        this.name = name;
-//        this.resourceType = ResourceType.CUSTOM;
-//    }
-
     @Override
     public Type<InteractorsResourceChangedHandler> getAssociatedType() {
         return TYPE;
