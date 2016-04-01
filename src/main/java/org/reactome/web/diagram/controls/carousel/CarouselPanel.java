@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.common.IconButton;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -22,6 +23,7 @@ public class CarouselPanel extends FlowPanel {
     private FlowPanel sliderPanel;
     private Button leftBtn;
     private Button rightBtn;
+    private List<Button> circleButtons;
 
     private int currentSlideIndex;
     private int slideWidth;
@@ -56,7 +58,7 @@ public class CarouselPanel extends FlowPanel {
 
         FlowPanel sliderOuterPanel = new FlowPanel();        // Carousel outer panel
         sliderOuterPanel.setStyleName(css.carouselPanel());
-        sliderOuterPanel.setWidth(slideWidth +"px");
+        sliderOuterPanel.setWidth(slideWidth + "px");
         sliderOuterPanel.setHeight(slideHeight + "px");
         sliderOuterPanel.add(sliderPanel);
 
@@ -94,7 +96,8 @@ public class CarouselPanel extends FlowPanel {
         }
     }
 
-    private FlowPanel createButtons(){
+    private FlowPanel createButtons() {
+        circleButtons = new LinkedList<>();
         FlowPanel buttonsPanel = new FlowPanel();           // contains the circle buttons
         buttonsPanel.setStyleName(RESOURCES.getCSS().buttonsPanel());
         for (final Slide slide : slidesList) {
@@ -106,23 +109,37 @@ public class CarouselPanel extends FlowPanel {
             });
             btn.setStyleName(RESOURCES.getCSS().circleBtn());
             buttonsPanel.add(btn);
+            circleButtons.add(btn);
         }
         return buttonsPanel;
     }
 
-    protected void selectSlide(Slide slide){
+    protected void selectSlide(Slide slide) {
         slide.init(slideWidth, slideHeight);
         currentSlideIndex = slidesList.indexOf(slide);
         sliderPanel.getElement().getStyle().setMarginLeft(-currentSlideIndex * slideWidth, Style.Unit.PX);
+
+        // Enable/disable left and right buttons accordingly
         if (currentSlideIndex == 0) {
             leftBtn.setEnabled(false);
             rightBtn.setEnabled(true);
-        } else if (currentSlideIndex == slidesList.size()-1) {
+        } else if (currentSlideIndex == slidesList.size() - 1) {
             leftBtn.setEnabled(true);
             rightBtn.setEnabled(false);
         } else {
             leftBtn.setEnabled(true);
             rightBtn.setEnabled(true);
+        }
+
+        // Set colour of the selected circle button
+        if (circleButtons != null) {
+            for (int i = 0; i < circleButtons.size(); i++) {
+                if (currentSlideIndex == i) {
+                    circleButtons.get(i).addStyleName(RESOURCES.getCSS().circleBtnSelected());
+                } else {
+                    circleButtons.get(i).removeStyleName(RESOURCES.getCSS().circleBtnSelected());
+                }
+            }
         }
     }
 
@@ -173,5 +190,7 @@ public class CarouselPanel extends FlowPanel {
         String rightBtn();
 
         String circleBtn();
+
+        String circleBtnSelected();
     }
 }
