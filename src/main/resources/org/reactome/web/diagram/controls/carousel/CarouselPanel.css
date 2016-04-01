@@ -102,6 +102,6 @@
     background-color:  #07558b;
 }
 
-.circleBtn:active:hover {
+.circleBtnSelected {
     background-color: white;
 }
