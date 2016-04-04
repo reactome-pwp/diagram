@@ -135,6 +135,10 @@
     padding: 3px;
     height: auto;
     width: auto;
+
+    border-color: #92c1f0;
+    border-style: solid;
+    border-width: 1px 1px 1px;
 }
 
 .addServicePanel {
@@ -142,6 +146,10 @@
     height: auto;
     width: auto;
     color: white; /* this is temporary */
+
+    border-color: #92c1f0;
+    border-style: solid;
+    border-width: 1px 1px 1px;
 }
 
 .infoLabel {
