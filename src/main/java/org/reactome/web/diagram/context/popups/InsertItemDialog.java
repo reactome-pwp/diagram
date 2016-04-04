@@ -404,10 +404,10 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
 
     private CarouselPanel getTuplesCarousel() {
         List<Slide> slidesList = new LinkedList<>();
-        slidesList.add(new Slide(RESOURCES.tuplesSlide01(), "You can import and overlay your data on top of<br>every pathway by defining custom resources", "white"));
-        slidesList.add(new Slide(RESOURCES.tuplesSlide02(), "A custom resource may be defined by providing a<br>local or network-stored file or a PSICQUIC service", "white"));
-        slidesList.add(new Slide(RESOURCES.tuplesSlide03(), "The simplest way to submit your data is in a<br>two-column file (tsv/csv) with the interactors A and B", "white"));
-        slidesList.add(new Slide(RESOURCES.tuplesSlide04(), "The extended tuple format offers a<br>wider variety of options", "white"));
+        slidesList.add(new Slide(RESOURCES.tuplesSlide01(), "You can import and overlay your data<br>onto pathways by defining custom resources", "white", 12));
+        slidesList.add(new Slide(RESOURCES.tuplesSlide02(), "A custom resource can be defined by providing a<br>local or network-stored file or a PSICQUIC service", "white", 12));
+        slidesList.add(new Slide(RESOURCES.tuplesSlide03(), "The simplest way to submit data is in a two-column file<br>(tsv/csv) with the interactors defined in columns 1 and 2", "white", 12));
+        slidesList.add(new Slide(RESOURCES.tuplesSlide04(), "The extended tuple format offers more options (alias, scores, etc).<br>This information will be displayed and used in the overlay", "white", 12));
 
         CarouselPanel carouselPanel = new CarouselPanel(slidesList, 400, 240, "white");
         carouselPanel.getElement().getStyle().setMarginLeft(50, Style.Unit.PX);
