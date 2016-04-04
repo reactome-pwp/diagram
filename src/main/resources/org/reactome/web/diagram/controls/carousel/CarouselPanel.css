@@ -1,5 +1,6 @@
 .carouselPanel {
-    overflow: auto;
+    /*overflow: auto;*/
+    overflow: hidden;
     border-radius: 4px;
 }
 
