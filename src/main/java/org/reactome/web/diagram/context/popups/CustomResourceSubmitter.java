@@ -8,7 +8,6 @@ import org.reactome.web.diagram.data.interactors.custom.raw.RawInteractorError;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadResponse;
 import org.reactome.web.diagram.data.interactors.custom.raw.factory.UploadResponseException;
 import org.reactome.web.diagram.data.interactors.custom.raw.factory.UploadResponseFactory;
-import org.reactome.web.diagram.util.Console;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -96,14 +95,19 @@ public class CustomResourceSubmitter implements FormPanel.SubmitHandler, FormPan
         RawUploadResponse uploadResponse;
         try {
             uploadResponse = UploadResponseFactory.getUploadResponseObject(RawUploadResponse.class, label.getInnerText());
-            long time = System.currentTimeMillis() - start;
-            this.handler.onSubmissionCompleted(uploadResponse, time);
+            if(uploadResponse.getSummary()!=null){
+                long time = System.currentTimeMillis() - start;
+                this.handler.onSubmissionCompleted(uploadResponse, time);
+            } else {
+                RawInteractorError error = UploadResponseFactory.getUploadResponseObject(RawInteractorError.class, label.getInnerText());
+                this.handler.onSubmissionError(error);
+            }
         } catch (UploadResponseException e) {
             try {
                 RawInteractorError error = UploadResponseFactory.getUploadResponseObject(RawInteractorError.class, label.getInnerText());
                 this.handler.onSubmissionError(error);
             } catch (UploadResponseException e1) {
-                Console.error("Oops! This is unexpected", this);
+                this.handler.onSubmissionException("Error processing this file. Please contact our help-desk at help@reactome.org");
             }
         }
     }
