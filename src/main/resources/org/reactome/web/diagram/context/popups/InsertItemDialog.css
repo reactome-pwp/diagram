@@ -207,7 +207,7 @@
     /* start of transparency styles */
     opacity:0;
     -moz-opacity:0;
-    filter:alpha(opacity:0);
+    filter:alpha(opacity=0); /* For IE8 and earlier */
     /* end of transparency styles */
 }
 
