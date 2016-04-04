@@ -185,6 +185,10 @@
     color: rgb(6, 107, 158);
 }
 
+.uploadOptionBtn input {
+    cursor: pointer;
+}
+
 .fileUpload {
     position: absolute;
     top: 44px;
