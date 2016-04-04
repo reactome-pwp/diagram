@@ -95,6 +95,7 @@ public class CarouselPanel extends FlowPanel {
 
     private void populateSlides() {
         for (Slide slide : slidesList) {
+            slide.setSlideSize(slideWidth, slideHeight);
             sliderPanel.add(slide);
         }
     }

@@ -37,17 +37,12 @@ public class Slide extends AbsolutePanel {
     public void init(int width, int height) {
         if(isInitialized) return;
 
-        Style style = getElement().getStyle();
-        style.setWidth(width, Style.Unit.PX);
-        style.setHeight(height, Style.Unit.PX);
-        style.setFloat(Style.Float.LEFT);
-
         Image image = new Image(imageResource);
         image.setWidth(width + "px");
         image.setHeight(height + "px");
 
         caption.addStyleName(RESOURCES.getCSS().caption());
-        style = caption.getElement().getStyle();
+        Style style = caption.getElement().getStyle();
         style.setWidth(width, Style.Unit.PX);
         style.setTextAlign(Style.TextAlign.CENTER);
 
@@ -56,6 +51,15 @@ public class Slide extends AbsolutePanel {
         isInitialized = true;
     }
 
+    /**
+     * Sets the size of the slide container
+     */
+    public void setSlideSize(int width, int height) {
+        Style style = getElement().getStyle();
+        style.setWidth(width, Style.Unit.PX);
+        style.setHeight(height, Style.Unit.PX);
+        style.setFloat(Style.Float.LEFT);
+    }
 
     public static Resources RESOURCES;
     static {
