@@ -28,6 +28,14 @@ public class Slide extends AbsolutePanel {
         getElement().getStyle().setColor(textColour);
     }
 
+    public Slide(ImageResource imageResource, String caption, String textColour, double fontSize){
+        this.imageResource = imageResource;
+        this.caption = new SimplePanel();
+        this.caption.getElement().getStyle().setFontSize(fontSize, Style.Unit.PX);
+        this.caption.getElement().setInnerHTML(caption);
+        getElement().getStyle().setColor(textColour);
+    }
+
     public Slide(ImageResource imageResource, Widget caption, String textColour) {
         this.imageResource = imageResource;
         this.caption = caption;
