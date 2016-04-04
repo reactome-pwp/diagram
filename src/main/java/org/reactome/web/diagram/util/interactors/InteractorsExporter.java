@@ -70,10 +70,10 @@ public class InteractorsExporter {
     private static String getFileContent(MapSet<String, RawInteractor> interactors, String separator, String lineBreak) {
         StringBuilder builder = new StringBuilder();
         // Add Header
-        builder.append("Interactor A").append(separator)
-                .append("Interactor B").append(separator)
-                .append("miScore").append(separator)
-                .append("#Evidences").append(lineBreak);
+        builder.append("ID A").append(separator)
+                .append("ID B").append(separator)
+                .append("SCORE").append(separator)
+                .append("#EVIDENCES").append(lineBreak);
         for (String diagramAcc : interactors.keySet()) {
             Set<RawInteractor> rawInteractors = interactors.getElements(diagramAcc);
             if(rawInteractors != null) {
