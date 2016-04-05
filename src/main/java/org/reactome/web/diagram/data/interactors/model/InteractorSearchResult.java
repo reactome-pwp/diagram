@@ -105,11 +105,13 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     public void setSearchDisplay(String[] searchTerms) {
         if (alias != null) {
             primary = alias;
-            secondary = accession + " " + evidences + " evidences";
+            secondary = accession;
         } else {
             primary = accession;
-            secondary = evidences + " evidences";
         }
+        // Adding the number of evidences in the second line of the suggestion
+        String evidenceStr = evidences == 0 ? "" : evidences == 1 ? evidences + " evidence" : evidences + " evidences";
+        secondary += " " + evidenceStr;
 
         if (searchTerms == null || searchTerms.length == 0) return;
 
