@@ -152,9 +152,9 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         if (keyCode == KeyCodes.KEY_F && isModifierKeyPressed) {
             event.preventDefault();
             event.stopPropagation();
-            if(!isExpanded){
+            if (!isExpanded) {
                 expandPanel();
-            }else{
+            } else {
                 collapsePanel();
             }
         }
