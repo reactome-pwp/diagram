@@ -25,7 +25,7 @@ import java.util.Objects;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class TooltipContainer extends AbsolutePanel implements DiagramRequestedHandler, DiagramLoadedHandler,
-        GraphObjectHoveredHandler, EntityDecoratorHoveredHandler, InteractorHoveredHandler,
+        GraphObjectHoveredHandler, EntityDecoratorHoveredHandler, InteractorHoveredHandler, InteractorDraggedHandler,
         DiagramZoomHandler, DiagramPanningHandler {
 
     private static final int DELAY = 500;
@@ -58,13 +58,14 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     }
 
     private void initHandlers() {
-        this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
-        this.eventBus.addHandler(EntityDecoratorHoveredEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramPanningEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramZoomEvent.TYPE, this);
-        this.eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
+        eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
+        eventBus.addHandler(EntityDecoratorHoveredEvent.TYPE, this);
+        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        eventBus.addHandler(DiagramPanningEvent.TYPE, this);
+        eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        eventBus.addHandler(DiagramZoomEvent.TYPE, this);
+        eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
+        eventBus.addHandler(InteractorDraggedEvent.TYPE, this);
     }
 
     public int getWidth() {
@@ -123,6 +124,12 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     @Override
     public void onDiagramZoomEvent(DiagramZoomEvent event) {
         showTooltip();
+    }
+
+    @Override
+    public void onInteractorDragged(InteractorDraggedEvent event) {
+        setHovered(null); //This forces the tooltip timer to restart
+        setHovered(event.getInteractorEntity()); //Only if the dragging stops for a while the tooltip will be shown
     }
 
     public void setWidth(int width) {

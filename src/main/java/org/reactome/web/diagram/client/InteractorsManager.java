@@ -55,6 +55,7 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     }
 
     public void drag(InteractorEntity entity, double deltaX, double deltaY){
+        eventBus.fireEventFromSource(new InteractorDraggedEvent(entity), this);
         InteractorsContent interactors = context.getInteractors();
         for (InteractorLink link : entity.getLinks()) {
             interactors.removeFromView(currentResource, link);
