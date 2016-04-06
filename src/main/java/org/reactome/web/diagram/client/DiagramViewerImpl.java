@@ -3,7 +3,11 @@ package org.reactome.web.diagram.client;
 import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootPanel;
 import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.diagram.common.DisplayManager;
 import org.reactome.web.diagram.data.AnalysisStatus;
@@ -41,7 +45,7 @@ import java.util.Set;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsManager.Handler,
-        LayoutLoadedHandler, DiagramLoadRequestHandler, DiagramLoadedHandler,
+        LayoutLoadedHandler, DiagramLoadRequestHandler, DiagramLoadedHandler, KeyDownHandler,
         InteractorsLoadedHandler, InteractorsResourceChangedHandler, InteractorsCollapsedHandler, InteractorHoveredHandler,
         InteractorsLayoutUpdatedHandler, InteractorsFilteredHandler, InteractorSelectedHandler, InteractorProfileChangedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
@@ -104,6 +108,9 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     private void initHandlers() {
+        //Attaching this as a KeyDownHandler
+        RootPanel.get().addDomHandler(this, KeyDownEvent.getType());
+
         canvas.addUserActionsHandlers(userActionsManager);
 
         eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
@@ -839,5 +846,20 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
         eventBus.fireEventFromSource(new DiagramZoomEvent(factor, visibleArea), this);
         forceDraw = true;  //IMPORTANT: Please leave it at the very end after the event firing
+    }
+
+    @Override
+    public void onKeyDown(KeyDownEvent keyDownEvent) {
+        if(isVisible()){
+            int keyCode = keyDownEvent.getNativeKeyCode();
+            String platform = Window.Navigator.getPlatform();
+            // If this is a Mac, check for the cmd key. In case of any other platform, check for the ctrl key
+            boolean isModifierKeyPressed = platform.toLowerCase().contains("mac") ? keyDownEvent.isMetaKeyDown() : keyDownEvent.isControlKeyDown();
+            if (keyCode == KeyCodes.KEY_F && isModifierKeyPressed) {
+                keyDownEvent.preventDefault();
+                keyDownEvent.stopPropagation();
+                eventBus.fireEventFromSource(new SearchKeyPressedEvent(), this);
+            }
+        }
     }
 }
