@@ -173,11 +173,11 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
             Coordinate offset = context.getDiagramStatus().getOffset();
             double factor = context.getDiagramStatus().getFactor();
             if (hovered instanceof Node) {
-                if (factor > ZOOM_THRESHOLD) {
+                Node node = (Node) hovered;
+                if (factor > ZOOM_THRESHOLD || (node.getTrivial()!=null && node.getTrivial() && factor < 0.50)) {
                     tooltip.hide();
                     return;
                 }
-                Node node = (Node) hovered;
                 NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
                 GraphPhysicalEntity obj = node.getGraphObject();
                 if (obj instanceof GraphEntityWithAccessionedSequence) {
@@ -251,6 +251,10 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
                 };
                 infoTimer.schedule(1500);
             } else if (hovered instanceof InteractorLink) {
+                if (factor > ZOOM_THRESHOLD || factor < 0.50) {
+                    tooltip.hide();
+                    return;
+                }
                 InteractorLink interactorLink = (InteractorLink) hovered;
                 int e = interactorLink.getEvidences() != null ? interactorLink.getEvidences() : 0;
                 String evidences = e == 0 ? "" : (e == 1 ? e + " evidence - " : e + " pieces of evidence - ");
