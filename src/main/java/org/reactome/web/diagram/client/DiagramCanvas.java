@@ -716,6 +716,12 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         this.buffer = createCanvas(width, height);  //Top-level canvas (mouse ctrl and buffer)
 
+        //Set the LineCap to round to avoid discontinuities in the reaction lines
+        //NOTE: Setting the LineJoin cannot work as we draw every line segment separately
+        this.reactions.setLineCap(Context2d.LineCap.ROUND);
+        this.reactionsHighlight.setLineCap(Context2d.LineCap.ROUND);
+        this.reactionsSelection.setLineCap(Context2d.LineCap.ROUND);
+
         //DO NOT CHANGE THE ORDER OF THE FOLLOWING TWO LINES
         this.add(new LoadingMessage(eventBus));                 //Loading message panel
         this.add(new AnalysisMessage(eventBus));                //Analysis overlay message panel
