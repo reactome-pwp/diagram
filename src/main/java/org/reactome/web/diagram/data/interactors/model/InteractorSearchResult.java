@@ -110,8 +110,8 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
             primary = accession;
         }
         // Adding the number of evidences in the second line of the suggestion
-        String evidenceStr = evidences == 0 ? "" : evidences == 1 ? evidences + " evidence" : evidences + " evidences";
-        secondary += " " + evidenceStr;
+        String evidenceStr = evidences == 0 ? "" : evidences == 1 ? evidences + " evidence" : evidences + " pieces of evidence";
+        secondary += ", " + evidenceStr;
 
         if (searchTerms == null || searchTerms.length == 0) return;
 

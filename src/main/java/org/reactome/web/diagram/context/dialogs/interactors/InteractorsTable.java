@@ -94,7 +94,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
 
         //We need to add the extra columns only once
         if(getColumnCount() == 1) {
-            insertColumn(1, buildEvidencesColumn(), "#Evidences");
+            insertColumn(1, buildEvidencesColumn(), "#Evidence");
             insertColumn(2, buildScoreColumn(), "Score");
 
             this.setColumnWidth(0, 140, Unit.PX);

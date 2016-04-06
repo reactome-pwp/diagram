@@ -48,7 +48,7 @@ public class InteractorInfoPanel extends Composite {
             }
             if (!interactors.isEmpty()) {
                 int interactorsSize = interactor.getEvidences(interactionId) != null ? interactor.getEvidences(interactionId) : 0;
-                String evidences = interactorsSize == 0 ? "" : (interactorsSize == 1 ? "(" + interactorsSize + " evidence)" : "(" + interactorsSize + " evidences)");
+                String evidences = interactorsSize == 0 ? "" : (interactorsSize == 1 ? "(" + interactorsSize + " evidence)" : "(" + interactorsSize + " pieces of evidence)");
 
                 Double score = interactor.getInteractionScore(interactionId);
                 String title = "Interacts with ";

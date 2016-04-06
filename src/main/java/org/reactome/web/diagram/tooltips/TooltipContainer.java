@@ -253,7 +253,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
             } else if (hovered instanceof InteractorLink) {
                 InteractorLink interactorLink = (InteractorLink) hovered;
                 int e = interactorLink.getEvidences() != null ? interactorLink.getEvidences() : 0;
-                String evidences = e == 0 ? "" : (e == 1 ? e + " evidence - " : e + " evidences - ");
+                String evidences = e == 0 ? "" : (e == 1 ? e + " evidence - " : e + " pieces of evidence - ");
                 Coordinate centre = interactorLink.transform(factor, offset).getCentre();
                 tooltip.setText(evidences + "Score: " + numberFormat.format(interactorLink.getScore()));
                 tooltip.setPositionAndShow(
