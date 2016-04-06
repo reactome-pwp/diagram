@@ -1,16 +1,16 @@
 package org.reactome.web.diagram.controls.top.search;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.RootPanel;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
@@ -31,7 +31,7 @@ import java.util.List;
 public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         DiagramLoadedHandler, DiagramRequestedHandler, LayoutLoadedHandler, SearchBoxUpdatedHandler,
         InteractorsResourceChangedHandler, InteractorsLoadedHandler,
-        SearchBoxArrowKeysHandler, KeyDownHandler {
+        SearchBoxArrowKeysHandler, SearchKeyPressedHandler {
 
     @SuppressWarnings("FieldCanBeLocal")
     private static String OPENING_TEXT = "Search for any diagram term ...";
@@ -47,9 +47,6 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     private Timer focusTimer;
 
     public SearchLauncher(EventBus eventBus) {
-        //Attaching this as a KeyDownHandler
-        RootPanel.get().addDomHandler(this, KeyDownEvent.getType());
-
         //Setting the search style
         setStyleName(RESOURCES.getCSS().launchPanel());
 
@@ -143,20 +140,11 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     }
 
     @Override
-    public void onKeyDown(KeyDownEvent event) {
-        if (!isVisible()) return;
-        int keyCode = event.getNativeKeyCode();
-        String platform = Window.Navigator.getPlatform();
-        // If this is a Mac, check for the cmd key. In case of any other platform, check for the ctrl key
-        boolean isModifierKeyPressed = platform.toLowerCase().contains("mac") ? event.isMetaKeyDown() : event.isControlKeyDown();
-        if (keyCode == KeyCodes.KEY_F && isModifierKeyPressed) {
-            event.preventDefault();
-            event.stopPropagation();
-            if (!isExpanded) {
-                expandPanel();
-            } else {
-                collapsePanel();
-            }
+    public void onSearchKeyPressed(SearchKeyPressedEvent event) {
+        if (!isExpanded) {
+            expandPanel();
+        } else {
+            collapsePanel();
         }
     }
 
@@ -191,6 +179,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
+        eventBus.addHandler(SearchKeyPressedEvent.TYPE, this);
     }
 
     private void performSearch() {
