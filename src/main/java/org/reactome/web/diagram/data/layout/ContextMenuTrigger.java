@@ -3,6 +3,19 @@ package org.reactome.web.diagram.data.layout;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 
 /**
+ * This is the small triangle that appears inside a diagram node and
+ * triggers the display of the context menu.
+ * It is defined by 3 points:
+ *
+ *  [b]\
+ *  |   \
+ *  |    \
+ *  |    [a]
+ *  |    /
+ *  |   /
+ *  [c]/
+ *
+ *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class ContextMenuTrigger {
@@ -26,9 +39,14 @@ public class ContextMenuTrigger {
         } else {
             y += prop.getHeight() / 2;
         }
-        this.a = CoordinateFactory.get(x - 5, y);
-        this.b = CoordinateFactory.get(x - 12, y - 4);
-        this.c = CoordinateFactory.get(x - 12, y + 4);
+
+        if (node.getRenderableClass().equals("EntitySet")) {
+            x -= 3;
+        }
+
+        this.a = CoordinateFactory.get(x - 2, y);
+        this.b = CoordinateFactory.get(x - 7, y - 3);
+        this.c = CoordinateFactory.get(x - 7, y + 3);
     }
 
     public boolean isHovered(Coordinate m) {
