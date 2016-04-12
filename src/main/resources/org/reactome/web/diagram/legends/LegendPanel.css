@@ -307,6 +307,10 @@
     max-width: 272px;
 }
 
+.interactorsControlMessageShort {
+    max-width: 104px;
+}
+
 .interactorsControlSlider {
     float: left;
     margin-left: 5px;

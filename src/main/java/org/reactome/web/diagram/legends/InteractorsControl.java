@@ -181,6 +181,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         } else {
             this.removeStyleName(RESOURCES.getCSS().interactorsControlError());
             this.removeStyleName(RESOURCES.getCSS().interactorsControlWarning());
+            message.addStyleName(RESOURCES.getCSS().interactorsControlMessageShort());
             setVisible(true);
             setMessage(currentOverlayResource.getName());
             controlsFP.setVisible(true);
@@ -262,6 +263,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
             }
 
             msg += resource.getName() + "...";
+            message.removeStyleName(RESOURCES.getCSS().interactorsControlMessageShort());
             message.setText(msg);
         }
     }

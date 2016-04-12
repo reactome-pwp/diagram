@@ -205,6 +205,8 @@ public abstract class LegendPanel extends AbsolutePanel {
 
         String interactorsControlMessage();
 
+        String interactorsControlMessageShort();
+
         String interactorsControlSlider();
 
         String interactorsControlControls();
