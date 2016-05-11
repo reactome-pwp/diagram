@@ -62,22 +62,4 @@ abstract class InfoActionsHelper {
             }
         };
     }
-
-//    static MouseOverHandler getInteractorLinkMouseOver(final DiagramInteractor diagramInteractor, final EventBus eventBus, final Object source){
-//        return new MouseOverHandler() {
-//            @Override
-//            public void onMouseOver(MouseOverEvent event) {
-//                eventBus.fireEventFromSource(new InteractorHoveredEvent(diagramInteractor), source);
-//            }
-//        };
-//    }
-//
-//    static MouseOutHandler getInteractorLinkMouseOut(final EventBus eventBus, final Object source){
-//        return new MouseOutHandler() {
-//            @Override
-//            public void onMouseOut(MouseOutEvent event) {
-//                eventBus.fireEventFromSource(new InteractorHoveredEvent(null), source);
-//            }
-//        };
-//    }
 }
