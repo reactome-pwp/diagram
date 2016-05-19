@@ -682,6 +682,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     }
 
     protected void initialise() {
+        //The widget can only be initialised ONCE
+        if(this.getWidgetCount() > 0) return;
+
         int width = this.getOffsetWidth();
         int height = this.getOffsetHeight();
 
