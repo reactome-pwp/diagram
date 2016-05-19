@@ -72,12 +72,12 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     // mouse positions relative to canvas (not the model)
     // Do not assign the same value at the beginning
-    Coordinate mouseCurrent = CoordinateFactory.get(-100, -100);
-    Coordinate mousePrevious = CoordinateFactory.get(-200, -200);
+    private Coordinate mouseCurrent = CoordinateFactory.get(-100, -100);
+    private Coordinate mousePrevious = CoordinateFactory.get(-200, -200);
 
     private boolean forceDraw = false;
 
-    public DiagramViewerImpl() {
+    DiagramViewerImpl() {
         super();
         this.canvas = new DiagramCanvas(eventBus);
         this.contextMap = new LruCache<>(DIAGRAM_CONTEXT_CACHE_SIZE);
@@ -96,15 +96,17 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     protected void initialise() {
-        super.initialise();
-        this.initHandlers();
-        AnimationScheduler.get().requestAnimationFrame(new AnimationScheduler.AnimationCallback() {
-            @Override
-            public void execute(double timestamp) {
-                doUpdate();
-                AnimationScheduler.get().requestAnimationFrame(this); // Call it again.
-            }
-        });
+        if(!initialised) { //initialised is defined in the AbstractDiagramViewer
+            super.initialise();
+            this.initHandlers();
+            AnimationScheduler.get().requestAnimationFrame(new AnimationScheduler.AnimationCallback() {
+                @Override
+                public void execute(double timestamp) {
+                    doUpdate();
+                    AnimationScheduler.get().requestAnimationFrame(this); // Call it again.
+                }
+            });
+        }
     }
 
     private void initHandlers() {
@@ -586,13 +588,13 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         forceDraw = true;
     }
 
-    public void resetDialogs() {
+    private void resetDialogs() {
         if (this.context != null) {
             this.context.hideDialogs();
         }
     }
 
-    public void resetIllustration() {
+    private void resetIllustration() {
         this.canvas.resetIllustration();
     }
 
@@ -758,7 +760,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         }
     }
 
-    public void setSelection(HoveredItem hoveredItem, boolean zoom, boolean fireExternally) {
+    private void setSelection(HoveredItem hoveredItem, boolean zoom, boolean fireExternally) {
         GraphObject toSelect = hoveredItem != null ? hoveredItem.getGraphObject() : null;
         if (toSelect != null) {
             if (hoveredItem.getAttachment() != null) {
@@ -829,7 +831,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         drawInteractors(visibleArea);
     }
 
-    public void zoom(double factor, Coordinate mouse) {
+    private void zoom(double factor, Coordinate mouse) {
         DiagramStatus status = context.getDiagramStatus();
         if (factor == status.getFactor()) return;
 
