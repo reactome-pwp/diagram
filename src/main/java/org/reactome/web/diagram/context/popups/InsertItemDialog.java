@@ -15,6 +15,8 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.carrousel.client.CarrouselPanel;
+import org.reactome.web.carrousel.client.Slide;
 import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.common.InputPanel;
 import org.reactome.web.diagram.common.PwpButton;
@@ -22,8 +24,6 @@ import org.reactome.web.diagram.common.validation.ContentValidator;
 import org.reactome.web.diagram.common.validation.FileValidator;
 import org.reactome.web.diagram.common.validation.NameValidator;
 import org.reactome.web.diagram.common.validation.UrlValidator;
-import org.reactome.web.diagram.controls.carousel.CarouselPanel;
-import org.reactome.web.diagram.controls.carousel.Slide;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawInteractorError;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawSummary;
 import org.reactome.web.diagram.data.interactors.custom.raw.RawUploadResponse;
@@ -402,14 +402,14 @@ public class InsertItemDialog extends PopupPanel implements CustomResourceSubmit
         return form;
     }
 
-    private CarouselPanel getTuplesCarousel() {
+    private CarrouselPanel getTuplesCarousel() {
         List<Slide> slidesList = new LinkedList<>();
         slidesList.add(new Slide(RESOURCES.tuplesSlide01(), "You can import and overlay your data<br>onto pathways by defining custom resources", "white", 12));
         slidesList.add(new Slide(RESOURCES.tuplesSlide02(), "A custom resource can be defined by providing a<br>local or network-stored file or a PSICQUIC service", "white", 12));
         slidesList.add(new Slide(RESOURCES.tuplesSlide03(), "The simplest way to submit data is in a two-column file<br>(tsv/csv) with the interactors defined in columns 1 and 2", "white", 12));
         slidesList.add(new Slide(RESOURCES.tuplesSlide04(), "The extended tuple format offers more options (alias, scores, etc).<br>This information will be displayed and used in the overlay", "white", 12));
 
-        CarouselPanel carouselPanel = new CarouselPanel(slidesList, 400, 240, "white");
+        CarrouselPanel carouselPanel = new CarrouselPanel(slidesList, 400, 240, "white");
         carouselPanel.getElement().getStyle().setMarginLeft(50, Style.Unit.PX);
         carouselPanel.getElement().getStyle().setFloat(Style.Float.LEFT);
         return carouselPanel;
