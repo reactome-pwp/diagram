@@ -1,8 +1,6 @@
 package org.reactome.web.diagram.search;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
@@ -31,16 +29,12 @@ public class SearchPanel extends FlowPanel {
 
         SuggestionPanel suggestions = new SuggestionPanel();
         // Listen to click events on suggestions and return focus on SearchBox
-        suggestions.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                launcher.setFocus(true);
-            }
-        });
+        suggestions.addClickHandler(event -> launcher.setFocus(true));
         launcher.addSearchPerformedHandler(suggestions);
         launcher.addPanelCollapsedHandler(suggestions);
         launcher.addPanelExpandedHandler(suggestions);
         launcher.addSearchBoxArrowKeysHandler(suggestions);
+        launcher.addSuggestionResetHandler(suggestions);
         this.add(suggestions);
 
         SelectionInfoPanel infoPanel = new SelectionInfoPanel(eventBus);

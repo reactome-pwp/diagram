@@ -21,7 +21,9 @@ import org.reactome.web.diagram.controls.top.search.SearchPerformedHandler;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
 import org.reactome.web.diagram.search.SearchResultObject;
+import org.reactome.web.diagram.search.events.SuggestionResetEvent;
 import org.reactome.web.diagram.search.events.SuggestionSelectedEvent;
+import org.reactome.web.diagram.search.handlers.SuggestionResetHandler;
 import org.reactome.web.diagram.search.handlers.SuggestionSelectedHandler;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
 import org.reactome.web.diagram.search.searchbox.SearchBoxArrowKeysEvent;
@@ -33,35 +35,25 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class SuggestionPanel extends AbstractAccordionPanel implements SearchPerformedHandler, SearchBoxArrowKeysHandler,
-        SelectionChangeEvent.Handler{
+        SelectionChangeEvent.Handler, SuggestionResetHandler {
     private final SingleSelectionModel<SearchResultObject> selectionModel;
     private CellList<SearchResultObject> suggestions;
     private ListDataProvider<SearchResultObject> dataProvider;
 
-    public static SuggestionResources RESOURCES;
-
-    static {
-        RESOURCES = GWT.create(SuggestionResources.class);
-        RESOURCES.getCSS().ensureInjected();
-    }
-
     /**
      * The key provider that provides the unique ID of a DatabaseObject.
      */
-    public static final ProvidesKey<SearchResultObject> KEY_PROVIDER = new ProvidesKey<SearchResultObject>() {
-        @Override
-        public Object getKey(SearchResultObject item) {
-            if(item == null){
-                return null;
-            }else if(item instanceof GraphObject) {
-                GraphObject graphObject = (GraphObject) item;
-                return graphObject.getDbId();
-            } else if( item instanceof InteractorSearchResult) {
-                InteractorSearchResult interactorSearchResult = (InteractorSearchResult) item;
-                return interactorSearchResult.getAccession();
-            }
+    public static final ProvidesKey<SearchResultObject> KEY_PROVIDER = item -> {
+        if(item == null){
             return null;
+        }else if(item instanceof GraphObject) {
+            GraphObject graphObject = (GraphObject) item;
+            return graphObject.getDbId();
+        } else if( item instanceof InteractorSearchResult) {
+            InteractorSearchResult interactorSearchResult = (InteractorSearchResult) item;
+            return interactorSearchResult.getAccession();
         }
+        return null;
     };
 
     public SuggestionPanel() {
@@ -142,6 +134,18 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
     @Override
     public void onSelectionChange(SelectionChangeEvent event) {
         fireEvent(new SuggestionSelectedEvent(selectionModel.getSelectedObject()));
+    }
+
+    @Override
+    public void onSuggestionReset(SuggestionResetEvent event) {
+        selectionModel.clear();
+    }
+
+
+    public static SuggestionResources RESOURCES;
+    static {
+        RESOURCES = GWT.create(SuggestionResources.class);
+        RESOURCES.getCSS().ensureInjected();
     }
 
     /**

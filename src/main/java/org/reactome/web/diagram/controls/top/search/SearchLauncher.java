@@ -17,8 +17,10 @@ import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.events.PanelCollapsedEvent;
 import org.reactome.web.diagram.search.events.PanelExpandedEvent;
+import org.reactome.web.diagram.search.events.SuggestionResetEvent;
 import org.reactome.web.diagram.search.handlers.PanelCollapsedHandler;
 import org.reactome.web.diagram.search.handlers.PanelExpandedHandler;
+import org.reactome.web.diagram.search.handlers.SuggestionResetHandler;
 import org.reactome.web.diagram.search.provider.SuggestionsProvider;
 import org.reactome.web.diagram.search.provider.SuggestionsProviderImpl;
 import org.reactome.web.diagram.search.searchbox.*;
@@ -87,6 +89,10 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         return addHandler(handler, SearchPerformedEvent.TYPE);
     }
 
+    public HandlerRegistration addSuggestionResetHandler(SuggestionResetHandler handler){
+        return addHandler(handler, SuggestionResetEvent.TYPE);
+    }
+
     @Override
     public void onArrowKeysPressed(SearchBoxArrowKeysEvent event) {
         if(event.getValue() == KeyCodes.KEY_ESCAPE) {
@@ -117,6 +123,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     public void onDiagramLoaded(DiagramLoadedEvent event) {
         this.searchBtn.setEnabled(true);
         this.suggestionsProvider = new SuggestionsProviderImpl(event.getContext());
+        fireEvent(new SuggestionResetEvent());
     }
 
     @Override
@@ -189,13 +196,13 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
             fireEvent(new SearchPerformedEvent(term, suggestions));
         }
     }
-    public static SearchLauncherResources RESOURCES;
 
+
+    public static SearchLauncherResources RESOURCES;
     static {
         RESOURCES = GWT.create(SearchLauncherResources.class);
         RESOURCES.getCSS().ensureInjected();
     }
-
 
     /**
      * A ClientBundle of resources used by this widget.
