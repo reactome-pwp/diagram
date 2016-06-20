@@ -77,7 +77,7 @@ public class InteractorsResourceLoader implements RequestCallback {
                     RawInteractorError error = UploadResponseFactory.getUploadResponseObject(RawInteractorError.class, response.getText());
                     this.handler.onInteractorsResourcesLoadError(error);
                 } catch (UploadResponseException e) {
-                    this.handler.onInteractorsResourcesLoadException(e.getMessage());
+                    this.handler.onInteractorsResourcesLoadException("Unable to connect to server [" + response.getStatusCode() + "]");
                 }
         }
     }
