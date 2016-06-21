@@ -65,6 +65,7 @@ public class InteractorsTable<T extends RawInteractor> extends DataGrid<T> {
         HeaderPanel panel = (HeaderPanel) this.getWidget();
         CustomScrollPanel scrollPanel = (CustomScrollPanel) panel.getContentWidget();
         scrollPanel.getHorizontalScrollbar().asWidget().getElement().getStyle().setOpacity(0);
+        scrollPanel.getVerticalScrollbar().asWidget().getElement().getStyle().setOpacity(0);
     }
 
     public HandlerRegistration addTableItemSelectedHandler(TableItemSelectedHandler handler){
