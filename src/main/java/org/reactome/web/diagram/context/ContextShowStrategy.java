@@ -48,27 +48,27 @@ public abstract class ContextShowStrategy {
 
     private static Coordinate getPosition(int dialogWidth, int dialogHeight, Bound bound, Bound canvas){
         int left; int top;
-        int leftSpace = bound.getX().intValue();
+        int leftSpace = bound.getX().intValue() > 0 ? bound.getX().intValue() : 0;
         int rightScace = canvas.getWidth().intValue() - (bound.getX().intValue() + bound.getWidth().intValue());
-        int topSpace = bound.getY().intValue();
+        int topSpace = bound.getY().intValue() > 0 ? bound.getY().intValue() : 0;
         int bottomSpace = canvas.getHeight().intValue() - (bound.getY().intValue() + bound.getHeight().intValue());
 
         // Horizontal positioning
         if (rightScace>dialogWidth) {
             left = canvas.getX().intValue() + bound.getX().intValue() + bound.getWidth().intValue();    // Place it right
         } else if (leftSpace>dialogWidth) {
-            left = canvas.getX().intValue() + bound.getX().intValue() - dialogWidth;                   // Place it left
+            left = canvas.getX().intValue() + bound.getX().intValue() - dialogWidth;                    // Place it left
         }else{
-            left = canvas.getX().intValue() + bound.getX().intValue();                                 // Extreme case
+            left = canvas.getX().intValue() + canvas.getWidth().intValue()/2;                           // Extreme case
         }
 
         // Vertical positioning
         if (bottomSpace>dialogHeight) {
             top = canvas.getY().intValue() + bound.getY().intValue() + bound.getHeight().intValue();    // Place it bottom
         } else if (topSpace>dialogHeight) {
-            top = canvas.getY().intValue() + bound.getY().intValue() - dialogHeight;                   // Place it top
+            top = canvas.getY().intValue() + bound.getY().intValue() - dialogHeight;                    // Place it top
         }else {
-            top = canvas.getY().intValue() + bound.getY().intValue();                                  // Extreme case
+            top = canvas.getY().intValue() + canvas.getHeight().intValue()/2;                           // Extreme case
         }
 
         return CoordinateFactory.get(left,top);
