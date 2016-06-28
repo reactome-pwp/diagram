@@ -321,7 +321,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                 if (!resource.isActive()) {
                     radioBtn.setEnabled(false);
                     radioBtn.setTitle(resource.getName() + " is not currently available");
-                    radioBtn.setStyleName(RESOURCES.getCSS().interactorResourceListBtnDisabled());
+                    radioBtn.addStyleName(RESOURCES.getCSS().interactorResourceListBtnDisabled());
                 } else {
                     radioBtn.setTitle("Select " + resource.getName() + " as a resource");
                 }

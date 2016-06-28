@@ -81,11 +81,10 @@
 }
 
 .interactorResourceListBtn{
-    float: left;;
+    float: left;
     width: 200px;
     white-space: nowrap;
     overflow:hidden;
-    white-space:nowrap;
     text-overflow:ellipsis;
 }
 
@@ -106,12 +105,11 @@
 }
 
 .interactorResourceListBtnDisabled{
-    display: inline-block;
     width: 200px;
 }
 
 .interactorResourceListBtnDisabled label{
-    margin-left: 5px;
+    /*margin-left: 5px;*/
     color: dimgray;
 }
 
