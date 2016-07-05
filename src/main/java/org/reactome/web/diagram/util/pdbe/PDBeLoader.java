@@ -52,7 +52,7 @@ public class PDBeLoader {
     }
 
     public void loadBestStructure(final Handler handler, final String acc) {
-        String url = "http://www.ebi.ac.uk/pdbe/api/mappings/best_structures/" + acc + "/";
+        String url = "https://www.ebi.ac.uk/pdbe/api/mappings/best_structures/" + acc + "/";
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             requestBuilder.sendRequest(null, new RequestCallback() {
@@ -90,7 +90,7 @@ public class PDBeLoader {
     }
 
     private void loadPDBeImage(final Handler handler, final PDBObject object) {
-        String url = "http://www.ebi.ac.uk/pdbe/static/entry/" + object.getPdbid() + "_deposited_chain_front_image-800x800.png";
+        String url = "https://www.ebi.ac.uk/pdbe/static/entry/" + object.getPdbid() + "_deposited_chain_front_image-800x800.png";
         final Image rtn = new Image(url);
         rtn.setAltText(url);
         //Next line is meant to avoid the "SecurityError" problem when exporting tainted canvases

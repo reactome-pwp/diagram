@@ -68,7 +68,7 @@ public class ChemicalImageLoader {
 
     private void loadChEBI(final Handler handler, String identifier){
         String id = identifier.replaceAll("^CHEBI[-:_]?", "");
-        String url = "http://www.ebi.ac.uk/chebi/displayImage.do?defaultImage=true&chebiId=" + id + "&dimensions=200&transbg=true";
+        String url = "https://www.ebi.ac.uk/chebi/displayImage.do?defaultImage=true&chebiId=" + id + "&dimensions=200&transbg=true";
         forceLoadImage(handler, url);
     }
 
