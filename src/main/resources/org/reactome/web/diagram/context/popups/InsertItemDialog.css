@@ -173,7 +173,6 @@
     padding-left: 8px;
     margin-top: 7px;
     outline: none;
-    /*margin-left: 10px;*/
 }
 
 .uploadOptionBtn{
@@ -203,11 +202,11 @@
     left: 66px;
     z-index: 100;
     width: 490px;
-    /*margin-top: 10px;*/
     /* start of transparency styles */
     opacity:0;
     -moz-opacity:0;
-    filter:alpha(opacity=0); /* For IE8 and earlier */
+    /*noinspection CssInvalidFunction*/
+    filter: literal("alpha(opacity=0)"); /* For IE8 and earlier */
     /* end of transparency styles */
 }
 
@@ -234,7 +233,7 @@
 }
 
 .submitBtn {
-    background-color: rgb(30, 148, 208); /*#45b0d8;*/
+    background-color: rgb(30, 148, 208);
     border: none;
     border-radius: 15px;
     color: white;
