@@ -92,12 +92,12 @@ public abstract class ReactionAbstractRenderer extends EdgeAbstractRenderer {
             GraphReactionLikeEvent rle = edge.getGraphObject();
             //It can only happen if the graph hasn't been loaded yet, so no hovering until then :(
             if (rle == null) return;
-            drawSegments(ctx, item, rle.getInputs(), factor, offset);
-            drawSegments(ctx, item, rle.getOutputs(), factor, offset);
-            drawSegments(ctx, item, rle.getCatalysts(), factor, offset);
-            drawSegments(ctx, item, rle.getActivators(), factor, offset);
-            drawSegments(ctx, item, rle.getInhibitors(), factor, offset);
-            drawSegments(ctx, item, rle.getRequirements(), factor, offset);
+            drawConnectors(ctx, item, rle.getInputs(), factor, offset);
+            drawConnectors(ctx, item, rle.getOutputs(), factor, offset);
+            drawConnectors(ctx, item, rle.getCatalysts(), factor, offset);
+            drawConnectors(ctx, item, rle.getActivators(), factor, offset);
+            drawConnectors(ctx, item, rle.getInhibitors(), factor, offset);
+            drawConnectors(ctx, item, rle.getRequirements(), factor, offset);
         } catch (ClassCastException ex) {
             //Nothing here
         }

@@ -17,6 +17,7 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public abstract class AbstractRenderer implements Renderer {
 
     @Override
@@ -71,11 +72,22 @@ public abstract class AbstractRenderer implements Renderer {
         }
     }
 
-    public void drawSegments(AdvancedContext2d ctx,
-                             DiagramObject item,
-                             List<GraphPhysicalEntity> physicalEntities,
-                             Double factor,
-                             Coordinate offset) {
+    public void drawConnector(AdvancedContext2d ctx, Connector connector, boolean stoichiometryVisible, Double factor, Coordinate offset) {
+        drawSegments(ctx, connector.getSegments(), factor, offset);
+        ShapeAbstractRenderer.draw(ctx, connector.getEndShape(), factor, offset);
+        if(stoichiometryVisible) {
+            Stoichiometry stoichiometry = connector.getStoichiometry();
+            if(stoichiometry != null && stoichiometry.getValue() > 1) {
+                ShapeAbstractRenderer.draw(ctx, stoichiometry.getShape(), factor, offset);
+            }
+        }
+    }
+
+    public void drawConnectors(AdvancedContext2d ctx,
+                               DiagramObject item,
+                               List<GraphPhysicalEntity> physicalEntities,
+                               Double factor,
+                               Coordinate offset) {
         boolean stoichiometryVisible = RendererManager.get().getConnectorRenderer().stoichiometryVisible();
         for(GraphPhysicalEntity pe : physicalEntities) {
             if(!isVisible(pe)) continue;
@@ -83,13 +95,32 @@ public abstract class AbstractRenderer implements Renderer {
                 Node node = (Node) obj;
                 for(Connector connector : node.getConnectors()) {
                     if(connector.getEdgeId().equals(item.getId())) {
-                        drawSegments(ctx, connector.getSegments(), factor, offset);
-                        ShapeAbstractRenderer.draw(ctx, connector.getEndShape(), factor, offset);
-                        if(stoichiometryVisible) {
-                            Stoichiometry stoichiometry = connector.getStoichiometry();
-                            if(stoichiometry != null && stoichiometry.getValue() > 1) {
-                                ShapeAbstractRenderer.draw(ctx, stoichiometry.getShape(), factor, offset);
-                            }
+                        drawConnector(ctx, connector, stoichiometryVisible, factor, offset);
+                    }
+                }
+            }
+        }
+    }
+
+    public void drawConnectorsWithAlpha(AdvancedContext2d ctx,
+                                        DiagramObject item,
+                                        List<GraphPhysicalEntity> physicalEntities,
+                                        Double factor,
+                                        Coordinate offset) {
+        boolean stoichiometryVisible = RendererManager.get().getConnectorRenderer().stoichiometryVisible();
+        for(GraphPhysicalEntity pe : physicalEntities) {
+            if(!isVisible(pe)) continue;
+            for(DiagramObject obj : pe.getDiagramObjects()) {
+                Node node = (Node) obj;
+                for(Connector connector : node.getConnectors()) {
+                    if(connector.getEdgeId().equals(item.getId())) {
+                        if (node.getTrivial() == null || !node.getTrivial()) {
+                            drawConnector(ctx, connector, stoichiometryVisible, factor, offset);
+                        } else {
+                            ctx.save();
+                            ctx.setGlobalAlpha((factor - 0.5) * 2);
+                            drawConnector(ctx, connector, stoichiometryVisible, factor, offset);
+                            ctx.restore();
                         }
                     }
                 }
