@@ -17,6 +17,12 @@ import org.reactome.web.diagram.util.Console;
 public class WidgetTest implements EntryPoint {
 
     private final DiagramViewer diagram;
+    private static String currentPathway = "R-HSA-5205647";
+//    private static String currentPathway = "R-HSA-5693567"; //Big one with plenty of overlap
+    private static String currentAnalysis = "MjAxNjA3MjEwOTAzNTFfOQ%3D%3D";
+
+    private TextBox pathwayTB;
+    private TextBox analysisTokenTB;
 
     public WidgetTest() {
 //        DiagramFactory.SERVER = "fakeserver.com";
@@ -36,8 +42,8 @@ public class WidgetTest implements EntryPoint {
                 Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                     @Override
                     public void execute() {
-                        diagram.loadDiagram("R-HSA-5205647");
-//                        diagram.loadDiagram("R-HSA-5693567"); //Big one with plenty of overlap
+                        diagram.loadDiagram(currentPathway);
+                        pathwayTB.setValue(currentPathway);
                     }
                 });
                 diagram.addDiagramLoadedHandler(new DiagramLoadedHandler() {
@@ -145,7 +151,9 @@ public class WidgetTest implements EntryPoint {
         button = new Button(stId, new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.loadDiagram(stId);
+                currentPathway = stId;
+                diagram.loadDiagram(currentPathway);
+                pathwayTB.setValue(currentPathway);
             }
         });
         button.setTitle(title);
@@ -154,6 +162,8 @@ public class WidgetTest implements EntryPoint {
 
     private Widget getDemoTopPanel(){
         FlowPanel fp = new FlowPanel();
+        fp.add(getPathwaySelectionPanel());
+        fp.add(getAnalysisSelectionPanel());
         fp.add(getLoadButton("R-HSA-1181150", ""));
         fp.add(getLoadButton("R-HSA-2990846", ""));
         fp.add(getLoadButton("R-HSA-163841", ""));
@@ -181,6 +191,38 @@ public class WidgetTest implements EntryPoint {
         fp.add(getLoadButton("R-HSA-5205647", ""));
         fp.add(getLoadButton("R-PFA-75153", ""));
 
+        return fp;
+    }
+
+    private Widget getPathwaySelectionPanel() {
+        FlowPanel fp = new FlowPanel();
+        pathwayTB = new TextBox();
+        fp.add(new InlineLabel("Enter a pathway: "));
+        fp.add(pathwayTB);
+        fp.add(new Button("GO", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                currentPathway = pathwayTB.getValue();
+                diagram.loadDiagram(currentPathway);
+            }
+        }));
+        return fp;
+    }
+
+    private Widget getAnalysisSelectionPanel() {
+        FlowPanel fp = new FlowPanel();
+        analysisTokenTB = new TextBox();
+        analysisTokenTB.setValue(currentAnalysis);
+        analysisTokenTB.setWidth("200px");
+        fp.add(new InlineLabel(" Overlay analysis token: "));
+        fp.add(analysisTokenTB);
+        fp.add(new Button("GO", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                currentAnalysis = analysisTokenTB.getValue();
+                diagram.setAnalysisToken(currentAnalysis, "TOTAL");
+            }
+        }));
         return fp;
     }
 
