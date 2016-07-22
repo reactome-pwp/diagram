@@ -16,7 +16,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class ConfirmationButton extends Composite implements ClickHandler{
-    private boolean expanded;
 
     private FlowPanel container;
     private FlowPanel innerContainer;
@@ -80,13 +79,11 @@ public class ConfirmationButton extends Composite implements ClickHandler{
     private void expand() {
         container.getElement().getStyle().setWidth(40, Style.Unit.PX);
         innerContainer.getElement().getStyle().setMarginLeft(-19, Style.Unit.PX);
-        expanded = true;
     }
 
     private void collapse(){
         container.getElement().getStyle().setWidth(19, Style.Unit.PX);
         innerContainer.getElement().getStyle().setMarginLeft(0, Style.Unit.PX);
-        expanded = false;
     }
 
     public static Resources RESOURCES;
