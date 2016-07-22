@@ -13,8 +13,8 @@ import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.client.DiagramFactory;
+import org.reactome.web.diagram.common.ConfirmationButton;
 import org.reactome.web.diagram.common.IconButton;
-import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.context.popups.InsertItemDialog;
 import org.reactome.web.diagram.controls.settings.common.InfoLabel;
 import org.reactome.web.diagram.data.DiagramContext;
@@ -366,7 +366,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                 if (radioBtn.getFormValue().equals(selectedResource.getIdentifier())) {
                     radioBtn.setValue(true);
                 }
-                final Button deleteBtn = new PwpButton("Click here to delete this resource", RESOURCES.getCSS().delete(), new ClickHandler() {
+
+                final ConfirmationButton deleteBtn = new ConfirmationButton("Click here to delete this resource", RESOURCES.deleteNormal(), new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent clickEvent) {
                         ResourcesManager.get().deleteResource(radioBtn.getFormValue());
@@ -496,8 +497,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         @Source("../images/bin_normal.png")
         ImageResource deleteNormal();
 
-        @Source("../images/bin_hovered.png")
-        ImageResource deleteHovered();
     }
 
     @CssResource.ImportedWithPrefix("diagram-InteractorsTabPanel")
@@ -533,8 +532,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         String downloadBtn();
 
         String addNewResourceBtn();
-
-        String delete();
 
     }
 }

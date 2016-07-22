@@ -204,21 +204,3 @@
 .addNewResourceBtn:disabled {
     background-color: #a39da6;
 }
-
-@sprite .delete {
-    gwt-image:'deleteNormal';
-    outline: none;
-    background-repeat:no-repeat;
-    border: 0;
-    cursor: pointer;
-    float: right;
-    margin-right:15px;
-}
-
-@sprite .delete:hover {
-    gwt-image:'deleteHovered';
-}
-
-@sprite .delete:active:hover {
-    gwt-image: 'deleteHovered';
-}
