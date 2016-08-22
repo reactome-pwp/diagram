@@ -70,6 +70,13 @@
             <artifactId>reactome-utils</artifactId>
             <version>${reactome.utils.version}</version>
         </dependency>
+
+        <!-- SVG support -->
+        <dependency>
+            <groupId>org.vectomatic</groupId>
+            <artifactId>lib-gwt-svg</artifactId>
+            <version>0.5.11</version>
+        </dependency>
     </dependencies>
 
     <build>

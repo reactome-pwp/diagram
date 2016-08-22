@@ -6,6 +6,7 @@
     <inherits name="com.google.web.bindery.autobean.AutoBean"/>
     <inherits name="uk.ac.ebi.pwp.structures.quadtree.QuadTree2D"/>
     <inherits name="org.reactome.web.pwp.model.PathwayPortalModel"/>
+    <inherits name="org.vectomatic.libgwtsvg"/>
 
     <!-- Default GWT style sheet (modified version of the Standard theme) -->
     <inherits name='org.reactome.web.diagram.style.DiagramStyle'/>

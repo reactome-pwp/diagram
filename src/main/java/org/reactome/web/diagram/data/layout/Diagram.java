@@ -71,4 +71,9 @@ public interface Diagram {
     Integer getMaxX();
     Integer getMinY();
     Integer getMaxY();
+
+    /**
+     * Related clickable picture
+     */
+    String getCPicture();
 }

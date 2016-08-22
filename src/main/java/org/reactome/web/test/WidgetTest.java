@@ -17,7 +17,7 @@ import org.reactome.web.diagram.util.Console;
 public class WidgetTest implements EntryPoint {
 
     private final DiagramViewer diagram;
-    private static String currentPathway = "R-HSA-5205647";
+    private static String currentPathway = "R-HSA-109581";//"R-HSA-5205647";
 //    private static String currentPathway = "R-HSA-5693567"; //Big one with plenty of overlap
     private static String currentAnalysis = "MjAxNjA3MjEwOTAzNTFfOQ%3D%3D";
 

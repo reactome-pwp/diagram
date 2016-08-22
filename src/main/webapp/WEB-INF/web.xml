@@ -95,7 +95,7 @@
         <init-param>
             <param-name>proxyPort</param-name>
             <!--<param-value>8585</param-value>-->
-            <param-value>7080</param-value>
+            <param-value>80</param-value>
         </init-param>
         <init-param>
             <param-name>proxyPath</param-name>
@@ -128,6 +128,20 @@
     <servlet-mapping>
         <servlet-name>FiguresProxy</servlet-name>
         <url-pattern>/figures/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- static SVG files local server (ONLY USED IN DEV MODE) -->
+    <servlet>
+        <servlet-name>SVGProxy</servlet-name>
+        <servlet-class>uk.ac.ebi.pride.web.util.servlet.proxy.StaticFilesProxyServlet</servlet-class>
+        <init-param>
+            <param-name>proxyFilePath</param-name>
+            <param-value>/Users/reactome/diagram/svg</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SVGProxy</servlet-name>
+        <url-pattern>/svg/*</url-pattern>
     </servlet-mapping>
 
 </web-app>

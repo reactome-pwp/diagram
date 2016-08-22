@@ -65,6 +65,7 @@ import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.actions.MouseActionsHandlers;
 import org.reactome.web.diagram.util.actions.UserActionsInstaller;
+import org.reactome.web.diagram.util.svg.SVGPanel;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -115,6 +116,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private List<Canvas> canvases = new LinkedList<>();
 
     private IllustrationPanel illustration;
+    private SVGPanel svgPanel;
 
     private int column = 0;
     private Double hoveredExpression = null;
@@ -285,6 +287,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         }
         this.tooltipContainer.setWidth(width);
         this.tooltipContainer.setHeight(height);
+
+        this.svgPanel.setSize(width, height);
     }
 
     @Override
@@ -732,6 +736,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         //Thumbnail
         this.add(this.thumbnail);
+
+        //SVG panel
+        this.add(this.svgPanel = new SVGPanel(eventBus, width, height), 0, 0);
 
         //Watermark
         this.addWatermark();
