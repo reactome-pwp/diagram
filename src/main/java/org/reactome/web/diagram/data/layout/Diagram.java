@@ -73,7 +73,7 @@ public interface Diagram {
     Integer getMaxY();
 
     /**
-     * Related clickable picture
+     * Related clickable picture in svg format
      */
-    String getCPicture();
+    String getPicture();
 }

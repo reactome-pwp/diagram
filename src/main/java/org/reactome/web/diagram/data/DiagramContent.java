@@ -33,6 +33,7 @@ public class DiagramContent {
 
     Boolean isDisease;
     Boolean forNormalDraw;
+    String picture;
 
     Map<Long, DiagramObject> diagramObjectMap;
     Map<String, GraphObject> graphObjectCache;
@@ -112,6 +113,8 @@ public class DiagramContent {
     public boolean isGraphLoaded() {
         return graphLoaded;
     }
+
+    public String getCPicture() { return picture;}
 
     public Long getDbId() {
         return dbId;

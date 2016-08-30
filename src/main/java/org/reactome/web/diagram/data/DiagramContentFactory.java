@@ -31,6 +31,7 @@ public abstract class DiagramContentFactory {
         content.dbId = diagram.getDbId();
         content.forNormalDraw = diagram.getForNormalDraw();
         content.isDisease = diagram.getIsDisease();
+        content.picture = diagram.getPicture();
 
         content.cache(diagram.getNodes());
         content.cache(diagram.getNotes());
