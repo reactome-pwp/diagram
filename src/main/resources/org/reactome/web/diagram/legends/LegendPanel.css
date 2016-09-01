@@ -29,7 +29,7 @@
     border: 0;
     cursor: pointer;
     float: right;
-    margin: 2px 8px;
+    margin: 2px 3px;
 }
 
 @sprite .close:hover {
