@@ -1,14 +1,22 @@
 package org.reactome.web.diagram.util.svg;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.regexp.shared.RegExp;
-import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Image;
+import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
+import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.events.CanvasExportRequestedEvent;
+import org.reactome.web.diagram.events.ControlActionEvent;
 import org.reactome.web.diagram.events.DiagramLoadRequestEvent;
+import org.reactome.web.diagram.events.LayoutLoadedEvent;
+import org.reactome.web.diagram.handlers.CanvasExportRequestedHandler;
+import org.reactome.web.diagram.handlers.ControlActionHandler;
+import org.reactome.web.diagram.handlers.DiagramLoadRequestHandler;
+import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
 import org.reactome.web.pwp.model.classes.Pathway;
@@ -25,15 +33,19 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class SVGPanel extends AbsolutePanel implements ClickHandler,
+public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, DatabaseObjectCreatedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
-        SVGLoader.Handler, DatabaseObjectCreatedHandler {
-    private EventBus eventBus;
+        LayoutLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, CanvasExportRequestedHandler {
 
     private static String PATTERN = "R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
+
     private static String CURSOR = "cursor: pointer;";
-    private static float MAX_ZOOM = 12.0f;
+    private static float MAX_ZOOM = 8.0f;
     private static float MIN_ZOOM = 0.2f;
+
+    private EventBus eventBus;
+    private DiagramContext context;
+    private RegExp regExp;
 
     private OMSVGSVGElement svg;
     private List<OMSVGElement> svgLayers;
@@ -43,20 +55,25 @@ public class SVGPanel extends AbsolutePanel implements ClickHandler,
     private float zFactor = 1;
 
     private boolean isPanning;
+    private boolean avoidClicking;
+
     private OMSVGPoint origin;
 
     private SVGLoader svgLoader;
+    private StringBuilder sb;
 
     public SVGPanel(EventBus eventBus, int width, int height) {
-        //todo to be removed - only for debug purposes
-        getElement().getStyle().setBackgroundColor("Green");
-
-        this.eventBus = eventBus;
         this.getElement().addClassName("pwp-SVGPanel");
+        this.getElement().getStyle().setBackgroundColor("white");
+        this.eventBus = eventBus;
+
+        regExp = RegExp.compile(PATTERN);
+
         initFilters();
-        setSize(width, height);
+        initHandlers();
+        sb = new StringBuilder();
         svgLoader = new SVGLoader(this);
-        load("Apoptosis.svg");
+        setSize(width, height);
     }
 
     public void load(String cPicture) {
@@ -65,22 +82,57 @@ public class SVGPanel extends AbsolutePanel implements ClickHandler,
     }
 
     @Override
-    public void onClick(ClickEvent event) {
-        event.preventDefault(); event.stopPropagation();
-        OMElement el = (OMElement) event.getSource();
-        Console.info(el.getTagName() + ":" + el.getAttribute("id") + " was clicked!");
-        DatabaseObjectFactory.get(el.getAttribute("id"), this);
+    public void onControlAction(ControlActionEvent event) {
+        switch (event.getAction()) {
+            case FIT_ALL:       fitAll();                         break;
+            case ZOOM_IN:       zoom(1.1f, getCentrePoint());     break;
+            case ZOOM_OUT:      zoom(0.9f, getCentrePoint());     break;
+            case UP:            translate(0, 10);                 break;
+            case RIGHT:         translate(-10, 0);                break;
+            case DOWN:          translate(0, -10);                break;
+            case LEFT:          translate(10, 0);                 break;
+//            case FIREWORKS:     overview();                       break;
+        }
     }
 
     @Override
     public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
-        Pathway p = (Pathway) databaseObject;
-        eventBus.fireEventFromSource(new DiagramLoadRequestEvent(p), this);
+        if(databaseObject instanceof Pathway) {
+            Pathway p = (Pathway) databaseObject;
+            eventBus.fireEventFromSource(new DiagramLoadRequestEvent(p), this);
+        }
     }
 
     @Override
     public void onDatabaseObjectError(Throwable exception) {
+        Console.error("Error getting pathway information...");
+        //TODO: Decide what to do in this case
+    }
 
+    @Override
+    public void onDiagramExportRequested(CanvasExportRequestedEvent event) {
+        String svgContent = svg.getMarkup();
+        if(svgContent != null) {
+            Image image = new Image();
+            image.setUrl("data:image/svg+xml," + svgContent);
+            final ImageDownloadDialog downloadDialogBox = new ImageDownloadDialog(image, "svg", "stableID");
+            downloadDialogBox.show();
+        }
+    }
+
+    @Override
+    public void onDiagramLoadRequest(DiagramLoadRequestEvent event) {
+        setVisible(false);
+        context = null;
+    }
+
+    @Override
+    public void onLayoutLoaded(LayoutLoadedEvent event) {
+        context = event.getContext();
+        String cPic = context.getContent().getCPicture();
+        if(cPic != null) {
+            load(cPic);
+        }
     }
 
     @Override
@@ -93,6 +145,7 @@ public class SVGPanel extends AbsolutePanel implements ClickHandler,
     @Override
     public void onMouseMove(MouseMoveEvent event) {
         if(isPanning) {
+            avoidClicking = true;
             OMSVGPoint end = getTranslatedPoint(event);
 
             OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(end.getX() - origin.getX(), end.getY() - origin.getY());
@@ -104,25 +157,28 @@ public class SVGPanel extends AbsolutePanel implements ClickHandler,
 
     @Override
     public void onMouseUp(MouseUpEvent event) {
+        event.preventDefault(); event.stopPropagation();
+        OMElement el = (OMElement) event.getSource();
+        if(!avoidClicking && (el.getId().matches(PATTERN))){
+            Console.info(el.getTagName() + ": " + el.getAttribute("id") + " was clicked!");
+            DatabaseObjectFactory.get(el.getAttribute("id"), this);
+        }
         isPanning = false;
+        avoidClicking = false;
     }
 
     @Override
     public void onMouseOver(MouseOverEvent event) {
         event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
-        Console.info("Mouse over " + el.getTagName() + ":" + el.getAttribute("id"));
-        OMSVGGElement gel = (OMSVGGElement) el;
-        gel.getStyle().setSVGProperty(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl("shadowFilter"));
+        el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl("shadowFilter"));
     }
 
     @Override
     public void onMouseOut(MouseOutEvent event) {
         event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
-        Console.info("Mouse out " + el.getTagName() + ":" + el.getAttribute("id"));
-        OMSVGGElement gel = (OMSVGGElement) el;
-        gel.getStyle().clearSVGProperty(SVGConstants.SVG_FILTER_ATTRIBUTE);
+        el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, "");
     }
 
     @Override
@@ -130,27 +186,18 @@ public class SVGPanel extends AbsolutePanel implements ClickHandler,
         event.preventDefault(); event.stopPropagation();
         float delta = event.getDeltaY() * 0.020f;
         float zoom = (1 - delta) > 0 ? (1 - delta) : 1;
-
-        if(zoom != 1 && (zFactor * zoom <= MAX_ZOOM) && (zFactor * zoom >= MIN_ZOOM)) {
-            OMSVGPoint p = getTranslatedPoint(event);
-            OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(p.getX(), p.getY()).scale(zoom).translate(-p.getX(), -p.getY());
-            ctm = ctm.multiply(newMatrix);
-            zFactor = zFactor * zoom;
-            applyCTM();
-        }
+        zoom(zoom, getTranslatedPoint(event));
     }
 
     @Override
     public void onSvgLoaded(OMSVGSVGElement svg, long time) {
         setVisible(true);
         this.svg = svg;
-        RegExp regExp = RegExp.compile(PATTERN);
         OMSVGGElement gElement = new OMSVGGElement();
         OMNodeList<OMElement> children = svg.getElementsByTagName(gElement.getTagName());
         for (OMElement child : children) {
             if(regExp.test(child.getId())) {
-                Console.info(">>> " + child.getId() + "-" + child.getClass().getSimpleName());
-                child.addDomHandler(SVGPanel.this, ClickEvent.getType());
+                child.addDomHandler(SVGPanel.this, MouseUpEvent.getType());
                 child.addDomHandler(SVGPanel.this, MouseOverEvent.getType());
                 child.addDomHandler(SVGPanel.this, MouseOutEvent.getType());
                 // Set the pointer to the active regions
@@ -183,14 +230,13 @@ public class SVGPanel extends AbsolutePanel implements ClickHandler,
 
         // Set initial translation matrix
         initialTM = svg.getCTM();
-        resetView();
-
+        fitAll();
     }
 
     @Override
     public void onSvgLoaderError(Throwable exception) {
-        setVisible(false);
-        Console.error("Error loading SVG");
+        Console.error("Error loading SVG...");
+        setVisible(false); //fall back to the green boxes diagram
     }
 
     public void resetView() {
@@ -212,12 +258,51 @@ public class SVGPanel extends AbsolutePanel implements ClickHandler,
     }
 
     private void applyCTM() {
-        StringBuilder sb = new StringBuilder("matrix(");
-        sb.append(ctm.getA()).append(",").append(ctm.getB()).append(",").append(ctm.getC()).append(",")
+        sb.setLength(0);
+        sb.append("matrix(").append(ctm.getA()).append(",").append(ctm.getB()).append(",").append(ctm.getC()).append(",")
                 .append(ctm.getD()).append(",").append(ctm.getE()).append(",").append(ctm.getF()).append(")");
         for (OMSVGElement svgLayer : svgLayers) {
             svgLayer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, sb.toString());
         }
+    }
+
+    private void fitAll(){
+        resetView();
+
+        OMSVGRect bb = svg.getBBox();
+        // Add a frame around the image
+        float frame = 20;
+        bb.setX(bb.getX() - frame);
+        bb.setY(bb.getY() - frame);
+        bb.setWidth(bb.getWidth() + (frame * 2));
+        bb.setHeight(bb.getHeight() + (frame * 2));
+
+        float rWidth = getOffsetWidth() / bb.getWidth();
+        float rHeight = getOffsetHeight() / bb.getHeight();
+        float zoom = (rWidth < rHeight) ? rWidth : rHeight;
+
+        float vpCX = getOffsetWidth() * 0.5f;
+        float vpCY = getOffsetHeight() * 0.5f;
+
+        float newCX = bb.getX() + (bb.getWidth()  * 0.5f);
+        float newCY = bb.getY() + (bb.getHeight() * 0.5f);
+
+        float corX = vpCX/zoom - newCX;
+        float corY = vpCY/zoom - newCY;
+
+        OMSVGMatrix newMatrix = svg.createSVGMatrix().scale(zoom).translate(corX, corY);
+        ctm = ctm.multiply(newMatrix);
+        zFactor = zFactor * zoom;
+        applyCTM();
+
+    }
+
+    private OMSVGPoint getCentrePoint() {
+        OMSVGPoint p = svg.createSVGPoint();
+        p.setX(getOffsetWidth()/2);
+        p.setY(getOffsetHeight()/2);
+
+        return p.matrixTransform(ctm.inverse());
     }
 
     private List<OMSVGElement> getRootLayers() {
@@ -273,19 +358,25 @@ public class SVGPanel extends AbsolutePanel implements ClickHandler,
         defs.appendChild(shadowFilter);
     }
 
-
-    public static Resources RESOURCES;
-    static {
-        RESOURCES = GWT.create(Resources.class);
+    private void initHandlers() {
+        eventBus.addHandler(DiagramLoadRequestEvent.TYPE, this);
+        eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
+        eventBus.addHandler(ControlActionEvent.TYPE, this);
+        eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
     }
 
-    public interface Resources extends ClientBundle {
+    private void translate(float x, float y) {
+        OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(x, y);
+        ctm = ctm.multiply(newMatrix);
+        applyCTM();
+    }
 
-//        @Source("Test.svg")
-//        ExternalSVGResource test();
-//
-//        @Source("Apoptosis.svg")
-//        ExternalSVGResource apoptosis();
-
+    private void zoom(float zoom, OMSVGPoint c) {
+        if(zoom != 1 && (zFactor * zoom <= MAX_ZOOM) && (zFactor * zoom >= MIN_ZOOM)) {
+            OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(c.getX(), c.getY()).scale(zoom).translate(-c.getX(), -c.getY());
+            ctm = ctm.multiply(newMatrix);
+            zFactor = zFactor * zoom;
+            applyCTM();
+        }
     }
 }
