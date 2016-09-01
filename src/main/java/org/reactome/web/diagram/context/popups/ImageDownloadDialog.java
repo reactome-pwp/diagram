@@ -17,7 +17,7 @@ import org.reactome.web.diagram.common.PwpButton;
  */
 public class ImageDownloadDialog extends PopupPanel {
 
-    public ImageDownloadDialog(final Image image, final String diagramStId){
+    public ImageDownloadDialog(final Image image, final String imageFormat,  final String diagramStId){
         super();
         String userAgent = Window.Navigator.getUserAgent().toLowerCase();
         boolean isIE = userAgent.contains("msie") || userAgent.contains("trident");
@@ -41,14 +41,14 @@ public class ImageDownloadDialog extends PopupPanel {
 
         FlowPanel buttons = new FlowPanel();
         if (isIE) {
-            Label infoLabel = new Label("To save the diagram, simply right-click on the image, and then click \'Save Picture As...\'");
+            Label infoLabel = new Label("To save the image, simply right-click on the image, and then click \'Save Picture As...\'");
             infoLabel.addStyleName(RESOURCES.getCSS().infoLabel());
             buttons.add(infoLabel);
         } else {
             Anchor anchor = new Anchor();                     // For downloading the image
             anchor.setHref(image.getUrl());
-            anchor.getElement().setAttribute("download", "DiagramImage.png");
-            Button button = new IconButton("Download as PNG", RESOURCES.downloadNormal());
+            anchor.getElement().setAttribute("download", "DiagramImage." + imageFormat);
+            Button button = new IconButton("Download as " + imageFormat.toUpperCase(), RESOURCES.downloadNormal());
             button.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent clickEvent) {
@@ -56,7 +56,7 @@ public class ImageDownloadDialog extends PopupPanel {
                 }
             });
             button.setStyleName(RESOURCES.getCSS().downloadPNG());
-            button.setTitle("Save diagram as a PNG image");
+            button.setTitle("Save diagram as " + imageFormat.toUpperCase() + " image");
             anchor.getElement().appendChild(button.getElement());
             buttons.add(anchor);
         }
@@ -65,12 +65,12 @@ public class ImageDownloadDialog extends PopupPanel {
             genomespace.addClickHandler( new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
-                    String mimeString = "image/png";
+                    String mimeString = "image/" + imageFormat;
                     String dataURL = image.getUrl();
                     String base64 = dataURL.split(",")[1];
                     // Convert the base64 string to a blob and send to
                     // GenomeSpace using their JavaScript API
-                    uploadToGenomeSpace(base64, mimeString, diagramStId);
+                    uploadToGenomeSpace(base64, mimeString, imageFormat, diagramStId);
                     hide();
                 }
             });
@@ -123,7 +123,7 @@ public class ImageDownloadDialog extends PopupPanel {
         return $wnd.gsUploadByPost;
     }-*/;
 
-    private static native void uploadToGenomeSpace(String base64, String mimeString, String identifier) /*-{
+    private static native void uploadToGenomeSpace(String base64, String mimeString, String imageFormat, String identifier) /*-{
         if(!$wnd.gsUploadByPost) return;
         var binary = atob(base64);                 //
         //noinspection JSPrimitiveTypeWrapperUsage
@@ -134,7 +134,7 @@ public class ImageDownloadDialog extends PopupPanel {
         var uarray = new Uint8Array(array);        //
         var blob = new Blob([uarray], {type: mimeString});
         var formData = new FormData();
-        var imageName = "Reactome_pathway_" + identifier + ".png";
+        var imageName = "Reactome_pathway_" + identifier + "." + imageFormat;
         formData.append("webmasterfile", blob, imageName);
         $wnd.gsUploadByPost(formData);
     }-*/;
