@@ -18,6 +18,8 @@ import org.reactome.web.diagram.handlers.ControlActionHandler;
 import org.reactome.web.diagram.handlers.DiagramLoadRequestHandler;
 import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
 import org.reactome.web.diagram.util.Console;
+import org.reactome.web.diagram.util.svg.animation.SVGAnimation;
+import org.reactome.web.diagram.util.svg.animation.SVGAnimationHandler;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
 import org.reactome.web.pwp.model.classes.Pathway;
 import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
@@ -35,7 +37,8 @@ import java.util.List;
  */
 public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, DatabaseObjectCreatedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
-        LayoutLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, CanvasExportRequestedHandler {
+        LayoutLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, CanvasExportRequestedHandler,
+        SVGAnimationHandler {
 
     private static String PATTERN = "R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
 
@@ -50,8 +53,10 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
     private OMSVGSVGElement svg;
     private List<OMSVGElement> svgLayers;
     private OMSVGDefsElement defs;
+
     private OMSVGMatrix ctm;
     private OMSVGMatrix initialTM;
+    private OMSVGMatrix fitTM;
     private float zFactor = 1;
 
     private boolean isPanning;
@@ -62,17 +67,19 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
     private SVGLoader svgLoader;
     private StringBuilder sb;
 
+    private SVGAnimation animation;
+
     public SVGPanel(EventBus eventBus, int width, int height) {
         this.getElement().addClassName("pwp-SVGPanel");
-        this.getElement().getStyle().setBackgroundColor("white");
+        this.getElement().getStyle().setBackgroundColor("green");
         this.eventBus = eventBus;
 
         regExp = RegExp.compile(PATTERN);
+        sb = new StringBuilder();
+        svgLoader = new SVGLoader(this);
 
         initFilters();
         initHandlers();
-        sb = new StringBuilder();
-        svgLoader = new SVGLoader(this);
         setSize(width, height);
     }
 
@@ -84,14 +91,13 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
     @Override
     public void onControlAction(ControlActionEvent event) {
         switch (event.getAction()) {
-            case FIT_ALL:       fitAll();                         break;
+            case FIT_ALL:       fitALL(true);                     break;
             case ZOOM_IN:       zoom(1.1f, getCentrePoint());     break;
             case ZOOM_OUT:      zoom(0.9f, getCentrePoint());     break;
             case UP:            translate(0, 10);                 break;
             case RIGHT:         translate(-10, 0);                break;
             case DOWN:          translate(0, -10);                break;
             case LEFT:          translate(10, 0);                 break;
-//            case FIREWORKS:     overview();                       break;
         }
     }
 
@@ -138,6 +144,7 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
     @Override
     public void onMouseDown(MouseDownEvent event) {
         event.preventDefault(); event.stopPropagation();
+        if(animation!=null) animation.cancel();
         origin = getTranslatedPoint(event);
         isPanning = true;
     }
@@ -230,7 +237,9 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
 
         // Set initial translation matrix
         initialTM = svg.getCTM();
-        fitAll();
+        resetView();
+        fitTM = calculateFitAll();
+        fitALL(false);
     }
 
     @Override
@@ -240,7 +249,6 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
     }
 
     public void resetView() {
-        zFactor = 1;
         ctm = initialTM;
         applyCTM();
     }
@@ -257,6 +265,11 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
         }
     }
 
+    public void transform(OMSVGMatrix newTM){
+        ctm = newTM;
+        applyCTM();
+    }
+
     private void applyCTM() {
         sb.setLength(0);
         sb.append("matrix(").append(ctm.getA()).append(",").append(ctm.getB()).append(",").append(ctm.getC()).append(",")
@@ -264,11 +277,10 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
         for (OMSVGElement svgLayer : svgLayers) {
             svgLayer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, sb.toString());
         }
+        zFactor = ctm.getA();
     }
 
-    private void fitAll(){
-        resetView();
-
+    private OMSVGMatrix calculateFitAll(){
         OMSVGRect bb = svg.getBBox();
         // Add a frame around the image
         float frame = 20;
@@ -291,9 +303,18 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
         float corY = vpCY/zoom - newCY;
 
         OMSVGMatrix newMatrix = svg.createSVGMatrix().scale(zoom).translate(corX, corY);
-        ctm = ctm.multiply(newMatrix);
-        zFactor = zFactor * zoom;
-        applyCTM();
+        newMatrix = ctm.multiply(newMatrix);
+        return newMatrix;
+    }
+
+    private void fitALL(boolean animated) {
+        if(animated) {
+            animation = new SVGAnimation(this, ctm);
+            animation.animate(fitTM);
+        } else {
+            ctm = initialTM.multiply(fitTM);
+            applyCTM();
+        }
 
     }
 
@@ -375,7 +396,6 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
         if(zoom != 1 && (zFactor * zoom <= MAX_ZOOM) && (zFactor * zoom >= MIN_ZOOM)) {
             OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(c.getX(), c.getY()).scale(zoom).translate(-c.getX(), -c.getY());
             ctm = ctm.multiply(newMatrix);
-            zFactor = zFactor * zoom;
             applyCTM();
         }
     }
