@@ -66,6 +66,7 @@ import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.actions.MouseActionsHandlers;
 import org.reactome.web.diagram.util.actions.UserActionsInstaller;
 import org.reactome.web.diagram.util.svg.SVGPanel;
+import org.reactome.web.diagram.util.svg.thumbnail.SVGThumbnail;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -117,6 +118,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
     private IllustrationPanel illustration;
     private SVGPanel svgPanel;
+    private SVGThumbnail svgThumbnail;
 
     private int column = 0;
     private Double hoveredExpression = null;
@@ -139,6 +141,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         InteractorColours.initialise(eventBus);
 
         this.thumbnail = new DiagramThumbnail(eventBus);
+        this.svgThumbnail = new SVGThumbnail(eventBus);
 
         this.initHandlers();
     }
@@ -739,6 +742,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         //SVG panel
         this.add(this.svgPanel = new SVGPanel(eventBus, width, height), 0, 0);
+        //SVG Thumbnail
+        this.add(this.svgThumbnail);
 
         //Watermark
         this.addWatermark();

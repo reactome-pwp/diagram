@@ -1,11 +1,9 @@
 package org.reactome.web.diagram.util.svg;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.regexp.shared.RegExp;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
 import org.reactome.web.diagram.data.DiagramContext;
@@ -20,6 +18,7 @@ import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimation;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimationHandler;
+import org.reactome.web.diagram.util.svg.events.SVGLoadedEvent;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
 import org.reactome.web.pwp.model.classes.Pathway;
 import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
@@ -28,36 +27,25 @@ import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.DOMHelper;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, DatabaseObjectCreatedHandler,
+public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, DatabaseObjectCreatedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
         LayoutLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, CanvasExportRequestedHandler,
         SVGAnimationHandler {
 
-    private static String PATTERN = "R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
+    private static final String PATTERN = "R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
 
-    private static String CURSOR = "cursor: pointer;";
-    private static float MAX_ZOOM = 8.0f;
-    private static float MIN_ZOOM = 0.2f;
+    private static final String CURSOR = "cursor: pointer;";
+    private static final float MAX_ZOOM = 8.0f;
+    private static final float MIN_ZOOM = 0.05f;
 
-    private EventBus eventBus;
     private DiagramContext context;
     private RegExp regExp;
 
-    private OMSVGSVGElement svg;
-    private List<OMSVGElement> svgLayers;
     private OMSVGDefsElement defs;
-
-    private OMSVGMatrix ctm;
-    private OMSVGMatrix initialTM;
-    private OMSVGMatrix fitTM;
-    private float zFactor = 1;
 
     private boolean isPanning;
     private boolean avoidClicking;
@@ -65,17 +53,14 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
     private OMSVGPoint origin;
 
     private SVGLoader svgLoader;
-    private StringBuilder sb;
-
     private SVGAnimation animation;
 
     public SVGPanel(EventBus eventBus, int width, int height) {
+        super(eventBus);
         this.getElement().addClassName("pwp-SVGPanel");
         this.getElement().getStyle().setBackgroundColor("green");
-        this.eventBus = eventBus;
 
         regExp = RegExp.compile(PATTERN);
-        sb = new StringBuilder();
         svgLoader = new SVGLoader(this);
 
         initFilters();
@@ -158,7 +143,7 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
             OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(end.getX() - origin.getX(), end.getY() - origin.getY());
             ctm = ctm.multiply(newMatrix);
 
-            applyCTM();
+            applyCTM(true);
         }
     }
 
@@ -200,6 +185,10 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
     public void onSvgLoaded(OMSVGSVGElement svg, long time) {
         setVisible(true);
         this.svg = svg;
+
+        //TODO: to be removed and added in the LoaderManager
+        eventBus.fireEventFromSource(new SVGLoadedEvent(svg, time), this);
+
         OMSVGGElement gElement = new OMSVGGElement();
         OMNodeList<OMElement> children = svg.getElementsByTagName(gElement.getTagName());
         for (OMElement child : children) {
@@ -237,8 +226,8 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
 
         // Set initial translation matrix
         initialTM = svg.getCTM();
-        resetView();
-        fitTM = calculateFitAll();
+        initialBB = svg.getBBox();
+        ctm = initialTM;
         fitALL(false);
     }
 
@@ -248,102 +237,20 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
         setVisible(false); //fall back to the green boxes diagram
     }
 
-    public void resetView() {
-        ctm = initialTM;
-        applyCTM();
-    }
-
-    public void setSize(int width, int height) {
-        //Set the size of the panel
-        setWidth(width + "px");
-        setHeight(height + "px");
-
-        //Set the size of the SVG
-        if(svg != null) {
-            svg.setWidth(Style.Unit.PX, width);
-            svg.setHeight(Style.Unit.PX, height);
-        }
-    }
-
     public void transform(OMSVGMatrix newTM){
         ctm = newTM;
-        applyCTM();
-    }
-
-    private void applyCTM() {
-        sb.setLength(0);
-        sb.append("matrix(").append(ctm.getA()).append(",").append(ctm.getB()).append(",").append(ctm.getC()).append(",")
-                .append(ctm.getD()).append(",").append(ctm.getE()).append(",").append(ctm.getF()).append(")");
-        for (OMSVGElement svgLayer : svgLayers) {
-            svgLayer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, sb.toString());
-        }
-        zFactor = ctm.getA();
-    }
-
-    private OMSVGMatrix calculateFitAll(){
-        OMSVGRect bb = svg.getBBox();
-        // Add a frame around the image
-        float frame = 20;
-        bb.setX(bb.getX() - frame);
-        bb.setY(bb.getY() - frame);
-        bb.setWidth(bb.getWidth() + (frame * 2));
-        bb.setHeight(bb.getHeight() + (frame * 2));
-
-        float rWidth = getOffsetWidth() / bb.getWidth();
-        float rHeight = getOffsetHeight() / bb.getHeight();
-        float zoom = (rWidth < rHeight) ? rWidth : rHeight;
-
-        float vpCX = getOffsetWidth() * 0.5f;
-        float vpCY = getOffsetHeight() * 0.5f;
-
-        float newCX = bb.getX() + (bb.getWidth()  * 0.5f);
-        float newCY = bb.getY() + (bb.getHeight() * 0.5f);
-
-        float corX = vpCX/zoom - newCX;
-        float corY = vpCY/zoom - newCY;
-
-        OMSVGMatrix newMatrix = svg.createSVGMatrix().scale(zoom).translate(corX, corY);
-        newMatrix = ctm.multiply(newMatrix);
-        return newMatrix;
+        applyCTM(true);
     }
 
     private void fitALL(boolean animated) {
+        OMSVGMatrix fitTM = calculateFitAll(FRAME);
         if(animated) {
             animation = new SVGAnimation(this, ctm);
             animation.animate(fitTM);
         } else {
             ctm = initialTM.multiply(fitTM);
-            applyCTM();
+            applyCTM(true);
         }
-
-    }
-
-    private OMSVGPoint getCentrePoint() {
-        OMSVGPoint p = svg.createSVGPoint();
-        p.setX(getOffsetWidth()/2);
-        p.setY(getOffsetHeight()/2);
-
-        return p.matrixTransform(ctm.inverse());
-    }
-
-    private List<OMSVGElement> getRootLayers() {
-        // Identify all layers by getting all top-level g elements
-        List<OMSVGElement> svgLayers = new ArrayList<>();
-        OMNodeList<OMNode> cNodes = svg.getChildNodes();
-        for (OMNode node : cNodes) {
-            if(node instanceof OMSVGGElement) {
-                svgLayers.add((OMSVGGElement) node);
-            }
-        }
-        return svgLayers;
-    }
-
-    private OMSVGPoint getTranslatedPoint(MouseEvent event) {
-        OMSVGPoint p = svg.createSVGPoint();
-        p.setX(event.getX());
-        p.setY(event.getY());
-
-        return p.matrixTransform(ctm.inverse());
     }
 
     private void initFilters() {
@@ -389,14 +296,14 @@ public class SVGPanel extends AbsolutePanel implements SVGLoader.Handler, Databa
     private void translate(float x, float y) {
         OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(x, y);
         ctm = ctm.multiply(newMatrix);
-        applyCTM();
+        applyCTM(true);
     }
 
     private void zoom(float zoom, OMSVGPoint c) {
         if(zoom != 1 && (zFactor * zoom <= MAX_ZOOM) && (zFactor * zoom >= MIN_ZOOM)) {
             OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(c.getX(), c.getY()).scale(zoom).translate(-c.getX(), -c.getY());
             ctm = ctm.multiply(newMatrix);
-            applyCTM();
+            applyCTM(true);
         }
     }
 }

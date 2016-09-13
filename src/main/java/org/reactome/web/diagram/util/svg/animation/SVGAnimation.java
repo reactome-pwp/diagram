@@ -1,7 +1,6 @@
 package org.reactome.web.diagram.util.svg.animation;
 
 import com.google.gwt.animation.client.Animation;
-import org.reactome.web.diagram.util.Console;
 import org.vectomatic.dom.svg.OMSVGMatrix;
 import org.vectomatic.dom.svg.OMSVGPoint;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
@@ -34,7 +33,6 @@ public class SVGAnimation extends Animation {
         scaleDelta = getScaleDelta(targetTM);
 
         int time = time(distanceTo(targetTM));
-        Console.error("Time: " + time);
         if(time > 0) {
             run(time);
         }
