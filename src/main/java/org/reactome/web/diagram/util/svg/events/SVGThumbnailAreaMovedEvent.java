@@ -12,8 +12,8 @@ public class SVGThumbnailAreaMovedEvent  extends GwtEvent<SVGThumbnailAreaMovedH
 
     private OMSVGPoint padding;
 
-    public SVGThumbnailAreaMovedEvent(OMSVGPoint paddding) {
-        this.padding = paddding;
+    public SVGThumbnailAreaMovedEvent(OMSVGPoint padding) {
+        this.padding = padding;
     }
 
     @Override
@@ -28,5 +28,12 @@ public class SVGThumbnailAreaMovedEvent  extends GwtEvent<SVGThumbnailAreaMovedH
 
     public OMSVGPoint getPadding() {
         return padding;
+    }
+
+    @Override
+    public String toString() {
+        return "SVGThumbnailAreaMovedEvent{" +
+                "padding=" + padding.getDescription() +
+                '}';
     }
 }
