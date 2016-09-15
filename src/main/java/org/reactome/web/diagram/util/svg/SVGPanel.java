@@ -251,19 +251,7 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
     @Override
     public void setSize(int width, int height) {
         super.setSize(width, height);
-//        if(svg != null && ctm !=null) {
-//            OMSVGPoint from = svg.createSVGPoint();
-//            from.setX(0);
-//            from.setY(0);
-//            from = from.matrixTransform(ctm.inverse());
-//
-//            OMSVGPoint to = svg.createSVGPoint();
-//            to.setX(getOffsetWidth());
-//            to.setY(getOffsetHeight());
-//            to = to.matrixTransform(ctm.inverse());
-//
-//            eventBus.fireEventFromSource(new SVGPanZoomEvent(from, to), this);
-//        }
+        notifyAboutChangeInView();
     }
 
     public void transform(OMSVGMatrix newTM){

@@ -34,6 +34,17 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         sb = new StringBuilder();
     }
 
+    public void setSize(int width, int height) {
+        //Set the size of the panel
+        setWidth(width + "px");
+        setHeight(height + "px");
+        //Set the size of the SVG
+        if(svg != null) {
+            svg.setWidth(Style.Unit.PX, width);
+            svg.setHeight(Style.Unit.PX, height);
+        }
+    }
+
     protected void applyCTM(boolean fireEvent) {
         sb.setLength(0);
         sb.append("matrix(").append(ctm.getA()).append(",").append(ctm.getB()).append(",").append(ctm.getC()).append(",")
@@ -44,17 +55,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         zFactor = ctm.getA();
 
         if(fireEvent) {
-            OMSVGPoint from = svg.createSVGPoint();
-            from.setX(0);
-            from.setY(0);
-            from = from.matrixTransform(ctm.inverse());
-
-            OMSVGPoint to = svg.createSVGPoint();
-            to.setX(getOffsetWidth());
-            to.setY(getOffsetHeight());
-            to = to.matrixTransform(ctm.inverse());
-
-            eventBus.fireEventFromSource(new SVGPanZoomEvent(from, to), this);
+            notifyAboutChangeInView();
         }
     }
 
@@ -110,15 +111,15 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         return svgLayers;
     }
 
-    public void setSize(int width, int height) {
-        //Set the size of the panel
-        setWidth(width + "px");
-        setHeight(height + "px");
-        //Set the size of the SVG
-        if(svg != null) {
-            svg.setWidth(Style.Unit.PX, width);
-            svg.setHeight(Style.Unit.PX, height);
-        }
+    protected void notifyAboutChangeInView() {
+        if(svg != null && ctm !=null) {
+            OMSVGPoint from = svg.createSVGPoint(0, 0);
+            from = from.matrixTransform(ctm.inverse());
 
+            OMSVGPoint to = svg.createSVGPoint(getOffsetWidth(), getOffsetHeight());
+            to = to.matrixTransform(ctm.inverse());
+
+            eventBus.fireEventFromSource(new SVGPanZoomEvent(from, to), this);
+        }
     }
 }
