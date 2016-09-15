@@ -6,6 +6,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
+import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.events.CanvasExportRequestedEvent;
 import org.reactome.web.diagram.events.ControlActionEvent;
@@ -19,6 +20,8 @@ import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimation;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimationHandler;
 import org.reactome.web.diagram.util.svg.events.SVGLoadedEvent;
+import org.reactome.web.diagram.util.svg.events.SVGThumbnailAreaMovedEvent;
+import org.reactome.web.diagram.util.svg.handlers.SVGThumbnailAreaMovedHandler;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
 import org.reactome.web.pwp.model.classes.Pathway;
 import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
@@ -34,7 +37,7 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
 public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, DatabaseObjectCreatedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
         LayoutLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, CanvasExportRequestedHandler,
-        SVGAnimationHandler {
+        SVGAnimationHandler, SVGThumbnailAreaMovedHandler {
 
     private static final String PATTERN = "R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
 
@@ -120,9 +123,9 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
     @Override
     public void onLayoutLoaded(LayoutLoadedEvent event) {
         context = event.getContext();
-        String cPic = context.getContent().getCPicture();
-        if(cPic != null) {
-            load(cPic);
+        DiagramContent content = context.getContent();
+        if(content.getCPicture() != null && content.getCPicture()) {
+            load(content.getStableId());
         }
     }
 
@@ -136,6 +139,7 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
 
     @Override
     public void onMouseMove(MouseMoveEvent event) {
+        event.preventDefault(); event.stopPropagation();
         if(isPanning) {
             avoidClicking = true;
             OMSVGPoint end = getTranslatedPoint(event);
@@ -237,6 +241,31 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
         setVisible(false); //fall back to the green boxes diagram
     }
 
+    @Override
+    public void onSVGThumbnailAreaMoved(SVGThumbnailAreaMovedEvent event) {
+        OMSVGPoint padding = event.getPadding();
+        ctm = ctm.translate(padding.getX(), padding.getY());
+        applyCTM(true);
+    }
+
+    @Override
+    public void setSize(int width, int height) {
+        super.setSize(width, height);
+//        if(svg != null && ctm !=null) {
+//            OMSVGPoint from = svg.createSVGPoint();
+//            from.setX(0);
+//            from.setY(0);
+//            from = from.matrixTransform(ctm.inverse());
+//
+//            OMSVGPoint to = svg.createSVGPoint();
+//            to.setX(getOffsetWidth());
+//            to.setY(getOffsetHeight());
+//            to = to.matrixTransform(ctm.inverse());
+//
+//            eventBus.fireEventFromSource(new SVGPanZoomEvent(from, to), this);
+//        }
+    }
+
     public void transform(OMSVGMatrix newTM){
         ctm = newTM;
         applyCTM(true);
@@ -291,6 +320,7 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
         eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         eventBus.addHandler(ControlActionEvent.TYPE, this);
         eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
+        eventBus.addHandler(SVGThumbnailAreaMovedEvent.TYPE, this);
     }
 
     private void translate(float x, float y) {

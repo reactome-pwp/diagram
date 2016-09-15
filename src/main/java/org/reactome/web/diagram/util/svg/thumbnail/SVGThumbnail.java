@@ -4,14 +4,14 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.events.DiagramLoadRequestEvent;
-import org.reactome.web.diagram.events.ViewportResizedEvent;
 import org.reactome.web.diagram.handlers.DiagramLoadRequestHandler;
-import org.reactome.web.diagram.handlers.ViewportResizedHandler;
 import org.reactome.web.diagram.util.svg.AbstractSVGPanel;
 import org.reactome.web.diagram.util.svg.events.SVGLoadedEvent;
 import org.reactome.web.diagram.util.svg.events.SVGPanZoomEvent;
+import org.reactome.web.diagram.util.svg.events.SVGThumbnailAreaMovedEvent;
 import org.reactome.web.diagram.util.svg.handlers.SVGLoadedHandler;
 import org.reactome.web.diagram.util.svg.handlers.SVGPanZoomHandler;
 import org.vectomatic.dom.svg.OMSVGMatrix;
@@ -24,11 +24,17 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequestHandler, SVGLoadedHandler,
-        SVGPanZoomHandler, ViewportResizedHandler {
+        MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler,
+        SVGPanZoomHandler {
     private static final int HEIGHT = 75;
     private static final int FALLBACK_WIDTH = 125;
 
     private Canvas frame;
+    private OMSVGPoint from;
+    private OMSVGPoint to;
+
+    private OMSVGPoint mouseDown;
+    private OMSVGPoint delta;
 
     public SVGThumbnail(EventBus eventBus) {
         super(eventBus);
@@ -38,6 +44,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
 
         this.setStyle();
         this.initHandlers();
+        this.initListeners();
     }
 
     @Override
@@ -46,8 +53,56 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
     }
 
     @Override
+    public void onMouseDown(MouseDownEvent event) {
+        event.stopPropagation(); event.preventDefault();
+        Element elem = event.getRelativeElement();
+        OMSVGPoint p = svg.createSVGPoint(event.getRelativeX(elem), event.getRelativeY(elem));
+        if (isMouseInVisibleArea(p)) {
+            mouseDown = svg.createSVGPoint(p);
+            delta = svg.createSVGPoint(mouseDown.substract(from));
+        }
+    }
+
+    @Override
+    public void onMouseMove(MouseMoveEvent event) {
+        event.stopPropagation(); event.preventDefault();
+        Element elem = event.getRelativeElement();
+        OMSVGPoint p = svg.createSVGPoint(event.getRelativeX(elem), event.getRelativeY(elem));
+        if (mouseDown != null) {
+            if (from != null && to != null) {
+                //Do not change any property of the status since it will be updated once the corresponding
+                //action is performed in the main view and notified (thumbnail status changes on demand)
+                OMSVGPoint padding = from.substract(p.substract(delta));
+                eventBus.fireEventFromSource(new SVGThumbnailAreaMovedEvent(padding), this);
+            }
+        } else {
+            if (isMouseInVisibleArea(p)) {
+                getElement().getStyle().setCursor(Style.Cursor.MOVE);
+            } else {
+                getElement().getStyle().setCursor(Style.Cursor.DEFAULT);
+            }
+        }
+    }
+
+    @Override
+    public void onMouseUp(MouseUpEvent event) {
+        event.stopPropagation(); event.preventDefault();
+        this.mouseDown = null;
+    }
+
+
+    @Override
+    public void onMouseOut(MouseOutEvent event) {
+        event.stopPropagation(); event.preventDefault();
+        this.mouseDown = null;
+    }
+
+    @Override
     public void onSVGLoaded(SVGLoadedEvent event) {
         svg = (OMSVGSVGElement) event.getSVG().cloneNode(true);
+
+        from = svg.createSVGPoint();
+        to = svg.createSVGPoint();
 
         OMSVGRect svgSize = getSVGInitialSize();
         double factor = HEIGHT / (svgSize.getHeight() + FRAME);
@@ -71,21 +126,20 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
         initialTM = svg.getCTM();
         initialBB = svg.getBBox();
 
-//        ctm = initialTM;
         OMSVGMatrix fitTM = calculateFitAll(FRAME);
-
         ctm = initialTM.multiply(fitTM);
         applyCTM(false);
     }
 
     @Override
     public void onSVGPanZoom(SVGPanZoomEvent event) {
-        drawFrame(event.getFrom(), event.getTo());
-    }
+        from = event.getFrom();
+        to = event.getTo();
 
-    @Override
-    public void onViewportResized(ViewportResizedEvent event) {
-        //todo Implement this
+        from = from.matrixTransform(ctm);
+        to = to.matrixTransform(ctm);
+
+        drawFrame(from, to);
     }
 
     @Override
@@ -116,21 +170,17 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
     }
 
     private void drawFrame(OMSVGPoint from, OMSVGPoint to) {
-        OMSVGPoint f = from.matrixTransform(this.ctm);
-        OMSVGPoint t = to.matrixTransform(this.ctm);
-
-        float tX = f.getX();
-        float tY = f.getY();
-
-        float W = t.getX() - tX;
-        float H =t.getY() - tY;
+        float tX = from.getX();
+        float tY = from.getY();
+        float width = to.getX() - tX;
+        float height = to.getY() - tY;
 
         cleanFrame();
 
         Context2d ctx = this.frame.getContext2d();
         ctx.fillRect(0, 0, this.frame.getOffsetWidth(), this.frame.getOffsetHeight());
-        ctx.clearRect(tX, tY, W, H);
-        ctx.strokeRect(tX, tY, W, H);
+        ctx.clearRect(tX, tY, width, height);
+        ctx.strokeRect(tX, tY, width, height);
     }
 
     private OMSVGRect getSVGInitialSize() {
@@ -141,7 +191,20 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
         eventBus.addHandler(DiagramLoadRequestEvent.TYPE, this);
         eventBus.addHandler(SVGLoadedEvent.TYPE, this);
         eventBus.addHandler(SVGPanZoomEvent.TYPE, this);
-//        eventBus.addHandler(ViewportResizedEvent.TYPE, this);
+    }
+
+    private void initListeners() {
+        this.frame.addMouseDownHandler(this);
+        this.frame.addMouseMoveHandler(this);
+        this.frame.addMouseUpHandler(this);
+        this.frame.addMouseOutHandler(this);
+    }
+
+    private boolean isMouseInVisibleArea(OMSVGPoint mouse) {
+        return mouse.getX() >= this.from.getX()
+                && mouse.getY() >= this.from.getY()
+                && mouse.getX() <= this.to.getX()
+                && mouse.getY() <= this.to.getY();
     }
 
     private void setStyle() {
@@ -153,5 +216,4 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
         style.setPosition(Style.Position.ABSOLUTE);
         style.setBottom(0, Style.Unit.PX);
     }
-
 }
