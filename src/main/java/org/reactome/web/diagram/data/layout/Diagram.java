@@ -75,5 +75,5 @@ public interface Diagram {
     /**
      * Related clickable picture in svg format
      */
-    String getPicture();
+    Boolean getPicture();
 }
