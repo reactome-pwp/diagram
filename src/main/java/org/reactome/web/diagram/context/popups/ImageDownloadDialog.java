@@ -17,7 +17,7 @@ import org.reactome.web.diagram.common.PwpButton;
  */
 public class ImageDownloadDialog extends PopupPanel {
 
-    public ImageDownloadDialog(final Image image, final String imageFormat,  final String diagramStId){
+    public ImageDownloadDialog(final Image image, final String imageFormat, final String diagramStId){
         super();
         String userAgent = Window.Navigator.getUserAgent().toLowerCase();
         boolean isIE = userAgent.contains("msie") || userAgent.contains("trident");
@@ -47,7 +47,7 @@ public class ImageDownloadDialog extends PopupPanel {
         } else {
             Anchor anchor = new Anchor();                     // For downloading the image
             anchor.setHref(image.getUrl());
-            anchor.getElement().setAttribute("download", "DiagramImage." + imageFormat);
+            anchor.getElement().setAttribute("download", diagramStId + "." + imageFormat);
             Button button = new IconButton("Download as " + imageFormat.toUpperCase(), RESOURCES.downloadNormal());
             button.addClickHandler(new ClickHandler() {
                 @Override
