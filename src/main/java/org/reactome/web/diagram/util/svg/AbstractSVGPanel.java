@@ -9,6 +9,7 @@ import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -21,6 +22,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
 
     protected OMSVGSVGElement svg;
     protected List<OMSVGElement> svgLayers;
+    protected List<OMElement> entities;
 
     protected OMSVGMatrix ctm;
     protected OMSVGMatrix initialTM;
@@ -83,6 +85,23 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         return svg.createSVGMatrix().scale(zoom).translate(corX, corY);
     }
 
+//    protected OMElement getNodeById(OMElement parent, String id) {
+//        OMElement rtn = null;
+//        OMNodeList<OMNode> nodes = parent.getChildNodes();
+//        Iterator<OMNode> it = nodes.iterator();
+//        while (it.hasNext()) {
+//            OMNode node = it.next();
+//            if(node instanceof OMElement) {
+//                OMElement el = (OMElement) node;
+//                if(el.getId()!=null && el.getId().equals(id)) {
+//                    rtn = el;
+//                    break;
+//                }
+//            }
+//        }
+//        return rtn;
+//    }
+
     protected OMSVGPoint getCentrePoint() {
         OMSVGPoint p = svg.createSVGPoint();
         p.setX(getOffsetWidth()/2);
@@ -121,5 +140,23 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
 
             eventBus.fireEventFromSource(new SVGPanZoomEvent(from, to), this);
         }
+    }
+
+    protected void removeAttributeFromChildren(final OMNode root, final String attribute) {
+        Iterator<OMNode> it = root.getChildNodes().iterator();
+        while (it.hasNext()) {
+            OMNode c = it.next();
+            if(c instanceof OMElement) {
+                OMElement el = (OMElement) c;
+                el.removeAttribute(attribute);
+                removeAttributeFromChildren(c, attribute);
+            }
+        }
+    }
+
+    protected OMNodeList<OMElement> getAllTextElementsFrom(final OMNode root){
+        OMElement el = (OMElement) root;
+        OMNodeList<OMElement> textEl = el.getElementsByTagName("text");
+        return textEl;
     }
 }
