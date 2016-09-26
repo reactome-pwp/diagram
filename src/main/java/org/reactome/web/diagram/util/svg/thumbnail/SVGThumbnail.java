@@ -27,7 +27,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
         MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler,
         SVGPanZoomHandler {
     private static final int HEIGHT = 75;
-    private static final int FALLBACK_WIDTH = 125;
+    private static final int FALLBACK_WIDTH = 100;
 
     private Canvas frame;
     private OMSVGPoint from;
@@ -47,9 +47,16 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
         this.initListeners();
     }
 
+    public void clearThumbnail() {
+        cleanFrame();
+        setVisible(false);
+    }
+
     @Override
     public void onDiagramLoadRequest(DiagramLoadRequestEvent event) {
-
+        svg.getElement().removeFromParent();
+        svg = null;
+        clearThumbnail();
     }
 
     @Override
