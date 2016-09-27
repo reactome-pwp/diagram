@@ -7,17 +7,13 @@ import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.ui.Image;
+import org.reactome.web.analysis.client.model.EntityStatistics;
+import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
 import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.DiagramContext;
-import org.reactome.web.diagram.events.CanvasExportRequestedEvent;
-import org.reactome.web.diagram.events.ControlActionEvent;
-import org.reactome.web.diagram.events.DiagramLoadRequestEvent;
-import org.reactome.web.diagram.events.LayoutLoadedEvent;
-import org.reactome.web.diagram.handlers.CanvasExportRequestedHandler;
-import org.reactome.web.diagram.handlers.ControlActionHandler;
-import org.reactome.web.diagram.handlers.DiagramLoadRequestHandler;
-import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
+import org.reactome.web.diagram.events.*;
+import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimation;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimationHandler;
@@ -36,6 +32,7 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -44,7 +41,7 @@ import java.util.Iterator;
 public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, DatabaseObjectCreatedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
         LayoutLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, CanvasExportRequestedHandler,
-        SVGAnimationHandler, SVGThumbnailAreaMovedHandler, DoubleClickHandler {
+        SVGAnimationHandler, SVGThumbnailAreaMovedHandler, DoubleClickHandler, AnalysisResultLoadedHandler {
 
     private static final String STID_PATTERN = "R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
     private static final String HOVERRING_FILTER = "shadowFilter";
@@ -53,6 +50,7 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
 
     private static final String CLIPPING_PATH = "CLIPPING_PATH_";
     private static final String CLIPPING_RECT = "CLIPPING_RECT_";
+    private static final float MIN_OVERLAY = 0.1f;
 
     private static final String CURSOR = "cursor: pointer;";
     private static final float MAX_ZOOM = 8.0f;
@@ -91,6 +89,12 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
     }
 
     @Override
+    public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
+        clearOverlay();
+        overlayAnalysisResults(event.getPathwaySummaries());
+    }
+
+    @Override
     public void onControlAction(ControlActionEvent event) {
         switch (event.getAction()) {
             case FIT_ALL:       fitALL(true);                     break;
@@ -100,13 +104,7 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
             case RIGHT:         translate(-10, 0);                break;
             case DOWN:          translate(0, -10);                break;
             case LEFT:          translate(10, 0);                 break;
-            case FIREWORKS:
-                testClipping("R-HSA-169911.1", 0.3f);
-                testClipping("R-HSA-5357769.1", 0.3f);
-                testClipping("R-HSA-75153", 0.6f);
-                testClipping("R-HSA-109606.1", 0.7f);
-
-                break;
+            case FIREWORKS:     testOverlay();                    break;
         }
     }
 
@@ -145,7 +143,6 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
     public void onDoubleClick(DoubleClickEvent event) {
         event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
-        Console.error(el.getId() + " was double clicked!");
         DatabaseObjectFactory.get(el.getAttribute("id"), this);
     }
 
@@ -153,7 +150,7 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
     public void onLayoutLoaded(LayoutLoadedEvent event) {
         context = event.getContext();
         DiagramContent content = context.getContent();
-        if(content.getCPicture() != null && content.getCPicture()) {
+        if(content.getPicture() != null && content.getPicture()) {
             load(content.getStableId());
         }
     }
@@ -216,6 +213,7 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
         } else {
             el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(COMBINED_FILTER));
         }
+        applyCTM(false);  //TODO Have a look why this is required
     }
 
     @Override
@@ -223,10 +221,11 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
         event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
         if(!el.equals(selected)) {
-            el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, "");
+            el.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
         } else {
             el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FILTER));
         }
+        applyCTM(false);  //TODO Have a look why this is required
     }
 
     @Override
@@ -314,11 +313,6 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
         applyCTM(true);
     }
 
-    private void testClipping(String stId, float percentage) {
-        createOrUpdateClippingPath(stId, percentage);
-        createOrUpdateOverlayElement(stId, "rgba(255,255,0,0.9)");
-    }
-
     private void clearOverlay() {
         for (OMElement entity : entities) {
             String stId = entity.getId();
@@ -331,12 +325,14 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
     }
 
 
-    private void createOrUpdateClippingPath(String stId, float percentage){
+    private void createOrUpdateClippingPath(String stId, float ratio){
         OMSVGRectElement rect = (OMSVGRectElement) svg.getElementById(CLIPPING_RECT + stId);
+        // Important !!! Correct ratio so that it is visible
+        ratio = ratio > MIN_OVERLAY ? ratio : MIN_OVERLAY;
 
         if(rect == null) {
             //Clipping path is not present.
-            rect = new OMSVGRectElement(0.0f, 0.0f, percentage, 1f, 0, 0);
+            rect = new OMSVGRectElement(0.0f, 0.0f, ratio, 1f, 0, 0);
             rect.setId(CLIPPING_RECT + stId);
 
             OMSVGClipPathElement cp = new OMSVGClipPathElement();
@@ -346,7 +342,7 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
             defs.appendChild(cp);
         } else {
             //Clipping path exists, simply re-use it
-            rect.getWidth().getBaseVal().setValue(percentage);
+            rect.getWidth().getBaseVal().setValue(ratio);
         }
     }
 
@@ -356,6 +352,7 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
             overlay = (OMSVGGElement) svg.getElementById(stId).cloneNode(true);
             overlay.setId(stId + "_Overlay");
             overlay.setAttribute(SVGConstants.SVG_CLIP_PATH_ATTRIBUTE, DOMHelper.toUrl(CLIPPING_PATH + stId));
+            overlay.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
             overlay.removeAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE);
             overlay.setAttribute(SVGConstants.SVG_FILL_ATTRIBUTE, overlayColor);
 
@@ -384,11 +381,20 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
         }
     }
 
+    private double getRatio(PathwaySummary p) {
+        EntityStatistics stats = p.getEntities();
+        Integer found = stats.getFound() != null ? stats.getFound() : 0;
+        Integer total = stats.getTotal() != null ? stats.getTotal() : 0;
+        Double rtn = found / (double) total;
+        return !rtn.isInfinite() && !rtn.isNaN() ? rtn : 0.0;
+    }
+
     private void initFilters() {
         defs = new OMSVGDefsElement();
         defs.appendChild(FilterFactory.getShadowFilter(HOVERRING_FILTER));
         defs.appendChild(FilterFactory.getOutlineFilter(SELECTION_FILTER, FilterColour.BLUE));
-        defs.appendChild(FilterFactory.combine(COMBINED_FILTER, FilterFactory.getShadowFilter(HOVERRING_FILTER), FilterFactory.getOutlineFilter(SELECTION_FILTER, FilterColour.BLUE)));
+        defs.appendChild(FilterFactory.getShadowWithOutlineFilter(COMBINED_FILTER, FilterColour.BLUE));
+//        defs.appendChild(FilterFactory.combine(COMBINED_FILTER, FilterFactory.getShadowFilter(HOVERRING_FILTER), FilterFactory.getOutlineFilter(SELECTION_FILTER, FilterColour.BLUE)));
     }
 
     private void initHandlers() {
@@ -397,6 +403,27 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
         eventBus.addHandler(ControlActionEvent.TYPE, this);
         eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
         eventBus.addHandler(SVGThumbnailAreaMovedEvent.TYPE, this);
+
+        eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
+    }
+
+    private void overlayAnalysisResults(List<PathwaySummary> ps) {
+        for (PathwaySummary p : ps) {
+            Console.error(" >> stid: " + p.getStId() + " r: " + p.getEntities().getRatio());
+            overlayEntity(p);
+        }
+    }
+
+    private void overlayEntity(PathwaySummary ps) {
+        OMElement el = svg.getElementById(ps.getStId());
+        if(el!=null) {
+            overlayEntity(ps.getStId(), (float) getRatio(ps));
+        }
+    }
+
+    private void overlayEntity(String stId, float percentage) {
+        createOrUpdateClippingPath(stId, percentage);
+        createOrUpdateOverlayElement(stId, "rgba(255,255,0,0.9)");
     }
 
     private void resetSelected() {
@@ -412,8 +439,15 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
         }
         element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(COMBINED_FILTER));
         selected = element;
-        //TODO Have a look why this is required
-        applyCTM(false);
+        applyCTM(false);  //TODO Have a look why this is required
+    }
+
+    private void testOverlay(){
+        clearOverlay();
+        overlayEntity("R-HSA-169911", 0.3f);
+        overlayEntity("R-HSA-5357769", 0.3f);
+        overlayEntity("R-HSA-75153", 0.6f);
+        overlayEntity("R-HSA-109606", 0.7f);
     }
 
     private void translate(float x, float y) {
