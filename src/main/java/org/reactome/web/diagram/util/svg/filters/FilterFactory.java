@@ -143,7 +143,7 @@ public abstract class FilterFactory {
 
 
     /**
-     * Returns a filter taht combines the steps of a ShadowFilter with those
+     * Returns a filter that combines the steps of a ShadowFilter with those
      * of an Outline Filter. The resulting filter is more efficient than the one
      * from the {@link #combine(String, OMSVGFilterElement, OMSVGFilterElement)} combine} method
      *
@@ -151,7 +151,7 @@ public abstract class FilterFactory {
      * @param colour The colour of the outline
      * @return
      */
-    public static OMSVGFilterElement getCombinedFilter(String id, FilterColour colour) {
+    public static OMSVGFilterElement getShadowWithOutlineFilter(String id, FilterColour colour) {
         //========== Selection Filter =========//
         OMSVGFEColorMatrixElement cMatrix = new OMSVGFEColorMatrixElement();
         cMatrix.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
