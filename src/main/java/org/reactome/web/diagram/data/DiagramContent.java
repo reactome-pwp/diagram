@@ -114,7 +114,7 @@ public class DiagramContent {
         return graphLoaded;
     }
 
-    public Boolean getCPicture() { return picture;}
+    public Boolean getPicture() { return picture;}
 
     public Long getDbId() {
         return dbId;
