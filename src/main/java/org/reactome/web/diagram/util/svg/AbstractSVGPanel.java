@@ -3,8 +3,13 @@ package org.reactome.web.diagram.util.svg;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Image;
+import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
 import org.reactome.web.diagram.util.svg.events.SVGPanZoomEvent;
+import org.reactome.web.diagram.util.svg.filters.FilterColour;
+import org.reactome.web.diagram.util.svg.filters.FilterFactory;
 import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 
@@ -19,10 +24,15 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     protected EventBus eventBus;
 
     protected static final float FRAME = 40;
+    protected static final String HOVERING_FILTER = "shadowFilter";
+    protected static final String SELECTION_FILTER = "selectionFilter";
+    protected static final String COMBINED_FILTER = "combinedFilter";
 
     protected OMSVGSVGElement svg;
     protected List<OMSVGElement> svgLayers;
     protected List<OMElement> entities;
+
+    protected OMSVGDefsElement baseDefs;
 
     protected OMSVGMatrix ctm;
     protected OMSVGMatrix initialTM;
@@ -34,6 +44,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     public AbstractSVGPanel(EventBus eventBus) {
         this.eventBus = eventBus;
         sb = new StringBuilder();
+        initFilters();
     }
 
     public void setSize(int width, int height) {
@@ -85,41 +96,31 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         return svg.createSVGMatrix().scale(zoom).translate(corX, corY);
     }
 
-//    protected OMElement getNodeById(OMElement parent, String id) {
-//        OMElement rtn = null;
-//        OMNodeList<OMNode> nodes = parent.getChildNodes();
-//        Iterator<OMNode> it = nodes.iterator();
-//        while (it.hasNext()) {
-//            OMNode node = it.next();
-//            if(node instanceof OMElement) {
-//                OMElement el = (OMElement) node;
-//                if(el.getId()!=null && el.getId().equals(id)) {
-//                    rtn = el;
-//                    break;
-//                }
-//            }
-//        }
-//        return rtn;
-//    }
+    protected void exportSVG(String stableId){
+        if(svg != null) {
+            Image image = new Image();
+            image.setUrl("data:image/svg+xml," + svg.getMarkup());
+            final ImageDownloadDialog downloadDialogBox = new ImageDownloadDialog(image, "svg", stableId);
+            downloadDialogBox.show();
+        }
+    }
 
     protected OMSVGPoint getCentrePoint() {
-        OMSVGPoint p = svg.createSVGPoint();
-        p.setX(getOffsetWidth()/2);
-        p.setY(getOffsetHeight()/2);
-
-        return p.matrixTransform(ctm.inverse());
+        return getTranslatedPoint(getOffsetWidth()/2, getOffsetHeight()/2);
     }
 
     protected OMSVGPoint getTranslatedPoint(MouseEvent event) {
-        OMSVGPoint p = svg.createSVGPoint();
-        p.setX(event.getX());
-        p.setY(event.getY());
+        return getTranslatedPoint(event.getX(), event.getY());
+    }
 
+    protected OMSVGPoint getTranslatedPoint(int x, int y) {
+        OMSVGPoint p = svg.createSVGPoint();
+        p.setX(x); p.setY(y);
         return p.matrixTransform(ctm.inverse());
     }
 
     protected List<OMSVGElement> getRootLayers() {
-        // Identify all layers by getting all top-level g elements
+        // Identify all layers by getting all top-level <g> elements
         List<OMSVGElement> svgLayers = new ArrayList<>();
         OMNodeList<OMNode> cNodes = svg.getChildNodes();
         for (OMNode node : cNodes) {
@@ -130,6 +131,21 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         return svgLayers;
     }
 
+    protected String hex2Rgb(String colorStr, float alpha) {
+        int r = Integer.valueOf( colorStr.substring( 1, 3 ), 16 );
+        int g = Integer.valueOf( colorStr.substring( 3, 5 ), 16 );
+        int b = Integer.valueOf( colorStr.substring( 5, 7 ), 16 );
+        float a = alpha >= 0 && alpha <= 1 ? alpha : 1.0f;
+        return "rgba(" + r + "," + g + "," + b + "," + NumberFormat.getFormat("#.#").format(a) + ")";
+    }
+
+    protected void initFilters() {
+        baseDefs = new OMSVGDefsElement();
+        baseDefs.appendChild(FilterFactory.getShadowFilter(HOVERING_FILTER));
+        baseDefs.appendChild(FilterFactory.getOutlineFilter(SELECTION_FILTER, FilterColour.BLUE));
+        baseDefs.appendChild(FilterFactory.getShadowWithOutlineFilter(COMBINED_FILTER, FilterColour.BLUE));
+//        baseDefs.appendChild(FilterFactory.combine(COMBINED_FILTER, FilterFactory.getShadowFilter(HOVERRING_FILTER), FilterFactory.getOutlineFilter(SELECTION_FILTER, FilterColour.BLUE)));
+    }
     protected void notifyAboutChangeInView() {
         if(svg != null && ctm !=null) {
             OMSVGPoint from = svg.createSVGPoint(0, 0);
