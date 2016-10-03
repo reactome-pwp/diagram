@@ -19,7 +19,7 @@ public class WidgetTest implements EntryPoint {
     private final DiagramViewer diagram;
     private static String currentPathway = "R-HSA-109581";//"R-HSA-5205647";
 //    private static String currentPathway = "R-HSA-5693567"; //Big one with plenty of overlap
-    private static String currentAnalysis = "MjAxNjA3MjEwOTAzNTFfOQ%3D%3D";
+    private static String currentAnalysis = "MjAxNjA5MzAwNTU3MjdfMg%3D%3D";
 
     private TextBox pathwayTB;
     private TextBox analysisTokenTB;
@@ -125,7 +125,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("ORA 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNjAzMjIxMzM5NDFfMTA%253D","TOTAL");
+                diagram.setAnalysisToken("MjAxNjA5MzAwNTU3MjdfMg==","TOTAL");
             }
         }));
 
@@ -137,7 +137,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("Exp 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNjAzMjIxNjM0NTdfMTI%253D","TOTAL");
+                diagram.setAnalysisToken("MjAxNjA5MzAwNTU5MDFfMw==","TOTAL");
             }
         }));
 
