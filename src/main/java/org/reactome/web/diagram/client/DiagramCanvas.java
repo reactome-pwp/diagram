@@ -141,7 +141,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         InteractorColours.initialise(eventBus);
 
         this.thumbnail = new DiagramThumbnail(eventBus);
-//        this.svgThumbnail = new SVGThumbnail(eventBus);
+        this.svgThumbnail = new SVGThumbnail(eventBus);
 
         this.initHandlers();
     }
@@ -743,7 +743,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         //SVG panel
         this.add(this.svgPanel = new SVGPanel(eventBus, width, height), 0, 0);
         //SVG Thumbnail
-//        this.add(this.svgThumbnail);
+        this.add(this.svgThumbnail);
 
         //Watermark
         this.addWatermark();
