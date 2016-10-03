@@ -56,7 +56,6 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
     private DiagramContext context;
     private RegExp regExp;
 
-
     private OMSVGDefsElement defs;
 
     private boolean isPanning;
