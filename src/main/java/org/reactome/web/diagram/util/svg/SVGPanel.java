@@ -278,7 +278,12 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         svg.addMouseDownHandler(this);
         svg.addMouseMoveHandler(this);
         svg.addMouseUpHandler(this);
-        svg.addDomHandler(SVGPanel.this, MouseWheelEvent.getType());
+
+        // !!! Important !!! //
+        // Adding the MouseWheelEvent directly on the SVG is not working
+        // on certain browsers. This is why we are adding the event handling
+        // on the wrapping div.
+        this.addDomHandler(this, MouseWheelEvent.getType());
 
         // Remove viewbox and set size
         svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
@@ -292,7 +297,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         }
 
         // Set initial translation matrix
-        initialTM = svg.getCTM();
+        initialTM = getInitialCTM();
         initialBB = svg.getBBox();
         ctm = initialTM;
         fitALL(false);

@@ -109,6 +109,15 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         return getTranslatedPoint(getOffsetWidth()/2, getOffsetHeight()/2);
     }
 
+    protected OMSVGMatrix getInitialCTM() {
+        OMSVGMatrix rtn = svg.getCTM();
+        if(rtn == null) {
+            //Get default initial transformation matrix;
+            rtn = svg.createSVGMatrix(1, 0, 0, 1, 0, 0);
+        }
+        return rtn;
+    }
+
     protected OMSVGPoint getTranslatedPoint(MouseEvent event) {
         return getTranslatedPoint(event.getX(), event.getY());
     }
