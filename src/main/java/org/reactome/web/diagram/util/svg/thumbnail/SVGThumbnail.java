@@ -139,7 +139,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
         svgLayers = getRootLayers();
 
         // Set initial translation matrix
-        initialTM = svg.getCTM();
+        initialTM = getInitialCTM();
         initialBB = svg.getBBox();
 
         OMSVGMatrix fitTM = calculateFitAll(FRAME);
