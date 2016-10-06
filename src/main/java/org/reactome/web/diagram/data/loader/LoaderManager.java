@@ -15,16 +15,21 @@ import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
 import org.reactome.web.diagram.handlers.InteractorsRequestCanceledHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
+import org.reactome.web.diagram.util.Console;
+import org.reactome.web.diagram.util.svg.events.SVGLoadedEvent;
+import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 /**
- * Implements a three step loading strategy
- * 1st step: Loads Diagram
- * 2nd step: Loads Graph
- * 3rd step: Loads Interactors (if INTERACTORS_RESOURCE is not null)
+ * Implements a combination of two series of steps.
+ * A: Load SVG for the diagram and use it
+ * B: If there is not SVG then it follows a three step loading strategy
+ *      1st step: Loads Diagram
+ *      2nd step: Loads Graph
+ *      3rd step: Loads Interactors (if INTERACTORS_RESOURCE is not null)
  *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler, InteractorsLoader.Handler,
+public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, GraphLoader.Handler, InteractorsLoader.Handler,
         InteractorsResourceChangedHandler, InteractorsRequestCanceledHandler,
         DiagramLoadedHandler {
 
@@ -37,6 +42,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
 
     private EventBus eventBus;
 
+    private SVGLoader svgLoader;
     private LayoutLoader layoutLoader;
     private GraphLoader graphLoader;
     private InteractorsLoader interactorsLoader;
@@ -45,6 +51,7 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
 
     public LoaderManager(EventBus eventBus) {
         this.eventBus = eventBus;
+        svgLoader = new SVGLoader(this);
         layoutLoader = new LayoutLoader(this);
         graphLoader = new GraphLoader(this);
         interactorsLoader = new InteractorsLoader(this);
@@ -65,6 +72,18 @@ public class LoaderManager implements LayoutLoader.Handler, GraphLoader.Handler,
 
     public void load(String stId) {
         cancel(); //First cancel possible loading process
+        svgLoader.load(stId);
+    }
+
+    @Override
+    public void onSvgLoaded(OMSVGSVGElement svg, long time) {
+        eventBus.fireEventFromSource(new SVGLoadedEvent(svg, time), this);
+        //Nothing else here. Plan A finishes if there is an SVG
+    }
+
+    @Override
+    public void onSvgLoaderError(String stId, Throwable exception) {
+        Console.info("NO SVG");
         layoutLoader.load(stId);
     }
 

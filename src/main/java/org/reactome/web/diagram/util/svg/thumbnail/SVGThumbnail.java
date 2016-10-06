@@ -7,7 +7,9 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.events.DiagramLoadRequestEvent;
+import org.reactome.web.diagram.events.DiagramLoadedEvent;
 import org.reactome.web.diagram.handlers.DiagramLoadRequestHandler;
+import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
 import org.reactome.web.diagram.util.svg.AbstractSVGPanel;
 import org.reactome.web.diagram.util.svg.events.SVGLoadedEvent;
 import org.reactome.web.diagram.util.svg.events.SVGPanZoomEvent;
@@ -23,8 +25,8 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequestHandler, SVGLoadedHandler,
-        MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler,
+public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequestHandler, DiagramLoadedHandler,
+        SVGLoadedHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler,
         SVGPanZoomHandler {
     private static final int HEIGHT = 75;
     private static final int FALLBACK_WIDTH = 100;
@@ -54,6 +56,13 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
 
     @Override
     public void onDiagramLoadRequest(DiagramLoadRequestEvent event) {
+        svg.getElement().removeFromParent();
+        svg = null;
+        clearThumbnail();
+    }
+
+    @Override
+    public void onDiagramLoaded(DiagramLoadedEvent event) {
         svg.getElement().removeFromParent();
         svg = null;
         clearThumbnail();
@@ -196,6 +205,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
 
     private void initHandlers() {
         eventBus.addHandler(DiagramLoadRequestEvent.TYPE, this);
+        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
         eventBus.addHandler(SVGLoadedEvent.TYPE, this);
         eventBus.addHandler(SVGPanZoomEvent.TYPE, this);
     }

@@ -10,8 +10,8 @@ import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.analysis.client.model.PathwaySummary;
-import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.loader.SVGLoader;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
@@ -20,6 +20,7 @@ import org.reactome.web.diagram.util.svg.animation.SVGAnimation;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimationHandler;
 import org.reactome.web.diagram.util.svg.events.SVGLoadedEvent;
 import org.reactome.web.diagram.util.svg.events.SVGThumbnailAreaMovedEvent;
+import org.reactome.web.diagram.util.svg.handlers.SVGLoadedHandler;
 import org.reactome.web.diagram.util.svg.handlers.SVGThumbnailAreaMovedHandler;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
 import org.reactome.web.pwp.model.classes.Pathway;
@@ -37,10 +38,10 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, DatabaseObjectCreatedHandler,
+public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
-        LayoutLoadedHandler, DiagramLoadRequestHandler, ControlActionHandler, CanvasExportRequestedHandler,
-        SVGAnimationHandler, SVGThumbnailAreaMovedHandler, DoubleClickHandler,
+        DiagramLoadRequestHandler, DiagramLoadedHandler, ControlActionHandler, CanvasExportRequestedHandler,
+        SVGLoadedHandler, SVGAnimationHandler, SVGThumbnailAreaMovedHandler, DoubleClickHandler,
         AnalysisResultLoadedHandler, AnalysisProfileChangedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler {
 
     private static final String STID_PATTERN = "R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
@@ -78,15 +79,9 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
         this.getElement().getStyle().setBackgroundColor("green");
 
         regExp = RegExp.compile(STID_PATTERN);
-        svgLoader = new SVGLoader(this);
 
         initHandlers();
         setSize(width, height);
-    }
-
-    public void load(String cPicture) {
-        setVisible(false);
-        svgLoader.load(cPicture);
     }
 
     @Override
@@ -173,15 +168,6 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
     }
 
     @Override
-    public void onLayoutLoaded(LayoutLoadedEvent event) {
-        context = event.getContext();
-        DiagramContent content = context.getContent();
-        if(content.getPicture() != null && content.getPicture()) {
-            load(content.getStableId());
-        }
-    }
-
-    @Override
     public void onMouseDown(MouseDownEvent event) {
         event.preventDefault(); event.stopPropagation();
         if(animation!=null) animation.cancel();
@@ -263,12 +249,9 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
     }
 
     @Override
-    public void onSvgLoaded(OMSVGSVGElement svg, long time) {
+    public void onSVGLoaded(SVGLoadedEvent event) {
         setVisible(true);
-        this.svg = svg;
-
-        //TODO: to be removed and added in the LoaderManager
-        eventBus.fireEventFromSource(new SVGLoadedEvent(svg, time), this);
+        this.svg = event.getSVG();
 
         entities = new ArrayList();
         OMNodeList<OMElement> children = svg.getElementsByTagName(new OMSVGGElement().getTagName());
@@ -316,8 +299,7 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
     }
 
     @Override
-    public void onSvgLoaderError(Throwable exception) {
-        Console.error("Error loading SVG...");
+    public void onDiagramLoaded(DiagramLoadedEvent event) {
         setVisible(false); //fall back to the green boxes diagram
         svg = null;
     }
@@ -418,9 +400,10 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
 
     private void initHandlers() {
         eventBus.addHandler(DiagramLoadRequestEvent.TYPE, this);
-        eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         eventBus.addHandler(ControlActionEvent.TYPE, this);
         eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
+        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        eventBus.addHandler(SVGLoadedEvent.TYPE, this);
         eventBus.addHandler(SVGThumbnailAreaMovedEvent.TYPE, this);
 
         eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);

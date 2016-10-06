@@ -23,7 +23,7 @@
         <reactome.web.carrousel>1.0.0</reactome.web.carrousel>
         <reactome.web.quadtree>1.1.0</reactome.web.quadtree>
 
-        <reactome.utils.version>1.0.0</reactome.utils.version>
+        <reactome.utils.version>1.0.2</reactome.utils.version>
     </properties>
 
     <dependencies>
@@ -69,6 +69,13 @@
             <groupId>org.reactome.server.utils</groupId>
             <artifactId>reactome-utils</artifactId>
             <version>${reactome.utils.version}</version>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- SVG support -->

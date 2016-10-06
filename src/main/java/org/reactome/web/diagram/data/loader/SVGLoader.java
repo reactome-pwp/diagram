@@ -1,8 +1,7 @@
-package org.reactome.web.diagram.util.svg;
+package org.reactome.web.diagram.data.loader;
 
 import com.google.gwt.http.client.*;
 import org.reactome.web.diagram.client.DiagramFactory;
-import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
 import org.vectomatic.dom.svg.utils.ParserException;
@@ -14,7 +13,7 @@ public class SVGLoader implements RequestCallback {
 
     public interface Handler {
         void onSvgLoaded(OMSVGSVGElement svg, long time);
-        void onSvgLoaderError(Throwable exception);
+        void onSvgLoaderError(String stId, Throwable exception);
     }
 
     private static String PREFIX = DiagramFactory.SERVER + "/svg/";
@@ -23,6 +22,7 @@ public class SVGLoader implements RequestCallback {
 
     private Handler handler;
     private Request request;
+    private String stId;
 
     SVGLoader(Handler handler) {
         this.handler = handler;
@@ -30,21 +30,24 @@ public class SVGLoader implements RequestCallback {
 
     public void cancel(){
         if(this.request!=null && this.request.isPending()){
+            this.stId = null;
             this.request.cancel();
         }
     }
 
-    void load(String pictureName){
-        if(!pictureName.endsWith(".svg")) {
-            pictureName = pictureName + ".svg";
+    void load(String stId){
+        this.stId = stId;
+        
+        if(!stId.endsWith(".svg")) {
+            stId = stId + ".svg";
         }
 
-        String url = PREFIX + pictureName +  SUFFIX;
+        String url = PREFIX + stId +  SUFFIX;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             this.request = requestBuilder.sendRequest(null, this);
         } catch (RequestException e) {
-            this.handler.onSvgLoaderError(e);
+            this.handler.onSvgLoaderError(stId, e);
         }
     }
 
@@ -58,16 +61,16 @@ public class SVGLoader implements RequestCallback {
                     long time = System.currentTimeMillis() - start;
                     this.handler.onSvgLoaded(svg, time);
                 } catch (ParserException e) {
-                    this.handler.onSvgLoaderError(e);
+                    this.handler.onSvgLoaderError(stId, e);
                 }
                 break;
             default:
-                this.handler.onSvgLoaderError(new Exception(response.getStatusText()));
+                this.handler.onSvgLoaderError(stId, new Exception(response.getStatusText()));
         }
     }
 
     @Override
     public void onError(Request request, Throwable exception) {
-        this.handler.onSvgLoaderError(exception);
+        this.handler.onSvgLoaderError(stId, exception);
     }
 }
