@@ -18,7 +18,6 @@ import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimation;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimationHandler;
-import org.reactome.web.diagram.util.svg.events.SVGLoadedEvent;
 import org.reactome.web.diagram.util.svg.events.SVGThumbnailAreaMovedEvent;
 import org.reactome.web.diagram.util.svg.handlers.SVGThumbnailAreaMovedHandler;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
@@ -267,8 +266,8 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
         setVisible(true);
         this.svg = svg;
 
-        //TODO: to be removed and added in the LoaderManager
-        eventBus.fireEventFromSource(new SVGLoadedEvent(svg, time), this);
+//        //TODO: to be removed and added in the LoaderManager
+//        eventBus.fireEventFromSource(new SVGLoadedEvent(svg, time), this);
 
         entities = new ArrayList();
         OMNodeList<OMElement> children = svg.getElementsByTagName(new OMSVGGElement().getTagName());
@@ -295,7 +294,12 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
         svg.addMouseDownHandler(this);
         svg.addMouseMoveHandler(this);
         svg.addMouseUpHandler(this);
-        svg.addDomHandler(SVGPanel.this, MouseWheelEvent.getType());
+
+        // !!! Important !!! //
+        // Adding the MouseWheelEvent directly on the SVG is not working
+        // on certain browsers. This is why we are adding the event handling
+        // on the wrapping div.
+        this.addDomHandler(this, MouseWheelEvent.getType());
 
         // Remove viewbox and set size
         svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
@@ -309,7 +313,7 @@ public class SVGPanel extends AbstractSVGPanel implements SVGLoader.Handler, Dat
         }
 
         // Set initial translation matrix
-        initialTM = svg.getCTM();
+        initialTM = getInitialCTM();
         initialBB = svg.getBBox();
         ctm = initialTM;
         fitALL(false);
