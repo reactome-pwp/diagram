@@ -48,7 +48,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
 
     private static final String CLIPPING_PATH = "CLIPPING_PATH_";
     private static final String CLIPPING_RECT = "CLIPPING_RECT_";
-    private static final float MIN_OVERLAY = 0.1f;
+    private static final float MIN_OVERLAY = 0.05f;
 
     private static final String CURSOR = "cursor: pointer;";
     private static final float MAX_ZOOM = 8.0f;
@@ -76,7 +76,6 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     public SVGPanel(EventBus eventBus, int width, int height) {
         super(eventBus);
         this.getElement().addClassName("pwp-SVGPanel");
-        this.getElement().getStyle().setBackgroundColor("green");
 
         regExp = RegExp.compile(STID_PATTERN);
 
@@ -143,7 +142,8 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
 
     @Override
     public void onDiagramExportRequested(CanvasExportRequestedEvent event) {
-        exportSVG(context.getContent().getStableId());
+//        exportSVG(context.getContent().getStableId());
+        exportSVG(svg.getLocalName());
     }
 
     @Override
