@@ -115,6 +115,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
 
     @Override
     public void onSVGLoaded(SVGLoadedEvent event) {
+        setVisible(true);
         svg = (OMSVGSVGElement) event.getSVG().cloneNode(true);
 
         from = svg.createSVGPoint();
@@ -226,7 +227,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
 
     private void setStyle() {
         Style style = this.getElement().getStyle();
-        style.setBackgroundColor("blue");
+        style.setBackgroundColor("white");
         style.setBorderStyle(Style.BorderStyle.SOLID);
         style.setBorderWidth(1, Style.Unit.PX);
         style.setBorderColor("grey");
