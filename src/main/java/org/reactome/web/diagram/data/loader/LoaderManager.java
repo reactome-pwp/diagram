@@ -3,7 +3,6 @@ package org.reactome.web.diagram.data.loader;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.client.DiagramFactory;
-import org.reactome.web.diagram.data.DiagramContent;
 import org.reactome.web.diagram.data.DiagramContentFactory;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.raw.Graph;
@@ -46,7 +45,6 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     private LayoutLoader layoutLoader;
     private GraphLoader graphLoader;
     private InteractorsLoader interactorsLoader;
-    private DiagramContent content;
     private DiagramContext context;
 
     public LoaderManager(EventBus eventBus) {
@@ -67,14 +65,13 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
         layoutLoader.cancel();
         graphLoader.cancel();
         interactorsLoader.cancel();
-        content = null;
         context = null;
     }
 
     public void load(String identifier) {
         cancel(); //First cancel possible loading process
         eventBus.fireEventFromSource(new ContentRequestedEvent(identifier), this);
-        DiagramContext context = this.contextMap.get(identifier);
+        context = this.contextMap.get(identifier);
         if (context != null) {
             eventBus.fireEventFromSource(new ContentLoadedEvent(context), this);
         } else {
@@ -104,12 +101,11 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     public void layoutLoaded(Diagram diagram, long time) {
         //This is querying the server so the following code is executed straight forward
         long start = System.currentTimeMillis();
-        graphLoader.load(diagram.getStableId());
-        content = DiagramContentFactory.getDiagramContent(diagram);
-        DiagramContext context = new DiagramContext(content);
+        DiagramContext context = new DiagramContext(DiagramContentFactory.getDiagramContent(diagram));
         //caching the context
         contextMap.put(context.getContent().getStableId(), context);
         this.context = context;
+        graphLoader.load(diagram.getStableId());
         time += System.currentTimeMillis() - start;
         eventBus.fireEventFromSource(new LayoutLoadedEvent(context, time), this);
     }
@@ -122,9 +118,9 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     @Override
     public void graphLoaded(Graph graph, long time) {
         long start = System.currentTimeMillis();
-        DiagramContentFactory.fillGraphContent(content, graph);
+        DiagramContentFactory.fillGraphContent(context.getContent(), graph);
         time += System.currentTimeMillis() - start;
-        eventBus.fireEventFromSource(new GraphLoadedEvent(content, time), this);
+        eventBus.fireEventFromSource(new GraphLoadedEvent(context.getContent(), time), this);
         //Once the graph is loaded the ContentLoadedEvent can be fired
         eventBus.fireEventFromSource(new ContentLoadedEvent(context), this);
     }
@@ -153,7 +149,7 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
         INTERACTORS_RESOURCE = event.getResource();
         interactorsLoader.cancel();
         if (INTERACTORS_RESOURCE != null && !context.getInteractors().isInteractorResourceCached(INTERACTORS_RESOURCE.getIdentifier())) {
-            interactorsLoader.load(content, INTERACTORS_RESOURCE);
+            interactorsLoader.load(context.getContent(), INTERACTORS_RESOURCE);
         }
     }
 
@@ -166,7 +162,6 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     public void onContentLoaded(ContentLoadedEvent event) {
         if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
             context = event.getContext();
-            content = context.getContent();
             if (INTERACTORS_RESOURCE != null) {   //Checking here so no error message is displayed in this case
                 //This fakes a resource changed so the control will show the loading message
                 //The behaviour of the three steps loading continues as expected
