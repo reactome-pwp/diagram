@@ -40,7 +40,7 @@ import java.util.*;
 @SuppressWarnings("FieldCanBeLocal")
 public class InteractorsTabPanel extends Composite implements ClickHandler, ValueChangeHandler, InteractorsResourceLoader.Handler,
         InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler,
-        DiagramLoadedHandler, DiagramRequestedHandler,
+        ContentLoadedHandler, ContentRequestedHandler,
         InsertItemDialog.Handler {
     private static int RESOURCES_REFRESH = 600000; // Update every 10 minutes
 
@@ -168,14 +168,16 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     }
 
     @Override
-    public void onDiagramRequested(DiagramRequestedEvent event) {
+    public void onContentRequested(ContentRequestedEvent event) {
         context = null;
         enableDownloadButton(false);
     }
 
     @Override
-    public void onDiagramLoaded(DiagramLoadedEvent event) {
-        context = event.getContext();
+    public void onContentLoaded(ContentLoadedEvent event) {
+        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+            context = event.getContext();
+        }
     }
 
     @Override
@@ -258,8 +260,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     }
 
     private void initialiseHandlers() {
-        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
-        eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
+        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
         eventBus.addHandler(InteractorsErrorEvent.TYPE, this);
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);

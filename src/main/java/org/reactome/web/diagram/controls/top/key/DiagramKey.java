@@ -35,7 +35,7 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class DiagramKey extends AbstractMenuDialog implements GraphObjectHoveredHandler, GraphObjectSelectedHandler,
-        DiagramRequestedHandler, DiagramProfileChangedHandler, ControlActionHandler {
+        ContentRequestedHandler, DiagramProfileChangedHandler, ControlActionHandler {
 
     private static final Double FACTOR = 0.82;
     private static final Coordinate OFFSET = CoordinateFactory.get(0, 0);
@@ -168,7 +168,7 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
         this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
         this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
         this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         this.eventBus.addHandler(ControlActionEvent.TYPE, this);
     }
 
@@ -192,7 +192,7 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
     }
 
     @Override
-    public void onDiagramRequested(DiagramRequestedEvent event) {
+    public void onContentRequested(ContentRequestedEvent event) {
 
     }
 

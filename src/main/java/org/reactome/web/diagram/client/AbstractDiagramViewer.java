@@ -51,8 +51,8 @@ public abstract class AbstractDiagramViewer extends ResizeComposite implements D
     }
 
     @Override
-    public HandlerRegistration addDiagramLoadedHandler(DiagramLoadedHandler handler) {
-        return this.addHandler(handler, DiagramLoadedEvent.TYPE);
+    public HandlerRegistration addDiagramLoadedHandler(ContentLoadedHandler handler) {
+        return this.addHandler(handler, ContentLoadedEvent.TYPE);
     }
 
     @Override

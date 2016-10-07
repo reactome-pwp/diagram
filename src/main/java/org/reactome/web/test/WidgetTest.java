@@ -7,8 +7,8 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.client.DiagramViewer;
-import org.reactome.web.diagram.events.DiagramLoadedEvent;
-import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
+import org.reactome.web.diagram.events.ContentLoadedEvent;
+import org.reactome.web.diagram.handlers.ContentLoadedHandler;
 import org.reactome.web.diagram.util.Console;
 
 /**
@@ -46,9 +46,9 @@ public class WidgetTest implements EntryPoint {
                         pathwayTB.setValue(currentPathway);
                     }
                 });
-                diagram.addDiagramLoadedHandler(new DiagramLoadedHandler() {
+                diagram.addDiagramLoadedHandler(new ContentLoadedHandler() {
                     @Override
-                    public void onDiagramLoaded(DiagramLoadedEvent event) {
+                    public void onContentLoaded(ContentLoadedEvent event) {
 //                        diagram.flagItems("NODAL");
                     }
                 });

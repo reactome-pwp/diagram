@@ -8,11 +8,11 @@ import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.events.AnalysisResetEvent;
 import org.reactome.web.diagram.events.AnalysisResultLoadedEvent;
 import org.reactome.web.diagram.events.AnalysisResultRequestedEvent;
-import org.reactome.web.diagram.events.DiagramRequestedEvent;
+import org.reactome.web.diagram.events.ContentRequestedEvent;
 import org.reactome.web.diagram.handlers.AnalysisResetHandler;
 import org.reactome.web.diagram.handlers.AnalysisResultLoadedHandler;
 import org.reactome.web.diagram.handlers.AnalysisResultRequestedHandler;
-import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
+import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 
 
 /**
@@ -20,7 +20,7 @@ import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
  */
 public class EnrichmentControl extends LegendPanel implements ClickHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler,
-        DiagramRequestedHandler {
+        ContentRequestedHandler {
 
     private InlineLabel message;
     private PwpButton closeBtn;
@@ -54,7 +54,7 @@ public class EnrichmentControl extends LegendPanel implements ClickHandler,
         this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(ContentRequestedEvent.TYPE, this);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class EnrichmentControl extends LegendPanel implements ClickHandler,
     }
 
     @Override
-    public void onDiagramRequested(DiagramRequestedEvent event) {
+    public void onContentRequested(ContentRequestedEvent event) {
         this.hide();
     }
 }

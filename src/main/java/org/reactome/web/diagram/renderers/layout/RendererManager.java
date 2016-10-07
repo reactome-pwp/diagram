@@ -2,9 +2,9 @@ package org.reactome.web.diagram.renderers.layout;
 
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.events.DiagramLoadedEvent;
+import org.reactome.web.diagram.events.ContentLoadedEvent;
 import org.reactome.web.diagram.events.DiagramZoomEvent;
-import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
+import org.reactome.web.diagram.handlers.ContentLoadedHandler;
 import org.reactome.web.diagram.handlers.DiagramZoomHandler;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.layout.s000.*;
@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class RendererManager implements DiagramZoomHandler, DiagramLoadedHandler {
+public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler {
 
     private static RendererManager manager;
 
@@ -42,7 +42,7 @@ public class RendererManager implements DiagramZoomHandler, DiagramLoadedHandler
 
     private void initHandlers(){
         this.eventBus.addHandler(DiagramZoomEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(ContentLoadedEvent.TYPE, this);
     }
 
     public static void initialise(EventBus eventBus) {
@@ -180,8 +180,10 @@ public class RendererManager implements DiagramZoomHandler, DiagramLoadedHandler
     }
 
     @Override
-    public void onDiagramLoaded(DiagramLoadedEvent event) {
-        this.setFactor(event.getContext().getDiagramStatus().getFactor());
+    public void onContentLoaded(ContentLoadedEvent event) {
+        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+            this.setFactor(event.getContext().getDiagramStatus().getFactor());
+        }
     }
 
     private void setFactor(double factor) {

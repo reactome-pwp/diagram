@@ -24,7 +24,7 @@ import java.util.Objects;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class TooltipContainer extends AbsolutePanel implements DiagramRequestedHandler, DiagramLoadedHandler,
+public class TooltipContainer extends AbsolutePanel implements ContentRequestedHandler, ContentLoadedHandler,
         GraphObjectHoveredHandler, EntityDecoratorHoveredHandler, InteractorHoveredHandler, InteractorDraggedHandler,
         DiagramZoomHandler, DiagramPanningHandler {
 
@@ -60,9 +60,9 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     private void initHandlers() {
         eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
         eventBus.addHandler(EntityDecoratorHoveredEvent.TYPE, this);
-        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
         eventBus.addHandler(DiagramPanningEvent.TYPE, this);
-        eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramZoomEvent.TYPE, this);
         eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
         eventBus.addHandler(InteractorDraggedEvent.TYPE, this);
@@ -104,8 +104,10 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     }
 
     @Override
-    public void onDiagramLoaded(DiagramLoadedEvent event) {
-        this.context = event.getContext();
+    public void onContentLoaded(ContentLoadedEvent event) {
+        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+            this.context = event.getContext();
+        }
     }
 
     @Override
@@ -117,7 +119,7 @@ public class TooltipContainer extends AbsolutePanel implements DiagramRequestedH
     }
 
     @Override
-    public void onDiagramRequested(DiagramRequestedEvent event) {
+    public void onContentRequested(ContentRequestedEvent event) {
         this.context = null;
     }
 

@@ -9,19 +9,19 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.events.ContentLoadedEvent;
+import org.reactome.web.diagram.events.ContentRequestedEvent;
 import org.reactome.web.diagram.events.ControlActionEvent;
-import org.reactome.web.diagram.events.DiagramLoadedEvent;
-import org.reactome.web.diagram.events.DiagramRequestedEvent;
 import org.reactome.web.diagram.events.LayoutLoadedEvent;
-import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
-import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
+import org.reactome.web.diagram.handlers.ContentLoadedHandler;
+import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class NavigationControlPanel extends AbsolutePanel implements ClickHandler,
-        DiagramRequestedHandler, LayoutLoadedHandler, DiagramLoadedHandler {
+        ContentRequestedHandler, LayoutLoadedHandler, ContentLoadedHandler {
 
     protected EventBus eventBus;
 
@@ -82,12 +82,12 @@ public class NavigationControlPanel extends AbsolutePanel implements ClickHandle
     }
 
     @Override
-    public void onDiagramRequested(DiagramRequestedEvent event) {
+    public void onContentRequested(ContentRequestedEvent event) {
         this.setVisible(false);
     }
 
     @Override
-    public void onDiagramLoaded(DiagramLoadedEvent event) {
+    public void onContentLoaded(ContentLoadedEvent event) {
         this.setVisible(true);
     }
 
@@ -97,8 +97,8 @@ public class NavigationControlPanel extends AbsolutePanel implements ClickHandle
     }
 
     private void initHandlers() {
-        this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(ContentRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(ContentLoadedEvent.TYPE, this);
         this.eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
     }
 

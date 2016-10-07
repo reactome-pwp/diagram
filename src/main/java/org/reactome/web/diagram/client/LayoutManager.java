@@ -6,12 +6,12 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.events.DiagramLoadedEvent;
-import org.reactome.web.diagram.events.DiagramRequestedEvent;
+import org.reactome.web.diagram.events.ContentLoadedEvent;
+import org.reactome.web.diagram.events.ContentRequestedEvent;
 import org.reactome.web.diagram.events.EntityDecoratorHoveredEvent;
 import org.reactome.web.diagram.events.GraphObjectHoveredEvent;
-import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
-import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
+import org.reactome.web.diagram.handlers.ContentLoadedHandler;
+import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.layout.Renderer;
 import org.reactome.web.diagram.renderers.layout.RendererManager;
@@ -21,7 +21,7 @@ import java.util.*;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class LayoutManager implements DiagramLoadedHandler, DiagramRequestedHandler {
+public class LayoutManager implements ContentLoadedHandler, ContentRequestedHandler {
 
     private EventBus eventBus;
 
@@ -38,8 +38,8 @@ public class LayoutManager implements DiagramLoadedHandler, DiagramRequestedHand
 
     @SuppressWarnings("Duplicates")
     private void addHandlers() {
-        this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(ContentLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(ContentRequestedEvent.TYPE, this);
     }
 
     public Set<DiagramObject> getFlagged() {
@@ -177,12 +177,14 @@ public class LayoutManager implements DiagramLoadedHandler, DiagramRequestedHand
     }
 
     @Override
-    public void onDiagramLoaded(DiagramLoadedEvent event) {
-        context = event.getContext();
+    public void onContentLoaded(ContentLoadedEvent event) {
+        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+            context = event.getContext();
+        }
     }
 
     @Override
-    public void onDiagramRequested(DiagramRequestedEvent event) {
+    public void onContentRequested(ContentRequestedEvent event) {
         context = null;
     }
 

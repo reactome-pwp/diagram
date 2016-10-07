@@ -10,7 +10,7 @@ import org.reactome.web.diagram.handlers.*;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class DiagramInfo extends AbsolutePanel implements DiagramRenderedHandler,
-        LayoutLoadedHandler, GraphLoadedHandler, DiagramRequestedHandler, DiagramLoadedHandler {
+        LayoutLoadedHandler, GraphLoadedHandler, ContentRequestedHandler, ContentLoadedHandler {
 
     private EventBus eventBus;
 
@@ -35,34 +35,35 @@ public class DiagramInfo extends AbsolutePanel implements DiagramRenderedHandler
         this.initHandlers();
     }
 
-
-    private void initHandlers(){
-        this.eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+    private void initHandlers() {
+        this.eventBus.addHandler(ContentLoadedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRenderedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         this.eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         this.eventBus.addHandler(GraphLoadedEvent.TYPE, this);
     }
 
 
     @Override
-    public void onDiagramLoaded(DiagramLoadedEvent event) {
-        if(!event.getContext().getContent().getStableId().equals(stId)){
-            this.layoutTime.setText("0 ms");
-            this.graphTime.setText("0 ms");
-            this.stId = event.getContext().getContent().getStableId();
+    public void onContentLoaded(ContentLoadedEvent event) {
+        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+            if (!event.getContext().getContent().getStableId().equals(stId)) {
+                this.layoutTime.setText("0 ms");
+                this.graphTime.setText("0 ms");
+                this.stId = event.getContext().getContent().getStableId();
+            }
         }
     }
 
     @Override
     public void onDiagramRendered(DiagramRenderedEvent event) {
         this.renderTime.setText((int) event.getTime() + " ms");
-        this.items.setText(event.getItems()+"");
+        this.items.setText(event.getItems() + "");
     }
 
 
     @Override
-    public void onDiagramRequested(DiagramRequestedEvent event) {
+    public void onContentRequested(ContentRequestedEvent event) {
         this.items.setText("Loading...");
         this.renderTime.setText("Loading...");
         this.layoutTime.setText("Loading...");
@@ -80,14 +81,14 @@ public class DiagramInfo extends AbsolutePanel implements DiagramRenderedHandler
         this.graphTime.setText((int) event.getTime() + " ms");
     }
 
-    private Widget getInfoPanel(String title, Widget holder){
+    private Widget getInfoPanel(String title, Widget holder) {
         FlowPanel fp = new FlowPanel();
         fp.add(new InlineLabel(title + ": "));
         fp.add(holder);
         return fp;
     }
 
-    private void setStyle(double w, double h){
+    private void setStyle(double w, double h) {
         this.setWidth(w + "px"); this.setHeight(h + "px");
         Style style = this.getElement().getStyle();
         style.setBackgroundColor("white");

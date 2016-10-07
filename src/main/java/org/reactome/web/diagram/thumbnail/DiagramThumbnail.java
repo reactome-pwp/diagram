@@ -27,7 +27,7 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelectedHandler, GraphObjectHoveredHandler,
-        DiagramRenderedHandler, DiagramZoomHandler, DiagramPanningHandler, ViewportResizedHandler, DiagramRequestedHandler,
+        DiagramRenderedHandler, DiagramZoomHandler, DiagramPanningHandler, ViewportResizedHandler, ContentRequestedHandler,
         MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler,
         DiagramProfileChangedHandler {
 
@@ -71,7 +71,7 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
         this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
         this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramRenderedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramZoomEvent.TYPE, this);
         this.eventBus.addHandler(DiagramPanningEvent.TYPE, this);
         this.eventBus.addHandler(ViewportResizedEvent.TYPE, this);
@@ -117,7 +117,7 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
     }
 
     @Override
-    public void onDiagramRequested(DiagramRequestedEvent event) {
+    public void onContentRequested(ContentRequestedEvent event) {
         this.content = null;
         this.clearThumbnail();
     }

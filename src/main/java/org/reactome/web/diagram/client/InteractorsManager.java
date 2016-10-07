@@ -14,8 +14,8 @@ import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.events.*;
-import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
-import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
+import org.reactome.web.diagram.handlers.ContentLoadedHandler;
+import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.handlers.InteractorsCollapsedHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 import org.reactome.web.diagram.renderers.interactor.InteractorRenderer;
@@ -29,7 +29,7 @@ import java.util.*;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class InteractorsManager implements DiagramLoadedHandler, DiagramRequestedHandler,
+public class InteractorsManager implements ContentLoadedHandler, ContentRequestedHandler,
         InteractorsCollapsedHandler, InteractorsResourceChangedHandler {
 
     private static final int MAX_INTERACTORS = 10;
@@ -48,8 +48,8 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     }
 
     private void addHandlers() {
-        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
-        eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
+        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
     }
@@ -99,12 +99,14 @@ public class InteractorsManager implements DiagramLoadedHandler, DiagramRequeste
     }
 
     @Override
-    public void onDiagramLoaded(DiagramLoadedEvent event) {
-        context = event.getContext();
+    public void onContentLoaded(ContentLoadedEvent event) {
+        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+            context = event.getContext();
+        }
     }
 
     @Override
-    public void onDiagramRequested(DiagramRequestedEvent event) {
+    public void onContentRequested(ContentRequestedEvent event) {
         context = null;
     }
 

@@ -38,7 +38,7 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class ExpressionLegend extends LegendPanel implements ClickHandler, MouseOverHandler, MouseOutHandler,
-        AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, DiagramRequestedHandler,
+        AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ContentRequestedHandler,
         ExpressionValueHoveredHandler, AnalysisProfileChangedHandler, ExpressionColumnChangedHandler,
         GraphObjectSelectedHandler, GraphObjectHoveredHandler, InteractorHoveredHandler {
 
@@ -167,7 +167,7 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
     }
 
     @Override
-    public void onDiagramRequested(DiagramRequestedEvent event) {
+    public void onContentRequested(ContentRequestedEvent event) {
         this.expHovered = null;
         this.hovered = null;
         this.selected = null;
@@ -335,7 +335,7 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
 
     private void initHandlers() {
         eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
-        eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
         eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
         eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);

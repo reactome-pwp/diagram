@@ -18,9 +18,7 @@ import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimation;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimationHandler;
-import org.reactome.web.diagram.util.svg.events.SVGLoadedEvent;
 import org.reactome.web.diagram.util.svg.events.SVGThumbnailAreaMovedEvent;
-import org.reactome.web.diagram.util.svg.handlers.SVGLoadedHandler;
 import org.reactome.web.diagram.util.svg.handlers.SVGThumbnailAreaMovedHandler;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
 import org.reactome.web.pwp.model.classes.Pathway;
@@ -38,10 +36,10 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedHandler,
+public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedHandler, ContentRequestedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
-        DiagramLoadRequestHandler, DiagramLoadedHandler, ControlActionHandler, CanvasExportRequestedHandler,
-        SVGLoadedHandler, SVGAnimationHandler, SVGThumbnailAreaMovedHandler, DoubleClickHandler,
+        ContentLoadedHandler, ControlActionHandler, CanvasExportRequestedHandler,
+        SVGAnimationHandler, SVGThumbnailAreaMovedHandler, DoubleClickHandler,
         AnalysisResultLoadedHandler, AnalysisProfileChangedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler {
 
     private static final String STID_PATTERN = "R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
@@ -130,7 +128,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
         if(databaseObject instanceof Pathway) {
             Pathway p = (Pathway) databaseObject;
-            eventBus.fireEventFromSource(new DiagramLoadRequestEvent(p), this);
+            eventBus.fireEventFromSource(new ContentRequestedEvent(p.getDbId() + ""), this);
         }
     }
 
@@ -147,10 +145,67 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     }
 
     @Override
-    public void onDiagramLoadRequest(DiagramLoadRequestEvent event) {
+    public void onContentRequested(ContentRequestedEvent event) {
         setVisible(false);
         context = null;
         svg = null;
+    }
+
+    @Override
+    public void onContentLoaded(ContentLoadedEvent event) {
+        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.SVG) {
+            setVisible(true);
+            this.svg = event.getSVG();
+
+            entities = new ArrayList();
+            OMNodeList<OMElement> children = svg.getElementsByTagName(new OMSVGGElement().getTagName());
+            for (OMElement child : children) {
+                if(regExp.test(child.getId())) {
+                    entities.add(child);
+                    child.addDomHandler(SVGPanel.this, MouseUpEvent.getType());
+                    child.addDomHandler(SVGPanel.this, MouseOverEvent.getType());
+                    child.addDomHandler(SVGPanel.this, MouseOutEvent.getType());
+                    child.addDomHandler(SVGPanel.this, DoubleClickEvent.getType());
+                    // Set the pointer to the active regions
+                    child.setAttribute("style", CURSOR);
+                }
+            }
+
+            // Identify all layers by getting all top-level g elements
+            svgLayers = getRootLayers();
+
+            // Clone and attach defs (filters - clipping paths) to the root SVG structure
+            defs = (OMSVGDefsElement) baseDefs.cloneNode(true);
+            svg.appendChild(defs);
+
+            // Add the event handlers
+            svg.addMouseDownHandler(this);
+            svg.addMouseMoveHandler(this);
+            svg.addMouseUpHandler(this);
+
+            // !!! Important !!! //
+            // Adding the MouseWheelEvent directly on the SVG is not working
+            // on certain browsers. This is why we are adding the event handling
+            // on the wrapping div.
+            this.addDomHandler(this, MouseWheelEvent.getType());
+
+            // Remove viewbox and set size
+            svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
+            setSize(getOffsetWidth(), getOffsetHeight());
+
+            Element div = SVGPanel.this.getElement();
+            if(div.hasChildNodes()) {
+                div.replaceChild(svg.getElement(), div.getFirstChild());
+            } else {
+                div.appendChild(svg.getElement());
+            }
+
+            // Set initial translation matrix
+            initialTM = getInitialCTM();
+            initialBB = svg.getBBox();
+            ctm = initialTM;
+            fitALL(false);
+        }
     }
 
     @Override
@@ -249,67 +304,6 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     }
 
     @Override
-    public void onSVGLoaded(SVGLoadedEvent event) {
-        setVisible(true);
-        this.svg = event.getSVG();
-
-        entities = new ArrayList();
-        OMNodeList<OMElement> children = svg.getElementsByTagName(new OMSVGGElement().getTagName());
-        for (OMElement child : children) {
-            if(regExp.test(child.getId())) {
-                entities.add(child);
-                child.addDomHandler(SVGPanel.this, MouseUpEvent.getType());
-                child.addDomHandler(SVGPanel.this, MouseOverEvent.getType());
-                child.addDomHandler(SVGPanel.this, MouseOutEvent.getType());
-                child.addDomHandler(SVGPanel.this, DoubleClickEvent.getType());
-                // Set the pointer to the active regions
-                child.setAttribute("style", CURSOR);
-            }
-        }
-
-        // Identify all layers by getting all top-level g elements
-        svgLayers = getRootLayers();
-
-        // Clone and attach defs (filters - clipping paths) to the root SVG structure
-        defs = (OMSVGDefsElement) baseDefs.cloneNode(true);
-        svg.appendChild(defs);
-
-        // Add the event handlers
-        svg.addMouseDownHandler(this);
-        svg.addMouseMoveHandler(this);
-        svg.addMouseUpHandler(this);
-
-        // !!! Important !!! //
-        // Adding the MouseWheelEvent directly on the SVG is not working
-        // on certain browsers. This is why we are adding the event handling
-        // on the wrapping div.
-        this.addDomHandler(this, MouseWheelEvent.getType());
-
-        // Remove viewbox and set size
-        svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
-        setSize(getOffsetWidth(), getOffsetHeight());
-
-        Element div = SVGPanel.this.getElement();
-        if(div.hasChildNodes()) {
-            div.replaceChild(svg.getElement(), div.getFirstChild());
-        } else {
-            div.appendChild(svg.getElement());
-        }
-
-        // Set initial translation matrix
-        initialTM = getInitialCTM();
-        initialBB = svg.getBBox();
-        ctm = initialTM;
-        fitALL(false);
-    }
-
-    @Override
-    public void onDiagramLoaded(DiagramLoadedEvent event) {
-        setVisible(false); //fall back to the green boxes diagram
-        svg = null;
-    }
-
-    @Override
     public void onSVGThumbnailAreaMoved(SVGThumbnailAreaMovedEvent event) {
         OMSVGPoint padding = event.getPadding();
         ctm = ctm.translate(padding.getX(), padding.getY());
@@ -404,11 +398,10 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     }
 
     private void initHandlers() {
-        eventBus.addHandler(DiagramLoadRequestEvent.TYPE, this);
         eventBus.addHandler(ControlActionEvent.TYPE, this);
         eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
-        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
-        eventBus.addHandler(SVGLoadedEvent.TYPE, this);
+        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
+        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(SVGThumbnailAreaMovedEvent.TYPE, this);
 
         eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);

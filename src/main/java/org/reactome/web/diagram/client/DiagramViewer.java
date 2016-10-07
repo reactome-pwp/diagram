@@ -19,7 +19,7 @@ public interface DiagramViewer extends IsWidget, HasHandlers, RequiresResize {
 
     HandlerRegistration addDatabaseObjectHoveredHandler(GraphObjectHoveredHandler handler);
 
-    HandlerRegistration addDiagramLoadedHandler(DiagramLoadedHandler handler);
+    HandlerRegistration addDiagramLoadedHandler(ContentLoadedHandler handler);
 
     HandlerRegistration addDiagramObjectsFlaggedHandler(DiagramObjectsFlaggedHandler handler);
 

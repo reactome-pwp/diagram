@@ -12,11 +12,11 @@ import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsException;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.events.*;
-import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
+import org.reactome.web.diagram.handlers.ContentLoadedHandler;
+import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.handlers.InteractorsRequestCanceledHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
-import org.reactome.web.diagram.util.Console;
-import org.reactome.web.diagram.util.svg.events.SVGLoadedEvent;
+import org.reactome.web.pwp.model.util.LruCache;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 /**
@@ -30,8 +30,7 @@ import org.vectomatic.dom.svg.OMSVGSVGElement;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, GraphLoader.Handler, InteractorsLoader.Handler,
-        InteractorsResourceChangedHandler, InteractorsRequestCanceledHandler,
-        DiagramLoadedHandler {
+        InteractorsResourceChangedHandler, InteractorsRequestCanceledHandler, ContentRequestedHandler, ContentLoadedHandler {
 
     //Every time the diagram widget is loaded will retrieve new data from the sever
     public static String version = "" + System.currentTimeMillis(); //UNIQUE per session
@@ -40,6 +39,7 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     //the "user preferred" interactors resource will be selected
     public static OverlayResource INTERACTORS_RESOURCE = new OverlayResource(DiagramFactory.INTERACTORS_INITIAL_RESOURCE, DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME, OverlayResource.ResourceType.STATIC);
 
+    private LruCache<String, DiagramContext> contextMap = new LruCache<>(5);
     private EventBus eventBus;
 
     private SVGLoader svgLoader;
@@ -59,7 +59,8 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
         //For the time being we only want to do something on demand for interactors
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
         eventBus.addHandler(InteractorsRequestCanceledEvent.TYPE, this);
-        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
+        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
     }
 
     public void cancel() {
@@ -70,20 +71,32 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
         context = null;
     }
 
-    public void load(String stId) {
+    public void load(String identifier) {
         cancel(); //First cancel possible loading process
-        svgLoader.load(stId);
+        eventBus.fireEventFromSource(new ContentRequestedEvent(identifier), this);
+        DiagramContext context = this.contextMap.get(identifier);
+        if (context != null) {
+            eventBus.fireEventFromSource(new ContentLoadedEvent(context), this);
+        } else {
+            svgLoader.load(identifier);
+        }
+    }
+
+    @Override
+    public void onContentRequested(ContentRequestedEvent event) {
+        if(!event.getSource().equals(this)) {
+            load(event.getIdentifier());
+        }
     }
 
     @Override
     public void onSvgLoaded(OMSVGSVGElement svg, long time) {
-        eventBus.fireEventFromSource(new SVGLoadedEvent(svg, time), this);
+        eventBus.fireEventFromSource(new ContentLoadedEvent(svg), this);
         //Nothing else here. Plan A finishes if there is an SVG
     }
 
     @Override
     public void onSvgLoaderError(String stId, Throwable exception) {
-        Console.info("NO SVG");
         layoutLoader.load(stId);
     }
 
@@ -93,7 +106,10 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
         long start = System.currentTimeMillis();
         graphLoader.load(diagram.getStableId());
         content = DiagramContentFactory.getDiagramContent(diagram);
-        context = new DiagramContext(content);
+        DiagramContext context = new DiagramContext(content);
+        //caching the context
+        contextMap.put(context.getContent().getStableId(), context);
+        this.context = context;
         time += System.currentTimeMillis() - start;
         eventBus.fireEventFromSource(new LayoutLoadedEvent(context, time), this);
     }
@@ -109,8 +125,8 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
         DiagramContentFactory.fillGraphContent(content, graph);
         time += System.currentTimeMillis() - start;
         eventBus.fireEventFromSource(new GraphLoadedEvent(content, time), this);
-        //Once the graph is loaded the DiagramLoadedEvent can be fired
-        eventBus.fireEventFromSource(new DiagramLoadedEvent(context), this);
+        //Once the graph is loaded the ContentLoadedEvent can be fired
+        eventBus.fireEventFromSource(new ContentLoadedEvent(context), this);
     }
 
     @Override
@@ -147,20 +163,22 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     }
 
     @Override
-    public void onDiagramLoaded(DiagramLoadedEvent event) {
-        context = event.getContext();
-        content = context.getContent();
-        if (INTERACTORS_RESOURCE != null) {   //Checking here so no error message is displayed in this case
-            //This fakes a resource changed so the control will show the loading message
-            //The behaviour of the three steps loading continues as expected
-            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                //We use the schedule deferred here because all the diagram loaded subscribers should be called BEFORE
-                //the InteractorsResourceChangedEvent is fired (to avoid messing the order of the events)
-                @Override
-                public void execute() {
-                    eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(INTERACTORS_RESOURCE),  LoaderManager.this);
-                }
-            });
+    public void onContentLoaded(ContentLoadedEvent event) {
+        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+            context = event.getContext();
+            content = context.getContent();
+            if (INTERACTORS_RESOURCE != null) {   //Checking here so no error message is displayed in this case
+                //This fakes a resource changed so the control will show the loading message
+                //The behaviour of the three steps loading continues as expected
+                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                    //We use the schedule deferred here because all the diagram loaded subscribers should be called BEFORE
+                    //the InteractorsResourceChangedEvent is fired (to avoid messing the order of the events)
+                    @Override
+                    public void execute() {
+                        eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(INTERACTORS_RESOURCE), LoaderManager.this);
+                    }
+                });
+            }
         }
     }
 }

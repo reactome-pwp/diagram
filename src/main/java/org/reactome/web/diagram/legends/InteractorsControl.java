@@ -25,7 +25,7 @@ import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class InteractorsControl extends LegendPanel implements ClickHandler, SliderValueChangedHandler,
-        DiagramRequestedHandler, DiagramLoadedHandler,
+        ContentRequestedHandler, ContentLoadedHandler,
         InteractorsResourceChangedHandler, InteractorsLoadedHandler, InteractorsErrorHandler, InteractorsLayoutUpdatedHandler {
 
     @SuppressWarnings("FieldCanBeLocal")
@@ -96,15 +96,17 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     }
 
     @Override
-    public void onDiagramLoaded(DiagramLoadedEvent event) {
-        context = event.getContext();
-        if (currentOverlayResource!=null && context.getInteractors().isInteractorResourceCached(currentOverlayResource.getIdentifier())) {
-            update();
+    public void onContentLoaded(ContentLoadedEvent event) {
+        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+            context = event.getContext();
+            if (currentOverlayResource != null && context.getInteractors().isInteractorResourceCached(currentOverlayResource.getIdentifier())) {
+                update();
+            }
         }
     }
 
     @Override
-    public void onDiagramRequested(DiagramRequestedEvent event) {
+    public void onContentRequested(ContentRequestedEvent event) {
         context = null;
         setVisible(false);
     }
@@ -235,8 +237,8 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     }
 
     private void initHandlers() {
-        eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
-        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
+        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
+        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLayoutUpdatedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);

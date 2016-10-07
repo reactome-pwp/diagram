@@ -14,7 +14,7 @@ import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.AnalysisResetHandler;
 import org.reactome.web.diagram.handlers.AnalysisResultLoadedHandler;
 import org.reactome.web.diagram.handlers.AnalysisResultRequestedHandler;
-import org.reactome.web.diagram.handlers.DiagramRequestedHandler;
+import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.util.slider.Slider;
 import org.reactome.web.diagram.util.slider.SliderValueChangedEvent;
 import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class ExpressionControl extends LegendPanel implements ClickHandler, SliderValueChangedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler,
-        DiagramRequestedHandler, ValueChangeHandler<Boolean> {
+        ContentRequestedHandler, ValueChangeHandler<Boolean> {
 
     private static Integer MIN_SPEED = 3000;
     private static Integer MAX_SPEED = 500;
@@ -133,7 +133,7 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
         this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(ContentRequestedEvent.TYPE, this);
     }
 
     @Override
@@ -222,7 +222,7 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
     }
 
     @Override
-    public void onDiagramRequested(DiagramRequestedEvent event) {
+    public void onContentRequested(ContentRequestedEvent event) {
         this.setVisible(false);
     }
 

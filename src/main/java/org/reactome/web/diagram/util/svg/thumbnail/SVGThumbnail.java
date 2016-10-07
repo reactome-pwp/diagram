@@ -6,15 +6,13 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
-import org.reactome.web.diagram.events.DiagramLoadRequestEvent;
-import org.reactome.web.diagram.events.DiagramLoadedEvent;
-import org.reactome.web.diagram.handlers.DiagramLoadRequestHandler;
-import org.reactome.web.diagram.handlers.DiagramLoadedHandler;
+import org.reactome.web.diagram.events.ContentLoadedEvent;
+import org.reactome.web.diagram.events.ContentRequestedEvent;
+import org.reactome.web.diagram.handlers.ContentLoadedHandler;
+import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.util.svg.AbstractSVGPanel;
-import org.reactome.web.diagram.util.svg.events.SVGLoadedEvent;
 import org.reactome.web.diagram.util.svg.events.SVGPanZoomEvent;
 import org.reactome.web.diagram.util.svg.events.SVGThumbnailAreaMovedEvent;
-import org.reactome.web.diagram.util.svg.handlers.SVGLoadedHandler;
 import org.reactome.web.diagram.util.svg.handlers.SVGPanZoomHandler;
 import org.vectomatic.dom.svg.OMSVGMatrix;
 import org.vectomatic.dom.svg.OMSVGPoint;
@@ -25,9 +23,8 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequestHandler, DiagramLoadedHandler,
-        SVGLoadedHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler,
-        SVGPanZoomHandler {
+public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHandler, ContentLoadedHandler,
+        MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, SVGPanZoomHandler {
     private static final int HEIGHT = 75;
     private static final int FALLBACK_WIDTH = 100;
 
@@ -55,17 +52,47 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
     }
 
     @Override
-    public void onDiagramLoadRequest(DiagramLoadRequestEvent event) {
-        svg.getElement().removeFromParent();
+    public void onContentRequested(ContentRequestedEvent event) {
+        if(svg!=null && svg.getElement()!=null) svg.getElement().removeFromParent();
         svg = null;
         clearThumbnail();
     }
 
     @Override
-    public void onDiagramLoaded(DiagramLoadedEvent event) {
-        svg.getElement().removeFromParent();
-        svg = null;
-        clearThumbnail();
+    public void onContentLoaded(ContentLoadedEvent event) {
+        if(event.CONTENT_TYPE == ContentLoadedEvent.Content.SVG) {
+            setVisible(true);
+            svg = (OMSVGSVGElement) event.getSVG().cloneNode(true);
+
+            from = svg.createSVGPoint();
+            to = svg.createSVGPoint();
+
+            OMSVGRect svgSize = getSVGInitialSize();
+            double factor = HEIGHT / (svgSize.getHeight() + FRAME);
+            setSize((int) Math.ceil(factor * (svgSize.getWidth() + FRAME)), HEIGHT);
+
+            svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
+
+            Element div = getElement();
+            if(div.getChildCount() == 1) {
+                // Only the canvas is added
+                div.insertFirst(svg.getElement());
+            } else {
+                // both the canvas and the svg have been added
+                div.replaceChild(svg.getElement(), div.getFirstChild());
+            }
+
+            // Identify all layers by getting all top-level g elements
+            svgLayers = getRootLayers();
+
+            // Set initial translation matrix
+            initialTM = getInitialCTM();
+            initialBB = svg.getBBox();
+
+            OMSVGMatrix fitTM = calculateFitAll(FRAME);
+            ctm = initialTM.multiply(fitTM);
+            applyCTM(false);
+        }
     }
 
     @Override
@@ -111,41 +138,6 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
     public void onMouseOut(MouseOutEvent event) {
         event.stopPropagation(); event.preventDefault();
         this.mouseDown = null;
-    }
-
-    @Override
-    public void onSVGLoaded(SVGLoadedEvent event) {
-        setVisible(true);
-        svg = (OMSVGSVGElement) event.getSVG().cloneNode(true);
-
-        from = svg.createSVGPoint();
-        to = svg.createSVGPoint();
-
-        OMSVGRect svgSize = getSVGInitialSize();
-        double factor = HEIGHT / (svgSize.getHeight() + FRAME);
-        setSize((int) Math.ceil(factor * (svgSize.getWidth() + FRAME)), HEIGHT);
-
-        svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
-
-        Element div = getElement();
-        if(div.getChildCount() == 1) {
-            // Only the canvas is added
-            div.insertFirst(svg.getElement());
-        } else {
-            // both the canvas and the svg have been added
-            div.replaceChild(svg.getElement(), div.getFirstChild());
-        }
-
-        // Identify all layers by getting all top-level g elements
-        svgLayers = getRootLayers();
-
-        // Set initial translation matrix
-        initialTM = getInitialCTM();
-        initialBB = svg.getBBox();
-
-        OMSVGMatrix fitTM = calculateFitAll(FRAME);
-        ctm = initialTM.multiply(fitTM);
-        applyCTM(false);
     }
 
     @Override
@@ -205,9 +197,8 @@ public class SVGThumbnail extends AbstractSVGPanel implements DiagramLoadRequest
     }
 
     private void initHandlers() {
-        eventBus.addHandler(DiagramLoadRequestEvent.TYPE, this);
-        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
-        eventBus.addHandler(SVGLoadedEvent.TYPE, this);
+        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
+        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
         eventBus.addHandler(SVGPanZoomEvent.TYPE, this);
     }
 

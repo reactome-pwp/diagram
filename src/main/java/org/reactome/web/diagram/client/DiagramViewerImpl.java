@@ -33,8 +33,6 @@ import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.util.ViewportUtils;
 import org.reactome.web.diagram.util.chemical.ChemicalImageLoader;
 import org.reactome.web.diagram.util.pdbe.PDBeLoader;
-import org.reactome.web.pwp.model.classes.Pathway;
-import org.reactome.web.pwp.model.util.LruCache;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.Collection;
@@ -45,7 +43,7 @@ import java.util.Set;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsManager.Handler,
-        LayoutLoadedHandler, DiagramLoadRequestHandler, DiagramLoadedHandler, KeyDownHandler,
+        LayoutLoadedHandler, ContentRequestedHandler, ContentLoadedHandler, KeyDownHandler,
         InteractorsLoadedHandler, InteractorsResourceChangedHandler, InteractorsCollapsedHandler, InteractorHoveredHandler,
         InteractorsLayoutUpdatedHandler, InteractorsFilteredHandler, InteractorSelectedHandler, InteractorProfileChangedHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
@@ -55,11 +53,9 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         IllustrationSelectedHandler, ControlActionHandler, ThumbnailAreaMovedHandler,
         StructureImageLoadedHandler {
 
-    private static final int DIAGRAM_CONTEXT_CACHE_SIZE = 5;
     private final DiagramCanvas canvas; //Canvas only created once and reused every time a new diagram is loaded
     private final DiagramManager diagramManager;
 
-    private LruCache<String, DiagramContext> contextMap;
     private DiagramContext context;
     private LoaderManager loaderManager;
 
@@ -80,7 +76,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     DiagramViewerImpl() {
         super();
         this.canvas = new DiagramCanvas(eventBus);
-        this.contextMap = new LruCache<>(DIAGRAM_CONTEXT_CACHE_SIZE);
         this.loaderManager = new LoaderManager(eventBus);
         AnalysisDataLoader.initialise(eventBus);
         PDBeLoader.initialise(eventBus);
@@ -124,8 +119,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
         eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
 
-        eventBus.addHandler(DiagramLoadedEvent.TYPE, this);
-        eventBus.addHandler(DiagramLoadRequestEvent.TYPE, this);
+        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
+        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
         eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
@@ -289,19 +284,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     private void load(String identifier) {
-        this.resetSelection();
-        this.resetHighlight();
-        this.resetDialogs();
-        this.resetIllustration();
-        this.diagramManager.cancelDisplayAnimation();
-        this.eventBus.fireEventFromSource(new DiagramRequestedEvent(), this);
-        DiagramContext context = this.contextMap.get(identifier);
-        if (context == null) {
-            this.resetContext();
-            this.loaderManager.load(identifier);
-        } else {
-            this.setContext(context);
-        }
+        this.loaderManager.load(identifier);
     }
 
     private void clearAnalysisOverlay(){
@@ -417,34 +400,30 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     @Override
-    public void onDiagramLoaded(DiagramLoadedEvent event) {
+    public void onContentLoaded(ContentLoadedEvent event) {
         this.canvas.setWatermarkVisible(true);
         this.canvas.setWatermarkURL(event.getContext(), null, this.flagTerm);
         fireEvent(event);
     }
 
     @Override
-    public void onDiagramLoadRequest(DiagramLoadRequestEvent event) {
+    public void onContentRequested(ContentRequestedEvent event) {
+        this.resetSelection();
+        this.resetHighlight();
+        this.resetDialogs();
+        this.resetIllustration();
+        this.diagramManager.cancelDisplayAnimation();
+        this.resetContext();
         this.canvas.setWatermarkVisible(false);
-        final Pathway diagram = event.getPathway();
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                loadDiagram(diagram.getDbId());
-            }
-        });
     }
 
     @Override
     public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                Coordinate model = context.getDiagramStatus().getModelCoordinate(mouseCurrent);
-                DiagramObject hovered = layoutManager.getHoveredDiagramObject();
-                canvas.notifyHoveredExpression(hovered, model);
-                forceDraw = true; //We give priority to other listeners here
-            }
+        Scheduler.get().scheduleDeferred(() -> {
+            Coordinate model = context.getDiagramStatus().getModelCoordinate(mouseCurrent);
+            DiagramObject hovered = layoutManager.getHoveredDiagramObject();
+            canvas.notifyHoveredExpression(hovered, model);
+            forceDraw = true; //We give priority to other listeners here
         });
     }
 
@@ -737,7 +716,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         this.resetContext();
 
         this.context = context;
-        contextMap.put(context.getContent().getStableId(), context);
         GraphObjectFactory.content = context.getContent();
 
         layoutManager.resetHovered();
@@ -745,7 +723,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         this.forceDraw = true;
         if (this.context.getContent().isGraphLoaded()) {
             this.loadAnalysis(this.analysisStatus); //IMPORTANT: This needs to be done once context is been set up above
-            this.eventBus.fireEventFromSource(new DiagramLoadedEvent(context), this);
+            this.eventBus.fireEventFromSource(new ContentLoadedEvent(context), this);
         }
         this.context.restoreDialogs();
     }
