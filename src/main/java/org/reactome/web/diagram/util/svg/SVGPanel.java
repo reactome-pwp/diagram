@@ -42,7 +42,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         SVGAnimationHandler, SVGThumbnailAreaMovedHandler, DoubleClickHandler,
         AnalysisResultLoadedHandler, AnalysisProfileChangedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler {
 
-    private static final String STID_PATTERN = "R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
+    private static final String STID_PATTERN = "REGION-R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
 
     private static final String CLIPPING_PATH = "CLIPPING_PATH_";
     private static final String CLIPPING_RECT = "CLIPPING_RECT_";
