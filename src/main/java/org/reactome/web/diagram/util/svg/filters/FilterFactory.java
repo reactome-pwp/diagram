@@ -11,6 +11,9 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
  */
 public abstract class FilterFactory {
 
+    private static int SHADOW_RADIUS = 6;
+    private static float OUTLINE_THICKNESS = 1.8f;
+
     /**
      * Returns a filter producing a simple shadow (like a halo)
      * around the object, having the same colour as the original object.
@@ -26,7 +29,7 @@ public abstract class FilterFactory {
 
         OMSVGFEGaussianBlurElement blur = new OMSVGFEGaussianBlurElement();
         blur.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "offOut");
-        blur.setAttribute(SVGConstants.SVG_STD_DEVIATION_ATTRIBUTE, "5");
+        blur.setAttribute(SVGConstants.SVG_STD_DEVIATION_ATTRIBUTE, "" + SHADOW_RADIUS);
         blur.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "blurOut");
 
         OMSVGFEBlendElement blend = new OMSVGFEBlendElement();
@@ -68,7 +71,7 @@ public abstract class FilterFactory {
         OMSVGFEMorphologyElement morpho = new OMSVGFEMorphologyElement();
         morpho.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "cMatrixOut");
         morpho.setAttribute(SVGConstants.SVG_OPERATOR_ATTRIBUTE, SVGConstants.SVG_DILATE_VALUE);
-        morpho.setAttribute(SVGConstants.SVG_RADIUS_ATTRIBUTE, "1.5");
+        morpho.setAttribute(SVGConstants.SVG_RADIUS_ATTRIBUTE, "" + OUTLINE_THICKNESS);
         morpho.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "morphoOut");
 
         OMSVGFEMergeElement merge = new OMSVGFEMergeElement();
@@ -116,7 +119,7 @@ public abstract class FilterFactory {
 
         OMSVGFEGaussianBlurElement blur = new OMSVGFEGaussianBlurElement();
         blur.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "offOut");
-        blur.setAttribute(SVGConstants.SVG_STD_DEVIATION_ATTRIBUTE, "5");
+        blur.setAttribute(SVGConstants.SVG_STD_DEVIATION_ATTRIBUTE, "" + SHADOW_RADIUS);
         blur.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "blurOut");
 
         OMSVGFEBlendElement blend = new OMSVGFEBlendElement();
@@ -161,7 +164,7 @@ public abstract class FilterFactory {
         OMSVGFEMorphologyElement morpho = new OMSVGFEMorphologyElement();
         morpho.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "cMatrixOut");
         morpho.setAttribute(SVGConstants.SVG_OPERATOR_ATTRIBUTE, SVGConstants.SVG_DILATE_VALUE);
-        morpho.setAttribute(SVGConstants.SVG_RADIUS_ATTRIBUTE, "1.5");
+        morpho.setAttribute(SVGConstants.SVG_RADIUS_ATTRIBUTE, "" + OUTLINE_THICKNESS);
         morpho.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "morphoOut");
 
         OMSVGFEMergeElement merge = new OMSVGFEMergeElement();
@@ -180,7 +183,7 @@ public abstract class FilterFactory {
 
         OMSVGFEGaussianBlurElement blur = new OMSVGFEGaussianBlurElement();
         blur.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "offOut");
-        blur.setAttribute(SVGConstants.SVG_STD_DEVIATION_ATTRIBUTE, "5");
+        blur.setAttribute(SVGConstants.SVG_STD_DEVIATION_ATTRIBUTE, "" + SHADOW_RADIUS);
         blur.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "blurOut");
 
 
