@@ -144,7 +144,6 @@ public abstract class FilterFactory {
         return shadowFilter;
     }
 
-
     /**
      * Returns a filter that combines the steps of a ShadowFilter with those
      * of an Outline Filter. The resulting filter is more efficient than the one
@@ -253,5 +252,45 @@ public abstract class FilterFactory {
         rtn.setAttribute(SVGConstants.SVG_HEIGHT_ATTRIBUTE, "150%");
 
         return rtn;
+    }
+
+    /**
+     * Returns a filter producing a simple color overlay
+     * on the object, having the specified colour.
+     *
+     * @param id The id of the returned filter
+     * @param colour The colour of the overlay
+     * @return
+     */
+    public static OMSVGFilterElement getColouredOverlayFilter(String id, FilterColour colour) {
+        // Add primitives
+        OMSVGFEColorMatrixElement cMatrix = new OMSVGFEColorMatrixElement();
+        cMatrix.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
+        cMatrix.setAttribute(SVGConstants.SVG_VALUES_ATTRIBUTE, colour.colourMatrix);
+        cMatrix.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "cMatrixOut");
+
+        OMSVGFEOffsetElement offSet = new OMSVGFEOffsetElement();
+        offSet.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "cMatrixOut");
+        offSet.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "offOut");
+
+        OMSVGFEBlendElement blend = new OMSVGFEBlendElement();
+        blend.setAttribute(SVGConstants.SVG_IN2_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
+        blend.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "offOut");
+        blend.setAttribute(SVGConstants.SVG_MODE_ATTRIBUTE, "normal");
+
+        //Compose the filter from the primitives
+        OMSVGFilterElement shadowFilter = new OMSVGFilterElement();
+        shadowFilter.setId(id);
+        shadowFilter.setAttribute(SVGConstants.SVG_X_ATTRIBUTE, "-25%");
+        shadowFilter.setAttribute(SVGConstants.SVG_Y_ATTRIBUTE, "-25%");
+        shadowFilter.setAttribute(SVGConstants.SVG_WIDTH_ATTRIBUTE, "150%");
+        shadowFilter.setAttribute(SVGConstants.SVG_HEIGHT_ATTRIBUTE, "150%");
+//        shadowFilter.setAttribute(SVGConstants.SVG_FILTER_RES_ATTRIBUTE, "200");
+
+        shadowFilter.appendChild(cMatrix);
+        shadowFilter.appendChild(offSet);
+        shadowFilter.appendChild(blend);
+
+        return shadowFilter;
     }
 }
