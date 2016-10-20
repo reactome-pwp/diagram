@@ -12,7 +12,7 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
 public abstract class FilterFactory {
 
     private static int SHADOW_RADIUS = 6;
-    private static float OUTLINE_THICKNESS = 1.8f;
+    private static float OUTLINE_THICKNESS = 2f;
 
     /**
      * Returns a filter producing a simple shadow (like a halo)
