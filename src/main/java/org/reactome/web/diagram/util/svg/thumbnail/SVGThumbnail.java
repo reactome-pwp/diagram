@@ -11,20 +11,23 @@ import org.reactome.web.diagram.events.ContentRequestedEvent;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
 import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.util.svg.AbstractSVGPanel;
+import org.reactome.web.diagram.util.svg.events.SVGEntityHoveredEvent;
+import org.reactome.web.diagram.util.svg.events.SVGEntitySelectedEvent;
 import org.reactome.web.diagram.util.svg.events.SVGPanZoomEvent;
 import org.reactome.web.diagram.util.svg.events.SVGThumbnailAreaMovedEvent;
+import org.reactome.web.diagram.util.svg.handlers.SVGEntityHoveredHandler;
+import org.reactome.web.diagram.util.svg.handlers.SVGEntitySelectedHandler;
 import org.reactome.web.diagram.util.svg.handlers.SVGPanZoomHandler;
-import org.vectomatic.dom.svg.OMSVGMatrix;
-import org.vectomatic.dom.svg.OMSVGPoint;
-import org.vectomatic.dom.svg.OMSVGRect;
-import org.vectomatic.dom.svg.OMSVGSVGElement;
+import org.vectomatic.dom.svg.*;
+import org.vectomatic.dom.svg.utils.DOMHelper;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHandler, ContentLoadedHandler,
-        MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, SVGPanZoomHandler {
+        MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, SVGPanZoomHandler,
+        SVGEntityHoveredHandler, SVGEntitySelectedHandler {
     private static final int HEIGHT = 75;
     private static final int FALLBACK_WIDTH = 100;
 
@@ -34,6 +37,9 @@ public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHa
 
     private OMSVGPoint mouseDown;
     private OMSVGPoint delta;
+
+    private OMElement selected;
+    private OMElement hovered;
 
     public SVGThumbnail(EventBus eventBus) {
         super(eventBus);
@@ -84,6 +90,9 @@ public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHa
 
             // Identify all layers by getting all top-level g elements
             svgLayers = getRootLayers();
+
+            // Append the filters
+            svg.appendChild(baseDefs);
 
             // Set initial translation matrix
             initialTM = getInitialCTM();
@@ -138,6 +147,16 @@ public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHa
     public void onMouseOut(MouseOutEvent event) {
         event.stopPropagation(); event.preventDefault();
         this.mouseDown = null;
+    }
+
+    @Override
+    public void onSVGEntityHovered(SVGEntityHoveredEvent event) {
+        setHovered(event.getHovered());
+    }
+
+    @Override
+    public void onSVGEntitySelected(SVGEntitySelectedEvent event) {
+        setSelected(event.getSelected());
     }
 
     @Override
@@ -199,6 +218,8 @@ public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHa
     private void initHandlers() {
         eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(ContentLoadedEvent.TYPE, this);
+        eventBus.addHandler(SVGEntityHoveredEvent.TYPE, this);
+        eventBus.addHandler(SVGEntitySelectedEvent.TYPE, this);
         eventBus.addHandler(SVGPanZoomEvent.TYPE, this);
     }
 
@@ -214,6 +235,32 @@ public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHa
                 && mouse.getY() >= this.from.getY()
                 && mouse.getX() <= this.to.getX()
                 && mouse.getY() <= this.to.getY();
+    }
+
+    private void setHovered(String elementId) {
+        if(hovered != selected) {
+            hovered.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
+        }
+
+        OMElement newHovered = svg.getElementById(elementId);
+        if(newHovered != null && newHovered != selected){
+                newHovered.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(HOVERING_OVERLAY_FILTER));
+                hovered = newHovered;
+        }
+        applyCTM(false);
+    }
+
+    private void setSelected(String elementId) {
+        if(selected != null) {
+            selected.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
+            selected = null;
+        }
+        if(elementId != null) {
+            OMElement newSelected = svg.getElementById(elementId);
+            newSelected.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_OVERLAY_FILTER));
+            selected = newSelected;
+        }
+        applyCTM(false);
     }
 
     private void setStyle() {

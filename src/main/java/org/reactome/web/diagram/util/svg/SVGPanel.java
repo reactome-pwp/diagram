@@ -11,13 +11,14 @@ import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.diagram.data.DiagramContext;
-import org.reactome.web.diagram.data.loader.SVGLoader;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimation;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimationHandler;
+import org.reactome.web.diagram.util.svg.events.SVGEntityHoveredEvent;
+import org.reactome.web.diagram.util.svg.events.SVGEntitySelectedEvent;
 import org.reactome.web.diagram.util.svg.events.SVGThumbnailAreaMovedEvent;
 import org.reactome.web.diagram.util.svg.handlers.SVGThumbnailAreaMovedHandler;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
@@ -28,7 +29,7 @@ import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.DOMHelper;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,10 +43,13 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         SVGAnimationHandler, SVGThumbnailAreaMovedHandler, DoubleClickHandler,
         AnalysisResultLoadedHandler, AnalysisProfileChangedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler {
 
-    private static final String STID_PATTERN = "REGION-R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
+    private static final String STID_PATTERN = "R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
+    private static final String REGION = "REGION-";
+    private static final String OVERLAY ="OVERLAY-";
+    private static final String OVERLAY_CLONE ="OVERLAYCLONE-";
 
-    private static final String CLIPPING_PATH = "CLIPPING_PATH_";
-    private static final String CLIPPING_RECT = "CLIPPING_RECT_";
+    private static final String CLIPPING_PATH = "CLIPPINGPATH-";
+    private static final String CLIPPING_RECT = "CLIPPINGRECT-";
     private static final float MIN_OVERLAY = 0.05f;
 
     private static final String CURSOR = "cursor: pointer;";
@@ -63,7 +67,6 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     private OMElement selected;
     private OMSVGPoint origin;
 
-    private SVGLoader svgLoader;
     private SVGAnimation animation;
 
     private AnalysisType analysisType;
@@ -121,6 +124,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             case RIGHT:         translate(-10, 0);                break;
             case DOWN:          translate(0, -10);                break;
             case LEFT:          translate(10, 0);                 break;
+            case FIREWORKS:     testOverlay();                    break; //TODO: TO BE REMOVED
         }
     }
 
@@ -157,18 +161,22 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             setVisible(true);
             this.svg = event.getSVG();
 
-            entities = new ArrayList();
+            entities = new HashMap<>();
             OMNodeList<OMElement> children = svg.getElementsByTagName(new OMSVGGElement().getTagName());
             for (OMElement child : children) {
                 if(regExp.test(child.getId())) {
-                    entities.add(child);
-                    child.addDomHandler(SVGPanel.this, MouseUpEvent.getType());
-                    child.addDomHandler(SVGPanel.this, MouseOverEvent.getType());
-                    child.addDomHandler(SVGPanel.this, MouseOutEvent.getType());
-                    child.addDomHandler(SVGPanel.this, DoubleClickEvent.getType());
-                    // Set the pointer to the active regions
-                    child.setAttribute("style", CURSOR);
+                    addOrUpdateSVGEntity(child);
                 }
+            }
+
+            for (SVGEntity svgEntity : entities.values()) {
+                OMElement child = svgEntity.getHoverableElement();
+                child.addDomHandler(SVGPanel.this, MouseUpEvent.getType());
+                child.addDomHandler(SVGPanel.this, MouseOverEvent.getType());
+                child.addDomHandler(SVGPanel.this, MouseOutEvent.getType());
+                child.addDomHandler(SVGPanel.this, DoubleClickEvent.getType());
+                // Set the pointer to the active regions
+                child.setAttribute("style", CURSOR);
             }
 
             // Identify all layers by getting all top-level g elements
@@ -259,12 +267,14 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         event.preventDefault(); event.stopPropagation();
         getElement().getStyle().setCursor(Style.Cursor.DEFAULT);
         OMElement el = (OMElement) event.getSource();
-
         if(!avoidClicking) {
-            if ((el.getId().matches(STID_PATTERN))) {
+            String elementId = el.getId();
+            if(regExp.test(elementId)) {
                 setSelected(el);
+                eventBus.fireEventFromSource(new SVGEntitySelectedEvent(elementId), this);
             } else {
                 resetSelected();
+                eventBus.fireEventFromSource(new SVGEntitySelectedEvent(null), this);
             }
         }
         isPanning = false;
@@ -281,6 +291,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(COMBINED_FILTER));
         }
         applyCTM(false);  //TODO Have a look why this is required
+        eventBus.fireEventFromSource(new SVGEntityHoveredEvent(el.getId()), this);
     }
 
     @Override
@@ -293,6 +304,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FILTER));
         }
         applyCTM(false);  //TODO Have a look why this is required
+        eventBus.fireEventFromSource(new SVGEntityHoveredEvent(null), this);
     }
 
     @Override
@@ -321,10 +333,27 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         applyCTM(true);
     }
 
+    private SVGEntity addOrUpdateSVGEntity(OMElement element) {
+        String elementId = element.getId();
+        String stId = elementId.substring(elementId.indexOf("-") + 1);
+        SVGEntity entity = entities.get(stId);
+        if(entity == null) {
+            entity = new SVGEntity(stId);
+            entities.put(stId, entity);
+        }
+
+        if(elementId.startsWith(REGION)) {
+            entity.setRegion(element);
+        } else if(elementId.startsWith(OVERLAY)) {
+            entity.setOverlay(element);
+        }
+        return entity;
+    }
+
     private void clearOverlay() {
-        for (OMElement entity : entities) {
-            String stId = entity.getId();
-            OMElement overlay = svg.getElementById(stId +"_Overlay");
+        for (SVGEntity entity : entities.values()) {
+            String stId = entity.getStId();
+            OMElement overlay = svg.getElementById(OVERLAY_CLONE + stId);
             if(overlay != null) {
                 OMNode parent = overlay.getParentNode();
                 parent.getParentNode().removeChild(parent);
@@ -355,26 +384,29 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     }
 
     private void createOrUpdateOverlayElement(String stId, String overlayColour) {
-        OMSVGGElement overlay = (OMSVGGElement) svg.getElementById(stId +"_Overlay");
+        OMSVGGElement overlay = (OMSVGGElement) svg.getElementById(OVERLAY_CLONE + stId);
         if(overlay == null) {
-            overlay = (OMSVGGElement) svg.getElementById(stId).cloneNode(true);
-            overlay.setId(stId + "_Overlay");
+            SVGEntity entity = entities.get(stId); //Entity cannot be null as it has been checked in a previous step.
+            overlay = (OMSVGGElement) entity.getOverlay().cloneNode(true);
+            overlay.setId(OVERLAY_CLONE + stId);
             overlay.setAttribute(SVGConstants.SVG_CLIP_PATH_ATTRIBUTE, DOMHelper.toUrl(CLIPPING_PATH + stId));
             overlay.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
             overlay.removeAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE);
             overlay.setAttribute(SVGConstants.SVG_FILL_ATTRIBUTE, overlayColour);
 
+            // Create a group to put the clone and the text
             OMSVGGElement overlayGroup = new OMSVGGElement();
             overlayGroup.appendChild(overlay);
 
-            //Handling text elements
+            // Make sure all text elements are put in front of the overlay
             OMNodeList<OMElement> textElements = getAllTextElementsFrom(overlay);
             Iterator<OMElement> it = textElements.iterator();
             while(it.hasNext()){
                 overlayGroup.appendChild(it.next());
             }
+            // Remove styling and add the overlay group under the OVERLAY-R-SSS-NNNNNNN
             removeAttributeFromChildren(overlay, SVGConstants.SVG_CLASS_ATTRIBUTE);
-            svg.getElementById(stId).appendChild(overlayGroup);
+            entity.getOverlay().appendChild(overlayGroup);
         }
     }
 
@@ -417,22 +449,25 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     }
 
     private void overlayEntity(PathwaySummary pathwaySummary) {
-        OMElement el = svg.getElementById(pathwaySummary.getStId());
-        if(el!=null) {
-            switch (analysisType) {
-                case SPECIES_COMPARISON:
-                case OVERREPRESENTATION:
-                    String enrichColour = hex2Rgb(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax(), 0.9f);
-                    overlayEntity(pathwaySummary.getStId(), (float) getRatio(pathwaySummary), enrichColour);
-                    break;
-                case EXPRESSION:
-                    String expressionColour = AnalysisColours.get().expressionGradient.getColor(
-                            pathwaySummary.getEntities().getExp().get(selectedExpCol),
-                            expressionSummary.getMin(),
-                            expressionSummary.getMax()
-                    );
-                    overlayEntity(pathwaySummary.getStId(), (float) getRatio(pathwaySummary), hex2Rgb(expressionColour, 0.9f) );
-                    break;
+        SVGEntity entity = entities.get(pathwaySummary.getStId());
+        if(entity!=null) {
+            OMElement el = entity.getOverlay();
+            if(el!=null) {
+                switch (analysisType) {
+                    case SPECIES_COMPARISON:
+                    case OVERREPRESENTATION:
+                        String enrichColour = hex2Rgb(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax(), 0.9f);
+                        overlayEntity(pathwaySummary.getStId(), (float) getRatio(pathwaySummary), enrichColour);
+                        break;
+                    case EXPRESSION:
+                        String expressionColour = AnalysisColours.get().expressionGradient.getColor(
+                                pathwaySummary.getEntities().getExp().get(selectedExpCol),
+                                expressionSummary.getMin(),
+                                expressionSummary.getMax()
+                        );
+                        overlayEntity(pathwaySummary.getStId(), (float) getRatio(pathwaySummary), hex2Rgb(expressionColour, 0.9f));
+                        break;
+                }
             }
         }
     }
@@ -455,7 +490,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         }
         element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(COMBINED_FILTER));
         selected = element;
-        applyCTM(false);  //TODO Have a look why this is required
+        applyCTM(false);
     }
 
     private void translate(float x, float y) {
@@ -470,6 +505,16 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             ctm = ctm.multiply(newMatrix);
             applyCTM(true);
         }
+    }
+
+    //ONLY for testing purpoces
+    private void testOverlay() {
+        clearOverlay();
+        String enrichColour = hex2Rgb(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax(), 0.7f);
+        overlayEntity("R-HSA-169911", 0.5f, enrichColour);
+        overlayEntity("R-HSA-5357769", 0.5f, enrichColour);
+        overlayEntity("R-HSA-109606", 0.5f, enrichColour);
+        overlayEntity("R-HSA-75153", 0.5f, enrichColour);
     }
 
 }

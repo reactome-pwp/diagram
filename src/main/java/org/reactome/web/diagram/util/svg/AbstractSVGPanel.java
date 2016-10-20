@@ -16,6 +16,7 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -27,10 +28,12 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     protected static final String HOVERING_FILTER = "shadowFilter";
     protected static final String SELECTION_FILTER = "selectionFilter";
     protected static final String COMBINED_FILTER = "combinedFilter";
+    protected static final String HOVERING_OVERLAY_FILTER = "hoveringOverlayFilter";
+    protected static final String SELECTION_OVERLAY_FILTER = "selectionOverlayFilter";
 
     protected OMSVGSVGElement svg;
     protected List<OMSVGElement> svgLayers;
-    protected List<OMElement> entities;
+    protected Map<String, SVGEntity> entities;
 
     protected OMSVGDefsElement baseDefs;
 
@@ -149,6 +152,8 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         baseDefs.appendChild(FilterFactory.getOutlineFilter(SELECTION_FILTER, FilterColour.BLUE));
         baseDefs.appendChild(FilterFactory.getShadowWithOutlineFilter(COMBINED_FILTER, FilterColour.BLUE));
 //        baseDefs.appendChild(FilterFactory.combine(COMBINED_FILTER, FilterFactory.getShadowFilter(HOVERRING_FILTER), FilterFactory.getOutlineFilter(SELECTION_FILTER, FilterColour.BLUE)));
+        baseDefs.appendChild(FilterFactory.getColouredOverlayFilter(HOVERING_OVERLAY_FILTER, FilterColour.YELLOW));
+        baseDefs.appendChild(FilterFactory.getColouredOverlayFilter(SELECTION_OVERLAY_FILTER, FilterColour.BLUE));
     }
     protected void notifyAboutChangeInView() {
         if(svg != null && ctm !=null) {
