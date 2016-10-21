@@ -434,7 +434,6 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     }
 
     private void initHandlers() {
-
         eventBus.addHandler(ControlActionEvent.TYPE, this);
         eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
         eventBus.addHandler(ContentLoadedEvent.TYPE, this);

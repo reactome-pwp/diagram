@@ -27,7 +27,7 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
  */
 public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHandler, ContentLoadedHandler,
         MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, SVGPanZoomHandler,
-        SVGEntityHoveredHandler, SVGEntitySelectedHandler {
+        SVGEntityHoveredHandler, SVGEntitySelectedHandler, ContextMenuHandler {
     private static final int HEIGHT = 75;
     private static final int FALLBACK_WIDTH = 100;
 
@@ -104,6 +104,12 @@ public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHa
             ctm = initialTM.multiply(fitTM);
             applyCTM(false);
         }
+    }
+
+    @Override
+    public void onContextMenu(ContextMenuEvent event) {
+            event.preventDefault();
+            event.stopPropagation();
     }
 
     @Override
@@ -226,10 +232,11 @@ public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHa
     }
 
     private void initListeners() {
-        this.frame.addMouseDownHandler(this);
-        this.frame.addMouseMoveHandler(this);
-        this.frame.addMouseUpHandler(this);
-        this.frame.addMouseOutHandler(this);
+        frame.addMouseDownHandler(this);
+        frame.addMouseMoveHandler(this);
+        frame.addMouseUpHandler(this);
+        frame.addMouseOutHandler(this);
+        addDomHandler(this, ContextMenuEvent.getType());
     }
 
     private boolean isMouseInVisibleArea(OMSVGPoint mouse) {
@@ -265,6 +272,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHa
         applyCTM(false);
     }
 
+    @SuppressWarnings("Duplicates")
     private void setStyle() {
         Style style = this.getElement().getStyle();
         style.setBackgroundColor("white");
