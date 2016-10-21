@@ -40,7 +40,7 @@ import java.util.List;
 public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedHandler, ContentRequestedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
         ContentLoadedHandler, ControlActionHandler, CanvasExportRequestedHandler,
-        SVGAnimationHandler, SVGThumbnailAreaMovedHandler, DoubleClickHandler,
+        SVGAnimationHandler, SVGThumbnailAreaMovedHandler, DoubleClickHandler, ContextMenuHandler,
         AnalysisResultLoadedHandler, AnalysisProfileChangedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler {
 
     private static final String STID_PATTERN = "R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
@@ -112,6 +112,12 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
 
         clearOverlay();
         overlayAnalysisResults();
+    }
+
+    @Override
+    public void onContextMenu(ContextMenuEvent event) {
+        event.preventDefault();
+        event.stopPropagation();
     }
 
     @Override
@@ -191,12 +197,6 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             svg.addMouseMoveHandler(this);
             svg.addMouseUpHandler(this);
 
-            // !!! Important !!! //
-            // Adding the MouseWheelEvent directly on the SVG is not working
-            // on certain browsers. This is why we are adding the event handling
-            // on the wrapping div.
-            this.addDomHandler(this, MouseWheelEvent.getType());
-
             // Remove viewbox and set size
             svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
             setSize(getOffsetWidth(), getOffsetHeight());
@@ -220,7 +220,11 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     public void onDoubleClick(DoubleClickEvent event) {
         event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
-        DatabaseObjectFactory.get(el.getAttribute("id"), this);
+        String id = el.getAttribute("id");
+        if(id!=null && !id.isEmpty()) {
+            id = id.substring(id.indexOf('-') + 1);
+            DatabaseObjectFactory.get(id, this);
+        }
     }
 
     @Override
@@ -430,6 +434,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     }
 
     private void initHandlers() {
+
         eventBus.addHandler(ControlActionEvent.TYPE, this);
         eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
         eventBus.addHandler(ContentLoadedEvent.TYPE, this);
@@ -440,6 +445,13 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
         eventBus.addHandler(AnalysisResetEvent.TYPE, this);
         eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
+
+        // !!! Important !!! //
+        // Adding the MouseWheelEvent directly on the SVG is not working
+        // on certain browsers. This is why we are adding the event handling
+        // on the wrapping div.
+        addDomHandler(this, MouseWheelEvent.getType());
+        addDomHandler(SVGPanel.this, ContextMenuEvent.getType());
     }
 
     private void overlayAnalysisResults() {

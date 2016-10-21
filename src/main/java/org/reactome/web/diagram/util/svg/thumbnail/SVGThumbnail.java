@@ -70,6 +70,8 @@ public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHa
             setVisible(true);
             svg = (OMSVGSVGElement) event.getSVG().cloneNode(true);
 
+            //TODO: Remove all text elements because they do not make sense to having them in the thumbnail.
+
             from = svg.createSVGPoint();
             to = svg.createSVGPoint();
 
