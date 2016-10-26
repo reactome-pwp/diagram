@@ -5,7 +5,6 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.regexp.shared.RegExp;
 import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
@@ -43,7 +42,6 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         SVGAnimationHandler, SVGThumbnailAreaMovedHandler, DoubleClickHandler, ContextMenuHandler,
         AnalysisResultLoadedHandler, AnalysisProfileChangedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler {
 
-    private static final String STID_PATTERN = "R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
     private static final String REGION = "REGION-";
     private static final String OVERLAY ="OVERLAY-";
     private static final String OVERLAY_CLONE ="OVERLAYCLONE-";
@@ -57,7 +55,6 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     private static final float MIN_ZOOM = 0.05f;
 
     private DiagramContext context;
-    private RegExp regExp;
 
     private OMSVGDefsElement defs;
 
@@ -77,8 +74,6 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     public SVGPanel(EventBus eventBus, int width, int height) {
         super(eventBus);
         this.getElement().addClassName("pwp-SVGPanel");
-
-        regExp = RegExp.compile(STID_PATTERN);
 
         initHandlers();
         setSize(width, height);
@@ -168,11 +163,8 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             this.svg = event.getSVG();
 
             entities = new HashMap<>();
-            OMNodeList<OMElement> children = svg.getElementsByTagName(new OMSVGGElement().getTagName());
-            for (OMElement child : children) {
-                if(regExp.test(child.getId())) {
-                    addOrUpdateSVGEntity(child);
-                }
+            for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
+                addOrUpdateSVGEntity(child);
             }
 
             for (SVGEntity svgEntity : entities.values()) {
@@ -220,10 +212,9 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     public void onDoubleClick(DoubleClickEvent event) {
         event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
-        String id = el.getAttribute("id");
-        if(id!=null && !id.isEmpty()) {
-            id = id.substring(id.indexOf('-') + 1);
-            DatabaseObjectFactory.get(id, this);
+        String stableId = SVGUtil.keepStableId(el.getAttribute("id"));
+        if(stableId != null) {
+            DatabaseObjectFactory.get(stableId, this);
         }
     }
 
@@ -273,7 +264,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         OMElement el = (OMElement) event.getSource();
         if(!avoidClicking) {
             String elementId = el.getId();
-            if(regExp.test(elementId)) {
+            if(SVGUtil.isAnnotated(elementId)) {
                 setSelected(el);
                 eventBus.fireEventFromSource(new SVGEntitySelectedEvent(elementId), this);
             } else {

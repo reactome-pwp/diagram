@@ -1,5 +1,9 @@
 package org.reactome.web.diagram.data;
 
+import org.reactome.web.diagram.data.content.Content;
+import org.reactome.web.diagram.data.content.DiagramContent;
+import org.reactome.web.diagram.data.content.EHLDContent;
+import org.reactome.web.diagram.data.content.EHLDObject;
 import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.graph.raw.EntityNode;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
@@ -12,26 +16,29 @@ import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
+import org.reactome.web.diagram.util.svg.SVGUtil;
+import org.vectomatic.dom.svg.OMElement;
+import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
  * @author Antonio Fabregat (fabregat@ebi.ac.uk)
  */
-public abstract class DiagramContentFactory {
+public abstract class ContentFactory {
 
-    public static DiagramContent getDiagramContent(Diagram diagram) {
+    public static Content getDiagramContent(Diagram diagram) {
         DiagramContent content = new DiagramContent();
 
         //Read and set general pathway information
-        content.stableId = diagram.getStableId();
-        content.displayName = diagram.getDisplayName();
-        content.dbId = diagram.getDbId();
-        content.forNormalDraw = diagram.getForNormalDraw();
-        content.isDisease = diagram.getIsDisease();
-        content.picture = diagram.getPicture();
+        content.setStableId(diagram.getStableId());
+        content.setDisplayName(diagram.getDisplayName());
+        content.setDbId(diagram.getDbId());
+        content.setForNormalDraw(diagram.getForNormalDraw());
+        content.setIsDisease(diagram.getIsDisease());
 
         content.cache(diagram.getNodes());
         content.cache(diagram.getNotes());
@@ -40,15 +47,43 @@ public abstract class DiagramContentFactory {
         content.cache(diagram.getCompartments());
         content.cache(diagram.getShadows());
 
-        content.minX = diagram.getMinX().doubleValue();
-        content.maxX = diagram.getMaxX().doubleValue();
-        content.minY = diagram.getMinY().doubleValue();
-        content.maxY = diagram.getMaxY().doubleValue();
+        content.setMinX(diagram.getMinX().doubleValue());
+        content.setMaxX(diagram.getMaxX().doubleValue());
+        content.setMinY(diagram.getMinY().doubleValue());
+        content.setMaxY(diagram.getMaxY().doubleValue());
 
         return content.init();
     }
 
-    public static void fillGraphContent(DiagramContent content, Graph graph) {
+    public static Content getEHLDContent(String stId, OMSVGSVGElement svg) {
+        EHLDContent content = new EHLDContent();
+
+        //Read and set general pathway information
+        content.setStableId(stId);
+
+        Long id = 0L;
+        //Create EHLDObjects to include in the content
+        List<EHLDObject> pathwayNodes = new LinkedList<>();
+        for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
+            pathwayNodes.add(new EHLDObject(id++, SVGUtil.keepStableId(child.getId()))); //just a placeholder
+        }
+
+        content.cache(pathwayNodes);
+//        content.cache(diagram.getNotes());
+//        content.cache(diagram.getEdges());
+//        content.cache(diagram.getLinks());
+//        content.cache(diagram.getCompartments());
+//        content.cache(diagram.getShadows());
+//
+//        content.setMinX(diagram.getMinX().doubleValue());
+//        content.setMaxX(diagram.getMaxX().doubleValue());
+//        content.setMinY(diagram.getMinY().doubleValue());
+//        content.setMaxY(diagram.getMaxY().doubleValue());
+
+        return content.init();
+    }
+
+    public static void fillGraphContent(Content content, Graph graph) {
         GraphObjectFactory.content = content;
 
         for (EntityNode node : graph.getNodes()) {

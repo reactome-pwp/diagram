@@ -3,7 +3,7 @@ package org.reactome.web.diagram.data.loader;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.client.DiagramFactory;
-import org.reactome.web.diagram.data.DiagramContentFactory;
+import org.reactome.web.diagram.data.ContentFactory;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
@@ -87,8 +87,11 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     }
 
     @Override
-    public void onSvgLoaded(OMSVGSVGElement svg, long time) {
-        eventBus.fireEventFromSource(new ContentLoadedEvent(svg), this);
+    public void onSvgLoaded(String stId, OMSVGSVGElement svg, long time) {
+        DiagramContext context = new DiagramContext(ContentFactory.getEHLDContent(stId, svg));
+        this.context = context;
+        graphLoader.load(stId);
+//        eventBus.fireEventFromSource(new ContentLoadedEvent(svg), this);
         //Nothing else here. Plan A finishes if there is an SVG
     }
 
@@ -101,7 +104,7 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     public void layoutLoaded(Diagram diagram, long time) {
         //This is querying the server so the following code is executed straight forward
         long start = System.currentTimeMillis();
-        DiagramContext context = new DiagramContext(DiagramContentFactory.getDiagramContent(diagram));
+        DiagramContext context = new DiagramContext(ContentFactory.getDiagramContent(diagram));
         //caching the context
         contextMap.put(context.getContent().getStableId(), context);
         this.context = context;
@@ -118,7 +121,7 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     @Override
     public void graphLoaded(Graph graph, long time) {
         long start = System.currentTimeMillis();
-        DiagramContentFactory.fillGraphContent(context.getContent(), graph);
+        ContentFactory.fillGraphContent(context.getContent(), graph);
         time += System.currentTimeMillis() - start;
         eventBus.fireEventFromSource(new GraphLoadedEvent(context.getContent(), time), this);
         //Once the graph is loaded the ContentLoadedEvent can be fired
@@ -133,7 +136,7 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     @Override
     public void interactorsLoaded(RawInteractors interactors, long time) {
         long start = System.currentTimeMillis();
-        DiagramContentFactory.fillInteractorsContent(context, interactors);
+        ContentFactory.fillInteractorsContent(context, interactors);
         time += System.currentTimeMillis() - start;
         eventBus.fireEventFromSource(new InteractorsLoadedEvent(interactors, time), this);
     }

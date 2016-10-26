@@ -7,7 +7,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import org.reactome.web.diagram.data.DiagramContent;
+import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.Compartment;
 import org.reactome.web.diagram.data.layout.Coordinate;
@@ -35,7 +35,7 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
     private static final int HEIGHT = 75;
     private static final double MIN_LINE_WIDTH = 0.15;
 
-    DiagramContent content;
+    Content content;
     Coordinate offset;
     double factor;
     Coordinate from;
@@ -243,7 +243,7 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
         }
     }
 
-    private void setContent(DiagramContent content, Box visibleArea) {
+    private void setContent(Content content, Box visibleArea) {
         if (this.content == content) return;
         this.content = content;
 

@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.data;
 
 import com.google.gwt.core.client.GWT;
+import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.graph.model.factory.ModelFactoryException;
 import org.reactome.web.diagram.data.graph.model.factory.SchemaClass;
@@ -17,7 +18,7 @@ import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
  */
 public abstract class GraphObjectFactory {
     //LayoutLoader is in charge of update the content when a new
-    public static DiagramContent content;
+    public static Content content;
 
     public static GraphObject getOrCreateDatabaseObject(GraphNode node){
         if(node ==null || node.getDbId()==null){

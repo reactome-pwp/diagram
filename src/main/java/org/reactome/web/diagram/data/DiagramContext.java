@@ -4,6 +4,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.Widget;
 import org.reactome.web.analysis.client.model.*;
 import org.reactome.web.diagram.context.ContextDialogPanel;
+import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
@@ -31,17 +32,17 @@ public class DiagramContext {
     private DiagramStatus diagramStatus;
     private AnalysisStatus analysisStatus;
 
-    private DiagramContent content;
+    private Content content;
     private InteractorsContent interactors;
 
     private Map<GraphObject, ContextDialogPanel> dialogMap = new HashMap<>();
 
-    public DiagramContext(DiagramContent content) {
+    public DiagramContext(Content content) {
         //Status needs to be created every time we load a new content
         this.diagramStatus = new DiagramStatus();
 
-        this.content = content; //created and initialised bye the DiagramContentFactory
-        this.interactors = new InteractorsContent(content.minX, content.minY, content.maxX, content.maxY);
+        this.content = content; //created and initialised by the DiagramContentFactory
+        this.interactors = new InteractorsContent(content.getMinX(), content.getMinY(), content.getMaxX(), content.getMaxY());
     }
 
     public void clearAnalysisOverlay() {
@@ -99,7 +100,7 @@ public class DiagramContext {
         return analysisStatus;
     }
 
-    public DiagramContent getContent() {
+    public Content getContent() {
         return content;
     }
 

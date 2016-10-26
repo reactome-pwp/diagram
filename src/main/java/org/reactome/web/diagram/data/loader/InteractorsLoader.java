@@ -3,7 +3,7 @@ package org.reactome.web.diagram.data.loader;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.http.client.*;
 import org.reactome.web.diagram.client.DiagramFactory;
-import org.reactome.web.diagram.data.DiagramContent;
+import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
@@ -44,7 +44,7 @@ public class InteractorsLoader implements RequestCallback {
         }
     }
 
-    public void load(DiagramContent content, OverlayResource resource){
+    public void load(Content content, OverlayResource resource){
         // Any previous request has to be canceled
         cancel();
 

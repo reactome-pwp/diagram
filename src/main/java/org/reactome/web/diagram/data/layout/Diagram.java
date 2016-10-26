@@ -71,9 +71,4 @@ public interface Diagram {
     Integer getMaxX();
     Integer getMinY();
     Integer getMaxY();
-
-    /**
-     * Related clickable picture in svg format
-     */
-    Boolean getPicture();
 }

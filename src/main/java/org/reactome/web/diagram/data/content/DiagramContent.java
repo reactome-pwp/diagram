@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.data;
+package org.reactome.web.diagram.data.content;
 
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
@@ -17,35 +17,23 @@ import java.util.*;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class DiagramContent {
+public class DiagramContent extends GenericContent {
 
     //The number of elements for every QuadTree quadrant node
-    static final int NUMBER_OF_ELEMENTS = 25;
+    private static final int NUMBER_OF_ELEMENTS = 25;
     //Quadrant minimum area (width * height):             180
     //  Right now an area of 180 x 80 = 14400 would     [--][--] 8
     //  host 4 entities of 90x40 each                   [--][--] 0
     //  An area of 90,000 includes 25 entities
-    static final int MIN_AREA = 90000;
+    private static final int MIN_AREA = 90000;
 
-    Long dbId;
-    String stableId;
-    String displayName;
-
-    Boolean isDisease;
-    Boolean forNormalDraw;
-    Boolean picture;
-
-    Map<Long, DiagramObject> diagramObjectMap;
-    Map<String, GraphObject> graphObjectCache;
-    Map<String, GraphSubpathway> subpathwaysCache;
-    MapSet<String, GraphObject> identifierMap;
-    Set<GraphPathway> encapsulatedPathways;
+    private Map<Long, DiagramObject> diagramObjectMap;
+    private Map<String, GraphObject> graphObjectCache;
+    private Map<String, GraphSubpathway> subpathwaysCache;
+    private MapSet<String, GraphObject> identifierMap;
+    private Set<GraphPathway> encapsulatedPathways;
 
     private QuadTree<DiagramObject> diagramObjects;
-
-    boolean graphLoaded = false;
-
-    double minX, maxX, minY, maxY;
 
     public DiagramContent() {
         this.diagramObjectMap = new TreeMap<>();
@@ -57,7 +45,7 @@ public class DiagramContent {
 
     //Please note that the way the content is created is by injecting the values without the constructor
     //init has to be called to be called once every value has been set up
-    DiagramContent init(){
+    public Content init(){
         this.diagramObjects = new QuadTree<>(minX, minY, maxX, maxY, NUMBER_OF_ELEMENTS, MIN_AREA);
         for (DiagramObject diagramObject : getDiagramObjects()) {
             this.diagramObjects.add(diagramObject);
@@ -110,37 +98,13 @@ public class DiagramContent {
         return encapsulatedPathways.size() > 0;
     }
 
-    public boolean isGraphLoaded() {
-        return graphLoaded;
-    }
-
-    public Long getDbId() {
-        return dbId;
-    }
-
     public Collection<DiagramObject> getHoveredTarget(Coordinate p, double factor) {
         double f = 1 / factor;
         return diagramObjects.getItems(new Box(p.getX() - f, p.getY() - f, p.getX() + f, p.getY() + f));
     }
 
-    public String getStableId() {
-        return stableId;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
     public Set<GraphPathway> getEncapsulatedPathways() {
         return encapsulatedPathways;
-    }
-
-    public Boolean getIsDisease() {
-        return isDisease;
-    }
-
-    public Boolean getForNormalDraw() {
-        return forNormalDraw;
     }
 
     public GraphObject getDatabaseObject(String identifier) {
@@ -173,30 +137,6 @@ public class DiagramContent {
 
     public MapSet<String, GraphObject> getIdentifierMap() {
         return identifierMap;
-    }
-
-    public double getMinX() {
-        return minX;
-    }
-
-    public double getMaxX() {
-        return maxX;
-    }
-
-    public double getMinY() {
-        return minY;
-    }
-
-    public double getMaxY() {
-        return maxY;
-    }
-
-    public double getWidth() {
-        return maxX - minX;
-    }
-
-    public double getHeight() {
-        return maxY - minY;
     }
 
     public Collection<DiagramObject> getVisibleItems(Box visibleArea) {

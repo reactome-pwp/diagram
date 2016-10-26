@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.events;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.reactome.web.diagram.data.DiagramContent;
+import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.handlers.DiagramRenderedHandler;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
@@ -11,12 +11,12 @@ import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 public class DiagramRenderedEvent extends GwtEvent<DiagramRenderedHandler> {
     public static Type<DiagramRenderedHandler> TYPE = new Type<DiagramRenderedHandler>();
 
-    private DiagramContent content;
+    private Content content;
     private Box visibleArea;
     private int items;
     private double time;
 
-    public DiagramRenderedEvent(DiagramContent content, Box visibleArea, int items, double time) {
+    public DiagramRenderedEvent(Content content, Box visibleArea, int items, double time) {
         this.content = content;
         this.visibleArea = visibleArea;
         this.items = items;
@@ -28,7 +28,7 @@ public class DiagramRenderedEvent extends GwtEvent<DiagramRenderedHandler> {
         return TYPE;
     }
 
-    public DiagramContent getContent() {
+    public Content getContent() {
         return content;
     }
 

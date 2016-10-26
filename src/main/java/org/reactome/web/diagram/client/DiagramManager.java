@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.client;
 
 import org.reactome.web.diagram.common.DisplayManager;
-import org.reactome.web.diagram.data.DiagramContent;
+import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 
@@ -22,7 +22,7 @@ class DiagramManager {
         displayManager.cancelDisplayAnimation();
     }
 
-    public void fitDiagram(DiagramContent c, boolean animation) {
+    public void fitDiagram(Content c, boolean animation) {
         displayManager.display(c.getMinX(), c.getMinY(), c.getMaxX(), c.getMaxY(), animation);
     }
 

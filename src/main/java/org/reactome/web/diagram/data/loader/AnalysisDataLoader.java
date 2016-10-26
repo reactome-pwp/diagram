@@ -6,7 +6,7 @@ import org.reactome.web.analysis.client.AnalysisHandler;
 import org.reactome.web.analysis.client.model.*;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.AnalysisStatus;
-import org.reactome.web.diagram.data.DiagramContent;
+import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.events.AnalysisResultLoadedEvent;
 import org.reactome.web.diagram.events.AnalysisResultRequestedEvent;
@@ -38,7 +38,7 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
     private EventBus eventBus;
 
     private AnalysisStatus analysisStatus;
-    private DiagramContent diagramContent;
+    private Content diagramContent;
     private AnalysisSummary analysisSummary;
     private ExpressionSummary expressionSummary;
 
@@ -64,7 +64,7 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
         return analysisDataLoader;
     }
 
-    public void loadAnalysisResult(AnalysisStatus analysisStatus, DiagramContent diagramContent) {
+    public void loadAnalysisResult(AnalysisStatus analysisStatus, Content diagramContent) {
         eventBus.fireEventFromSource(new AnalysisResultRequestedEvent(diagramContent.getDbId()), this);
         this.diagramContent = diagramContent;
         if(analysisStatus!=null && !analysisStatus.equals(this.analysisStatus)){

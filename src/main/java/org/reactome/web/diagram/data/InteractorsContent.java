@@ -3,6 +3,7 @@ package org.reactome.web.diagram.data;
 import org.reactome.web.analysis.client.model.FoundInteractor;
 import org.reactome.web.analysis.client.model.IdentifierSummary;
 import org.reactome.web.diagram.client.DiagramFactory;
+import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.common.InteractorsSummary;
@@ -259,7 +260,7 @@ public class InteractorsContent {
 
     //We keep this cache to avoid creating it every time
     private Map<String, List<InteractorSearchResult>> interactorsSearchItemsPerResource = new HashMap<>();
-    public List<InteractorSearchResult> getInteractorSearchResult(OverlayResource resource, DiagramContent content) {
+    public List<InteractorSearchResult> getInteractorSearchResult(OverlayResource resource, Content content) {
         // IMPORTANT: First check whether the rawInteractors have been loaded
         // If not then there is no point in searching for a term and caching the results
         MapSet<String, RawInteractor> map = rawInteractorsCache.get(resource.getIdentifier());
@@ -291,7 +292,7 @@ public class InteractorsContent {
         return rtn;
     }
 
-    private Set<GraphObject> getInteractsWith(String diagramAcc, DiagramContent content) {
+    private Set<GraphObject> getInteractsWith(String diagramAcc, Content content) {
         Set<GraphObject> aux = content.getIdentifierMap().getElements(diagramAcc);
         if (aux != null) return aux;
         return new HashSet<>();
@@ -304,13 +305,10 @@ public class InteractorsContent {
             Set<RawInteractor> set = map.getElements(acc);
             if (set != null) {
                 rtn.addAll(set);
-                Collections.sort(rtn, new Comparator<RawInteractor>() {
-                    @Override
-                    public int compare(RawInteractor o1, RawInteractor o2) {
-                        int c = Double.compare(o2.getScore(), o1.getScore());
-                        if (c == 0) return o1.getAcc().compareTo(o2.getAcc());
-                        return c;
-                    }
+                Collections.sort(rtn, (o1, o2) -> {
+                    int c = Double.compare(o2.getScore(), o1.getScore());
+                    if (c == 0) return o1.getAcc().compareTo(o2.getAcc());
+                    return c;
                 });
             }
         }
@@ -369,7 +367,7 @@ public class InteractorsContent {
         }
     }
 
-    public void restoreInteractorsSummary(String resource, DiagramContent content) {
+    public void restoreInteractorsSummary(String resource, Content content) {
         Set<InteractorsSummary> items = interactorsSummaryMap.getElements(resource);
         if (items == null) return;
         for (InteractorsSummary summary : items) {

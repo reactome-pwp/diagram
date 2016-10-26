@@ -12,7 +12,7 @@ import org.vectomatic.dom.svg.utils.ParserException;
 public class SVGLoader implements RequestCallback {
 
     public interface Handler {
-        void onSvgLoaded(OMSVGSVGElement svg, long time);
+        void onSvgLoaded(String stId, OMSVGSVGElement svg, long time);
         void onSvgLoaderError(String stId, Throwable exception);
     }
 
@@ -59,7 +59,7 @@ public class SVGLoader implements RequestCallback {
                     long start = System.currentTimeMillis();
                     OMSVGSVGElement svg = OMSVGParser.parse(response.getText(), false);
                     long time = System.currentTimeMillis() - start;
-                    this.handler.onSvgLoaded(svg, time);
+                    this.handler.onSvgLoaded(stId, svg, time);
                 } catch (ParserException e) {
                     this.handler.onSvgLoaderError(stId, e);
                 }
