@@ -732,11 +732,6 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.reactionsHighlight.setLineCap(Context2d.LineCap.ROUND);
         this.reactionsSelection.setLineCap(Context2d.LineCap.ROUND);
 
-        //DO NOT CHANGE THE ORDER OF THE FOLLOWING TWO LINES
-        this.add(new LoadingMessage(eventBus));                 //Loading message panel
-        this.add(new AnalysisMessage(eventBus));                //Analysis overlay message panel
-        this.add(new ErrorMessage(eventBus));                   //Error message panel
-
         //Thumbnail
         this.add(this.thumbnail);
 
@@ -744,6 +739,11 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.add(this.svgPanel = new SVGPanel(eventBus, width, height), 0, 0);
         //SVG Thumbnail
         this.add(this.svgThumbnail);
+
+        //DO NOT CHANGE THE ORDER OF THE FOLLOWING TWO LINES
+        this.add(new LoadingMessage(eventBus));                 //Loading message panel
+        this.add(new AnalysisMessage(eventBus));                //Analysis overlay message panel
+        this.add(new ErrorMessage(eventBus));                   //Error message panel
 
         //Watermark
         this.addWatermark();
