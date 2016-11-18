@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.reactome.web.diagram.data.content.Content.Type.SVG;
+
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -84,8 +86,10 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
 
     @Override
     public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
-        clearOverlay();
-        overlayAnalysisResults();
+        if(svg!=null) {
+            clearOverlay();
+            overlayAnalysisResults();
+        }
     }
 
     @Override
@@ -94,8 +98,9 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         expressionSummary = null;
         pathwaySummaries = null;
         selectedExpCol = 0;
-
-        clearOverlay();
+        if(svg!=null) {
+            clearOverlay();
+        }
     }
 
     @Override
@@ -106,9 +111,10 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         analysisType = event.getType();
         pathwaySummaries = event.getPathwaySummaries();
         expressionSummary = event.getExpressionSummary();
-
-        clearOverlay();
-        overlayAnalysisResults();
+        if(svg!=null) {
+            clearOverlay();
+            overlayAnalysisResults();
+        }
     }
 
     @Override
@@ -119,6 +125,8 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
 
     @Override
     public void onControlAction(ControlActionEvent event) {
+        if(context.getContent().getType() != SVG) return;
+
         switch (event.getAction()) {
             case FIT_ALL:       fitALL(true);                     break;
             case ZOOM_IN:       zoom(1.1f, getCentrePoint());     break;
@@ -127,7 +135,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             case RIGHT:         translate(-10, 0);                break;
             case DOWN:          translate(0, -10);                break;
             case LEFT:          translate(10, 0);                 break;
-            case FIREWORKS:     testOverlay();                    break; //TODO: TO BE REMOVED
+//            case FIREWORKS:     testOverlay();                    break; //TODO: TO BE REMOVED
         }
     }
 
@@ -149,14 +157,17 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     public void onContentRequested(ContentRequestedEvent event) {
         setVisible(false);
         context = null;
-        svg = null;
+        if(svg!=null) {
+            svg = null;
+            getElement().removeAllChildren();
+        }
     }
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
         context = event.getContext();
         Content content = context.getContent();
-        if (content.getType() == Content.Type.SVG) {
+        if (content.getType() == SVG) {
             setVisible(true);
             this.svg = ((EHLDContent)content).getSVG();
 
@@ -221,8 +232,10 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     @Override
     public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
         selectedExpCol = e.getColumn();
-        clearOverlay();
-        overlayAnalysisResults();
+        if(svg!=null) {
+            clearOverlay();
+            overlayAnalysisResults();
+        }
     }
 
     @Override
@@ -407,12 +420,15 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
 
     private void fitALL(boolean animated) {
         OMSVGMatrix fitTM = calculateFitAll(FRAME);
-        if(animated) {
-            animation = new SVGAnimation(this, ctm);
-            animation.animate(fitTM);
-        } else {
-            ctm = initialTM.multiply(fitTM);
-            applyCTM(true);
+
+        if(!SVGUtil.areEqual(ctm, fitTM)) {
+            if (animated) {
+                animation = new SVGAnimation(this, ctm);
+                animation.animate(fitTM);
+            } else {
+                ctm = initialTM.multiply(fitTM);
+                applyCTM(true);
+            }
         }
     }
 
