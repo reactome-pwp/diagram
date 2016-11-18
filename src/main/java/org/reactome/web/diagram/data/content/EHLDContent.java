@@ -50,25 +50,9 @@ public class EHLDContent extends GenericContent {
             graphObjectCache.put(dbObject.getStId(), dbObject);
         }
 
-//        if (dbObject instanceof GraphPhysicalEntity) {
-//            GraphPhysicalEntity pe = (GraphPhysicalEntity) dbObject;
-//            if (pe.getIdentifier() != null) {
-//                identifierMap.add(pe.getIdentifier(), dbObject);
-//            }
-//            if (pe.getGeneNames() != null) {
-//                for (String gene : pe.getGeneNames()) {
-//                    identifierMap.add(gene, dbObject);
-//                }
-//            }
         if (dbObject instanceof GraphPathway) {
             encapsulatedPathways.add((GraphPathway) dbObject);
         }
-
-//        if (dbObject instanceof GraphSubpathway) {
-//            GraphSubpathway gsp = (GraphSubpathway) dbObject;
-//            this.subpathwaysCache.put("" + gsp.getDbId(), gsp);
-//            this.subpathwaysCache.put(gsp.getStId(), gsp);
-//        }
     }
 
     @Override

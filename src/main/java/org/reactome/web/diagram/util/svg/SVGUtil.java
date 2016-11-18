@@ -30,6 +30,14 @@ public abstract class SVGUtil {
         return input != null && regExp.test(input);
     }
 
+    /***
+     * Takes as input a string like "OVERVIEW-R-SSS-NNNNNNN"
+     * or "REGION-R-SSS-NNNNNN, filters out the first part and
+     * keeps only the stable identifier.
+     *
+     * @param identifier
+     * @return the stable identifier
+     */
     public static String keepStableId(String identifier) {
         String rtn = null;
         if(identifier!=null && !identifier.isEmpty()) {
