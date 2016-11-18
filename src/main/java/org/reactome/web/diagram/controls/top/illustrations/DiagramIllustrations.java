@@ -30,6 +30,8 @@ import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
 import org.reactome.web.pwp.model.handlers.DatabaseObjectCreatedHandler;
 import org.reactome.web.pwp.model.handlers.DatabaseObjectLoadedHandler;
 
+import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -60,7 +62,7 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+        if (event.getContext().getContent().getType() == DIAGRAM) {
             initialise();
             setIllustrations(event.getContext().getContent().getDbId(), main);
         }

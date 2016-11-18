@@ -16,6 +16,8 @@ import org.reactome.web.diagram.renderers.layout.s800.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
+
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
@@ -181,7 +183,7 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+        if (event.getContext().getContent().getType() == DIAGRAM) {
             this.setFactor(event.getContext().getDiagramStatus().getFactor());
         }
     }

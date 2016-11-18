@@ -15,6 +15,8 @@ public class EHLDObject implements DiagramObject {
     private String displayName;
     private String schemaClass;
     private String renderableClass;
+    private GraphObject graphObject;
+
 
     public EHLDObject(Long id, String stableId) {
         this.id = id;
@@ -65,12 +67,13 @@ public class EHLDObject implements DiagramObject {
 
     @Override
     public <T extends GraphObject> T getGraphObject() {
-        return null;
+        return (T) graphObject;
     }
 
     @Override
-    public void setGraphObject(GraphObject obj) {
-
+    public <T extends GraphObject> void setGraphObject (T obj) {
+        graphObject = obj;
+        //TODO set the proper diagramId to the diagramobject
     }
 
     @Override

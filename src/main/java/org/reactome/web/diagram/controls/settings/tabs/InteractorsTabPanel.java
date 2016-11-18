@@ -34,6 +34,8 @@ import org.reactome.web.diagram.util.interactors.InteractorsExporter;
 
 import java.util.*;
 
+import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
+
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
@@ -175,7 +177,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+        if (event.getContext().getContent().getType() == DIAGRAM) {
             context = event.getContext();
         }
     }

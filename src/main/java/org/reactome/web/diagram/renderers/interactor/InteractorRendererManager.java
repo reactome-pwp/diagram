@@ -27,6 +27,8 @@ import org.reactome.web.diagram.renderers.interactor.s300.StaticLinkRenderer300;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -108,7 +110,7 @@ public class InteractorRendererManager implements DiagramZoomHandler, ContentLoa
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+        if (event.getContext().getContent().getType() == DIAGRAM) {
             setFactor(event.getContext().getDiagramStatus().getFactor());
         }
     }

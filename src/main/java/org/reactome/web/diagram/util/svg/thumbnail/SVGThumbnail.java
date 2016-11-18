@@ -6,6 +6,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
+import org.reactome.web.diagram.data.content.EHLDContent;
 import org.reactome.web.diagram.events.ContentLoadedEvent;
 import org.reactome.web.diagram.events.ContentRequestedEvent;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
@@ -21,6 +22,8 @@ import org.reactome.web.diagram.util.svg.handlers.SVGPanZoomHandler;
 import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.DOMHelper;
 import org.vectomatic.dom.svg.utils.SVGConstants;
+
+import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -66,9 +69,10 @@ public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHa
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        if(event.CONTENT_TYPE == ContentLoadedEvent.Content.SVG) {
+        if(event.getContext().getContent().getType() == SVG) {
             setVisible(true);
-            svg = (OMSVGSVGElement) event.getSVG().cloneNode(true);
+            EHLDContent content = (EHLDContent) event.getContext().getContent();
+            svg = (OMSVGSVGElement) content.getSVG().cloneNode(true);
 
             //TODO: Remove all text elements because they do not make sense to having them in the thumbnail.
 

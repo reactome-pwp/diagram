@@ -21,6 +21,8 @@ import org.reactome.web.diagram.util.slider.Slider;
 import org.reactome.web.diagram.util.slider.SliderValueChangedEvent;
 import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
 
+import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
+
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
@@ -97,7 +99,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+        if (event.getContext().getContent().getType() == DIAGRAM) {
             context = event.getContext();
             if (currentOverlayResource != null && context.getInteractors().isInteractorResourceCached(currentOverlayResource.getIdentifier())) {
                 update();

@@ -26,7 +26,7 @@ public interface DiagramObject extends QuadTreeBox {
 
     <T extends GraphObject> T getGraphObject();
 
-    void setGraphObject(GraphObject obj);
+    <T extends GraphObject> void setGraphObject(T obj);
 
     //Don use get -> getContextMenuTrigger (because AutoBean only overrides the non-property methods)
     ContextMenuTrigger contextMenuTrigger(); //Behaviour override with DiagramObjectCategory

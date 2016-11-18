@@ -6,6 +6,7 @@ import org.reactome.web.diagram.data.graph.model.GraphSubpathway;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.util.MapSet;
+import org.vectomatic.dom.svg.OMSVGSVGElement;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.*;
@@ -17,17 +18,20 @@ public class EHLDContent extends GenericContent {
 
     private Map<String, DiagramObject> tempDiagramObjectMap;
     private Map<Long, DiagramObject> diagramObjectMap;
-//    private Map<String, GraphObject> graphObjectCache;
+    private Map<String, GraphObject> graphObjectCache;
 //    private Map<String, GraphSubpathway> subpathwaysCache;
-//    private MapSet<String, GraphObject> identifierMap;
-//    private Set<GraphPathway> encapsulatedPathways;
+    private MapSet<String, GraphObject> identifierMap;
+    private Set<GraphPathway> encapsulatedPathways;
 
-    public EHLDContent() {
+    private OMSVGSVGElement svg;
+
+    public EHLDContent(OMSVGSVGElement svg) {
+        this.svg = svg;
         this.tempDiagramObjectMap = new HashMap<>();
         this.diagramObjectMap = new TreeMap<>();
-//        this.graphObjectCache = new HashMap<>();
-//        this.identifierMap = new MapSet<>();
-//        this.encapsulatedPathways = new HashSet<>();
+        this.graphObjectCache = new HashMap<>();
+        this.identifierMap = new MapSet<>();
+        this.encapsulatedPathways = new HashSet<>();
 //        this.subpathwaysCache = new HashMap<>();
     }
 
@@ -38,47 +42,73 @@ public class EHLDContent extends GenericContent {
 
     @Override
     public void cache(GraphObject dbObject) {
+        this.graphLoaded = true;
+        if (dbObject.getDbId() != null) {
+            graphObjectCache.put(dbObject.getDbId() + "", dbObject);
+        }
+        if (dbObject.getStId() != null) {
+            graphObjectCache.put(dbObject.getStId(), dbObject);
+        }
 
+//        if (dbObject instanceof GraphPhysicalEntity) {
+//            GraphPhysicalEntity pe = (GraphPhysicalEntity) dbObject;
+//            if (pe.getIdentifier() != null) {
+//                identifierMap.add(pe.getIdentifier(), dbObject);
+//            }
+//            if (pe.getGeneNames() != null) {
+//                for (String gene : pe.getGeneNames()) {
+//                    identifierMap.add(gene, dbObject);
+//                }
+//            }
+        if (dbObject instanceof GraphPathway) {
+            encapsulatedPathways.add((GraphPathway) dbObject);
+        }
+
+//        if (dbObject instanceof GraphSubpathway) {
+//            GraphSubpathway gsp = (GraphSubpathway) dbObject;
+//            this.subpathwaysCache.put("" + gsp.getDbId(), gsp);
+//            this.subpathwaysCache.put(gsp.getStId(), gsp);
+//        }
     }
 
     @Override
     public void cache(List<? extends DiagramObject> diagramObjects) {
         if (diagramObjects == null) return;
         for (DiagramObject diagramObject : diagramObjects) {
-            this.diagramObjectMap.put(diagramObject.getId(), diagramObject);
+            EHLDObject ehldObject = (EHLDObject) diagramObject;
+            diagramObjectMap.put(ehldObject.getId(), ehldObject);
+            tempDiagramObjectMap.put(ehldObject.getStableId(), ehldObject);
         }
     }
 
-
-
     @Override
     public boolean containsOnlyEncapsulatedPathways() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean containsEncapsulatedPathways() {
-        return false;
+        return true;
     }
 
     @Override
     public Collection<DiagramObject> getHoveredTarget(Coordinate p, double factor) {
-        return null;
+        return Collections.EMPTY_LIST;
     }
 
     @Override
     public Set<GraphPathway> getEncapsulatedPathways() {
-        return null;
+        return encapsulatedPathways;
     }
 
     @Override
     public GraphObject getDatabaseObject(String identifier) {
-        return null;
+        return this.graphObjectCache.get(identifier);
     }
 
     @Override
     public GraphObject getDatabaseObject(Long dbId) {
-        return null;
+        return this.graphObjectCache.get(dbId.toString());
     }
 
     @Override
@@ -93,22 +123,27 @@ public class EHLDContent extends GenericContent {
 
     @Override
     public DiagramObject getDiagramObject(Long id) {
-        return null;
+        return this.diagramObjectMap.get(id);
+    }
+
+    @Override
+    public DiagramObject getDiagramObject(String id) {
+        return this.tempDiagramObjectMap.get(id);
     }
 
     @Override
     public Collection<GraphObject> getDatabaseObjects() {
-        return null;
+        return new HashSet<>(this.graphObjectCache.values());
     }
 
     @Override
     public Collection<DiagramObject> getDiagramObjects() {
-        return null;
+        return this.diagramObjectMap.values();
     }
 
     @Override
     public MapSet<String, GraphObject> getIdentifierMap() {
-        return null;
+        return identifierMap;
     }
 
     @Override
@@ -154,5 +189,14 @@ public class EHLDContent extends GenericContent {
     @Override
     public void clearDisplayedInteractors() {
         //Nothing Here
+    }
+
+    public OMSVGSVGElement getSVG() {
+        return svg;
+    }
+
+    @Override
+    public Type getType(){
+        return Type.SVG;
     }
 }

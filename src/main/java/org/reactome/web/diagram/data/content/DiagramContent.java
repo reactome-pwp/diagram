@@ -127,6 +127,10 @@ public class DiagramContent extends GenericContent {
         return this.diagramObjectMap.get(id);
     }
 
+    public DiagramObject getDiagramObject(String id) {
+        return null;
+    }
+
     public Collection<GraphObject> getDatabaseObjects() {
         return new HashSet<>(this.graphObjectCache.values());
     }
@@ -169,6 +173,11 @@ public class DiagramContent extends GenericContent {
                 node.setDiagramEntityInteractorsSummary(null);
             }
         }
+    }
+
+    @Override
+    public Type getType(){
+        return Type.DIAGRAM;
     }
 
     @Override

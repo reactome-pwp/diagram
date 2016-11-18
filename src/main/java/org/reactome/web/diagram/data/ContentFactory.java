@@ -20,9 +20,7 @@ import org.reactome.web.diagram.util.svg.SVGUtil;
 import org.vectomatic.dom.svg.OMElement;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
@@ -30,7 +28,7 @@ import java.util.List;
  */
 public abstract class ContentFactory {
 
-    public static Content getDiagramContent(Diagram diagram) {
+    public static Content getContent(Diagram diagram) {
         DiagramContent content = new DiagramContent();
 
         //Read and set general pathway information
@@ -55,8 +53,8 @@ public abstract class ContentFactory {
         return content.init();
     }
 
-    public static Content getEHLDContent(String stId, OMSVGSVGElement svg) {
-        EHLDContent content = new EHLDContent();
+    public static Content getContent(String stId, OMSVGSVGElement svg) {
+        EHLDContent content = new EHLDContent(svg);
 
         //Read and set general pathway information
         content.setStableId(stId);
@@ -64,8 +62,12 @@ public abstract class ContentFactory {
         Long id = 0L;
         //Create EHLDObjects to include in the content
         List<EHLDObject> pathwayNodes = new LinkedList<>();
+        Set<String> aux = new HashSet();
         for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
-            pathwayNodes.add(new EHLDObject(id++, SVGUtil.keepStableId(child.getId()))); //just a placeholder
+            String stID = SVGUtil.keepStableId(child.getId());
+            if(aux.add(stID)){
+                pathwayNodes.add(new EHLDObject(id++, stID)); //just a placeholder
+            }
         }
 
         content.cache(pathwayNodes);
@@ -84,6 +86,37 @@ public abstract class ContentFactory {
     }
 
     public static void fillGraphContent(Content content, Graph graph) {
+        if(content instanceof DiagramContent){
+            fillGraphContent((DiagramContent) content, graph);
+        } else if (content instanceof EHLDContent) {
+            fillGraphContent((EHLDContent) content, graph);
+        } else {
+            Console.warn("Ooops. Don't know what to do with " + content.getClass().getSimpleName());
+        }
+    }
+
+    private static void fillGraphContent(EHLDContent content, Graph graph) {
+        GraphObjectFactory.content = content;
+
+        for (EntityNode node : graph.getNodes()) {
+            GraphObjectFactory.getOrCreateDatabaseObject(node);
+        }
+
+        for (EntityNode node : graph.getNodes()) {
+            GraphObject obj = content.getDatabaseObject(node.getDbId());
+            if (obj instanceof GraphPathway) {
+                GraphPathway pathway = (GraphPathway) obj;
+                DiagramObject diagramObject = getDiagramObjectByStableId(node.getStId());
+                pathway.addDiagramObject(diagramObject);
+                diagramObject.setGraphObject(pathway);
+
+                Console.error(pathway.getStId() + " - " + ((EHLDObject) diagramObject).getStableId());
+            }
+        }
+
+    }
+
+    private static void fillGraphContent(DiagramContent content, Graph graph) {
         GraphObjectFactory.content = content;
 
         for (EntityNode node : graph.getNodes()) {
@@ -167,6 +200,14 @@ public abstract class ContentFactory {
             for (Long id : ids) {
                 rtn.add(GraphObjectFactory.content.getDiagramObject(id));
             }
+        }
+        return rtn;
+    }
+
+    private static DiagramObject getDiagramObjectByStableId(String stId) {
+        DiagramObject rtn = null;
+        if (stId != null) {
+            rtn = GraphObjectFactory.content.getDiagramObject(stId);
         }
         return rtn;
     }

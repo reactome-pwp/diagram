@@ -6,6 +6,8 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 
+import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -46,7 +48,7 @@ public class DiagramInfo extends AbsolutePanel implements DiagramRenderedHandler
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+        if (event.getContext().getContent().getType() == DIAGRAM) {
             if (!event.getContext().getContent().getStableId().equals(stId)) {
                 this.layoutTime.setText("0 ms");
                 this.graphTime.setText("0 ms");

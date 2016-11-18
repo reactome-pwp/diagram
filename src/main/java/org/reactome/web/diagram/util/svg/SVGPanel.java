@@ -10,6 +10,8 @@ import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.content.Content;
+import org.reactome.web.diagram.data.content.EHLDContent;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
@@ -74,6 +76,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     public SVGPanel(EventBus eventBus, int width, int height) {
         super(eventBus);
         this.getElement().addClassName("pwp-SVGPanel");
+//        this.getElement().getStyle().setBackgroundColor("Green");
 
         initHandlers();
         setSize(width, height);
@@ -100,7 +103,6 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         //!!! Important !!!
         //For the moment analysis results are loaded from the EVENT, as the context does not yet include them.
         //TODO: When integration of the SVGPanel is completed, Analysis results have to be read by the context
-
         analysisType = event.getType();
         pathwaySummaries = event.getPathwaySummaries();
         expressionSummary = event.getExpressionSummary();
@@ -158,9 +160,10 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.SVG) {
+        Content content = event.getContext().getContent();
+        if (content.getType() == Content.Type.SVG) {
             setVisible(true);
-            this.svg = event.getSVG();
+            this.svg = ((EHLDContent)content).getSVG();
 
             entities = new HashMap<>();
             for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
@@ -169,12 +172,14 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
 
             for (SVGEntity svgEntity : entities.values()) {
                 OMElement child = svgEntity.getHoverableElement();
-                child.addDomHandler(SVGPanel.this, MouseUpEvent.getType());
-                child.addDomHandler(SVGPanel.this, MouseOverEvent.getType());
-                child.addDomHandler(SVGPanel.this, MouseOutEvent.getType());
-                child.addDomHandler(SVGPanel.this, DoubleClickEvent.getType());
-                // Set the pointer to the active regions
-                child.setAttribute("style", CURSOR);
+                if(child!=null) {
+                    child.addDomHandler(SVGPanel.this, MouseUpEvent.getType());
+                    child.addDomHandler(SVGPanel.this, MouseOverEvent.getType());
+                    child.addDomHandler(SVGPanel.this, MouseOutEvent.getType());
+                    child.addDomHandler(SVGPanel.this, DoubleClickEvent.getType());
+                    // Set the pointer to the active regions
+                    child.setAttribute("style", CURSOR);
+                }
             }
 
             // Identify all layers by getting all top-level g elements
@@ -460,6 +465,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
                     case OVERREPRESENTATION:
                         String enrichColour = hex2Rgb(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax(), 0.9f);
                         overlayEntity(pathwaySummary.getStId(), (float) getRatio(pathwaySummary), enrichColour);
+                        Console.error("checking..." + pathwaySummary.getStId() + " " + (float) getRatio(pathwaySummary));
                         break;
                     case EXPRESSION:
                         String expressionColour = AnalysisColours.get().expressionGradient.getColor(
@@ -513,10 +519,15 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     private void testOverlay() {
         clearOverlay();
         String enrichColour = hex2Rgb(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax(), 0.7f);
+        //Apoptosis - Marissa's draft EHDL
         overlayEntity("R-HSA-169911", 0.5f, enrichColour);
         overlayEntity("R-HSA-5357769", 0.5f, enrichColour);
         overlayEntity("R-HSA-109606", 0.5f, enrichColour);
         overlayEntity("R-HSA-75153", 0.5f, enrichColour);
+
+        //Collagen Formation - for cristoffer's draft EHLD
+//        overlayEntity("R-HSA-1650814", 0.5f, enrichColour);
+//        overlayEntity("R-HSA-2022090", 0.5f, enrichColour);
     }
 
 }

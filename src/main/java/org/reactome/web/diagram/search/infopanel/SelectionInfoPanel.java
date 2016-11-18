@@ -16,6 +16,8 @@ import org.reactome.web.diagram.search.events.SuggestionSelectedEvent;
 import org.reactome.web.diagram.search.handlers.SuggestionSelectedHandler;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
 
+import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -34,7 +36,7 @@ public class SelectionInfoPanel extends AbstractAccordionPanel implements Sugges
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+        if (event.getContext().getContent().getType() == DIAGRAM) {
             context = event.getContext();
         }
     }

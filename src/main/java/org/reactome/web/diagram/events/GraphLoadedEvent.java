@@ -40,7 +40,7 @@ public class GraphLoadedEvent extends GwtEvent<GraphLoadedHandler> {
     public String toString() {
         return "GraphLoadedEvent{" +
                 "time=" + time +
-                ", content=" + content +
+                ", content=" + content.getStableId() +
                 '}';
     }
 }

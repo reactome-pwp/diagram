@@ -21,6 +21,8 @@ import org.reactome.web.diagram.handlers.*;
 
 import java.util.Objects;
 
+import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -105,7 +107,7 @@ public class TooltipContainer extends AbsolutePanel implements ContentRequestedH
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+        if (event.getContext().getContent().getType() == DIAGRAM) {
             this.context = event.getContext();
         }
     }

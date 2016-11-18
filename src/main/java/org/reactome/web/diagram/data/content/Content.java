@@ -17,6 +17,8 @@ import java.util.Set;
  */
 public interface Content {
 
+    enum Type {DIAGRAM, SVG}
+
     Content init();
 
     void cache(GraphObject dbObject);
@@ -52,6 +54,8 @@ public interface Content {
     GraphSubpathway getGraphSubpathway(Long dbId);
 
     DiagramObject getDiagramObject(Long id);
+
+    DiagramObject getDiagramObject(String id);
 
     Collection<GraphObject> getDatabaseObjects();
 
@@ -94,4 +98,6 @@ public interface Content {
     int getNumberOfBurstEntities();
 
     void clearDisplayedInteractors();
+
+    Type getType();
 }

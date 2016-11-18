@@ -39,6 +39,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -146,7 +148,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     private void doUpdate() {
-        if (context == null) return;
+        if (context == null || context.getContent().getType() != DIAGRAM) return;
         if (forceDraw) {
             forceDraw = false;
             Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
@@ -401,9 +403,9 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        if(event.CONTENT_TYPE.equals(ContentLoadedEvent.Content.DIAGRAM)) {
+//        if(event.getContext().getContent().getType() == Content.Type.DIAGRAM) {
             this.context = event.getContext();
-        }
+//        }
         this.canvas.setWatermarkVisible(true);
         this.canvas.setWatermarkURL(event.getContext(), null, this.flagTerm);
         fireEvent(event);

@@ -28,7 +28,7 @@ public class WidgetTest implements EntryPoint {
 //        DiagramFactory.SERVER = "fakeserver.com";
         DiagramFactory.CONSOLE_VERBOSE = true;
         DiagramFactory.EVENT_BUS_VERBOSE = true;
-//                DiagramFactory.SHOW_INFO = true;
+//      DiagramFactory.SHOW_INFO = true;
         diagram = DiagramFactory.createDiagramViewer();
     }
 
@@ -75,13 +75,13 @@ public class WidgetTest implements EntryPoint {
         button.addMouseOverHandler(new MouseOverHandler() {
             @Override
             public void onMouseOver(MouseOverEvent event) {
-                diagram.highlightItem(stId);
+                //diagram.highlightItem(stId);
             }
         });
         button.addMouseOutHandler(new MouseOutHandler() {
             @Override
             public void onMouseOut(MouseOutEvent event) {
-                diagram.resetHighlight();
+                //diagram.resetHighlight();
             }
         });
         button.setTitle(title);
@@ -125,7 +125,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("ORA 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNjA5MzAwNTU3MjdfMg==","TOTAL");
+                diagram.setAnalysisToken("MjAxNjExMTEwOTQyMDBfMg==","TOTAL");
             }
         }));
 
@@ -137,7 +137,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("Exp 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNjA5MzAwNTU5MDFfMw==","TOTAL");
+                diagram.setAnalysisToken("MjAxNjExMTEwOTQyNTFfMw==","TOTAL");
             }
         }));
 

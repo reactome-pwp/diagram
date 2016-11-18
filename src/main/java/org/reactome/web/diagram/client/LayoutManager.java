@@ -18,6 +18,8 @@ import org.reactome.web.diagram.renderers.layout.RendererManager;
 
 import java.util.*;
 
+import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -178,7 +180,7 @@ public class LayoutManager implements ContentLoadedHandler, ContentRequestedHand
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+        if (event.getContext().getContent().getType() == DIAGRAM) {
             context = event.getContext();
         }
     }

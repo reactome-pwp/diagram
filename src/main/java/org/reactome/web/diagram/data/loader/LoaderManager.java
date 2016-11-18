@@ -5,6 +5,7 @@ import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.ContentFactory;
 import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.content.DiagramContent;
 import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractors;
@@ -17,6 +18,8 @@ import org.reactome.web.diagram.handlers.InteractorsRequestCanceledHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 import org.reactome.web.pwp.model.util.LruCache;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
+
+import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 
 /**
  * Implements a combination of two series of steps.
@@ -88,11 +91,11 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
 
     @Override
     public void onSvgLoaded(String stId, OMSVGSVGElement svg, long time) {
-        DiagramContext context = new DiagramContext(ContentFactory.getEHLDContent(stId, svg));
+        DiagramContext context = new DiagramContext(ContentFactory.getContent(stId, svg));
         this.context = context;
         graphLoader.load(stId);
 //        eventBus.fireEventFromSource(new ContentLoadedEvent(svg), this);
-        //Nothing else here. Plan A finishes if there is an SVG
+//        Nothing else here. Plan A finishes if there is an SVG
     }
 
     @Override
@@ -104,7 +107,7 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     public void layoutLoaded(Diagram diagram, long time) {
         //This is querying the server so the following code is executed straight forward
         long start = System.currentTimeMillis();
-        DiagramContext context = new DiagramContext(ContentFactory.getDiagramContent(diagram));
+        DiagramContext context = new DiagramContext(ContentFactory.getContent(diagram));
         //caching the context
         contextMap.put(context.getContent().getStableId(), context);
         this.context = context;
@@ -163,7 +166,7 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        if (event.CONTENT_TYPE == ContentLoadedEvent.Content.DIAGRAM) {
+        if (event.getContext().getContent().getType() == DIAGRAM) {
             context = event.getContext();
             if (INTERACTORS_RESOURCE != null) {   //Checking here so no error message is displayed in this case
                 //This fakes a resource changed so the control will show the loading message
@@ -173,7 +176,9 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
                     //the InteractorsResourceChangedEvent is fired (to avoid messing the order of the events)
                     @Override
                     public void execute() {
-                        eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(INTERACTORS_RESOURCE), LoaderManager.this);
+                        if(context.getContent() instanceof DiagramContent) {
+                            eventBus.fireEventFromSource(new InteractorsResourceChangedEvent(INTERACTORS_RESOURCE), LoaderManager.this);
+                        }
                     }
                 });
             }
