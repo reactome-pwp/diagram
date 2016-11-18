@@ -767,7 +767,9 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     private void fitDiagram(boolean animation) {
-        diagramManager.fitDiagram(context.getContent(), animation);
+        if(context.getContent().getType() == DIAGRAM) {
+            diagramManager.fitDiagram(context.getContent(), animation);
+        }
     }
 
     private void overview() {
@@ -775,7 +777,9 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     private void padding(int dX, int dY) {
-        padding(CoordinateFactory.get(dX, dY));
+        if(context.getContent().getType() == DIAGRAM) {
+            padding(CoordinateFactory.get(dX, dY));
+        }
     }
 
     @Override
@@ -787,7 +791,9 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     private void zoomDelta(double deltaFactor) {
-        zoom(context.getDiagramStatus().getFactor() + deltaFactor);
+        if(context.getContent().getType() == DIAGRAM) {
+            zoom(context.getDiagramStatus().getFactor() + deltaFactor);
+        }
     }
 
     private void zoom(double factor) {
