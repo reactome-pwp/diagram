@@ -40,8 +40,8 @@ import java.util.List;
  */
 public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedHandler, ContentRequestedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
-        ContentLoadedHandler, ControlActionHandler, CanvasExportRequestedHandler,
-        SVGAnimationHandler, SVGThumbnailAreaMovedHandler, DoubleClickHandler, ContextMenuHandler,
+        ContentLoadedHandler, ControlActionHandler, DoubleClickHandler, ContextMenuHandler,
+        SVGAnimationHandler, SVGThumbnailAreaMovedHandler,
         AnalysisResultLoadedHandler, AnalysisProfileChangedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler {
 
     private static final String REGION = "REGION-";
@@ -146,12 +146,6 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     }
 
     @Override
-    public void onDiagramExportRequested(CanvasExportRequestedEvent event) {
-//        exportSVG(context.getContent().getStableId());
-        exportSVG(svg.getLocalName());
-    }
-
-    @Override
     public void onContentRequested(ContentRequestedEvent event) {
         setVisible(false);
         context = null;
@@ -160,7 +154,8 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        Content content = event.getContext().getContent();
+        context = event.getContext();
+        Content content = context.getContent();
         if (content.getType() == Content.Type.SVG) {
             setVisible(true);
             this.svg = ((EHLDContent)content).getSVG();
@@ -431,7 +426,6 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
 
     private void initHandlers() {
         eventBus.addHandler(ControlActionEvent.TYPE, this);
-        eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
         eventBus.addHandler(ContentLoadedEvent.TYPE, this);
         eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(SVGThumbnailAreaMovedEvent.TYPE, this);

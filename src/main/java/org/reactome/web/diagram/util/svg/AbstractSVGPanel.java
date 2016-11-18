@@ -50,6 +50,15 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         initFilters();
     }
 
+    public void exportImage(String stableId){
+        if(svg != null) {
+            Image image = new Image();
+            image.setUrl("data:image/svg+xml," + svg.getMarkup());
+            final ImageDownloadDialog downloadDialogBox = new ImageDownloadDialog(image, "svg", stableId);
+            downloadDialogBox.show();
+        }
+    }
+
     public void setSize(int width, int height) {
         //Set the size of the panel
         setWidth(width + "px");
@@ -97,15 +106,6 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         float corY = vpCY/zoom - newCY;
 
         return svg.createSVGMatrix().scale(zoom).translate(corX, corY);
-    }
-
-    protected void exportSVG(String stableId){
-        if(svg != null) {
-            Image image = new Image();
-            image.setUrl("data:image/svg+xml," + svg.getMarkup());
-            final ImageDownloadDialog downloadDialogBox = new ImageDownloadDialog(image, "svg", stableId);
-            downloadDialogBox.show();
-        }
     }
 
     protected OMSVGPoint getCentrePoint() {

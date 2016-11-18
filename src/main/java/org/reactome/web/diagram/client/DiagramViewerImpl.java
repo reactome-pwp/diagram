@@ -14,6 +14,7 @@ import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.DiagramContext;
 import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.GraphObjectFactory;
+import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
@@ -355,7 +356,11 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     @Override
     public void onDiagramExportRequested(CanvasExportRequestedEvent event) {
         if (context != null) {
-            this.canvas.exportImage(this.context.getContent().getStableId());
+            Content content = context.getContent();
+            switch(content.getType()) {
+                case DIAGRAM:     canvas.exportImage(content.getStableId());        break;
+                case SVG:         canvas.exportEHLDImage(content.getStableId());    break;
+            }
         }
     }
 
@@ -403,9 +408,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-//        if(event.getContext().getContent().getType() == Content.Type.DIAGRAM) {
-            this.context = event.getContext();
-//        }
+        this.context = event.getContext();
         this.canvas.setWatermarkVisible(true);
         this.canvas.setWatermarkURL(event.getContext(), null, this.flagTerm);
         fireEvent(event);
@@ -524,12 +527,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     @Override
     protected void onLoad() {
         super.onLoad();
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                initialise();
-            }
-        });
+        Scheduler.get().scheduleDeferred(() -> initialise());
     }
 
     @Override

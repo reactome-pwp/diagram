@@ -273,12 +273,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     @Override
     protected void onLoad() {
         super.onLoad();
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                initialise();
-            }
-        });
+        Scheduler.get().scheduleDeferred(() -> initialise());
     }
 
     @Override
@@ -338,6 +333,9 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                 }
             }
         }).scheduleRepeating(20);
+    }
+    public void exportEHLDImage(final String diagramStId){
+        svgPanel.exportImage(diagramStId);
     }
 
     public void notifyHoveredExpression(DiagramObject item, Coordinate model) {
