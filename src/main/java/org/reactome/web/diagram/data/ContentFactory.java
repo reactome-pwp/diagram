@@ -59,10 +59,10 @@ public abstract class ContentFactory {
         //Read and set general pathway information
         content.setStableId(stId);
 
-        Long id = 0L;
         //Create EHLDObjects to include in the content
         List<EHLDObject> pathwayNodes = new LinkedList<>();
         Set<String> aux = new HashSet();
+        Long id = 0L;
         for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
             String stID = SVGUtil.keepStableId(child.getId());
             if(aux.add(stID)){
@@ -71,17 +71,6 @@ public abstract class ContentFactory {
         }
 
         content.cache(pathwayNodes);
-//        content.cache(diagram.getNotes());
-//        content.cache(diagram.getEdges());
-//        content.cache(diagram.getLinks());
-//        content.cache(diagram.getCompartments());
-//        content.cache(diagram.getShadows());
-//
-//        content.setMinX(diagram.getMinX().doubleValue());
-//        content.setMaxX(diagram.getMaxX().doubleValue());
-//        content.setMinY(diagram.getMinY().doubleValue());
-//        content.setMaxY(diagram.getMaxY().doubleValue());
-
         return content.init();
     }
 
@@ -109,8 +98,6 @@ public abstract class ContentFactory {
                 DiagramObject diagramObject = getDiagramObjectByStableId(node.getStId());
                 pathway.addDiagramObject(diagramObject);
                 diagramObject.setGraphObject(pathway);
-
-                Console.error(pathway.getStId() + " - " + ((EHLDObject) diagramObject).getStableId());
             }
         }
 

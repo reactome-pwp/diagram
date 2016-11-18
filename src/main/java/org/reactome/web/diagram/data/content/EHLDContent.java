@@ -111,8 +111,8 @@ public class EHLDContent extends GenericContent {
     }
 
     @Override
-    public DiagramObject getDiagramObject(String id) {
-        return this.tempDiagramObjectMap.get(id);
+    public DiagramObject getDiagramObject(String stId) {
+        return this.tempDiagramObjectMap.get(stId);
     }
 
     @Override

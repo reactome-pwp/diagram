@@ -73,7 +73,8 @@ public class EHLDObject implements DiagramObject {
     @Override
     public <T extends GraphObject> void setGraphObject (T obj) {
         graphObject = obj;
-        //TODO set the proper diagramId to the diagramobject
+        reactomeId = obj.getDbId(); // Set the proper dbId to the EHLD object
+        schemaClass = obj.getSchemaClass().name;
     }
 
     @Override
