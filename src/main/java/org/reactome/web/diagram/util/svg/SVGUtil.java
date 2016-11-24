@@ -47,11 +47,15 @@ public abstract class SVGUtil {
         return rtn;
     }
 
+    /*
+     * Checks whether two transform matrices are the same
+     */
     public static boolean areEqual(OMSVGMatrix m1, OMSVGMatrix m2) {
+        boolean rtn;
         if (m1 == null || m2 == null ) {
-            return false;
+            rtn = false;
         } else if (m1 == m2) {
-            return true;
+            rtn = true;
         } else if (
                 m1.getA() != m2.getA() ||
                 m1.getB() != m2.getB() ||
@@ -60,9 +64,10 @@ public abstract class SVGUtil {
                 m1.getE() != m2.getE() ||
                 m1.getF() != m2.getF()
                 ) {
-            return false;
+            rtn = false;
         } else {
-            return true;
+            rtn = true;
         }
+        return rtn;
     }
 }
