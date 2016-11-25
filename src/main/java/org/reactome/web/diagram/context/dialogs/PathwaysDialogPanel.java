@@ -12,7 +12,7 @@ import org.reactome.web.diagram.context.sections.Section;
 import org.reactome.web.diagram.context.sections.SectionCellSelectedEvent;
 import org.reactome.web.diagram.context.sections.SectionCellSelectedHandler;
 import org.reactome.web.diagram.context.sections.SelectionSummary;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.ContentRequestedEvent;
@@ -39,12 +39,12 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
         SectionCellSelectedHandler, AncestorsCreatedHandler, ChangeLabelsHandler {
 
     private EventBus eventBus;
-    private DiagramContext context;
+    private Context context;
     private FlowPanel container;
     private GraphObject graphObject;
     private List<Pathway> pathwaysIndex = new ArrayList<>();
 
-    public PathwaysDialogPanel(EventBus eventBus, DiagramObject diagramObject, DiagramContext context) {
+    public PathwaysDialogPanel(EventBus eventBus, DiagramObject diagramObject, Context context) {
         this.eventBus = eventBus;
         this.context = context;
         this.container = new FlowPanel();

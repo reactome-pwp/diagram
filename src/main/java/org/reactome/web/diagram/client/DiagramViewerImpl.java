@@ -11,7 +11,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.diagram.common.DisplayManager;
 import org.reactome.web.diagram.data.AnalysisStatus;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.GraphObjectFactory;
 import org.reactome.web.diagram.data.content.Content;
@@ -59,7 +59,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     private final DiagramCanvas canvas; //Canvas only created once and reused every time a new diagram is loaded
     private final DiagramManager diagramManager;
 
-    private DiagramContext context;
+    private Context context;
     private LoaderManager loaderManager;
 
     private UserActionsManager userActionsManager;
@@ -716,7 +716,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
         GraphObjectFactory.content = null;
     }
 
-    private void setContext(final DiagramContext context) {
+    private void setContext(final Context context) {
         this.resetContext();
 
         this.context = context;

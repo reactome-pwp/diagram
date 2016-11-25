@@ -3,7 +3,7 @@ package org.reactome.web.diagram.search.infopanel;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.*;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.images.InteractorImages;
@@ -22,7 +22,7 @@ import java.util.Set;
  */
 public class InteractorsListPanel extends FlowPanel {
 
-    public InteractorsListPanel(String title, DiagramContext context, GraphPhysicalEntity obj, EventBus eventBus) {
+    public InteractorsListPanel(String title, Context context, GraphPhysicalEntity obj, EventBus eventBus) {
         List<RawInteractor> rawInteractors = context.getInteractors().getRawInteractors(LoaderManager.INTERACTORS_RESOURCE.getIdentifier(), obj.getIdentifier() );
         if(rawInteractors==null || rawInteractors.isEmpty()) return;
 

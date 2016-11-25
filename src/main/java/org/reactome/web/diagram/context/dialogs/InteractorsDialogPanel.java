@@ -15,7 +15,7 @@ import org.reactome.web.diagram.context.dialogs.interactors.TableItemSelectedHan
 import org.reactome.web.diagram.context.dialogs.molecules.ChangeLabelsEvent;
 import org.reactome.web.diagram.context.dialogs.molecules.ChangeLabelsHandler;
 import org.reactome.web.diagram.data.AnalysisStatus;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
@@ -40,7 +40,7 @@ public class InteractorsDialogPanel extends Composite implements TableItemSelect
     private EventBus eventBus;
     private FlowPanel container;
     private Image loadingIcon;
-    private DiagramContext context;
+    private Context context;
     private GraphPhysicalEntity physicalEntity;
 
     private AnalysisType analysisType;
@@ -54,7 +54,7 @@ public class InteractorsDialogPanel extends Composite implements TableItemSelect
     private List<RawInteractor> interactions;
     private InteractorsTable<RawInteractor> interactorsTable;
 
-    public InteractorsDialogPanel(EventBus eventBus, DiagramObject diagramObject, DiagramContext context) {
+    public InteractorsDialogPanel(EventBus eventBus, DiagramObject diagramObject, Context context) {
         this.eventBus = eventBus;
         this.context = context;
         this.physicalEntity = diagramObject.getGraphObject();

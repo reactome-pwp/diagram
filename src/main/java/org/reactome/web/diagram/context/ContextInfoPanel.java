@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.context.dialogs.InteractorsDialogPanel;
 import org.reactome.web.diagram.context.dialogs.MoleculesDialogPanel;
 import org.reactome.web.diagram.context.dialogs.PathwaysDialogPanel;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.GraphEntityWithAccessionedSequence;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphSimpleEntity;
@@ -34,7 +34,7 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
 
     private DeckLayoutPanel container;
 
-    public ContextInfoPanel(ContextDialogPanel parent, EventBus eventBus, DiagramObject diagramObject, DiagramContext context) {
+    public ContextInfoPanel(ContextDialogPanel parent, EventBus eventBus, DiagramObject diagramObject, Context context) {
         FlowPanel buttonsPanel = new FlowPanel();
         buttonsPanel.setStyleName(RESOURCES.getCSS().buttonsPanel());
         buttonsPanel.add(this.molecules = getButton("Molecules", RESOURCES.molecules()));

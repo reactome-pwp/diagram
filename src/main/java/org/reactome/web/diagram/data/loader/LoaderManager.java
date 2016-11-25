@@ -4,7 +4,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.ContentFactory;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.content.DiagramContent;
 import org.reactome.web.diagram.data.graph.raw.Graph;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
@@ -41,14 +41,14 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     //the "user preferred" interactors resource will be selected
     public static OverlayResource INTERACTORS_RESOURCE = new OverlayResource(DiagramFactory.INTERACTORS_INITIAL_RESOURCE, DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME, OverlayResource.ResourceType.STATIC);
 
-    private LruCache<String, DiagramContext> contextMap = new LruCache<>(5);
+    private LruCache<String, Context> contextMap = new LruCache<>(5);
     private EventBus eventBus;
 
     private SVGLoader svgLoader;
     private LayoutLoader layoutLoader;
     private GraphLoader graphLoader;
     private InteractorsLoader interactorsLoader;
-    private DiagramContext context;
+    private Context context;
 
     public LoaderManager(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -91,7 +91,7 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
 
     @Override
     public void onSvgLoaded(String stId, OMSVGSVGElement svg, long time) {
-        DiagramContext context = new DiagramContext(ContentFactory.getContent(stId, svg));
+        Context context = new Context(ContentFactory.getContent(stId, svg));
         this.context = context;
         graphLoader.load(stId);
 //        eventBus.fireEventFromSource(new ContentLoadedEvent(svg), this);
@@ -107,7 +107,7 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     public void layoutLoaded(Diagram diagram, long time) {
         //This is querying the server so the following code is executed straight forward
         long start = System.currentTimeMillis();
-        DiagramContext context = new DiagramContext(ContentFactory.getContent(diagram));
+        Context context = new Context(ContentFactory.getContent(diagram));
         //caching the context
         contextMap.put(context.getContent().getStableId(), context);
         this.context = context;

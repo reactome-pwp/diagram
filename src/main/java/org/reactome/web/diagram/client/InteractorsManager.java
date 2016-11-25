@@ -3,7 +3,7 @@ package org.reactome.web.diagram.client;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.analysis.client.model.FoundElements;
 import org.reactome.web.analysis.client.model.FoundInteractor;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
@@ -38,7 +38,7 @@ public class InteractorsManager implements ContentLoadedHandler, ContentRequeste
 
     private EventBus eventBus;
 
-    private DiagramContext context;
+    private Context context;
     private String currentResource;
 
     private DiagramInteractor hovered;

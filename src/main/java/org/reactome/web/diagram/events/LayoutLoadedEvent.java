@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.events;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
 
 /**
@@ -10,10 +10,10 @@ import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
 public class LayoutLoadedEvent extends GwtEvent<LayoutLoadedHandler> {
     public static Type<LayoutLoadedHandler> TYPE = new Type<LayoutLoadedHandler>();
 
-    private DiagramContext context;
+    private Context context;
     private long time;
 
-    public LayoutLoadedEvent(DiagramContext context, long time) {
+    public LayoutLoadedEvent(Context context, long time) {
         this.context = context;
         this.time = time;
     }
@@ -28,7 +28,7 @@ public class LayoutLoadedEvent extends GwtEvent<LayoutLoadedHandler> {
         handler.onLayoutLoaded(this);
     }
 
-    public DiagramContext getContext() {
+    public Context getContext() {
         return context;
     }
 

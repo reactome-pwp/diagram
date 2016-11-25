@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.common.PwpButton;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
@@ -42,7 +42,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
     private OverlayResource currentOverlayResource;
 
-    private DiagramContext context;
+    private Context context;
     private Image loadingIcon;
     private InlineLabel message;
     private InlineLabel summaryLb;

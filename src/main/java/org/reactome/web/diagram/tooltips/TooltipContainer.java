@@ -5,7 +5,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.GraphEntityWithAccessionedSequence;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.graph.model.GraphSimpleEntity;
@@ -34,7 +34,7 @@ public class TooltipContainer extends AbsolutePanel implements ContentRequestedH
     private static final double ZOOM_THRESHOLD = 1.2;
 
     private EventBus eventBus;
-    private DiagramContext context;
+    private Context context;
     private Object hovered;
 
     private Timer hoveredTimer;

@@ -1,6 +1,6 @@
 package org.reactome.web.diagram.search.provider;
 
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
@@ -17,9 +17,9 @@ import java.util.List;
  */
 public class SuggestionsProviderImpl implements SuggestionsProvider<SearchResultObject> {
 
-    private DiagramContext context;
+    private Context context;
 
-    public SuggestionsProviderImpl(DiagramContext context) {
+    public SuggestionsProviderImpl(Context context) {
         this.context = context;
     }
 

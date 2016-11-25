@@ -222,7 +222,7 @@ public abstract class ContentFactory {
         return rtn;
     }
 
-    public static void fillInteractorsContent(DiagramContext context, RawInteractors rawInteractors) {
+    public static void fillInteractorsContent(Context context, RawInteractors rawInteractors) {
         InteractorsContent interactors = context.getInteractors();
 
         String resource = rawInteractors.getResource();

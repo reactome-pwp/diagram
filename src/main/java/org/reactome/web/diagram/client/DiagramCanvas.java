@@ -26,7 +26,7 @@ import org.reactome.web.diagram.controls.settings.RightContainerPanel;
 import org.reactome.web.diagram.controls.top.LeftTopLauncherPanel;
 import org.reactome.web.diagram.controls.top.RightTopLauncherPanel;
 import org.reactome.web.diagram.data.AnalysisStatus;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
@@ -158,15 +158,15 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         UserActionsInstaller.addUserActionsHandlers(canvas, handler);
     }
 
-    public void flag(Collection<DiagramObject> items, DiagramContext context) {
+    public void flag(Collection<DiagramObject> items, Context context) {
         highlight(items, context, this.flag);
     }
 
-    public void halo(Collection<DiagramObject> items, DiagramContext context) {
+    public void halo(Collection<DiagramObject> items, Context context) {
         highlight(items, context, this.halo);
     }
 
-    private void highlight(Collection<DiagramObject> items, DiagramContext context, AdvancedContext2d ctx){
+    private void highlight(Collection<DiagramObject> items, Context context, AdvancedContext2d ctx){
         cleanCanvas(ctx);
         if (items == null || items.isEmpty()) return;
 
@@ -182,7 +182,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         }
     }
 
-    public void highlight(HoveredItem hoveredItem, DiagramContext context) {
+    public void highlight(HoveredItem hoveredItem, Context context) {
         cleanCanvas(this.entitiesHighlight);
         cleanCanvas(this.reactionsHighlight);
         if(hoveredItem==null) return;
@@ -199,7 +199,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         }
     }
 
-    public void highlightInteractor(DiagramInteractor item, DiagramContext context){
+    public void highlightInteractor(DiagramInteractor item, Context context){
         cleanCanvas(this.interactorsHighlight);
         if (item == null) return;
         DiagramStatus status = context.getDiagramStatus();
@@ -207,7 +207,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         if(renderer!=null) renderer.highlight(interactorsHighlight, item, status.getFactor(), status.getOffset());
     }
 
-    public void decorators(HoveredItem hoveredItem, DiagramContext context) {
+    public void decorators(HoveredItem hoveredItem, Context context) {
         cleanCanvas(this.entitiesDecorators);
         if (hoveredItem == null) return;
 
@@ -240,7 +240,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         }
     }
 
-    public void select(List<DiagramObject> items, DiagramContext context) {
+    public void select(List<DiagramObject> items, Context context) {
         DiagramStatus status = context.getDiagramStatus();
         cleanCanvas(this.entitiesSelection);
         cleanCanvas(this.reactionsSelection);
@@ -353,7 +353,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.column = e.getColumn();
     }
 
-    public void setWatermarkURL(DiagramContext context, GraphObject selection, String flag) {
+    public void setWatermarkURL(Context context, GraphObject selection, String flag) {
         if(watermark!=null) {
             StringBuilder href = new StringBuilder(DiagramFactory.WATERMARK_BASE_URL);
             String pathwayStId = context == null ? null : context.getContent().getStableId();
@@ -382,7 +382,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         }
     }
 
-    public void renderInteractors(Collection<DiagramInteractor> items, DiagramContext context){
+    public void renderInteractors(Collection<DiagramInteractor> items, Context context){
         cleanCanvas(interactors);
 
         AnalysisStatus analysisStatus = context.getAnalysisStatus();
@@ -438,7 +438,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         }
     }
 
-    public void render(Collection<DiagramObject> items, DiagramContext context) {
+    public void render(Collection<DiagramObject> items, Context context) {
         ColourProfileType colourProfileType = context.getColourProfileType();
         AnalysisStatus analysisStatus = context.getAnalysisStatus();
         Double factor = context.getDiagramStatus().getFactor();

@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.events;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
 
 /**
@@ -11,9 +11,9 @@ public class ContentLoadedEvent extends GwtEvent<ContentLoadedHandler> {
 
     public static Type<ContentLoadedHandler> TYPE = new Type<>();
 
-    private DiagramContext context;
+    private Context context;
 
-    public ContentLoadedEvent(DiagramContext context) {
+    public ContentLoadedEvent(Context context) {
         this.context = context;
     }
 
@@ -27,7 +27,7 @@ public class ContentLoadedEvent extends GwtEvent<ContentLoadedHandler> {
         handler.onContentLoaded(this);
     }
 
-    public DiagramContext getContext() {
+    public Context getContext() {
         return context;
     }
 

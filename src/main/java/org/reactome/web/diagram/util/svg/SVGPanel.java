@@ -9,7 +9,7 @@ import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.analysis.client.model.PathwaySummary;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.content.EHLDContent;
 import org.reactome.web.diagram.events.*;
@@ -58,7 +58,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     private static final float MAX_ZOOM = 8.0f;
     private static final float MIN_ZOOM = 0.05f;
 
-    private DiagramContext context;
+    private Context context;
 
     private OMSVGDefsElement defs;
 
@@ -96,7 +96,6 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     public void onAnalysisReset(AnalysisResetEvent event) {
         analysisType = AnalysisType.NONE;
         expressionSummary = null;
-        pathwaySummaries = null;
         selectedExpCol = 0;
         if(svg!=null) {
             clearOverlay();
@@ -111,6 +110,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         analysisType = event.getType();
         pathwaySummaries = event.getPathwaySummaries();
         expressionSummary = event.getExpressionSummary();
+        selectedExpCol = 0;
         if(svg!=null) {
             clearOverlay();
             overlayAnalysisResults();
@@ -135,7 +135,6 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             case RIGHT:         translate(-10, 0);                break;
             case DOWN:          translate(0, -10);                break;
             case LEFT:          translate(10, 0);                 break;
-//            case FIREWORKS:     testOverlay();                    break; //TODO: TO BE REMOVED
         }
     }
 
@@ -216,6 +215,11 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             initialBB = svg.getBBox();
             ctm = initialTM;
             fitALL(false);
+
+            if(analysisType!=null && analysisType!=AnalysisType.NONE) {
+                clearOverlay();
+                overlayAnalysisResults();
+            }
         }
     }
 
@@ -475,7 +479,6 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
                     case OVERREPRESENTATION:
                         String enrichColour = hex2Rgb(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax(), 0.9f);
                         overlayEntity(pathwaySummary.getStId(), (float) getRatio(pathwaySummary), enrichColour);
-                        Console.error("checking..." + pathwaySummary.getStId() + " " + (float) getRatio(pathwaySummary));
                         break;
                     case EXPRESSION:
                         String expressionColour = AnalysisColours.get().expressionGradient.getColor(

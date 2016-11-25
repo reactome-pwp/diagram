@@ -26,7 +26,7 @@ import java.util.Set;
  *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class DiagramContext {
+public class Context {
     static final double ANALYSIS_MIN_PERCENTAGE = 0.03;
 
     private DiagramStatus diagramStatus;
@@ -37,7 +37,7 @@ public class DiagramContext {
 
     private Map<GraphObject, ContextDialogPanel> dialogMap = new HashMap<>();
 
-    public DiagramContext(Content content) {
+    public Context(Content content) {
         //Status needs to be created every time we load a new content
         this.diagramStatus = new DiagramStatus();
 

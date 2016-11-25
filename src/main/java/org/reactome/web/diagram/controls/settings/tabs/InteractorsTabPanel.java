@@ -17,7 +17,7 @@ import org.reactome.web.diagram.common.ConfirmationButton;
 import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.context.popups.InsertItemDialog;
 import org.reactome.web.diagram.controls.settings.common.InfoLabel;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.custom.ResourcesManager;
@@ -47,7 +47,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     private static int RESOURCES_REFRESH = 600000; // Update every 10 minutes
 
     private EventBus eventBus;
-    private DiagramContext context;
+    private Context context;
     private Map<String, OverlayResource> resourcesMap = new HashMap<>();
     private OverlayResource selectedResource;
     private OverlayResource staticResource;

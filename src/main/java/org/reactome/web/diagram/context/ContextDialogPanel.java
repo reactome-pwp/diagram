@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.context.dialogs.molecules.ChangeLabelsEvent;
 import org.reactome.web.diagram.context.dialogs.molecules.ChangeLabelsHandler;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.impl.BoundFactory;
@@ -30,7 +30,7 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
 
     private DiagramObject item;
     private GraphObject graphObject;
-    private DiagramContext context;
+    private Context context;
     private Widget canvas;
 
     private boolean pinned = false;
@@ -40,7 +40,7 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
     private Button pin;
     private Button close;
 
-    public ContextDialogPanel(EventBus eventBus, DiagramObject item, DiagramContext context, Widget canvas) {
+    public ContextDialogPanel(EventBus eventBus, DiagramObject item, Context context, Widget canvas) {
         super();
         setAutoHideEnabled(true);
         setModal(false);

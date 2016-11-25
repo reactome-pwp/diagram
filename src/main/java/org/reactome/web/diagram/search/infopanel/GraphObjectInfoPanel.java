@@ -5,7 +5,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.*;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.loader.LoaderManager;
 
@@ -29,7 +29,7 @@ public class GraphObjectInfoPanel extends Composite {
         OBJECT_INFO_RESOURCES.getCSS().ensureInjected();
     }
 
-    public GraphObjectInfoPanel(EventBus eventBus, GraphObject graphObject, DiagramContext context) {
+    public GraphObjectInfoPanel(EventBus eventBus, GraphObject graphObject, Context context) {
         this.eventBus = eventBus;
         this.graphObject = graphObject;
         this.mainPanel = new FlowPanel();

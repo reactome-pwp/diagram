@@ -4,7 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
 import org.reactome.web.diagram.events.ContentLoadedEvent;
@@ -24,7 +24,7 @@ import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 public class SelectionInfoPanel extends AbstractAccordionPanel implements SuggestionSelectedHandler,
         ContentRequestedHandler, ContentLoadedHandler {
     private EventBus eventBus;
-    private DiagramContext context;
+    private Context context;
 
     public SelectionInfoPanel(EventBus eventBus) {
         this.eventBus = eventBus;

@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.client;
 
 import com.google.gwt.event.shared.EventBus;
-import org.reactome.web.diagram.data.DiagramContext;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
@@ -27,7 +27,7 @@ public class LayoutManager implements ContentLoadedHandler, ContentRequestedHand
 
     private EventBus eventBus;
 
-    private DiagramContext context;
+    private Context context;
     private HoveredItem hovered = null;
     private GraphObject selected = null;
     private Set<DiagramObject> halo = new HashSet<>();
