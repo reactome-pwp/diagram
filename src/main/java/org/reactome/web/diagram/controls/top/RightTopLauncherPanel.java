@@ -12,12 +12,14 @@ import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.controls.top.illustrations.DiagramIllustrations;
 import org.reactome.web.diagram.controls.top.key.DiagramKey;
 import org.reactome.web.diagram.events.CanvasExportRequestedEvent;
+import org.reactome.web.diagram.events.ContentLoadedEvent;
+import org.reactome.web.diagram.handlers.ContentLoadedHandler;
 
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
+public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, ContentLoadedHandler {
 
     private EventBus eventBus;
 
@@ -44,6 +46,7 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
         this.diagramKeyBtn = new PwpButton("Diagram key", RESOURCES.getCSS().key(), this);
         this.add(this.diagramKeyBtn);
 
+        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
         this.setVisible(true);
     }
 
@@ -64,6 +67,14 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler {
             } else {
                 this.diagramIllustrations.showRelativeTo(btn);
             }
+        }
+    }
+
+    @Override
+    public void onContentLoaded(ContentLoadedEvent event) {
+        switch (event.getContext().getContent().getType()) {
+            case DIAGRAM:   diagramKeyBtn.setEnabled(true);     break;
+            case SVG:       diagramKeyBtn.setEnabled(false);    break;
         }
     }
 

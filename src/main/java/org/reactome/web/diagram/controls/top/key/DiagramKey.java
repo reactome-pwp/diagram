@@ -31,11 +31,13 @@ import org.reactome.web.diagram.util.Console;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.reactome.web.diagram.data.content.Content.Type.SVG;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class DiagramKey extends AbstractMenuDialog implements GraphObjectHoveredHandler, GraphObjectSelectedHandler,
-        ContentRequestedHandler, DiagramProfileChangedHandler, ControlActionHandler {
+        ContentLoadedHandler, DiagramProfileChangedHandler, ControlActionHandler {
 
     private static final Double FACTOR = 0.82;
     private static final Coordinate OFFSET = CoordinateFactory.get(0, 0);
@@ -168,7 +170,7 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
         this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
         this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
         this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
-        this.eventBus.addHandler(ContentRequestedEvent.TYPE, this);
+        this.eventBus.addHandler(ContentLoadedEvent.TYPE, this);
         this.eventBus.addHandler(ControlActionEvent.TYPE, this);
     }
 
@@ -191,9 +193,12 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
         highlight(selection, this.selected);
     }
 
-    @Override
-    public void onContentRequested(ContentRequestedEvent event) {
 
+    @Override
+    public void onContentLoaded(ContentLoadedEvent event) {
+        if(event.getContext().getContent().getType() == SVG) {
+            setVisible(false);
+        }
     }
 
     @Override

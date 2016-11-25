@@ -127,6 +127,8 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
             this.searchBtn.setEnabled(true);
             this.suggestionsProvider = new SuggestionsProviderImpl(event.getContext());
             fireEvent(new SuggestionResetEvent());
+        } else {
+            this.searchBtn.setEnabled(false);
         }
     }
 
