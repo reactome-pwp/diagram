@@ -6,6 +6,8 @@ import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 
 /**
+ * Used to represent the Pathways inside an EHLD.
+ *
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class EHLDObject implements DiagramObject {
@@ -14,7 +16,7 @@ public class EHLDObject implements DiagramObject {
     private String stableId;
     private String displayName;
     private String schemaClass;
-    private String renderableClass;
+    private final String renderableClass = "ProcessNode";
     private GraphObject graphObject;
 
 
@@ -74,7 +76,8 @@ public class EHLDObject implements DiagramObject {
     public <T extends GraphObject> void setGraphObject (T obj) {
         graphObject = obj;
         reactomeId = obj.getDbId(); // Set the proper dbId to the EHLD object
-        schemaClass = obj.getSchemaClass().name;
+        schemaClass = obj.getSchemaClass().schemaClass;
+        displayName = obj.getDisplayName();
     }
 
     @Override
