@@ -84,3 +84,7 @@
 @sprite .key:active:hover {
     gwt-image: 'keyClicked';
 }
+
+@sprite .key:disabled {
+    gwt-image: 'keyDisabled';
+}
