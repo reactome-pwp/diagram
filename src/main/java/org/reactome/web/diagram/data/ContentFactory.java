@@ -87,6 +87,11 @@ public abstract class ContentFactory {
     private static void fillGraphContent(EHLDContent content, Graph graph) {
         GraphObjectFactory.content = content;
 
+        // !Important: In a normal diagram layout the DBID is
+        // included in the layout JSON file. However, in an EHLD we have
+        // to wait until the graph JSON arrived.
+        content.setDbId(graph.getDbId());
+
         for (EntityNode node : graph.getNodes()) {
             GraphObjectFactory.getOrCreateDatabaseObject(node);
         }
@@ -96,8 +101,10 @@ public abstract class ContentFactory {
             if (obj instanceof GraphPathway) {
                 GraphPathway pathway = (GraphPathway) obj;
                 DiagramObject diagramObject = getDiagramObjectByStableId(node.getStId());
-                pathway.addDiagramObject(diagramObject);
-                diagramObject.setGraphObject(pathway);
+                if(diagramObject!=null) {
+                    pathway.addDiagramObject(diagramObject);
+                    diagramObject.setGraphObject(pathway);
+                }
             }
         }
 
