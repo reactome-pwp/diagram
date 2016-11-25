@@ -409,6 +409,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
         this.context = event.getContext();
+        this.context.restoreDialogs();
         this.canvas.setWatermarkVisible(true);
         this.canvas.setWatermarkURL(event.getContext(), null, this.flagTerm);
         fireEvent(event);
