@@ -36,7 +36,7 @@ public abstract class SVGUtil {
      * or "REGION-R-SSS-NNNNNN, filters out the first part and
      * keeps only the stable identifier.
      *
-     * @param identifier
+     * @param identifier the id of the SVG element
      * @return the stable identifier
      */
     public static String keepStableId(String identifier) {
@@ -49,6 +49,14 @@ public abstract class SVGUtil {
 
     /*
      * Checks whether two transform matrices are the same
+     */
+
+    /***
+     * Checks whether two transformation matrices are equal.
+     *
+     * @param m1 the first transformation matrix
+     * @param m2 the second transformation matrix
+     * @return True only in case the two matrices are equal
      */
     public static boolean areEqual(OMSVGMatrix m1, OMSVGMatrix m2) {
         boolean rtn;
