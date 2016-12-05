@@ -108,12 +108,9 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
 
     @Override
     public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                fillGradient();
-                draw();
-            }
+        Scheduler.get().scheduleDeferred(() -> {
+            fillGradient();
+            draw();
         });
     }
 
