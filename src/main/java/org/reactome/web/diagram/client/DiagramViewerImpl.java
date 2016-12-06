@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
+import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -260,9 +261,13 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     }
 
     private void highlightGraphObject(GraphObject graphObject) {
-        HoveredItem hovered = new HoveredItem(graphObject);
-        if (layoutManager.isHighlighted(hovered)) return;
-        canvas.highlight(hovered, context);
+        if(context.getContent().getType() == DIAGRAM) {
+            HoveredItem hovered = new HoveredItem(graphObject);
+            if (layoutManager.isHighlighted(hovered)) return;
+            canvas.highlight(hovered, context);
+        } else if(context.getContent().getType() == SVG) {
+            canvas.highlightEHLD(graphObject);
+        }
         //we don't rely on the listener of the following event because finer grain of the hovering is lost
         GraphObjectHoveredEvent event = new GraphObjectHoveredEvent(graphObject);
         this.eventBus.fireEventFromSource(event, this);
@@ -588,9 +593,15 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     @Override
     public void resetHighlight() {
-        if (layoutManager.resetHovered()) {
-            canvas.highlight(null, context);
-            eventBus.fireEventFromSource(new GraphObjectHoveredEvent(), this);
+        if(context==null) return;
+
+        if(context.getContent().getType() == DIAGRAM) {
+            if (layoutManager.resetHovered()) {
+                canvas.highlight(null, context);
+                eventBus.fireEventFromSource(new GraphObjectHoveredEvent(), this);
+            }
+        } else if(context.getContent().getType() == SVG) {
+            canvas.highlightEHLD(null);
         }
     }
 

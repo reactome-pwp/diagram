@@ -23,6 +23,8 @@ import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -86,22 +88,26 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
 
     @Override
     public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
-        this.cleanCanvas(this.selection);
-        GraphObject graphObject = event.getGraphObject();
-        if (graphObject != null) {
-            for (DiagramObject selected : graphObject.getDiagramObjects()) {
-                this.select(selected);
+        if(content!=null && content.getType() == DIAGRAM) {
+            this.cleanCanvas(this.selection);
+            GraphObject graphObject = event.getGraphObject();
+            if (graphObject != null) {
+                for (DiagramObject selected : graphObject.getDiagramObjects()) {
+                    this.select(selected);
+                }
             }
         }
     }
 
     @Override
     public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
-        this.cleanCanvas(this.highlight);
-        GraphObject hovered = event.getGraphObject();
-        List<DiagramObject> toHover = hovered != null ? hovered.getDiagramObjects() : new LinkedList<DiagramObject>();
-        for (DiagramObject item : toHover) {
-            this.highlight(item);
+        if(content!=null && content.getType() == DIAGRAM) {
+            this.cleanCanvas(this.highlight);
+            GraphObject hovered = event.getGraphObject();
+            List<DiagramObject> toHover = hovered != null ? hovered.getDiagramObjects() : new LinkedList<DiagramObject>();
+            for (DiagramObject item : toHover) {
+                this.highlight(item);
+            }
         }
     }
 

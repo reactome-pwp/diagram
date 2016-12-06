@@ -12,6 +12,7 @@ import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.content.EHLDContent;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
@@ -66,6 +67,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     private boolean avoidClicking;
 
     private OMElement selected;
+    private OMElement hovered;
     private OMSVGPoint origin;
 
     private SVGAnimation animation;
@@ -82,6 +84,22 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
 
         initHandlers();
         setSize(width, height);
+    }
+
+    public void highlight(GraphObject obj){
+        resetHighlight();
+        if(obj!=null) {
+            SVGEntity svgEntity = entities.get(obj.getStId());
+            if (svgEntity != null) {
+                highlightElement(svgEntity.getHoverableElement());
+            }
+        }
+    }
+
+    public void resetHighlight() {
+        if(hovered!=null) {
+            unHighlightElement(hovered);
+        }
     }
 
     @Override
@@ -167,8 +185,8 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         context = event.getContext();
         Content content = context.getContent();
         if (content.getType() == SVG) {
-            setVisible(true);
             this.svg = ((EHLDContent)content).getSVG();
+            setVisible(true);
 
             entities = new HashMap<>();
             for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
@@ -284,9 +302,11 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             if(SVGUtil.isAnnotated(elementId)) {
                 setSelected(el);
                 eventBus.fireEventFromSource(new SVGEntitySelectedEvent(elementId), this);
+                notifySelection(elementId);
             } else {
                 resetSelected();
                 eventBus.fireEventFromSource(new SVGEntitySelectedEvent(null), this);
+                notifySelection(null);
             }
         }
         isPanning = false;
@@ -297,26 +317,21 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     public void onMouseOver(MouseOverEvent event) {
         event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
-        if(!el.equals(selected)) {
-            el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(HOVERING_FILTER));
-        } else {
-            el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(COMBINED_FILTER));
-        }
+        resetHighlight();
+        highlightElement(el);
         applyCTM(false);  //TODO Have a look why this is required
         eventBus.fireEventFromSource(new SVGEntityHoveredEvent(el.getId()), this);
+        notifyHovering(el.getId());
     }
 
     @Override
     public void onMouseOut(MouseOutEvent event) {
         event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
-        if(!el.equals(selected)) {
-            el.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
-        } else {
-            el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FILTER));
-        }
+        unHighlightElement(el);
         applyCTM(false);  //TODO Have a look why this is required
         eventBus.fireEventFromSource(new SVGEntityHoveredEvent(null), this);
+        notifyHovering(null);
     }
 
     @Override
@@ -444,6 +459,24 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         return !rtn.isInfinite() && !rtn.isNaN() ? rtn : 0.0;
     }
 
+    private void highlightElement(OMElement el){
+        hovered = el;
+        if(!el.equals(selected)) {
+            el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(HOVERING_FILTER));
+        } else {
+            el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(COMBINED_FILTER));
+        }
+    }
+
+    private void unHighlightElement(OMElement el){
+        hovered = null;
+        if(!el.equals(selected)) {
+            el.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
+        } else {
+            el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FILTER));
+        }
+    }
+
     private void initHandlers() {
         eventBus.addHandler(ControlActionEvent.TYPE, this);
         eventBus.addHandler(ContentLoadedEvent.TYPE, this);
@@ -461,6 +494,22 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         // on the wrapping div.
         addDomHandler(this, MouseWheelEvent.getType());
         addDomHandler(SVGPanel.this, ContextMenuEvent.getType());
+    }
+
+    private void notifySelection(String elementId){
+        GraphObject selected = null;
+        if(elementId!=null) {
+            selected = context.getContent().getDatabaseObject(SVGUtil.keepStableId(elementId));
+        }
+        eventBus.fireEventFromSource(new GraphObjectSelectedEvent(selected, false), this);
+    }
+
+    private void notifyHovering(String elementId){
+        GraphObject hovered = null;
+        if(elementId!=null) {
+            hovered = context.getContent().getDatabaseObject(SVGUtil.keepStableId(elementId));
+        }
+        eventBus.fireEventFromSource(new GraphObjectHoveredEvent(hovered), this);
     }
 
     private void overlayAnalysisResults() {

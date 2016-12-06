@@ -75,13 +75,13 @@ public class WidgetTest implements EntryPoint {
         button.addMouseOverHandler(new MouseOverHandler() {
             @Override
             public void onMouseOver(MouseOverEvent event) {
-                //diagram.highlightItem(stId);
+                diagram.highlightItem(stId);
             }
         });
         button.addMouseOutHandler(new MouseOutHandler() {
             @Override
             public void onMouseOut(MouseOutEvent event) {
-                //diagram.resetHighlight();
+                diagram.resetHighlight();
             }
         });
         button.setTitle(title);
@@ -93,8 +93,8 @@ public class WidgetTest implements EntryPoint {
 
         fp.add(new Label("R-HSA-1181150"));
         fp.add(new Label("Reactions"));
-        fp.add(getSelectionButton("R-HSA-1181152", "Cleavage of NODAL proprotein"));
-        fp.add(getSelectionButton("R-HSA-1535903", "Phospho R-SMAD(SMAD2/3):CO-SMAD(SMAD4):FOXO3 binds FoxO3a-binding elements"));
+        fp.add(getSelectionButton("R-HSA-75153", "Cleavage of NODAL proprotein"));
+        fp.add(getSelectionButton("R-HSA-5357769", "Phospho R-SMAD(SMAD2/3):CO-SMAD(SMAD4):FOXO3 binds FoxO3a-binding elements"));
 
         fp.add(new Label("--"));
         fp.add(new Label("Sets"));
@@ -125,7 +125,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("ORA 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNjExMTEwOTQyMDBfMg==","TOTAL");
+                diagram.setAnalysisToken("MjAxNjExMjQxMDE5NTZfNg==","TOTAL");
             }
         }));
 
@@ -137,7 +137,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("Exp 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNjExMTEwOTQyNTFfMw==","TOTAL");
+                diagram.setAnalysisToken("MjAxNjA5MjkwNTA3MjNfNQ==","TOTAL");
             }
         }));
 

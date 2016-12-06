@@ -199,6 +199,10 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         }
     }
 
+    public void highlightEHLD(GraphObject hoveredItem) {
+        svgPanel.highlight(hoveredItem);
+    }
+
     public void highlightInteractor(DiagramInteractor item, Context context){
         cleanCanvas(this.interactorsHighlight);
         if (item == null) return;
