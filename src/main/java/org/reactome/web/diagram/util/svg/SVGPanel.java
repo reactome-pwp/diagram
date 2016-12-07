@@ -19,6 +19,7 @@ import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimation;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimationHandler;
+import org.reactome.web.diagram.util.svg.context.SVGContextPanel;
 import org.reactome.web.diagram.util.svg.events.SVGEntityHoveredEvent;
 import org.reactome.web.diagram.util.svg.events.SVGEntitySelectedEvent;
 import org.reactome.web.diagram.util.svg.events.SVGThumbnailAreaMovedEvent;
@@ -77,10 +78,13 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     private List<PathwaySummary> pathwaySummaries;
     private int selectedExpCol = 0;
 
+    private SVGContextPanel contextPanel;
+
     public SVGPanel(EventBus eventBus, int width, int height) {
         super(eventBus);
         this.getElement().addClassName("pwp-SVGPanel");
-//        this.getElement().getStyle().setBackgroundColor("Green");
+
+        contextPanel = new SVGContextPanel(eventBus);
 
         initHandlers();
         setSize(width, height);
@@ -264,17 +268,8 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     public void onMouseDown(MouseDownEvent event) {
         event.preventDefault(); event.stopPropagation();
         if(animation!=null) animation.cancel();
-
-        int button = event.getNativeEvent().getButton();
-        switch (button) {
-            case NativeEvent.BUTTON_RIGHT:
-                //TODO implement the context menu
-                break;
-            default:
-                origin = getTranslatedPoint(event);
-                isPanning = true;
-                break;
-        }
+        origin = getTranslatedPoint(event);
+        isPanning = true;
     }
 
     @Override
@@ -300,9 +295,17 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         if(!avoidClicking) {
             String elementId = el.getId();
             if(SVGUtil.isAnnotated(elementId)) {
-                setSelected(el);
-                eventBus.fireEventFromSource(new SVGEntitySelectedEvent(elementId), this);
-                notifySelection(elementId);
+                int button = event.getNativeEvent().getButton();
+                switch (button) {
+                    case NativeEvent.BUTTON_RIGHT:
+                        contextPanel.show(SVGUtil.keepStableId(elementId), event.getClientX(), event.getClientY());
+                        break;
+                    default:
+                        setSelected(el);
+                        eventBus.fireEventFromSource(new SVGEntitySelectedEvent(elementId), this);
+                        notifySelection(elementId);
+                        break;
+                }
             } else {
                 resetSelected();
                 eventBus.fireEventFromSource(new SVGEntitySelectedEvent(null), this);
@@ -337,6 +340,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     @Override
     public void onMouseWheel(MouseWheelEvent event) {
         event.preventDefault(); event.stopPropagation();
+        contextPanel.hide();
         float delta = event.getDeltaY() * 0.020f;
         float zoom = (1 - delta) > 0 ? (1 - delta) : 1;
         zoom(zoom, getTranslatedPoint(event));
