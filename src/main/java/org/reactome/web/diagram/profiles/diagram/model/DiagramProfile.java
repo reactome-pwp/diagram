@@ -20,6 +20,7 @@ public interface DiagramProfile extends Serializable {
 
     DiagramProfileNode getComplex();
 
+    @Deprecated
     DiagramProfileNode getEntity();
 
     DiagramProfileNode getEntityset();
