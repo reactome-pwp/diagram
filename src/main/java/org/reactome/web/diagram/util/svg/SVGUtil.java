@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.util.svg;
 
+import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import org.vectomatic.dom.svg.OMElement;
 import org.vectomatic.dom.svg.OMSVGGElement;
@@ -15,7 +16,9 @@ import java.util.List;
 public abstract class SVGUtil {
 
     private static final String STID_PATTERN = "R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
+    private static final String STID_PATTERN_LITE = "R-[A-Z]{3}-[0-9]{3,}";
     private static RegExp regExp = RegExp.compile(STID_PATTERN);
+    private static RegExp regExpLite = RegExp.compile(STID_PATTERN_LITE);
 
     public static List<OMElement> getAnnotatedOMElements(OMSVGSVGElement svg) {
         List<OMElement> rtn = new ArrayList<>();
@@ -42,7 +45,10 @@ public abstract class SVGUtil {
     public static String keepStableId(String identifier) {
         String rtn = null;
         if(identifier!=null && !identifier.isEmpty()) {
-            rtn = identifier.substring(identifier.indexOf('-') + 1);
+            MatchResult result = regExpLite.exec(identifier);
+            if(result.getGroupCount()>0) {
+                rtn = result.getGroup(0);
+            }
         }
         return rtn;
     }
