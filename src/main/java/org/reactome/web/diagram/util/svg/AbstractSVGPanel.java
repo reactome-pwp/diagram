@@ -13,10 +13,7 @@ import org.reactome.web.diagram.util.svg.filters.FilterFactory;
 import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -179,9 +176,13 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         }
     }
 
-    protected OMNodeList<OMElement> getAllTextElementsFrom(final OMNode root){
+    protected List<OMElement> getAllTextElementsFrom(final OMNode root){
+        List<OMElement> rtn = new LinkedList<>();
         OMElement el = (OMElement) root;
         OMNodeList<OMElement> textEl = el.getElementsByTagName("text");
-        return textEl;
+        for (OMElement element : textEl) {
+            rtn.add(element);
+        }
+        return rtn;
     }
 }

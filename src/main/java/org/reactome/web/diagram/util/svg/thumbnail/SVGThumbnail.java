@@ -23,6 +23,8 @@ import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.DOMHelper;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 
+import java.util.List;
+
 import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 
 /**
@@ -74,7 +76,11 @@ public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHa
             EHLDContent content = (EHLDContent) event.getContext().getContent();
             svg = (OMSVGSVGElement) content.getSVG().cloneNode(true);
 
-            //TODO: Remove all text elements because they do not make sense to having them in the thumbnail.
+            // Remove all text elements from thumbnail
+            List<OMElement> textElements = getAllTextElementsFrom(svg);
+            for (OMElement textElement : textElements) {
+                textElement.getElement().removeFromParent();
+            }
 
             from = svg.createSVGPoint();
             to = svg.createSVGPoint();

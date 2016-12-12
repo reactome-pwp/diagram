@@ -430,7 +430,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             overlayGroup.appendChild(overlay);
 
             // Make sure all text elements are put in front of the overlay
-            OMNodeList<OMElement> textElements = getAllTextElementsFrom(overlay);
+            List<OMElement> textElements = getAllTextElementsFrom(overlay);
             Iterator<OMElement> it = textElements.iterator();
             while(it.hasNext()){
                 overlayGroup.appendChild(it.next());
