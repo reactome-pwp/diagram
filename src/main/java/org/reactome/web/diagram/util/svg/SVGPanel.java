@@ -465,19 +465,19 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
 
     private void highlightElement(OMElement el){
         hovered = el;
-        if(!el.equals(selected)) {
-            el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(HOVERING_FILTER));
-        } else {
+        if(el.equals(selected)) {
             el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(COMBINED_FILTER));
+        } else {
+            el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(HOVERING_FILTER));
         }
     }
 
     private void unHighlightElement(OMElement el){
         hovered = null;
-        if(!el.equals(selected)) {
-            el.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
-        } else {
+        if(el.equals(selected)) {
             el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FILTER));
+        } else {
+            el.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
         }
     }
 
