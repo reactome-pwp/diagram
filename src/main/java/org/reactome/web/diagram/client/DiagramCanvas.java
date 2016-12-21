@@ -2,29 +2,17 @@ package org.reactome.web.diagram.client;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RequiresResize;
 import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
-import org.reactome.web.diagram.controls.navigation.NavigationControlPanel;
-import org.reactome.web.diagram.controls.settings.HideableContainerPanel;
-import org.reactome.web.diagram.controls.settings.RightContainerPanel;
-import org.reactome.web.diagram.controls.top.LeftTopLauncherPanel;
-import org.reactome.web.diagram.controls.top.RightTopLauncherPanel;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.DiagramStatus;
@@ -35,10 +23,6 @@ import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
 import org.reactome.web.diagram.events.ExpressionValueHoveredEvent;
 import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
-import org.reactome.web.diagram.legends.*;
-import org.reactome.web.diagram.messages.AnalysisMessage;
-import org.reactome.web.diagram.messages.ErrorMessage;
-import org.reactome.web.diagram.messages.LoadingMessage;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.profiles.diagram.model.DiagramProfileProperties;
@@ -66,7 +50,6 @@ import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.actions.MouseActionsHandlers;
 import org.reactome.web.diagram.util.actions.UserActionsInstaller;
 import org.reactome.web.diagram.util.svg.SVGPanel;
-import org.reactome.web.diagram.util.svg.thumbnail.SVGThumbnail;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -116,14 +99,14 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private DiagramThumbnail thumbnail;
     private List<Canvas> canvases = new LinkedList<>();
 
-    private IllustrationPanel illustration;
+//    private IllustrationPanel illustration;
     private SVGPanel svgPanel;
-    private SVGThumbnail svgThumbnail;
+//    private SVGThumbnail svgThumbnail;
 
     private int column = 0;
     private Double hoveredExpression = null;
 
-    private Anchor watermark;
+//    private Anchor watermark;
 
     public DiagramCanvas(EventBus eventBus) {
         this.getElement().addClassName("pwp-DiagramCanvas");
@@ -141,7 +124,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         InteractorColours.initialise(eventBus);
 
         this.thumbnail = new DiagramThumbnail(eventBus);
-        this.svgThumbnail = new SVGThumbnail(eventBus);
+//        this.svgThumbnail = new SVGThumbnail(eventBus);
 
         this.initHandlers();
     }
@@ -260,15 +243,15 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         }
     }
 
-    public void setIllustration(String url){
-        this.illustration.setUrl(url);
-    }
-
-    public void resetIllustration(){
-        if(this.illustration!=null) {
-            this.illustration.reset();
-        }
-    }
+//    public void setIllustration(String url){
+//        this.illustration.setUrl(url);
+//    }
+//
+//    public void resetIllustration(){
+//        if(this.illustration!=null) {
+//            this.illustration.reset();
+//        }
+//    }
 
     public void setCursor(Style.Cursor cursor) {
         this.buffer.getCanvas().getStyle().setCursor(cursor);
@@ -338,9 +321,10 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
             }
         }).scheduleRepeating(20);
     }
-    public void exportEHLDImage(final String diagramStId){
-        svgPanel.exportImage(diagramStId);
-    }
+
+//    public void exportEHLDImage(final String diagramStId){
+//        svgPanel.exportView(diagramStId);
+//    }
 
     public void notifyHoveredExpression(DiagramObject item, Coordinate model) {
         Renderer renderer = rendererManager.getRenderer(item);
@@ -357,34 +341,34 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.column = e.getColumn();
     }
 
-    public void setWatermarkURL(Context context, GraphObject selection, String flag) {
-        if(watermark!=null) {
-            StringBuilder href = new StringBuilder(DiagramFactory.WATERMARK_BASE_URL);
-            String pathwayStId = context == null ? null : context.getContent().getStableId();
-            if (pathwayStId != null && !pathwayStId.isEmpty()) {
-                href.append("#/").append(pathwayStId);
-                if (selection != null) {
-                    if (selection.getStId() != null && !selection.getStId().isEmpty()) {
-                        href.append("&SEL=").append(selection.getStId());
-                    }
-                }
-                AnalysisStatus analysisStatus = context.getAnalysisStatus();
-                if (analysisStatus != null) {
-                    href.append("&DTAB=AN").append("&ANALYSIS=").append(analysisStatus.getToken()).append("&RESOURCE=").append(analysisStatus.getResource());
-                }
-                if (flag != null && !flag.isEmpty()) {
-                    href.append("&FLG=").append(flag);
-                }
-            }
-            watermark.setHref(href.toString());
-        }
-    }
-
-    public void setWatermarkVisible(boolean visible){
-        if(watermark!=null) {
-            watermark.setVisible(visible);
-        }
-    }
+//    public void setWatermarkURL(Context context, GraphObject selection, String flag) {
+//        if(watermark!=null) {
+//            StringBuilder href = new StringBuilder(DiagramFactory.WATERMARK_BASE_URL);
+//            String pathwayStId = context == null ? null : context.getContent().getStableId();
+//            if (pathwayStId != null && !pathwayStId.isEmpty()) {
+//                href.append("#/").append(pathwayStId);
+//                if (selection != null) {
+//                    if (selection.getStId() != null && !selection.getStId().isEmpty()) {
+//                        href.append("&SEL=").append(selection.getStId());
+//                    }
+//                }
+//                AnalysisStatus analysisStatus = context.getAnalysisStatus();
+//                if (analysisStatus != null) {
+//                    href.append("&DTAB=AN").append("&ANALYSIS=").append(analysisStatus.getToken()).append("&RESOURCE=").append(analysisStatus.getResource());
+//                }
+//                if (flag != null && !flag.isEmpty()) {
+//                    href.append("&FLG=").append(flag);
+//                }
+//            }
+//            watermark.setHref(href.toString());
+//        }
+//    }
+//
+//    public void setWatermarkVisible(boolean visible){
+//        if(watermark!=null) {
+//            watermark.setVisible(visible);
+//        }
+//    }
 
     public void renderInteractors(Collection<DiagramInteractor> items, Context context){
         cleanCanvas(interactors);
@@ -678,17 +662,17 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.interactorsHighlight.setStrokeStyle(profileProperties.getHighlight());
     }
 
-    private void addWatermark(){
-        if(DiagramFactory.WATERMARK) {
-            Image img = new Image(RESOURCES.logo());
-            SafeHtml image = SafeHtmlUtils.fromSafeConstant(img.toString());
-            watermark = new Anchor(image, DiagramFactory.WATERMARK_BASE_URL, "_blank");
-            watermark.setTitle("Open this pathway in Reactome Pathway Browser");
-            watermark.setStyleName(RESOURCES.getCSS().watermark());
-            watermark.setVisible(false);
-            add(watermark);
-        }
-    }
+//    private void addWatermark(){
+//        if(DiagramFactory.WATERMARK) {
+//            Image img = new Image(RESOURCES.logo());
+//            SafeHtml image = SafeHtmlUtils.fromSafeConstant(img.toString());
+//            watermark = new Anchor(image, DiagramFactory.WATERMARK_BASE_URL, "_blank");
+//            watermark.setTitle("Open this pathway in Reactome Pathway Browser");
+//            watermark.setStyleName(RESOURCES.getCSS().watermark());
+//            watermark.setVisible(false);
+//            add(watermark);
+//        }
+//    }
 
     protected void initialise() {
         //The widget can only be initialised ONCE
@@ -734,60 +718,60 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.reactionsHighlight.setLineCap(Context2d.LineCap.ROUND);
         this.reactionsSelection.setLineCap(Context2d.LineCap.ROUND);
 
-        //Thumbnail
-        this.add(this.thumbnail);
-
-        //SVG panel
-        this.add(this.svgPanel = new SVGPanel(eventBus, width, height), 0, 0);
-        //SVG Thumbnail
-        this.add(this.svgThumbnail);
-
-        //DO NOT CHANGE THE ORDER OF THE FOLLOWING TWO LINES
-        this.add(new LoadingMessage(eventBus));                 //Loading message panel
-        this.add(new AnalysisMessage(eventBus));                //Analysis overlay message panel
-        this.add(new ErrorMessage(eventBus));                   //Error message panel
-
-        //Watermark
-        this.addWatermark();
-
-        //Right container
-        RightContainerPanel rightContainerPanel = new RightContainerPanel();
-        this.add(rightContainerPanel);
-
-        //Control panel
-        this.add(new NavigationControlPanel(eventBus));
-
-        //Bottom Controls container
-        BottomContainerPanel bottomContainerPanel = new BottomContainerPanel();
-        this.add(bottomContainerPanel);
-
-        //Flagged Objects control panel
-        bottomContainerPanel.add(new FlaggedItemsControl(eventBus));
-
-        //Enrichment legend and control panels
-        bottomContainerPanel.add(new EnrichmentControl(eventBus));
-
-        //Expression legend and control panels
-        rightContainerPanel.add(new ExpressionLegend(eventBus));
-        bottomContainerPanel.add(new ExpressionControl(eventBus));
-
-        //Interactors control panel
-        bottomContainerPanel.add(new InteractorsControl(eventBus));
-
-        //Info panel
-        if (DiagramFactory.SHOW_INFO) {
-            this.add(new DiagramInfo(eventBus));
-        }
-
-        //Launcher panels
-        this.add(new LeftTopLauncherPanel(eventBus));
-        this.add(new RightTopLauncherPanel(eventBus));
-
-        //Settings panel
-        rightContainerPanel.add(new HideableContainerPanel(eventBus));
-
-        //Illustration panel
-        this.add(this.illustration = new IllustrationPanel(), 0 , 0);
+//        //Thumbnail
+//        this.add(this.thumbnail);
+//
+//        //SVG panel
+//        this.add(this.svgPanel = new SVGPanel(eventBus, width, height), 0, 0);
+//        //SVG Thumbnail
+//        this.add(this.svgThumbnail);
+//
+//        //DO NOT CHANGE THE ORDER OF THE FOLLOWING TWO LINES
+//        this.add(new LoadingMessage(eventBus));                 //Loading message panel
+//        this.add(new AnalysisMessage(eventBus));                //Analysis overlay message panel
+//        this.add(new ErrorMessage(eventBus));                   //Error message panel
+//
+//        //Watermark
+//        this.addWatermark();
+//
+//        //Right container
+//        RightContainerPanel rightContainerPanel = new RightContainerPanel();
+//        this.add(rightContainerPanel);
+//
+//        //Control panel
+//        this.add(new NavigationControlPanel(eventBus));
+//
+//        //Bottom Controls container
+//        BottomContainerPanel bottomContainerPanel = new BottomContainerPanel();
+//        this.add(bottomContainerPanel);
+//
+//        //Flagged Objects control panel
+//        bottomContainerPanel.add(new FlaggedItemsControl(eventBus));
+//
+//        //Enrichment legend and control panels
+//        bottomContainerPanel.add(new EnrichmentControl(eventBus));
+//
+//        //Expression legend and control panels
+//        rightContainerPanel.add(new ExpressionLegend(eventBus));
+//        bottomContainerPanel.add(new ExpressionControl(eventBus));
+//
+//        //Interactors control panel
+//        bottomContainerPanel.add(new InteractorsControl(eventBus));
+//
+//        //Info panel
+//        if (DiagramFactory.SHOW_INFO) {
+//            this.add(new DiagramInfo(eventBus));
+//        }
+//
+//        //Launcher panels
+//        this.add(new LeftTopLauncherPanel(eventBus));
+//        this.add(new RightTopLauncherPanel(eventBus));
+//
+//        //Settings panel
+//        rightContainerPanel.add(new HideableContainerPanel(eventBus));
+//
+//        //Illustration panel
+//        this.add(this.illustration = new IllustrationPanel(), 0 , 0);
     }
 
     private AdvancedContext2d createCanvas(int width, int height) {
@@ -843,27 +827,5 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                 break;
         }
         return rtn;
-    }
-
-    public static Resources RESOURCES;
-    static {
-        RESOURCES = GWT.create(Resources.class);
-        RESOURCES.getCSS().ensureInjected();
-    }
-
-    public interface Resources extends ClientBundle {
-        @Source(ResourceCSS.CSS)
-        ResourceCSS getCSS();
-
-        @Source("images/watermark.png")
-        ImageResource logo();
-    }
-
-    @CssResource.ImportedWithPrefix("diagram-DiagramCanvas")
-    public interface ResourceCSS extends CssResource {
-        String CSS = "org/reactome/web/diagram/client/DiagramCanvas.css";
-
-        String watermark();
-
     }
 }

@@ -32,11 +32,20 @@ public abstract class FilterFactory {
         blur.setAttribute(SVGConstants.SVG_STD_DEVIATION_ATTRIBUTE, "" + SHADOW_RADIUS);
         blur.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "blurOut");
 
-        OMSVGFEBlendElement blend = new OMSVGFEBlendElement();
-        blend.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
-        blend.setAttribute(SVGConstants.SVG_IN2_ATTRIBUTE, "blurOut");
-        blend.setAttribute(SVGConstants.SVG_MODE_ATTRIBUTE, "normal");
-        blend.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "blendOut");
+//        OMSVGFEBlendElement blend = new OMSVGFEBlendElement();
+//        blend.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
+//        blend.setAttribute(SVGConstants.SVG_IN2_ATTRIBUTE, "blurOut");
+//        blend.setAttribute(SVGConstants.SVG_MODE_ATTRIBUTE, "normal");
+//        blend.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "blendOut");
+
+        OMSVGFEMergeElement merge = new OMSVGFEMergeElement();
+        OMSVGFEMergeNodeElement mergeNode1 = new OMSVGFEMergeNodeElement();
+        mergeNode1.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "blurOut");
+        OMSVGFEMergeNodeElement mergeNode2 = new OMSVGFEMergeNodeElement();
+        mergeNode2.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
+        merge.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "mergeOut");
+        merge.appendChild(mergeNode1);
+        merge.appendChild(mergeNode2);
 
         //Compose the filter from the primitives
         OMSVGFilterElement shadowFilter = new OMSVGFilterElement();
@@ -48,7 +57,7 @@ public abstract class FilterFactory {
 
         shadowFilter.appendChild(offSet);
         shadowFilter.appendChild(blur);
-        shadowFilter.appendChild(blend);
+        shadowFilter.appendChild(merge);
 
         return shadowFilter;
     }

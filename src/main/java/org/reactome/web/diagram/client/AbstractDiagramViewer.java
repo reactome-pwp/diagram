@@ -16,7 +16,7 @@ public abstract class AbstractDiagramViewer extends ResizeComposite implements D
 
     protected EventBus eventBus;
 
-    boolean initialised = false;
+//    boolean initialised = false;
     int viewportWidth = 0;
     int viewportHeight = 0;
 
@@ -25,7 +25,7 @@ public abstract class AbstractDiagramViewer extends ResizeComposite implements D
     }
 
     protected void initialise(){
-        this.initialised = true;
+//        this.initialised = true;
         this.viewportWidth = getOffsetWidth();
         this.viewportHeight = getOffsetHeight();
     }

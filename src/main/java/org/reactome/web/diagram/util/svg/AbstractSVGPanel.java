@@ -47,7 +47,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         initFilters();
     }
 
-    public void exportImage(String stableId){
+    public void exportView(String stableId){
         if(svg != null) {
             Image image = new Image();
             image.setUrl("data:image/svg+xml," + svg.getMarkup());
