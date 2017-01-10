@@ -106,7 +106,27 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         }
     }
 
-    @Override
+    public void select(GraphObject obj) {
+        resetSelection();
+        if (obj != null) {
+            SVGEntity svgEntity = entities.get(obj.getStId());
+            if (svgEntity != null) {
+                OMElement toSelect = svgEntity.getHoverableElement();
+                setSelectedElement(toSelect);
+                eventBus.fireEventFromSource(new SVGEntitySelectedEvent(toSelect.getId()), this);
+            }
+        }
+    }
+
+    public void resetSelection() {
+        if(selected!=null) {
+            resetSelectedElement();
+            eventBus.fireEventFromSource(new SVGEntitySelectedEvent(null), this);
+        }
+    }
+
+
+        @Override
     public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
         if(svg!=null) {
             clearOverlay();
@@ -301,13 +321,13 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
                         contextPanel.show(SVGUtil.keepStableId(elementId), event.getClientX(), event.getClientY());
                         break;
                     default:
-                        setSelected(el);
+                        setSelectedElement(el);
                         eventBus.fireEventFromSource(new SVGEntitySelectedEvent(elementId), this);
                         notifySelection(elementId);
                         break;
                 }
             } else {
-                resetSelected();
+                resetSelectedElement();
                 eventBus.fireEventFromSource(new SVGEntitySelectedEvent(null), this);
                 notifySelection(null);
             }
@@ -551,16 +571,16 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         createOrUpdateOverlayElement(stId, overlayColour);
     }
 
-    private void resetSelected() {
+    private void resetSelectedElement() {
         if(selected!=null) {
             selected.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
             selected = null;
         }
     }
 
-    private void setSelected(OMElement element) {
+    private void setSelectedElement(OMElement element) {
         if(selected!=null && !selected.equals(element)) {
-            resetSelected();
+            resetSelectedElement();
         }
         element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(COMBINED_FILTER));
         selected = element;

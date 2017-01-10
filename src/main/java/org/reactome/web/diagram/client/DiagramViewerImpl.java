@@ -456,16 +456,21 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     @Override
     public void onGraphObjectSelected(final GraphObjectSelectedEvent event) {
         GraphObject graphObject = event.getGraphObject();
-        if (!layoutManager.isSelected(graphObject)) {
-            layoutManager.setSelected(graphObject);
-            this.canvas.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
-            if (event.getZoom()) {
-                this.diagramManager.displayDiagramObjects(layoutManager.getHalo());
+        if(context.getContent().getType() == DIAGRAM) {
+            if (!layoutManager.isSelected(graphObject)) {
+                layoutManager.setSelected(graphObject);
+                this.canvas.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
+                if (event.getZoom()) {
+                    this.diagramManager.displayDiagramObjects(layoutManager.getHalo());
+                }
+                forceDraw = true;
             }
-            forceDraw = true;
-            if (event.getFireExternally()) {
-                fireEvent(event);
-            }
+        } else if(context.getContent().getType() == SVG) {
+            canvas.selectEHLD(graphObject);
+        }
+
+        if (event.getFireExternally()) {
+            fireEvent(event);
         }
     }
 

@@ -260,6 +260,10 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         }
     }
 
+    public void selectEHLD(GraphObject hoveredItem) {
+        svgPanel.select(hoveredItem);
+    }
+
     public void setIllustration(String url){
         this.illustration.setUrl(url);
     }
