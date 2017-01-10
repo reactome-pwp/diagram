@@ -257,7 +257,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHa
     }
 
     private void setHovered(String elementId) {
-        if(hovered != selected) {
+        if(hovered != null && hovered != selected) {
             hovered.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
         }
 
