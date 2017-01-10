@@ -178,6 +178,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     @Override
     public void onGraphObjectSelected(final GraphObjectSelectedEvent event) {
         setWatermarkURL(this.context, event.getGraphObject(), flagTerm);
+        selectItem(event.getGraphObject()); //TODO check this...
     }
 
     @Override
