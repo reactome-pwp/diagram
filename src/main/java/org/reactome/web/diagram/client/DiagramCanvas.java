@@ -6,7 +6,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
-import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
@@ -76,6 +75,7 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("WeakerAccess")
 class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionColumnChangedHandler {
 
     private final RendererManager rendererManager;
@@ -277,7 +277,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     @Override
     protected void onLoad() {
         super.onLoad();
-        Scheduler.get().scheduleDeferred(() -> initialise());
+        Scheduler.get().scheduleDeferred(this::initialise);
     }
 
     @Override
@@ -287,10 +287,15 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         for (Canvas canvas : canvases) {
             setCanvasProperties(canvas, width, height);
         }
-        this.tooltipContainer.setWidth(width);
-        this.tooltipContainer.setHeight(height);
 
-        this.svgPanel.setSize(width, height);
+        if (tooltipContainer != null) {
+            tooltipContainer.setWidth(width);
+            tooltipContainer.setHeight(height);
+        }
+
+        if (svgPanel != null) {
+            svgPanel.setSize(width, height);
+        }
     }
 
     @Override
@@ -392,6 +397,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         AnalysisStatus analysisStatus = context.getAnalysisStatus();
         Double minExp = 0.0; Double maxExp = 0.0;
         AnalysisType analysisType = AnalysisType.NONE;
+        //noinspection Duplicates
         if (analysisStatus != null) {
             analysisType = AnalysisType.getType(analysisStatus.getAnalysisSummary().getType());
             if (analysisStatus.getExpressionSummary() != null) {
@@ -451,6 +457,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
 
         Double minExp = 0.0; Double maxExp = 0.0;
         AnalysisType analysisType = AnalysisType.NONE;
+        //noinspection Duplicates
         if (analysisStatus != null) {
             analysisType = AnalysisType.getType(analysisStatus.getAnalysisSummary().getType());
             if (analysisStatus.getExpressionSummary() != null) {
@@ -793,11 +800,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private AdvancedContext2d createCanvas(int width, int height) {
         Canvas canvas = Canvas.createIfSupported();
         //We need to avoid the default context menu for the canvases
-        canvas.addDomHandler(new ContextMenuHandler() {
-            @Override
-            public void onContextMenu(ContextMenuEvent event) {
-                event.preventDefault(); event.stopPropagation();
-            }
+        canvas.addDomHandler(event -> {
+            event.preventDefault(); event.stopPropagation();
         }, ContextMenuEvent.getType());
         //Not used in this implementation but useful to apply styles from the outside
         canvas.getElement().addClassName("pwp-DiagramCanvas");
