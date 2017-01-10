@@ -16,7 +16,7 @@ public class SVGLoader implements RequestCallback {
         void onSvgLoaderError(String stId, Throwable exception);
     }
 
-    private static String PREFIX = DiagramFactory.SERVER + "/svg/";
+    private static String PREFIX = DiagramFactory.SERVER + "/download/current/ehld/";
     private static String SUFFIX = "?v=" + LoaderManager.version;
 
 
