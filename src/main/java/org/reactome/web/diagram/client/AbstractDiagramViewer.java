@@ -3,7 +3,6 @@ package org.reactome.web.diagram.client;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.ResizeComposite;
-import org.reactome.web.diagram.common.DiagramAnimationHandler;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.DiagramEventBus;
@@ -12,11 +11,11 @@ import org.reactome.web.diagram.util.DiagramEventBus;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  *
  */
-public abstract class AbstractDiagramViewer extends ResizeComposite implements DiagramViewer, DiagramAnimationHandler {
+public abstract class AbstractDiagramViewer extends ResizeComposite implements DiagramViewer {
 
     protected EventBus eventBus;
 
-//    boolean initialised = false;
+    boolean initialised = false;
     int viewportWidth = 0;
     int viewportHeight = 0;
 
@@ -25,7 +24,7 @@ public abstract class AbstractDiagramViewer extends ResizeComposite implements D
     }
 
     protected void initialise(){
-//        this.initialised = true;
+        this.initialised = true;
         this.viewportWidth = getOffsetWidth();
         this.viewportHeight = getOffsetHeight();
     }
@@ -75,12 +74,10 @@ public abstract class AbstractDiagramViewer extends ResizeComposite implements D
         return this.addHandler(handler, FireworksOpenedEvent.TYPE);
     }
 
-    @Override
     public int getViewportWidth() {
         return viewportWidth;
     }
 
-    @Override
     public int getViewportHeight() {
         return viewportHeight;
     }

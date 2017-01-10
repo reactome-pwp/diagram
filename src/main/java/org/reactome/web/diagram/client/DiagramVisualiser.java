@@ -8,6 +8,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import org.reactome.web.analysis.client.model.AnalysisType;
+import org.reactome.web.diagram.client.visualisers.Visualiser;
 import org.reactome.web.diagram.common.DiagramAnimationHandler;
 import org.reactome.web.diagram.common.DisplayManager;
 import org.reactome.web.diagram.data.AnalysisStatus;
@@ -27,10 +28,7 @@ import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.loader.AnalysisDataLoader;
 import org.reactome.web.diagram.data.loader.AnalysisTokenValidator;
 import org.reactome.web.diagram.events.*;
-import org.reactome.web.diagram.handlers.AnalysisProfileChangedHandler;
-import org.reactome.web.diagram.handlers.DiagramProfileChangedHandler;
-import org.reactome.web.diagram.handlers.InteractorProfileChangedHandler;
-import org.reactome.web.diagram.handlers.StructureImageLoadedHandler;
+import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.util.ViewportUtils;
 import org.reactome.web.diagram.util.chemical.ChemicalImageLoader;
@@ -38,18 +36,16 @@ import org.reactome.web.diagram.util.pdbe.PDBeLoader;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
-import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
+public class DiagramVisualiser extends AbsolutePanel implements Visualiser, RequiresResize,
         UserActionsManager.Handler,
         DiagramAnimationHandler,
+        DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler,
         DiagramProfileChangedHandler, AnalysisProfileChangedHandler, InteractorProfileChangedHandler,
         StructureImageLoadedHandler {
     protected EventBus eventBus;
@@ -66,7 +62,7 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
 
     private UserActionsManager userActionsManager;
 
-    private String flagTerm;
+//    private String flagTerm;
     private AnalysisStatus analysisStatus;
     private LayoutManager layoutManager;
     private InteractorsManager interactorsManager;
@@ -82,7 +78,7 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
         super();
         this.canvas = new DiagramCanvas(eventBus);
 //        this.loaderManager = new LoaderManager(eventBus);
-        AnalysisDataLoader.initialise(eventBus);
+//        AnalysisDataLoader.initialise(eventBus);
         PDBeLoader.initialise(eventBus);
         ChemicalImageLoader.initialise(eventBus);
         this.layoutManager = new LayoutManager(eventBus);
@@ -93,7 +89,7 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
         this.diagramManager = new DiagramManager(new DisplayManager(this));
 //        this.initWidget(this.canvas);
         this.add(this.canvas);
-        this.getElement().addClassName("pwp-DiagramVis"); //IMPORTANT!
+        this.getElement().addClassName("pwp-DiagramVisualiser"); //IMPORTANT!
     }
 
     protected void initialise() {
@@ -131,9 +127,9 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
 //
 //        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
 //        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
-//        eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
+        eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
 //        eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
-//        eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
+        eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
 //        eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
 //
         eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
@@ -204,11 +200,6 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
 //        this.eventBus.fireEventFromSource(new DiagramRenderedEvent(context.getContent(), visibleArea, items.size(), time), this);
     }
 
-//    @Override
-//    public void flagItems(String identifier) { //TODO to be removed
-//        this.eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(identifier), this);
-//    }
-
     @Override
     public DiagramStatus getDiagramStatus() {
         return this.context.getDiagramStatus();
@@ -226,22 +217,6 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
         this.eventBus.fireEventFromSource(new DiagramZoomEvent(factor, visibleArea), this);
     }
 
-    @Override
-    public void highlightItem(String stableIdentifier) { //TODO to be removed
-        try {
-            GraphObject item = this.context.getContent().getDatabaseObject(stableIdentifier);
-            highlightGraphObject(item);
-        } catch (Exception e) {/*Nothing here*/}
-    }
-
-    @Override
-    public void highlightItem(Long dbIdentifier) { //TODO to be removed
-        try {
-            GraphObject item = this.context.getContent().getDatabaseObject(dbIdentifier);
-            highlightGraphObject(item);
-        } catch (Exception e) {/*Nothing here*/}
-    }
-
     private void highlightHoveredItem(HoveredItem hovered) {
         if (layoutManager.isHighlighted(hovered)) return;
         canvas.highlight(hovered, context);
@@ -249,11 +224,11 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
         GraphObjectHoveredEvent event = layoutManager.setHovered(hovered);
         if (event != null) {
             this.eventBus.fireEventFromSource(event, this);
-            fireEvent(event); //needs outside notification
+//            fireEvent(event); //needs outside notification //TODO Need external notification
         }
     }
 
-    private void highlightInteractor(DiagramInteractor hovered) {
+    public void highlightInteractor(DiagramInteractor hovered) {
         if (interactorsManager.isHighlighted(hovered)) return;
         // setInteractorHovered knows when an interactor is being dragged, so it won't set a new one if that case
         if (userActionsManager.setInteractorHovered(hovered)) {
@@ -261,19 +236,20 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
             InteractorHoveredEvent event = interactorsManager.setHovered(hovered);
             if (event != null) {
                 this.eventBus.fireEventFromSource(event, this);
-                fireEvent(event); //needs outside notification
+//                fireEvent(event); //needs outside notification
             }
         }
     }
 
-    private void highlightGraphObject(GraphObject graphObject) {
-        if(context.getContent().getType() == DIAGRAM) {
+    @Override
+    public void highlightGraphObject(GraphObject graphObject) {
+//        if(context.getContent().getType() == DIAGRAM) {
             HoveredItem hovered = new HoveredItem(graphObject);
             if (layoutManager.isHighlighted(hovered)) return;
             canvas.highlight(hovered, context);
-        } else if(context.getContent().getType() == SVG) {
-            canvas.highlightEHLD(graphObject);
-        }
+//        } else if(context.getContent().getType() == SVG) {
+//            canvas.highlightEHLD(graphObject);
+//        }
         //we don't rely on the listener of the following event because finer grain of the hovering is lost
         GraphObjectHoveredEvent event = new GraphObjectHoveredEvent(graphObject);
         this.eventBus.fireEventFromSource(event, this);
@@ -298,7 +274,7 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
 //    }
 
     private void load(String identifier) {
-        this.loaderManager.load(identifier);
+        eventBus.fireEventFromSource(new ContentRequestedEvent(identifier), this);
     }
 
     private void clearAnalysisOverlay(){
@@ -349,98 +325,39 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
         forceDraw = true;
     }
 
-//    @Override
-//    public void onControlAction(ControlActionEvent event) {
-//        double zoomDelta = UserActionsManager.ZOOM_DELTA;
-//        switch (event.getAction()) {
-//            case FIT_ALL:       this.fitDiagram(true);          break;
-//            case ZOOM_IN:       this.zoomDelta(zoomDelta);      break;
-//            case ZOOM_OUT:      this.zoomDelta(-zoomDelta);     break;
-//            case UP:            this.padding(0, 10);            break;
-//            case RIGHT:         this.padding(-10, 0);           break;
-//            case DOWN:          this.padding(0, -10);           break;
-//            case LEFT:          this.padding(10, 0);            break;
-//            case FIREWORKS:     this.overview();                break;
-//        }
-//    }
-
-//    @Override
-//    public void onDiagramExportRequested(CanvasExportRequestedEvent event) {
-//        if (context != null) {
-//            Content content = context.getContent();
-//            switch(content.getType()) {
-//                case DIAGRAM:     canvas.exportImage(content.getStableId());        break;
-//                case SVG:         canvas.exportEHLDImage(content.getStableId());    break;
-//            }
-//        }
-//    }
-
+    @Override
     public void exportView() {
         if (context != null) {
             canvas.exportImage(context.getContent().getStableId());
         }
     }
 
-
     @Override
     public void onDiagramObjectsFlagged(DiagramObjectsFlaggedEvent event) {
-        this.canvas.setWatermarkURL(context, layoutManager.getSelected(), this.flagTerm = event.getTerm());
         layoutManager.setFlagged(event.getFlaggedItems());
         this.canvas.flag(event.getFlaggedItems(), this.context);
-        if (event.getNotify()) {
-            this.fireEvent(event);
-        }
-    }
-
-    @Override
-    public void onDiagramObjectsFlagRequested(DiagramObjectsFlagRequestedEvent event) {
-        String term = event.getTerm();
-        Set<GraphObject> items = this.context.getContent().getIdentifierMap().getElements(term);
-        Set<DiagramObject> flagged = new HashSet<>();
-        if (items != null) {
-            for (GraphObject item : items) {
-                flagged.addAll(item.getDiagramObjects());
-                if (item instanceof GraphPhysicalEntity) {
-                    GraphPhysicalEntity pe = (GraphPhysicalEntity) item;
-                    for (GraphPhysicalEntity entity : pe.getParentLocations()) {
-                        flagged.addAll(entity.getDiagramObjects());
-                    }
-                }
-            }
-        }
-        boolean notify = !event.getSource().equals(this);
-        this.eventBus.fireEventFromSource(new DiagramObjectsFlaggedEvent(term, flagged, notify), this);
     }
 
     @Override
     public void onDiagramObjectsFlagReset(DiagramObjectsFlagResetEvent event) {
-        this.canvas.setWatermarkURL(context, layoutManager.getSelected(), this.flagTerm = null);
         if(layoutManager.resetFlagged()){
             this.canvas.flag(layoutManager.getFlagged(), this.context);
-            if (!event.getSource().equals(this)) {
-                this.fireEvent(event);
-            }
         }
     }
 
     @Override
-    public void onContentLoaded(ContentLoadedEvent event) {
-        this.context = event.getContext();
+    public void contentLoaded(Context context) { //on contentFullyLoaded
+        this.context = context;
         this.context.restoreDialogs();
-        this.canvas.setWatermarkVisible(true);
-        this.canvas.setWatermarkURL(event.getContext(), null, this.flagTerm);
-        fireEvent(event);
     }
 
     @Override
-    public void onContentRequested(ContentRequestedEvent event) {
+    public void contentRequested() {
         this.resetSelection();
         this.resetHighlight();
         this.resetDialogs();
-        this.resetIllustration();
         this.diagramManager.cancelDisplayAnimation();
         this.resetContext();
-        this.canvas.setWatermarkVisible(false);
     }
 
     @Override
@@ -453,33 +370,33 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
         });
     }
 
-    @Override
-    public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
-        //In order to have fine grain hovering capabilities, this class is not taking actions for onGraphObjectHovered
-        //when it is fired by its own, so we ONLY want to do the STANDARD action (highlight) when the event comes from
-        //the outside. That is the reason of the next line of code
-        if (event.getSource().equals(this)) return;
-        if (context != null) {
-            //this.hovered = new HoveredItem(event.getHoveredObjects()); // Don't do it here. Hovering can also be fired from the outside
-            canvas.highlight(new HoveredItem(event.getGraphObject()), this.context);
-        }
-    }
+//    @Override
+//    public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
+//        //In order to have fine grain hovering capabilities, this class is not taking actions for onGraphObjectHovered
+//        //when it is fired by its own, so we ONLY want to do the STANDARD action (highlight) when the event comes from
+//        //the outside. That is the reason of the next line of code
+//        if (event.getSource().equals(this)) return;
+//        if (context != null) {
+//            //this.hovered = new HoveredItem(event.getHoveredObjects()); // Don't do it here. Hovering can also be fired from the outside
+//            canvas.highlight(new HoveredItem(event.getGraphObject()), this.context);
+//        }
+//    }
 
-    @Override
-    public void onGraphObjectSelected(final GraphObjectSelectedEvent event) {
-        GraphObject graphObject = event.getGraphObject();
-        if (!layoutManager.isSelected(graphObject)) {
-            layoutManager.setSelected(graphObject);
-            this.canvas.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
-            if (event.getZoom()) {
-                this.diagramManager.displayDiagramObjects(layoutManager.getHalo());
-            }
-            forceDraw = true;
-            if (event.getFireExternally()) {
-                fireEvent(event);
-            }
-        }
-    }
+//    @Override
+//    public void onGraphObjectSelected(final GraphObjectSelectedEvent event) {
+//        GraphObject graphObject = event.getGraphObject();
+//        if (!layoutManager.isSelected(graphObject)) {
+//            layoutManager.setSelected(graphObject);
+//            this.canvas.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
+//            if (event.getZoom()) {
+//                this.diagramManager.displayDiagramObjects(layoutManager.getHalo());
+//            }
+//            forceDraw = true;
+//            if (event.getFireExternally()) {
+//                fireEvent(event);
+//            }
+//        }
+//    }
 
     @Override
     public void onIllustrationSelected(IllustrationSelectedEvent event) {
@@ -537,8 +454,8 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
     }
 
     @Override
-    public void onLayoutLoaded(LayoutLoadedEvent event) {
-        this.setContext(event.getContext());
+    public void layoutLoaded(Context context) {
+        this.setContext(context);
         this.fitDiagram(false);
     }
 
@@ -598,22 +515,17 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
 //    }
 
     @Override
-    public void resetFlaggedItems() {
-        this.eventBus.fireEventFromSource(new DiagramObjectsFlagResetEvent(), this);
-    }
-
-    @Override
     public void resetHighlight() {
         if(context==null) return;
 
-        if(context.getContent().getType() == DIAGRAM) { //TODO move this to ViewerContainer
+//        if(context.getContent().getType() == DIAGRAM) { //TODO move this to ViewerContainer
             if (layoutManager.resetHovered()) {
                 canvas.highlight(null, context);
                 eventBus.fireEventFromSource(new GraphObjectHoveredEvent(), this);
             }
-        } else if(context.getContent().getType() == SVG) {
-            canvas.highlightEHLD(null);
-        }
+//        } else if(context.getContent().getType() == SVG) {
+//            canvas.highlightEHLD(null);
+//        }
     }
 
     @Override
@@ -764,7 +676,8 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
         }
     }
 
-    private void setSelection(HoveredItem hoveredItem, boolean zoom, boolean fireExternally) {
+    @Override
+    public void setSelection(HoveredItem hoveredItem, boolean zoom, boolean fireExternally) {
         GraphObject toSelect = hoveredItem != null ? hoveredItem.getGraphObject() : null;
         if (toSelect != null) {
             if (hoveredItem.getAttachment() != null) {
@@ -783,16 +696,26 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
                 this.context.showDialog(this.eventBus, item, this.canvas);
             }
         }
+        selectGraphObject(toSelect, zoom, fireExternally);
+//        if (!layoutManager.isSelected(toSelect)) {
+//            //this.resetIllustration(); //TODO this has been moved to a higher layer
+//            this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(toSelect, zoom, fireExternally), this);
+//        }
+    }
+
+    private void selectGraphObject(GraphObject toSelect, boolean zoom, boolean fireExternally){
         if (!layoutManager.isSelected(toSelect)) {
-            this.resetIllustration(); //TODO this should be moved to a higher layer
+            layoutManager.setSelected(toSelect);
+            if (zoom) {
+                this.diagramManager.displayDiagramObjects(layoutManager.getHalo());
+            }
+            forceDraw = true;
             this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(toSelect, zoom, fireExternally), this);
         }
     }
 
-
-
-
-    private void fitDiagram(boolean animation) {
+    @Override
+    public void fitDiagram(boolean animation) {
 //        if(context.getContent().getType() == DIAGRAM) { //TODO to be moved to Viewer
             diagramManager.fitDiagram(context.getContent(), animation);
 //        }
@@ -816,7 +739,8 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
         eventBus.fireEventFromSource(new DiagramPanningEvent(visibleArea), this);
     }
 
-    private void zoomDelta(double deltaFactor) {
+    @Override
+    public void zoomDelta(double deltaFactor) {
 //        if(context.getContent().getType() == DIAGRAM) {  //TODO to be moved to Viewer
             zoom(context.getDiagramStatus().getFactor() + deltaFactor);
 //        }
@@ -869,5 +793,10 @@ public class DiagramVisualiser extends AbsolutePanel implements RequiresResize,
 
     public int getViewportHeight() {
         return viewportHeight;
+    }
+
+    @Override
+    public GraphObject getSelected() {
+        return layoutManager.getSelected();
     }
 }
