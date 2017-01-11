@@ -856,7 +856,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     @Override
     public void onKeyDown(KeyDownEvent keyDownEvent) {
-        if(isVisible()){
+        if(isVisible() && DiagramFactory.RESPOND_TO_SEARCH_SHORTCUT){
             int keyCode = keyDownEvent.getNativeKeyCode();
             String platform = Window.Navigator.getPlatform();
             // If this is a Mac, check for the cmd key. In case of any other platform, check for the ctrl key

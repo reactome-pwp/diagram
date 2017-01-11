@@ -69,7 +69,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
     }
 
     private static boolean isChemical(String accession){
-        return accession.matches("^(CHEBI|CHEMBL).*");
+        return accession.matches("^(CHEBI|CHEMBL|ZINC).*");
     }
 
     public Coordinate getCentre() {
