@@ -7,13 +7,38 @@
     <groupId>org.reactome.web</groupId>
     <artifactId>diagram</artifactId>
     <packaging>jar</packaging>
-    <version>3.2.3</version>
+    <version>3.3.0-SNAPSHOT</version>
     <name>Reactome Diagram Viewer</name>
+
+    <description>
+        Visualiser of Reactome diagrams, illustrations and enhanced high level diagrams (EHLD)
+    </description>
+
+    <organization>
+        <name>The European Bioinformatics Institute</name>
+        <url>http://www.ebi.ac.uk/</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>ksidiro</id>
+            <name>Kostas Sidiropoulos</name>
+            <email>ksidiro@ebi.ac.uk</email>
+            <organization>http://www.ebi.ac.uk/</organization>
+        </developer>
+        <developer>
+            <id>fabregat</id>
+            <name>Antonio Fabregat</name>
+            <email>fabregat@ebi.ac.uk</email>
+            <organization>http://www.ebi.ac.uk/</organization>
+        </developer>
+    </developers>
 
     <properties>
         <!-- Convenience property to set the GWT version -->
-        <gwtVersion>2.8.0-beta1</gwtVersion>
-        
+        <gwtVersion>2.8.0</gwtVersion>
+        <gwtStyle>OBF</gwtStyle> <!-- OBF | PRETTY | DETAILED -->
+
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
@@ -24,20 +49,47 @@
         <reactome.web.quadtree>1.1.0</reactome.web.quadtree>
 
         <reactome.utils.version>1.0.2</reactome.utils.version>
+
+        <appModule>org.reactome.web.diagram.DiagramViewer</appModule>
+        <appName>${appModule}</appName>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt</artifactId>
+                <version>${gwtVersion}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <appModule>org.reactome.web.WidgetTest</appModule>
+                <appName>widgettest</appName>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
             <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-servlet</artifactId>
-            <version>${gwtVersion}</version>
-            <scope>runtime</scope>
+            <artifactId>gwt-user</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>${gwtVersion}</version>
+            <artifactId>gwt-codeserver</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
         </dependency>
 
         <dependency>
@@ -70,12 +122,6 @@
             <artifactId>reactome-utils</artifactId>
             <version>${reactome.utils.version}</version>
             <scope>runtime</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>javax.servlet-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- SVG support -->
@@ -106,23 +152,48 @@
                 </configuration>
             </plugin>
 
-            <!-- GWT Maven Plugin -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>net.ltgt.gwt.maven</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwtVersion}</version>
+                <version>1.0-rc-6</version>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>resources</goal>
-                            <!-- Compile is not needed because other projects using the jar will do it -->
-                            <!--<goal>compile</goal>-->
-                            <goal>test</goal>
-                            <goal>generateAsync</goal>
+                            <goal>import-sources</goal>
+                            <goal>compile</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <moduleName>${appModule}</moduleName>
+                    <moduleShortName>${appName}</moduleShortName>
+                    <failOnError>true</failOnError>
+                    <compilerArgs>
+                        <arg>-compileReport</arg>
+                        <arg>-XcompilerMetrics</arg>
+                        <arg>-optimize</arg>
+                        <arg>9</arg>
+                        <arg>-style</arg>
+                        <arg>${gwtStyle}</arg>
+                    </compilerArgs>
+                    <devmodeArgs>
+                        <arg>-bindAddress</arg>
+                        <arg>0.0.0.0</arg>
+                    </devmodeArgs>
+                    <codeserverArgs>
+                        <arg>-bindAddress</arg>
+                        <arg>0.0.0.0</arg>
+                        <arg>-gen</arg>
+                        <arg>${project.build.directory}/.generated</arg>
+                    </codeserverArgs>
+                    <warDir>${project.build.directory}/${project.build.finalName}</warDir>
+                    <classpathScope>compile+runtime</classpathScope>
+                    <startupUrls>
+                        <startupUrl>index.html</startupUrl>
+                    </startupUrls>
+                </configuration>
             </plugin>
+
 
             <!-- Copy static web files before executing gwt:run -->
             <plugin>
@@ -174,23 +245,6 @@
             </extension>
         </extensions>
     </build>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwtVersion}</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>compile-report</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-        </plugins>
-    </reporting>
 
     <repositories>
         <repository>
