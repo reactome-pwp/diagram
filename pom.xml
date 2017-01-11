@@ -48,7 +48,7 @@
         <reactome.web.carrousel>1.0.0</reactome.web.carrousel>
         <reactome.web.quadtree>1.1.0</reactome.web.quadtree>
 
-        <reactome.utils.version>1.0.2</reactome.utils.version>
+        <reactome.utils.version>1.0.3</reactome.utils.version>
 
         <appModule>org.reactome.web.diagram.DiagramViewer</appModule>
         <appName>${appModule}</appName>
