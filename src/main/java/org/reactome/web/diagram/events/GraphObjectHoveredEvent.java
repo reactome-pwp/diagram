@@ -48,7 +48,7 @@ public class GraphObjectHoveredEvent extends GwtEvent<GraphObjectHoveredHandler>
 
     public List<DiagramObject> getHoveredObjects() {
         return graphObject != null ? graphObject.getDiagramObjects() : new LinkedList<DiagramObject>();
-    }GraphObjectHoveredEvent
+    }
 
     public DiagramObject getHoveredObject() {
         return hoveredObject;
