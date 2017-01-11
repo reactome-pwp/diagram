@@ -96,6 +96,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             SVGEntity svgEntity = entities.get(obj.getStId());
             if (svgEntity != null) {
                 highlightElement(svgEntity.getHoverableElement());
+                eventBus.fireEventFromSource(new SVGEntityHoveredEvent(svgEntity.getHoverableElement().getId()), this);
             }
         }
     }
@@ -103,6 +104,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     public void resetHighlight() {
         if(hovered!=null) {
             unHighlightElement(hovered);
+            eventBus.fireEventFromSource(new SVGEntityHoveredEvent(null), this);
         }
     }
 
