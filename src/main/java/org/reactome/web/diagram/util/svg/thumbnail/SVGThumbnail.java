@@ -261,10 +261,12 @@ public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHa
             hovered.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
         }
 
-        OMElement newHovered = svg.getElementById(elementId);
-        if(newHovered != null && newHovered != selected){
+        if(elementId != null) {
+            OMElement newHovered = svg.getElementById(elementId);
+            if (newHovered != null && newHovered != selected) {
                 newHovered.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(HOVERING_OVERLAY_FILTER));
                 hovered = newHovered;
+            }
         }
         applyCTM(false);
     }
@@ -274,6 +276,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements ContentRequestedHa
             selected.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
             selected = null;
         }
+
         if(elementId != null) {
             OMElement newSelected = svg.getElementById(elementId);
             newSelected.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_OVERLAY_FILTER));
