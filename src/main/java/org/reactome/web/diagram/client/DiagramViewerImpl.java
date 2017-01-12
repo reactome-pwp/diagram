@@ -673,6 +673,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
 
     @Override
     public HoveredItem getHoveredDiagramObject() {
+        if(context == null || context.getContent().getType() != DIAGRAM) {return null;}
+
         Coordinate model = context.getDiagramStatus().getModelCoordinate(mouseCurrent);
         Collection<HoveredItem> hoveredItems = layoutManager.getHovered(model);
         for (HoveredItem hovered : hoveredItems) {
