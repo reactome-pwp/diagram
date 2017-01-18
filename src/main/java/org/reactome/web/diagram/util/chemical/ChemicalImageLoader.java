@@ -76,8 +76,7 @@ public class ChemicalImageLoader {
     }
 
     public void loadZINC(final Handler handler, String identifier){
-        //TODO: use HTTPS when ZINC provides it
-        String url = "http://zinc15.docking.org/substances/" + identifier + ".png";
+        String url = "https://zinc15.docking.org/substances/" + identifier + ".png";
         forceLoadImage(handler, url);
     }
 
