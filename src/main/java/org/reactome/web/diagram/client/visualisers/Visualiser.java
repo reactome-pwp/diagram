@@ -24,15 +24,22 @@ public interface Visualiser extends IsWidget{
     void contentRequested();
     void layoutLoaded(Context context);
 
-    void highlightGraphObject(GraphObject graphObject);
+    boolean highlightGraphObject(GraphObject graphObject, boolean notify);
     void highlightInteractor(DiagramInteractor diagramInteractor);
 
-    void resetHighlight();
-    void resetSelection();
+    boolean resetHighlight(boolean notify);
+    boolean resetSelection(boolean notify);
 
-    void setSelection(HoveredItem hoveredItem, boolean zoom, boolean fireExternally);
+//    boolean setSelection(HoveredItem hoveredItem, boolean zoom, boolean fireExternally, boolean notify);
+    boolean selectGraphObject(GraphObject graphObject, boolean notify);
 
     GraphObject getSelected();
+
+    void loadAnalysis();
+    void resetAnalysis();
+
+
+
 
 //
 //    void flag(Collection<DiagramObject> items, Context context);

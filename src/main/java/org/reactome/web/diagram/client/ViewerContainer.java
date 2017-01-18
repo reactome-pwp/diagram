@@ -44,7 +44,8 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         GraphObjectSelectedHandler,
         LayoutLoadedHandler,
         CanvasExportRequestedHandler, ControlActionHandler,
-        DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler {
+        DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler,
+{
 
     private EventBus eventBus;
     private Context context;
@@ -121,8 +122,8 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.add(this.illustration = new IllustrationPanel(), 0 , 0);
     }
 
-    public void highlightGraphObject(GraphObject graphObject) {
-        activeVisualiser.highlightGraphObject(graphObject);
+    public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
+        return activeVisualiser.highlightGraphObject(graphObject, notify);
     }
 
     public void highlightInteractor(DiagramInteractor diagramInteractor) {
@@ -178,7 +179,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     @Override
     public void onGraphObjectSelected(final GraphObjectSelectedEvent event) {
         setWatermarkURL(this.context, event.getGraphObject(), flagTerm);
-        selectItem(event.getGraphObject()); //TODO check this...
+//        selectItem(event.getGraphObject()); //TODO check this...
     }
 
     @Override
@@ -193,21 +194,21 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         //TODO
     }
 
-    public void selectItem(GraphObject item) {
+    public boolean selectItem(GraphObject item, boolean notify) {
         resetIllustration();
-        if (item != null) {
-            activeVisualiser.setSelection(new HoveredItem(item), true, false);
-        } else {
-            activeVisualiser.resetSelection();
-        }
+        return activeVisualiser.selectGraphObject(item, notify);
     }
 
     public void setIllustration(String url){
         this.illustration.setUrl(url);
     }
 
-    public void resetHighlight() {
-        activeVisualiser.resetHighlight();
+    public boolean resetHighlight(boolean notify) {
+        return activeVisualiser.resetHighlight(notify);
+    }
+
+    public boolean resetSelection(boolean notify) {
+        return activeVisualiser.resetSelection(notify);
     }
 
     public void resetIllustration(){
@@ -215,6 +216,18 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
             this.illustration.reset();
         }
     }
+
+
+
+    public void resetAnalysis() {
+         activeVisualiser.resetAnalysis();
+    }
+
+    public void loadAnalysis() {
+        setWatermarkURL(context, activeVisualiser.getSelected(), this.flagTerm);
+        activeVisualiser.loadAnalysis();
+    }
+
 
     private void setWatermarkURL(Context context, GraphObject selection, String flag) {
         if(watermark!=null) {

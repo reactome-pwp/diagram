@@ -163,7 +163,7 @@ public class DiagramVisualiser extends AbsolutePanel implements Visualiser, Requ
             DiagramInteractor hoveredInteractor = getHoveredInteractor();
             canvas.setCursor(hoveredInteractor == null ? Style.Cursor.DEFAULT : Style.Cursor.POINTER);
             if (hoveredInteractor != null) {
-                resetHighlight(); // This resets the layout highlight -> please note that the method is defined in the DiagramViewer interface
+                resetHighlight(true); // This resets the layout highlight -> please note that the method is defined in the DiagramViewer interface
             } else { // It is needed otherwise the getHoveredDiagramObject will find a possible diagram layout object behind the interactor
                 HoveredItem hovered = getHoveredDiagramObject();
                 DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
@@ -223,8 +223,9 @@ public class DiagramVisualiser extends AbsolutePanel implements Visualiser, Requ
         canvas.decorators(hovered, context);
         GraphObjectHoveredEvent event = layoutManager.setHovered(hovered);
         if (event != null) {
+            // Outside notification is handled at a higher level.
             this.eventBus.fireEventFromSource(event, this);
-//            fireEvent(event); //needs outside notification //TODO Need external notification
+//            fireEvent(event);
         }
     }
 
@@ -242,17 +243,18 @@ public class DiagramVisualiser extends AbsolutePanel implements Visualiser, Requ
     }
 
     @Override
-    public void highlightGraphObject(GraphObject graphObject) {
-//        if(context.getContent().getType() == DIAGRAM) {
-            HoveredItem hovered = new HoveredItem(graphObject);
-            if (layoutManager.isHighlighted(hovered)) return;
+    public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
+        boolean rtn = false;
+        HoveredItem hovered = new HoveredItem(graphObject);
+        if (!layoutManager.isHighlighted(hovered)) {
             canvas.highlight(hovered, context);
-//        } else if(context.getContent().getType() == SVG) {
-//            canvas.highlightEHLD(graphObject);
-//        }
-        //we don't rely on the listener of the following event because finer grain of the hovering is lost
-        GraphObjectHoveredEvent event = new GraphObjectHoveredEvent(graphObject);
-        this.eventBus.fireEventFromSource(event, this);
+            if (notify) {
+                //we don't rely on the listener of the following event because finer grain of the hovering is lost
+                eventBus.fireEventFromSource(new GraphObjectHoveredEvent(graphObject), this);
+            }
+            rtn = true;
+        }
+        return rtn;
     }
 
     @Override
@@ -277,46 +279,56 @@ public class DiagramVisualiser extends AbsolutePanel implements Visualiser, Requ
         eventBus.fireEventFromSource(new ContentRequestedEvent(identifier), this);
     }
 
-    private void clearAnalysisOverlay(){
-        context.clearAnalysisOverlay();
-        interactorsManager.clearAnalysisOverlay();
-    }
+//    private void clearAnalysisOverlay(){
+//        context.clearAnalysisOverlay();
+//        interactorsManager.clearAnalysisOverlay();
+//    }
 
-    private void loadAnalysis(AnalysisStatus analysisStatus) {
-        if (analysisStatus == null) {
-            if (this.analysisStatus != null) {
-                this.eventBus.fireEventFromSource(new AnalysisResetEvent(false), this);
-            }
-        } else if (!analysisStatus.equals(this.context.getAnalysisStatus())) {
-            this.analysisStatus = analysisStatus;
-            clearAnalysisOverlay();
-            AnalysisDataLoader.get().loadAnalysisResult(analysisStatus, this.context.getContent());
-        }
-    }
+//    private void loadAnalysis(AnalysisStatus analysisStatus) {
+//        if (analysisStatus == null) {
+//            if (this.analysisStatus != null) {
+//                this.eventBus.fireEventFromSource(new AnalysisResetEvent(false), this);
+//            }
+//        } else if (!analysisStatus.equals(this.context.getAnalysisStatus())) {
+//            this.analysisStatus = analysisStatus;
+//            clearAnalysisOverlay();
+//            AnalysisDataLoader.get().loadAnalysisResult(analysisStatus, this.context.getContent());
+//        }
+//    }
+
+//    @Override
+//    public void onAnalysisReset(AnalysisResetEvent event) {
+//        if (event.getFireExternally()) {
+//            fireEvent(event);
+//        }
+//        this.resetAnalysis();
+//        this.canvas.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
+//    }
+
+//    @Override
+//    public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
+//        analysisStatus.setAnalysisSummary(event.getSummary());
+//        analysisStatus.setExpressionSummary(event.getExpressionSummary());
+//        context.setAnalysisOverlay(analysisStatus, event.getFoundElements(), event.getPathwaySummaries());
+//        interactorsManager.setAnalysisOverlay(event.getFoundElements(), context.getContent().getIdentifierMap());
+//        this.canvas.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
+//        forceDraw = true;
+//    }
+
+//    @Override
+//    public void onAnalysisResultRequested(AnalysisResultRequestedEvent event) {
+//        clearAnalysisOverlay();
+//        this.analysisStatus.setExpressionSummary(null);
+//        forceDraw = true;
+//    }
 
     @Override
-    public void onAnalysisReset(AnalysisResetEvent event) {
-        if (event.getFireExternally()) {
-            fireEvent(event);
-        }
-        this.resetAnalysis();
-        this.canvas.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
-    }
-
-    @Override
-    public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
-        analysisStatus.setAnalysisSummary(event.getSummary());
-        analysisStatus.setExpressionSummary(event.getExpressionSummary());
-        context.setAnalysisOverlay(analysisStatus, event.getFoundElements(), event.getPathwaySummaries());
-        interactorsManager.setAnalysisOverlay(event.getFoundElements(), context.getContent().getIdentifierMap());
-        this.canvas.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
+    public void loadAnalysis(){
         forceDraw = true;
     }
 
     @Override
-    public void onAnalysisResultRequested(AnalysisResultRequestedEvent event) {
-        clearAnalysisOverlay();
-        this.analysisStatus.setExpressionSummary(null);
+    public void resetAnalysis(){
         forceDraw = true;
     }
 
@@ -353,8 +365,8 @@ public class DiagramVisualiser extends AbsolutePanel implements Visualiser, Requ
 
     @Override
     public void contentRequested() {
-        this.resetSelection();
-        this.resetHighlight();
+        this.resetSelection(true);
+        this.resetHighlight(true);
         this.resetDialogs();
         this.diagramManager.cancelDisplayAnimation();
         this.resetContext();
@@ -369,18 +381,6 @@ public class DiagramVisualiser extends AbsolutePanel implements Visualiser, Requ
             forceDraw = true; //We give priority to other listeners here
         });
     }
-
-//    @Override
-//    public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
-//        //In order to have fine grain hovering capabilities, this class is not taking actions for onGraphObjectHovered
-//        //when it is fired by its own, so we ONLY want to do the STANDARD action (highlight) when the event comes from
-//        //the outside. That is the reason of the next line of code
-//        if (event.getSource().equals(this)) return;
-//        if (context != null) {
-//            //this.hovered = new HoveredItem(event.getHoveredObjects()); // Don't do it here. Hovering can also be fired from the outside
-//            canvas.highlight(new HoveredItem(event.getGraphObject()), this.context);
-//        }
-//    }
 
 //    @Override
 //    public void onGraphObjectSelected(final GraphObjectSelectedEvent event) {
@@ -497,13 +497,6 @@ public class DiagramVisualiser extends AbsolutePanel implements Visualiser, Requ
         this.padding(event.getCoordinate().multiply(context.getDiagramStatus().getFactor()));
     }
 
-    @Override
-    public void resetAnalysis() {
-        this.analysisStatus = null;
-        clearAnalysisOverlay();
-        forceDraw = true;
-    }
-
     private void resetDialogs() {
         if (this.context != null) {
             this.context.hideDialogs();
@@ -515,59 +508,56 @@ public class DiagramVisualiser extends AbsolutePanel implements Visualiser, Requ
 //    }
 
     @Override
-    public void resetHighlight() {
-        if(context==null) return;
-
-//        if(context.getContent().getType() == DIAGRAM) { //TODO move this to ViewerContainer
-            if (layoutManager.resetHovered()) {
-                canvas.highlight(null, context);
+    public boolean resetHighlight(boolean notify) {
+        boolean rtn = false;
+        if (context==null) return rtn;
+        if (layoutManager.resetHovered()) {
+            canvas.highlight(null, context);
+            if (notify) {
                 eventBus.fireEventFromSource(new GraphObjectHoveredEvent(), this);
             }
-//        } else if(context.getContent().getType() == SVG) {
-//            canvas.highlightEHLD(null);
-//        }
+            rtn = true;
+        }
+        return rtn;
     }
 
     @Override
-    public void resetSelection() {
+    public boolean resetSelection(boolean notify) {
+        boolean rtn = false;
+        if (context==null) return rtn;
         if (layoutManager.resetSelected()) {
-            this.forceDraw = true;
-            this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(null, false), this);
-        }
-    }
-
-    @Override
-    public void selectItem(String stableIdentifier) {
-        selectItem(this.context.getContent().getDatabaseObject(stableIdentifier));
-    }
-
-    @Override
-    public void selectItem(Long dbIdentifier) {
-        selectItem(this.context.getContent().getDatabaseObject(dbIdentifier));
-    }
-
-    private void selectItem(GraphObject item) {
-        if (item != null) {
-            this.setSelection(new HoveredItem(item), true, false);
-        } else {
-            this.resetSelection();
-        }
-    }
-
-    @Override
-    public void setAnalysisToken(String token, String resource) {
-        final AnalysisStatus analysisStatus = (token == null) ? null : new AnalysisStatus(eventBus, token, resource);
-        AnalysisTokenValidator.checkTokenAvailability(token, new AnalysisTokenValidator.TokenAvailabilityHandler() {
-            @Override
-            public void onTokenAvailabilityChecked(boolean available, String message) {
-                if (available) {
-                    loadAnalysis(analysisStatus);
-                } else {
-                    eventBus.fireEventFromSource(new DiagramInternalErrorEvent(message), DiagramVisualiser.this);
-                }
+            forceDraw = true;
+            if(notify) {
+                eventBus.fireEventFromSource(new GraphObjectSelectedEvent(null, false), this);
             }
-        });
+            rtn = true;
+        }
+        return rtn;
     }
+
+    @Override
+    public boolean selectGraphObject(GraphObject graphObject, boolean notify){
+        if (graphObject != null) {
+            return setSelection(new HoveredItem(graphObject), true, false, true);
+        } else {
+            return resetSelection(notify);
+        }
+    }
+
+//    @Override
+//    public void setAnalysisToken(String token, String resource) {
+//        final AnalysisStatus analysisStatus = (token == null) ? null : new AnalysisStatus(eventBus, token, resource);
+//        AnalysisTokenValidator.checkTokenAvailability(token, new AnalysisTokenValidator.TokenAvailabilityHandler() {
+//            @Override
+//            public void onTokenAvailabilityChecked(boolean available, String message) {
+//                if (available) {
+//                    loadAnalysis(analysisStatus);
+//                } else {
+//                    eventBus.fireEventFromSource(new DiagramInternalErrorEvent(message), DiagramVisualiser.this);
+//                }
+//            }
+//        });
+//    }
 
     @Override
     public void setMousePosition(Coordinate mouse){
@@ -672,46 +662,51 @@ public class DiagramVisualiser extends AbsolutePanel implements Visualiser, Requ
         if (interactor != null) {
             eventBus.fireEventFromSource(new InteractorSelectedEvent(interactor.getUrl()), this);
         } else {
-            setSelection(this.getHoveredDiagramObject(), zoom, fireExternally);
+            setSelection(this.getHoveredDiagramObject(), zoom, fireExternally, true);
         }
     }
 
-    @Override
-    public void setSelection(HoveredItem hoveredItem, boolean zoom, boolean fireExternally) {
+
+    private boolean setSelection(HoveredItem hoveredItem, boolean zoom, boolean fireExternally, boolean notify) {
         GraphObject toSelect = hoveredItem != null ? hoveredItem.getGraphObject() : null;
         if (toSelect != null) {
             if (hoveredItem.getAttachment() != null) {
-                this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getAttachment()), this);
+                eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getAttachment()), this);
             }
             if (hoveredItem.getSummaryItem() != null) {
                 SummaryItem summaryItem = hoveredItem.getSummaryItem();
                 if(summaryItem.getType().equals("TR")){
                     forceDraw |= interactorsManager.update(summaryItem, (Node) hoveredItem.getHoveredObject());
                 }
-                this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getSummaryItem()), this);
+                eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getSummaryItem()), this);
             }
             if (hoveredItem.getContextMenuTrigger() != null) {
-                this.eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getContextMenuTrigger()), this);
+                eventBus.fireEventFromSource(new EntityDecoratorSelectedEvent(toSelect, hoveredItem.getContextMenuTrigger()), this);
                 DiagramObject item = layoutManager.getHoveredDiagramObject();
-                this.context.showDialog(this.eventBus, item, this.canvas);
+                context.showDialog(this.eventBus, item, this.canvas);
             }
         }
-        selectGraphObject(toSelect, zoom, fireExternally);
+        return makeSelection(toSelect, zoom, fireExternally, true);
 //        if (!layoutManager.isSelected(toSelect)) {
 //            //this.resetIllustration(); //TODO this has been moved to a higher layer
 //            this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(toSelect, zoom, fireExternally), this);
 //        }
     }
 
-    private void selectGraphObject(GraphObject toSelect, boolean zoom, boolean fireExternally){
+    private boolean makeSelection(GraphObject toSelect, boolean zoom, boolean fireExternally, boolean notify){
+        boolean rtn = false;
         if (!layoutManager.isSelected(toSelect)) {
             layoutManager.setSelected(toSelect);
+            rtn = true;
             if (zoom) {
-                this.diagramManager.displayDiagramObjects(layoutManager.getHalo());
+                diagramManager.displayDiagramObjects(layoutManager.getHalo());
             }
             forceDraw = true;
-            this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(toSelect, zoom, fireExternally), this);
+            if (notify) {
+                eventBus.fireEventFromSource(new GraphObjectSelectedEvent(toSelect, zoom, fireExternally), this);
+            }
         }
+        return rtn;
     }
 
     @Override
