@@ -7,6 +7,7 @@ import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.*;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
+import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
@@ -85,7 +86,9 @@ class UserActionsManager implements MouseActionsHandlers {
                 HoveredItem hovered = handler.getHoveredDiagramObject();
                 DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
                 handler.setSelection(false, true);
-                handler.showDialog(item);
+                if(hovered.getGraphObject() instanceof GraphPhysicalEntity) {
+                    handler.showDialog(item);
+                }
                 break;
             default:
                 setMouseDownPosition(event.getRelativeElement(), event);

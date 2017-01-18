@@ -7,6 +7,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.GraphEntityWithAccessionedSequence;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.graph.model.GraphSimpleEntity;
 import org.reactome.web.diagram.data.interactors.common.DiagramBox;
@@ -190,15 +191,18 @@ public class TooltipContainer extends AbsolutePanel implements ContentRequestedH
                     return;
                 }
                 NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
-                GraphPhysicalEntity obj = node.getGraphObject();
-                if (obj instanceof GraphEntityWithAccessionedSequence) {
-                    tooltip.setText(node.getDisplayName() + (obj.getIdentifier() != null ? " (" + obj.getIdentifier() + ")" : ""));
-                }else if (obj instanceof GraphSimpleEntity) {
-                    tooltip.setText(node.getDisplayName() + (obj.getIdentifier() != null ? " (CHEBI:" + obj.getIdentifier() + ")" : ""));
-                } else {
-                    tooltip.setText(node.getDisplayName());
+                GraphObject aux = node.getGraphObject();
+                if(aux instanceof GraphPhysicalEntity) {
+                    GraphPhysicalEntity obj = (GraphPhysicalEntity) aux;
+                    if (obj instanceof GraphEntityWithAccessionedSequence) {
+                        tooltip.setText(node.getDisplayName() + (obj.getIdentifier() != null ? " (" + obj.getIdentifier() + ")" : ""));
+                    } else if (obj instanceof GraphSimpleEntity) {
+                        tooltip.setText(node.getDisplayName() + (obj.getIdentifier() != null ? " (CHEBI:" + obj.getIdentifier() + ")" : ""));
+                    } else {
+                        tooltip.setText(node.getDisplayName());
+                    }
+                    tooltip.setPositionAndShow(this, prop.getX(), prop.getY(), prop.getHeight() + 8.0 * factor);
                 }
-                tooltip.setPositionAndShow(this, prop.getX(), prop.getY(), prop.getHeight() + 8.0 * factor);
             } else if (hovered instanceof Edge) {
                 Edge edge = (Edge) hovered;
                 tooltip.setText(edge.getDisplayName());
