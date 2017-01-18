@@ -63,7 +63,7 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
             PhysicalEntity pe = databaseObject.cast();
             RESTFulClient.loadPathwaysWithDiagramForEntity(pe, this);
         }else if (databaseObject instanceof Event){
-            Event event = (Event) databaseObject;
+            Event event = databaseObject.cast();
             RESTFulClient.getAncestors(event, this);
         }
     }
