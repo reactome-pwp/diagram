@@ -78,7 +78,11 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
         if (context != null) {
             eventBus.fireEventFromSource(new ContentLoadedEvent(context), this);
         } else {
-            svgLoader.load(identifier);
+            if (SVGLoader.isSVGAvailable(identifier)) {
+                svgLoader.load(identifier);
+            } else {
+                layoutLoader.load(identifier);
+            }
         }
     }
 
