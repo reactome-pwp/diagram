@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.util.svg;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
@@ -9,10 +10,14 @@ import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.analysis.client.model.PathwaySummary;
+import org.reactome.web.diagram.client.thumbnails.Thumbnail;
+import org.reactome.web.diagram.client.visualisers.Visualiser;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.content.EHLDContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
+import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
@@ -24,6 +29,7 @@ import org.reactome.web.diagram.util.svg.events.SVGEntityHoveredEvent;
 import org.reactome.web.diagram.util.svg.events.SVGEntitySelectedEvent;
 import org.reactome.web.diagram.util.svg.events.SVGThumbnailAreaMovedEvent;
 import org.reactome.web.diagram.util.svg.handlers.SVGThumbnailAreaMovedHandler;
+import org.reactome.web.diagram.util.svg.thumbnail.SVGThumbnail;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
 import org.reactome.web.pwp.model.classes.Pathway;
 import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
@@ -42,9 +48,10 @@ import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedHandler, ContentRequestedHandler,
+public class SVGPanel extends AbstractSVGPanel implements Visualiser,
+        DatabaseObjectCreatedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
-        ContentLoadedHandler, ControlActionHandler, DoubleClickHandler, ContextMenuHandler,
+        DoubleClickHandler, ContextMenuHandler,
         SVGAnimationHandler, SVGThumbnailAreaMovedHandler,
         AnalysisResultLoadedHandler, AnalysisProfileChangedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler {
 
@@ -57,12 +64,18 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     private static final float MIN_OVERLAY = 0.05f;
 
     private static final String CURSOR = "cursor: pointer;";
+    private static final float ZOOM_IN_STEP = 1.1f;
+    private static final float ZOOM_OUT_STEP = 0.9f;
     private static final float MAX_ZOOM = 8.0f;
     private static final float MIN_ZOOM = 0.05f;
 
     private Context context;
 
     private OMSVGDefsElement defs;
+
+    private boolean initialised;
+    private int viewportWidth = 0;
+    private int viewportHeight = 0;
 
     private boolean isPanning;
     private boolean avoidClicking;
@@ -79,16 +92,142 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     private int selectedExpCol = 0;
 
     private SVGContextPanel contextPanel;
+    private Thumbnail thumbnail;
 
-    public SVGPanel(EventBus eventBus, int width, int height) {
+    public SVGPanel(EventBus eventBus) {
         super(eventBus);
         this.getElement().addClassName("pwp-SVGPanel");
 
-        contextPanel = new SVGContextPanel(eventBus);
+//        contextPanel = new SVGContextPanel(eventBus);
+//        svgThumbnail = new SVGThumbnail(eventBus);
 
         initHandlers();
-        setSize(width, height);
+//        setSize(width, height);
     }
+
+    protected void initialise() {
+        if (!initialised) {
+            this.initialised = true;
+            contextPanel = new SVGContextPanel(eventBus);
+            thumbnail = new SVGThumbnail(eventBus);
+            this.add(thumbnail);
+
+            this.viewportWidth = getParent().getOffsetWidth();
+            this.viewportHeight = getParent().getOffsetHeight();
+//            setSize(viewportWidth, viewportHeight);
+        }
+    }
+
+    @Override
+    public void fitDiagram(boolean animation) {
+        fitALL(true);
+    }
+
+    @Override
+    public void zoomDelta(double deltaFactor) {
+        zoom((float)deltaFactor, getCentrePoint());
+    }
+
+    @Override
+    public void zoomIn() {
+        zoom(ZOOM_IN_STEP, getCentrePoint());
+    }
+
+    @Override
+    public void zoomOut() {
+        zoom(ZOOM_OUT_STEP, getCentrePoint());
+    }
+
+    @Override
+    public void padding(int dX, int dY) {
+        translate((int) dX, (int) dY);
+    }
+
+    @Override
+    public void exportView() {
+        if (context != null) {
+            exportView(context.getContent().getStableId());
+        }
+    }
+
+    @Override
+    public void contentLoaded(Context context) {
+        this.context = context;
+        Content content = context.getContent();
+        if (content.getType() == SVG) {
+            this.svg = (OMSVGSVGElement) ((EHLDContent)content).getSVG().cloneNode(true);
+//            setVisible(true); //TODO remove this. Should be handled at container level
+
+            entities = new HashMap<>();
+            for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
+                addOrUpdateSVGEntity(child);
+            }
+
+            for (SVGEntity svgEntity : entities.values()) {
+                OMElement child = svgEntity.getHoverableElement();
+                if(child!=null) {
+                    child.addDomHandler(SVGPanel.this, MouseUpEvent.getType());
+                    child.addDomHandler(SVGPanel.this, MouseOverEvent.getType());
+                    child.addDomHandler(SVGPanel.this, MouseOutEvent.getType());
+                    child.addDomHandler(SVGPanel.this, DoubleClickEvent.getType());
+                    // Set the pointer to the active regions
+                    child.setAttribute("style", CURSOR);
+                }
+            }
+
+            // Identify all layers by getting all top-level g elements
+            svgLayers = getRootLayers();
+
+            // Clone and attach defs (filters - clipping paths) to the root SVG structure
+            defs = (OMSVGDefsElement) baseDefs.cloneNode(true);
+            svg.appendChild(defs);
+
+            // Add the event handlers
+            svg.addMouseDownHandler(this);
+            svg.addMouseMoveHandler(this);
+            svg.addMouseUpHandler(this);
+
+            // Remove viewbox and set size
+            svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
+            setSize(getOffsetWidth(), getOffsetHeight());
+
+            Element div = SVGPanel.this.getElement();
+            if(div.getChildCount()>1) {
+                div.replaceChild(svg.getElement(), div.getLastChild());
+            } else {
+                div.appendChild(svg.getElement());
+            }
+
+//            thumbnail.diagramRendered(content, null);
+
+            // Set initial translation matrix
+            initialTM = getInitialCTM();
+            initialBB = svg.getBBox();
+            ctm = initialTM;
+            fitALL(false);
+
+            if(analysisType!=null && analysisType!=AnalysisType.NONE) {
+                clearOverlay();
+                overlayAnalysisResults();
+            }
+        }
+    }
+
+    @Override
+    public void contentRequested() {
+//        setVisible(false); //TODO remove this. Should be handled at container level
+        context = null;
+        if(svg!=null) {
+//            getElement().removeChild(svg.getNode());
+//            getElement().removeAllChildren();
+            if(getElement().getChildCount()>1) {
+                getElement().getLastChild().removeFromParent();
+            }
+            svg = null;
+        }
+    }
+
+
 
     public void highlight(GraphObject obj){
         resetHighlight();
@@ -96,6 +235,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             SVGEntity svgEntity = entities.get(obj.getStId());
             if (svgEntity != null) {
                 highlightElement(svgEntity.getHoverableElement());
+//                thumbnail.setHoveredItem(svgEntity.getHoverableElement().getId());
                 eventBus.fireEventFromSource(new SVGEntityHoveredEvent(svgEntity.getHoverableElement().getId()), this);
             }
         }
@@ -104,6 +244,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     public void resetHighlight() {
         if(hovered!=null) {
             unHighlightElement(hovered);
+//            thumbnail.setHoveredItem(null);
             eventBus.fireEventFromSource(new SVGEntityHoveredEvent(null), this);
         }
     }
@@ -115,6 +256,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             if (svgEntity != null) {
                 OMElement toSelect = svgEntity.getHoverableElement();
                 setSelectedElement(toSelect);
+//                thumbnail.setSelectedItem(toSelect.getId());
                 eventBus.fireEventFromSource(new SVGEntitySelectedEvent(toSelect.getId()), this);
             }
         }
@@ -123,6 +265,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     public void resetSelection() {
         if(selected!=null) {
             resetSelectedElement();
+//            thumbnail.setSelectedItem(null);
             eventBus.fireEventFromSource(new SVGEntitySelectedEvent(null), this);
         }
     }
@@ -166,20 +309,20 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         event.stopPropagation();
     }
 
-    @Override
-    public void onControlAction(ControlActionEvent event) {
-        if(context.getContent().getType() != SVG) return;
-
-        switch (event.getAction()) {
-            case FIT_ALL:       fitALL(true);                     break;
-            case ZOOM_IN:       zoom(1.1f, getCentrePoint());     break;
-            case ZOOM_OUT:      zoom(0.9f, getCentrePoint());     break;
-            case UP:            translate(0, 10);                 break;
-            case RIGHT:         translate(-10, 0);                break;
-            case DOWN:          translate(0, -10);                break;
-            case LEFT:          translate(10, 0);                 break;
-        }
-    }
+//    @Override
+//    public void onControlAction(ControlActionEvent event) {
+////        if(context.getContent().getType() != SVG) return;
+//
+//        switch (event.getAction()) {
+//            case FIT_ALL:       fitALL(true);                  break;
+//            case ZOOM_IN:       zoom(1.1f, getCentrePoint());     break;
+//            case ZOOM_OUT:      zoom(0.9f, getCentrePoint());     break;
+//            case UP:            translate(0, 10);                 break;
+//            case RIGHT:         translate(-10, 0);                break;
+//            case DOWN:          translate(0, -10);                break;
+//            case LEFT:          translate(10, 0);                 break;
+//        }
+//    }
 
     @Override
     public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
@@ -195,76 +338,76 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         //TODO: Decide what to do in this case
     }
 
-    @Override
-    public void onContentRequested(ContentRequestedEvent event) {
-        setVisible(false);
-        context = null;
-        if(svg!=null) {
-            svg = null;
-            getElement().removeAllChildren();
-        }
-    }
+//    @Override
+//    public void onContentRequested(ContentRequestedEvent event) {
+//        setVisible(false);
+//        context = null;
+//        if(svg!=null) {
+//            svg = null;
+//            getElement().removeAllChildren();
+//        }
+//    }
 
-    @Override
-    public void onContentLoaded(ContentLoadedEvent event) {
-        context = event.getContext();
-        Content content = context.getContent();
-        if (content.getType() == SVG) {
-            this.svg = ((EHLDContent)content).getSVG();
-            setVisible(true);
-
-            entities = new HashMap<>();
-            for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
-                addOrUpdateSVGEntity(child);
-            }
-
-            for (SVGEntity svgEntity : entities.values()) {
-                OMElement child = svgEntity.getHoverableElement();
-                if(child!=null) {
-                    child.addDomHandler(SVGPanel.this, MouseUpEvent.getType());
-                    child.addDomHandler(SVGPanel.this, MouseOverEvent.getType());
-                    child.addDomHandler(SVGPanel.this, MouseOutEvent.getType());
-                    child.addDomHandler(SVGPanel.this, DoubleClickEvent.getType());
-                    // Set the pointer to the active regions
-                    child.setAttribute("style", CURSOR);
-                }
-            }
-
-            // Identify all layers by getting all top-level g elements
-            svgLayers = getRootLayers();
-
-            // Clone and attach defs (filters - clipping paths) to the root SVG structure
-            defs = (OMSVGDefsElement) baseDefs.cloneNode(true);
-            svg.appendChild(defs);
-
-            // Add the event handlers
-            svg.addMouseDownHandler(this);
-            svg.addMouseMoveHandler(this);
-            svg.addMouseUpHandler(this);
-
-            // Remove viewbox and set size
-            svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
-            setSize(getOffsetWidth(), getOffsetHeight());
-
-            Element div = SVGPanel.this.getElement();
-            if(div.hasChildNodes()) {
-                div.replaceChild(svg.getElement(), div.getFirstChild());
-            } else {
-                div.appendChild(svg.getElement());
-            }
-
-            // Set initial translation matrix
-            initialTM = getInitialCTM();
-            initialBB = svg.getBBox();
-            ctm = initialTM;
-            fitALL(false);
-
-            if(analysisType!=null && analysisType!=AnalysisType.NONE) {
-                clearOverlay();
-                overlayAnalysisResults();
-            }
-        }
-    }
+//    @Override
+//    public void onContentLoaded(ContentLoadedEvent event) {
+//        context = event.getContext();
+//        Content content = context.getContent();
+//        if (content.getType() == SVG) {
+//            this.svg = ((EHLDContent)content).getSVG();
+//            setVisible(true);
+//
+//            entities = new HashMap<>();
+//            for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
+//                addOrUpdateSVGEntity(child);
+//            }
+//
+//            for (SVGEntity svgEntity : entities.values()) {
+//                OMElement child = svgEntity.getHoverableElement();
+//                if(child!=null) {
+//                    child.addDomHandler(SVGPanel.this, MouseUpEvent.getType());
+//                    child.addDomHandler(SVGPanel.this, MouseOverEvent.getType());
+//                    child.addDomHandler(SVGPanel.this, MouseOutEvent.getType());
+//                    child.addDomHandler(SVGPanel.this, DoubleClickEvent.getType());
+//                    // Set the pointer to the active regions
+//                    child.setAttribute("style", CURSOR);
+//                }
+//            }
+//
+//            // Identify all layers by getting all top-level g elements
+//            svgLayers = getRootLayers();
+//
+//            // Clone and attach defs (filters - clipping paths) to the root SVG structure
+//            defs = (OMSVGDefsElement) baseDefs.cloneNode(true);
+//            svg.appendChild(defs);
+//
+//            // Add the event handlers
+//            svg.addMouseDownHandler(this);
+//            svg.addMouseMoveHandler(this);
+//            svg.addMouseUpHandler(this);
+//
+//            // Remove viewbox and set size
+//            svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
+//            setSize(getOffsetWidth(), getOffsetHeight());
+//
+//            Element div = SVGPanel.this.getElement();
+//            if(div.hasChildNodes()) {
+//                div.replaceChild(svg.getElement(), div.getFirstChild());
+//            } else {
+//                div.appendChild(svg.getElement());
+//            }
+//
+//            // Set initial translation matrix
+//            initialTM = getInitialCTM();
+//            initialBB = svg.getBBox();
+//            ctm = initialTM;
+//            fitALL(false);
+//
+//            if(analysisType!=null && analysisType!=AnalysisType.NONE) {
+//                clearOverlay();
+//                overlayAnalysisResults();
+//            }
+//        }
+//    }
 
     @Override
     public void onDoubleClick(DoubleClickEvent event) {
@@ -283,6 +426,12 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
             clearOverlay();
             overlayAnalysisResults();
         }
+    }
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        Scheduler.get().scheduleDeferred(() -> initialise());
     }
 
     @Override
@@ -323,12 +472,14 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
                         break;
                     default:
                         setSelectedElement(el);
+//                        thumbnail.setSelectedItem(elementId);
                         eventBus.fireEventFromSource(new SVGEntitySelectedEvent(elementId), this);
                         notifySelection(elementId);
                         break;
                 }
             } else {
                 resetSelectedElement();
+//                thumbnail.setSelectedItem(null);
                 eventBus.fireEventFromSource(new SVGEntitySelectedEvent(null), this);
                 notifySelection(null);
             }
@@ -344,6 +495,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         resetHighlight();
         highlightElement(el);
         applyCTM(false);  //TODO Have a look why this is required
+//        thumbnail.setHoveredItem(el.getId());
         eventBus.fireEventFromSource(new SVGEntityHoveredEvent(el.getId()), this);
         notifyHovering(el.getId());
     }
@@ -354,6 +506,7 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         OMElement el = (OMElement) event.getSource();
         unHighlightElement(el);
         applyCTM(false);  //TODO Have a look why this is required
+//        thumbnail.setHoveredItem(null);
         eventBus.fireEventFromSource(new SVGEntityHoveredEvent(null), this);
         notifyHovering(null);
     }
@@ -503,15 +656,15 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
     }
 
     private void initHandlers() {
-        eventBus.addHandler(ControlActionEvent.TYPE, this);
-        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
-        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
+//        eventBus.addHandler(ControlActionEvent.TYPE, this);
+//        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
+//        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(SVGThumbnailAreaMovedEvent.TYPE, this);
 
-        eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
-        eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
-        eventBus.addHandler(AnalysisResetEvent.TYPE, this);
-        eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
+//        eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
+//        eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
+//        eventBus.addHandler(AnalysisResetEvent.TYPE, this);
+//        eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
 
         // !!! Important !!! //
         // Adding the MouseWheelEvent directly on the SVG is not working
@@ -615,6 +768,87 @@ public class SVGPanel extends AbstractSVGPanel implements DatabaseObjectCreatedH
         //Collagen Formation - for cristoffer's draft EHLD
 //        overlayEntity("R-HSA-1650814", 0.5f, enrichColour);
 //        overlayEntity("R-HSA-2022090", 0.5f, enrichColour);
+    }
+
+    @Override
+    public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
+        return false;
+    }
+
+    @Override
+    public void highlightInteractor(DiagramInteractor diagramInteractor) {
+        //Nothing here
+    }
+
+    @Override
+    public boolean resetHighlight(boolean notify) {
+        return false;
+    }
+
+    @Override
+    public boolean resetSelection(boolean notify) {
+        return false;
+    }
+
+    @Override
+    public boolean selectGraphObject(GraphObject graphObject, boolean notify) {
+        return false;
+    }
+
+    @Override
+    public GraphObject getSelected() {
+        Console.info("Helloooooooooooooooooooooooooooo");
+        return null;
+    }
+
+    @Override
+    public void loadAnalysis() {
+
+    }
+
+    @Override
+    public void resetAnalysis() {
+
+    }
+
+    @Override
+    public void setContext(Context context) {
+
+    }
+
+    @Override
+    public void resetContext() {
+
+    }
+
+    @Override
+    public void expressionColumnChanged() {
+
+    }
+
+    @Override
+    public void interactorsCollapsed(String resource) {
+        //Nothing here
+    }
+
+    @Override
+    public void interactorsFiltered() {
+        //Nothing here
+    }
+
+    @Override
+    public void interactorsLayoutUpdated() {
+        //Nothing here
+    }
+
+    @Override
+    public void interactorsLoaded() {
+        //Nothing here
+    }
+
+    @Override
+    public void interactorsResourceChanged(OverlayResource resource) {
+        //Nothing here
     }
 
 }

@@ -17,7 +17,7 @@ import org.reactome.web.diagram.util.Console;
 public class WidgetTest implements EntryPoint {
 
     private final DiagramViewer diagram;
-    private static String currentPathway = "R-HSA-109581";//"R-HSA-5205647";
+    private static String currentPathway = "R-HSA-1181150";
 //    private static String currentPathway = "R-HSA-5693567"; //Big one with plenty of overlap
     private static String currentAnalysis = "MjAxNjA5MzAwNTU3MjdfMg%3D%3D";
 
@@ -177,6 +177,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(getLoadButton("R-HSA-3645790", ""));
         fp.add(new InlineLabel(" "));
         fp.add(getLoadButton("R-HSA-109581", "Apoptosis"));
+        fp.add(getLoadButton("R-HSA-109582", "Hemostasis"));
         fp.add(new InlineLabel(" "));
         fp.add(getLoadButton("R-HSA-5637815", "Signaling by Ligand-Responsive EGFR Variants in Cancer"));
         fp.add(getLoadButton("R-HSA-2219530", "Constitutive Signaling by Aberrant PI3K in Cancer"));

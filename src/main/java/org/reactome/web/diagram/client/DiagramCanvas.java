@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RequiresResize;
 import org.reactome.web.analysis.client.model.AnalysisType;
+import org.reactome.web.diagram.client.thumbnails.Thumbnail;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
@@ -49,7 +50,6 @@ import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.actions.MouseActionsHandlers;
 import org.reactome.web.diagram.util.actions.UserActionsInstaller;
-import org.reactome.web.diagram.util.svg.SVGPanel;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -59,7 +59,7 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionColumnChangedHandler {
+class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHandler {
 
     private final RendererManager rendererManager;
     private final InteractorRendererManager interactorRendererManager;
@@ -96,11 +96,11 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     private AdvancedContext2d buffer;
 
     private TooltipContainer tooltipContainer;
-    private DiagramThumbnail thumbnail;
+    private Thumbnail thumbnail;
     private List<Canvas> canvases = new LinkedList<>();
 
 //    private IllustrationPanel illustration;
-    private SVGPanel svgPanel;
+//    private SVGPanel svgPanel;
 //    private SVGThumbnail svgThumbnail;
 
     private int column = 0;
@@ -145,6 +145,10 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         highlight(items, context, this.flag);
     }
 
+    public Thumbnail getThumbnail() {
+        return thumbnail;
+    }
+
     public void halo(Collection<DiagramObject> items, Context context) {
         highlight(items, context, this.halo);
     }
@@ -180,10 +184,6 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
                 renderer.highlight(reactionsHighlight, item, status.getFactor(), status.getOffset());
             }
         }
-    }
-
-    public void highlightEHLD(GraphObject hoveredItem) {
-        svgPanel.highlight(hoveredItem);
     }
 
     public void highlightInteractor(DiagramInteractor item, Context context){
@@ -257,23 +257,23 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.buffer.getCanvas().getStyle().setCursor(cursor);
     }
 
-    @Override
-    protected void onLoad() {
-        super.onLoad();
-        Scheduler.get().scheduleDeferred(() -> initialise());
-    }
+//    @Override
+//    protected void onLoad() {
+//        super.onLoad();
+//        Scheduler.get().scheduleDeferred(() -> initialise());
+//    }
 
-    @Override
-    public void onResize() {
-        int width = this.getOffsetWidth();
-        int height = this.getOffsetHeight();
+    public void setSize(int width, int height){
+        this.setWidth(width+"px");
+        this.setHeight(height+"px");
+
         for (Canvas canvas : canvases) {
             setCanvasProperties(canvas, width, height);
         }
-        this.tooltipContainer.setWidth(width);
-        this.tooltipContainer.setHeight(height);
-
-        this.svgPanel.setSize(width, height);
+        if(tooltipContainer!=null) {
+            tooltipContainer.setWidth(width);
+            tooltipContainer.setHeight(height);
+        }
     }
 
     @Override
@@ -284,7 +284,7 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
     }
 
     public void clearThumbnail() {
-        this.thumbnail.clearThumbnail();
+        this.thumbnail.contentRequested();
     }
 
     private void cleanCanvas(Context2d ctx) {
@@ -662,24 +662,15 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.interactorsHighlight.setStrokeStyle(profileProperties.getHighlight());
     }
 
-//    private void addWatermark(){
-//        if(DiagramFactory.WATERMARK) {
-//            Image img = new Image(RESOURCES.logo());
-//            SafeHtml image = SafeHtmlUtils.fromSafeConstant(img.toString());
-//            watermark = new Anchor(image, DiagramFactory.WATERMARK_BASE_URL, "_blank");
-//            watermark.setTitle("Open this pathway in Reactome Pathway Browser");
-//            watermark.setStyleName(RESOURCES.getCSS().watermark());
-//            watermark.setVisible(false);
-//            add(watermark);
-//        }
-//    }
-
-    protected void initialise() {
+    public void initialise() {
         //The widget can only be initialised ONCE
         if(this.getWidgetCount() > 0) return;
 
-        int width = this.getOffsetWidth();
-        int height = this.getOffsetHeight();
+        int width = getParent().getOffsetWidth();
+        int height = getParent().getOffsetHeight();
+
+        this.setWidth(width + "px");
+        this.setHeight(height + "px");
 
         this.compartments = createCanvas(width, height);
         this.shadows = createCanvas(width, height);
@@ -718,60 +709,8 @@ class DiagramCanvas extends AbsolutePanel implements RequiresResize, ExpressionC
         this.reactionsHighlight.setLineCap(Context2d.LineCap.ROUND);
         this.reactionsSelection.setLineCap(Context2d.LineCap.ROUND);
 
-//        //Thumbnail
-//        this.add(this.thumbnail);
-//
-//        //SVG panel
-//        this.add(this.svgPanel = new SVGPanel(eventBus, width, height), 0, 0);
-//        //SVG Thumbnail
-//        this.add(this.svgThumbnail);
-//
-//        //DO NOT CHANGE THE ORDER OF THE FOLLOWING TWO LINES
-//        this.add(new LoadingMessage(eventBus));                 //Loading message panel
-//        this.add(new AnalysisMessage(eventBus));                //Analysis overlay message panel
-//        this.add(new ErrorMessage(eventBus));                   //Error message panel
-//
-//        //Watermark
-//        this.addWatermark();
-//
-//        //Right container
-//        RightContainerPanel rightContainerPanel = new RightContainerPanel();
-//        this.add(rightContainerPanel);
-//
-//        //Control panel
-//        this.add(new NavigationControlPanel(eventBus));
-//
-//        //Bottom Controls container
-//        BottomContainerPanel bottomContainerPanel = new BottomContainerPanel();
-//        this.add(bottomContainerPanel);
-//
-//        //Flagged Objects control panel
-//        bottomContainerPanel.add(new FlaggedItemsControl(eventBus));
-//
-//        //Enrichment legend and control panels
-//        bottomContainerPanel.add(new EnrichmentControl(eventBus));
-//
-//        //Expression legend and control panels
-//        rightContainerPanel.add(new ExpressionLegend(eventBus));
-//        bottomContainerPanel.add(new ExpressionControl(eventBus));
-//
-//        //Interactors control panel
-//        bottomContainerPanel.add(new InteractorsControl(eventBus));
-//
-//        //Info panel
-//        if (DiagramFactory.SHOW_INFO) {
-//            this.add(new DiagramInfo(eventBus));
-//        }
-//
-//        //Launcher panels
-//        this.add(new LeftTopLauncherPanel(eventBus));
-//        this.add(new RightTopLauncherPanel(eventBus));
-//
-//        //Settings panel
-//        rightContainerPanel.add(new HideableContainerPanel(eventBus));
-//
-//        //Illustration panel
-//        this.add(this.illustration = new IllustrationPanel(), 0 , 0);
+        //Thumbnail
+        this.add(this.thumbnail);
     }
 
     private AdvancedContext2d createCanvas(int width, int height) {

@@ -6,12 +6,15 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
+import org.reactome.web.diagram.client.thumbnails.Thumbnail;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.svg.events.SVGPanZoomEvent;
 import org.reactome.web.diagram.util.svg.filters.FilterColour;
 import org.reactome.web.diagram.util.svg.filters.FilterFactory;
 import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.SVGConstants;
+import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.*;
 
@@ -43,8 +46,8 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
 
     public AbstractSVGPanel(EventBus eventBus) {
         this.eventBus = eventBus;
-        sb = new StringBuilder();
         initFilters();
+        sb = new StringBuilder();
     }
 
     public void exportView(String stableId){
@@ -182,6 +185,19 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         OMNodeList<OMElement> textEl = el.getElementsByTagName("text");
         for (OMElement element : textEl) {
             rtn.add(element);
+        }
+        return rtn;
+    }
+
+    protected boolean removeLogoFrom(final OMNode root){
+        boolean rtn = false;
+        OMElement el = (OMElement) root;
+        OMNodeList<OMElement> targetEl = el.getElementsByTagName("g");
+        for (OMElement element : targetEl) {
+            if(element.getId().toLowerCase().startsWith("logo")) {
+                element.getElement().removeFromParent();
+                rtn = true;
+            }
         }
         return rtn;
     }

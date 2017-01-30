@@ -1,16 +1,14 @@
 package org.reactome.web.diagram.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.client.visualisers.Visualiser;
 import org.reactome.web.diagram.controls.navigation.NavigationControlPanel;
 import org.reactome.web.diagram.controls.settings.HideableContainerPanel;
@@ -21,6 +19,7 @@ import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
@@ -29,8 +28,11 @@ import org.reactome.web.diagram.messages.AnalysisMessage;
 import org.reactome.web.diagram.messages.ErrorMessage;
 import org.reactome.web.diagram.messages.LoadingMessage;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
+import org.reactome.web.diagram.util.Console;
+import org.reactome.web.diagram.util.svg.SVGPanel;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
@@ -40,12 +42,11 @@ import static org.reactome.web.diagram.data.content.Content.Type.SVG;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class ViewerContainer extends AbsolutePanel implements RequiresResize,
-        ContentLoadedHandler, ContentRequestedHandler,
+//        ContentLoadedHandler, ContentRequestedHandler,
         GraphObjectSelectedHandler,
-        LayoutLoadedHandler,
         CanvasExportRequestedHandler, ControlActionHandler,
         DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler,
-{
+        IllustrationSelectedHandler {
 
     private EventBus eventBus;
     private Context context;
@@ -59,7 +60,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     private String flagTerm;
 
     public ViewerContainer(EventBus eventBus) {
-        this.getElement().addClassName("pwp-ViewerContainer");
+        this.getElement().setClassName("pwp-ViewerContainer");
         this.eventBus = eventBus;
 
         visualisers = new HashMap<>();
@@ -71,8 +72,15 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
     protected void initialise() {
         //All Viewers with their thumbnails
-        visualisers.put(DIAGRAM, new DiagramVisualiser());
-        visualisers.put(SVG, new DiagramVisualiser());
+        visualisers.put(DIAGRAM, new DiagramVisualiser(eventBus));
+        visualisers.put(SVG, new SVGPanel(eventBus)); //TODO change this
+
+        for (Visualiser vis: visualisers.values()) {
+            this.add(vis);
+        }
+
+        //Set this as default
+        activeVisualiser = visualisers.get(DIAGRAM);
 
         //DO NOT CHANGE THE ORDER OF THE FOLLOWING TWO LINES
         this.add(new LoadingMessage(eventBus));                 //Loading message panel
@@ -120,6 +128,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
         //Illustration panel
         this.add(this.illustration = new IllustrationPanel(), 0 , 0);
+//        this.getElement().getStyle().setBackgroundColor("green");
     }
 
     public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
@@ -130,20 +139,63 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         activeVisualiser.highlightInteractor(diagramInteractor);
     }
 
-    @Override
-    public void onContentLoaded(ContentLoadedEvent event) {
-        context = event.getContext();
+//    @Override
+//    public void onContentLoaded(ContentLoadedEvent event) {
+//        context = event.getContext();
+//        setWatermarkVisible(true);
+//        setWatermarkURL(context, null, this.flagTerm);
+//        setActiveVisualiser(context);
+//        activeVisualiser.contentLoaded(context);
+//    }
+
+    public void contentLoaded(final Context context) {
+        this.context = context;
         setWatermarkVisible(true);
         setWatermarkURL(context, null, this.flagTerm);
         setActiveVisualiser(context);
         activeVisualiser.contentLoaded(context);
     }
 
-    @Override
-    public void onContentRequested(ContentRequestedEvent event) {
+//    @Override
+//    public void onContentRequested(ContentRequestedEvent event) {
+//        context = null;
+//        setWatermarkVisible(false);
+//        this.resetIllustration();
+//        activeVisualiser.contentRequested(); //TODO maybe iterate all visualisers and content request
+//    }
+
+    public void contentRequested() {
+//        activeVisualiser.resetSelection(true);
+//        activeVisualiser.resetHighlight(true);
+//        activeVisualiser.resetDialogs();
+        activeVisualiser.contentRequested();
+        resetIllustration();
         setWatermarkVisible(false);
-        this.resetIllustration();
-        activeVisualiser.contentRequested(); //TODO maybe iterate all visualisers and content request
+        context = null;
+    }
+
+    public void expressionColumnChanged() {
+        activeVisualiser.expressionColumnChanged();
+    }
+
+    public void interactorsCollapsed(String resource) {
+        activeVisualiser.interactorsCollapsed(resource);
+    }
+
+    public void interactorsFiltered() {
+        activeVisualiser.interactorsFiltered();
+    }
+
+    public void interactorsLayoutUpdated(){
+        activeVisualiser.interactorsLayoutUpdated();
+    }
+
+    public void interactorsLoaded(){
+        activeVisualiser.interactorsLoaded();
+    }
+
+    public void interactorsResourceChanged(OverlayResource resource) {
+        activeVisualiser.interactorsResourceChanged(resource);
     }
 
     @Override
@@ -163,16 +215,15 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
     @Override
     public void onControlAction(ControlActionEvent event) {
-        double zoomDelta = UserActionsManager.ZOOM_DELTA;
         switch (event.getAction()) {
-            case FIT_ALL:       activeVisualiser.fitDiagram(true);          break;
-            case ZOOM_IN:       activeVisualiser.zoomDelta(zoomDelta);      break;
-            case ZOOM_OUT:      activeVisualiser.zoomDelta(-zoomDelta);     break;
-            case UP:            activeVisualiser.padding(0, 10);            break;
-            case RIGHT:         activeVisualiser.padding(-10, 0);           break;
-            case DOWN:          activeVisualiser.padding(0, -10);           break;
-            case LEFT:          activeVisualiser.padding(10, 0);            break;
-            case FIREWORKS:     overview();                                 break;
+            case FIT_ALL:       activeVisualiser.fitDiagram(true);  break;
+            case ZOOM_IN:       activeVisualiser.zoomIn();                    break;
+            case ZOOM_OUT:      activeVisualiser.zoomOut();                   break;
+            case UP:            activeVisualiser.padding(0, 10);      break;
+            case RIGHT:         activeVisualiser.padding(-10, 0);     break;
+            case DOWN:          activeVisualiser.padding(0, -10);     break;
+            case LEFT:          activeVisualiser.padding(10, 0);      break;
+            case FIREWORKS:     overview();                                   break;
         }
     }
 
@@ -183,15 +234,29 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     @Override
-    public void onLayoutLoaded(LayoutLoadedEvent event) {
-        context = event.getContext();
-        setActiveVisualiser(context);
-        activeVisualiser.layoutLoaded(context);
+    public void onIllustrationSelected(IllustrationSelectedEvent event) {
+        this.setIllustration(event.getUrl());
     }
+
+//    @Override
+//    public void onLayoutLoaded(LayoutLoadedEvent event) {
+//        context = event.getContext();
+//        setActiveVisualiser(context);
+//        activeVisualiser.layoutLoaded(context);
+//    }
 
     @Override
     public void onResize() {
-        //TODO
+        final int width = this.getOffsetWidth();
+        final int height = this.getOffsetHeight();
+        activeVisualiser.setSize(width, height);
+
+        //Deffer the resizing of the rest
+        Scheduler.get().scheduleDeferred(() -> {
+            visualisers.values().stream()
+                    .filter(v -> v!=activeVisualiser)
+                    .forEach(v -> v.setSize(width, height));
+        });
     }
 
     public boolean selectItem(GraphObject item, boolean notify) {
@@ -217,10 +282,9 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         }
     }
 
-
-
     public void resetAnalysis() {
-         activeVisualiser.resetAnalysis();
+        setWatermarkURL(this.context, activeVisualiser.getSelected(), this.flagTerm);
+        activeVisualiser.resetAnalysis();
     }
 
     public void loadAnalysis() {
@@ -228,6 +292,17 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         activeVisualiser.loadAnalysis();
     }
 
+    public void resetContext() {
+        this.context = null;
+        activeVisualiser.resetContext();
+    }
+
+    public void setContext(final Context context) {
+        this.context = context;
+        setActiveVisualiser(context);
+        activeVisualiser.setContext(context);
+        activeVisualiser.fitDiagram(false);
+    }
 
     private void setWatermarkURL(Context context, GraphObject selection, String flag) {
         if(watermark!=null) {
@@ -280,15 +355,15 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
 //        eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
 
-        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
-        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
+//        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
+//        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
 //        eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
         eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
 
 //        eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
-//        eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
+        eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
 //
 //        eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
 //        eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
@@ -298,7 +373,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 //        eventBus.addHandler(InteractorSelectedEvent.TYPE, this);
 //        eventBus.addHandler(InteractorProfileChangedEvent.TYPE, this);
 //
-        eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
+//        eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
 //        eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
 //        eventBus.addHandler(ThumbnailAreaMovedEvent.TYPE, this);
         eventBus.addHandler(ControlActionEvent.TYPE, this);
@@ -313,7 +388,14 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     private void setActiveVisualiser(Context context){
         if(context != null) {
             Visualiser visualiser = visualisers.get(context.getContent().getType());
-            if (visualiser != null) {
+            if (visualiser != null && activeVisualiser != visualiser) {
+                for (Visualiser vis : visualisers.values()) {
+                    if(vis == visualiser) {
+                        vis.asWidget().setVisible(true);
+                    } else {
+                        vis.asWidget().setVisible(false);
+                    }
+                }
                 activeVisualiser = visualiser;
             }
         }

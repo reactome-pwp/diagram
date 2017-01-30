@@ -10,6 +10,7 @@ import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.diagram.client.visualisers.Visualiser;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
+import org.reactome.web.diagram.data.GraphObjectFactory;
 import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
@@ -24,6 +25,7 @@ import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
+import org.reactome.web.diagram.util.Console;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.Collection;
@@ -40,43 +42,21 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         GraphObjectHoveredHandler, GraphObjectSelectedHandler,
         DiagramObjectsFlagRequestHandler, DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler,
-        IllustrationSelectedHandler, ThumbnailAreaMovedHandler,
+        IllustrationSelectedHandler,
         FireworksOpenedHandler {
 
-    private final ViewerContainer viewerContainer;
-//    private final DiagramCanvas canvas; //Canvas only created once and reused every time a new diagram is loaded
-//    private final DiagramManager diagramManager;
-
     private Context context;
+    private final ViewerContainer viewerContainer;
     private LoaderManager loaderManager;
-
-//    private UserActionsManager userActionsManager;
-
-//    private String flagTerm;
     private AnalysisStatus analysisStatus;
-    private LayoutManager layoutManager;
     private InteractorsManager interactorsManager;
-
-    // mouse positions relative to canvas (not the model)
-    // Do not assign the same value at the beginning
-    private Coordinate mouseCurrent = CoordinateFactory.get(-100, -100);
-    private Coordinate mousePrevious = CoordinateFactory.get(-200, -200);
-
 
     DiagramViewerImpl() {
         super();
         this.viewerContainer = new ViewerContainer(eventBus);
-//        this.canvas = new DiagramCanvas(eventBus);
         this.loaderManager = new LoaderManager(eventBus);
         AnalysisDataLoader.initialise(eventBus);
-//        PDBeLoader.initialise(eventBus);
-//        ChemicalImageLoader.initialise(eventBus);
-//        this.layoutManager = new LayoutManager(eventBus);
         this.interactorsManager = new InteractorsManager(eventBus);
-
-//        this.userActionsManager = new UserActionsManager(this, canvas);
-
-//        this.diagramManager = new DiagramManager(new DisplayManager(this));
         this.initWidget(this.viewerContainer);
         this.getElement().addClassName("pwp-DiagramViewer"); //IMPORTANT!
     }
@@ -92,9 +72,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         //Attaching this as a KeyDownHandler
         RootPanel.get().addDomHandler(this, KeyDownEvent.getType());
 
-//        canvas.addUserActionsHandlers(userActionsManager);
-
-//        eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
         eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
         eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
         eventBus.addHandler(AnalysisResetEvent.TYPE, this);
@@ -108,9 +85,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
         eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
-//        eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
 
-//        eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
         eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
 
         eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
@@ -119,14 +94,9 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         eventBus.addHandler(InteractorsLayoutUpdatedEvent.TYPE, this);
         eventBus.addHandler(InteractorsFilteredEvent.TYPE, this);
         eventBus.addHandler(InteractorSelectedEvent.TYPE, this);
-//        eventBus.addHandler(InteractorProfileChangedEvent.TYPE, this);
 
         eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
-        eventBus.addHandler(ThumbnailAreaMovedEvent.TYPE, this);
-//        eventBus.addHandler(ControlActionEvent.TYPE, this);
-
-//        eventBus.addHandler(StructureImageLoadedEvent.TYPE, this);
     }
 
     @Override
@@ -252,6 +222,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         analysisStatus.setExpressionSummary(event.getExpressionSummary());
         context.setAnalysisOverlay(analysisStatus, event.getFoundElements(), event.getPathwaySummaries());
         interactorsManager.setAnalysisOverlay(event.getFoundElements(), context.getContent().getIdentifierMap());
+        viewerContainer.loadAnalysis();
 //        this.viewerContainer.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
 //        forceDraw = true;
     }
@@ -263,11 +234,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         viewerContainer.resetAnalysis();
         //        forceDraw = true;
     }
-
-//    @Override
-//    public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
-//        forceDraw = true;
-//    }
 
     @Override
     public void onDiagramObjectsFlagged(DiagramObjectsFlaggedEvent event) {
@@ -306,21 +272,26 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
         this.context = event.getContext();
+        viewerContainer.contentLoaded(context);
         fireEvent(event);
     }
 
     @Override
     public void onContentRequested(ContentRequestedEvent event) {
-        this.context = null;
+        viewerContainer.contentRequested();
+        this.resetContext();
     }
 
     @Override
     public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
+//        Scheduler.get().scheduleDeferred(() -> {
+//            Coordinate model = context.getDiagramStatus().getModelCoordinate(mouseCurrent);
+//            DiagramObject hovered = layoutManager.getHoveredDiagramObject();
+////            canvas.notifyHoveredExpression(hovered, model);
+////            forceDraw = true; //We give priority to other listeners here
+//        });
         Scheduler.get().scheduleDeferred(() -> {
-            Coordinate model = context.getDiagramStatus().getModelCoordinate(mouseCurrent);
-            DiagramObject hovered = layoutManager.getHoveredDiagramObject();
-//            canvas.notifyHoveredExpression(hovered, model);
-//            forceDraw = true; //We give priority to other listeners here
+            viewerContainer.expressionColumnChanged();
         });
     }
 
@@ -386,35 +357,27 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
 
     @Override
     public void onInteractorsCollapsed(InteractorsCollapsedEvent event) {
-        Collection<DiagramObject> diagramObjects = context.getContent().getDiagramObjects();
-        context.getInteractors().resetBurstInteractors(event.getResource(), diagramObjects);
-//        forceDraw = true;
+        viewerContainer.interactorsCollapsed(event.getResource());
     }
 
     @Override
     public void onInteractorsFiltered(InteractorsFilteredEvent event) {
-        Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
-//        drawInteractors(visibleArea);
+        viewerContainer.interactorsFiltered();
     }
 
     @Override
     public void onInteractorsLayoutUpdated(InteractorsLayoutUpdatedEvent event) {
-        Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
-//        drawInteractors(visibleArea);
+        viewerContainer.interactorsLayoutUpdated();
     }
 
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
-//        forceDraw = true;
+        viewerContainer.interactorsLoaded();
     }
 
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        context.getContent().clearDisplayedInteractors();
-        if(context.getInteractors().isInteractorResourceCached(event.getResource().getIdentifier())) {
-            context.getInteractors().restoreInteractorsSummary(event.getResource().getIdentifier(), context.getContent());
-        }
-//        forceDraw = true;
+        viewerContainer.interactorsResourceChanged(event.getResource());
     }
 
     @Override
@@ -427,7 +390,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
 
     @Override
     public void onLayoutLoaded(LayoutLoadedEvent event) {
-        this.context = event.getContext();
+        setContext(event.getContext());
     }
 
     @Override
@@ -456,17 +419,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         super.onResize(); //Need to call super to propagate the resizing to the contained elements
         this.viewportWidth = getOffsetWidth();
         this.viewportHeight = getOffsetHeight();
-//        this.forceDraw = true;
-
-        if (this.context != null) {
-            Box visibleArea = this.context.getVisibleModelArea(viewportWidth, viewportHeight);
-            this.eventBus.fireEventFromSource(new ViewportResizedEvent(getOffsetWidth(), getOffsetHeight(), visibleArea), this);
-        }
-    }
-
-    @Override
-    public void onThumbnailAreaMoved(ThumbnailAreaMovedEvent event) {
-//        this.padding(event.getCoordinate().multiply(context.getDiagramStatus().getFactor()));
     }
 
     @Override
@@ -605,33 +557,32 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
 //        }
 //    }
 
-//    private void resetContext() {
-//        this.canvas.clear();
-//        this.canvas.clearThumbnail();
-//        if (this.context != null) {
-//            //this.resetAnalysis(); !IMPORTANT! Do not use this method here
-//            //Once a context is due to be replaced, the analysis overlay has to be cleaned up
-//            clearAnalysisOverlay();
-//            this.context = null;
-//        }
-//        GraphObjectFactory.content = null;
-//    }
+    private void resetContext() {
+        viewerContainer.resetContext();
+        if (this.context != null) {
+            //Once a context is due to be replaced, the analysis overlay has to be cleaned up
+            clearAnalysisOverlay();
+            this.context = null;
+        }
+        GraphObjectFactory.content = null;
+    }
 
-//    private void setContext(final Context context) {
-//        this.resetContext();
-//
-//        this.context = context;
-//        GraphObjectFactory.content = context.getContent();
-//
+    private void setContext(final Context context) {
+        this.resetContext();
+
+        this.context = context;
+        GraphObjectFactory.content = context.getContent();
+
+        viewerContainer.setContext(context);
 //        layoutManager.resetHovered();
-//
+
 //        this.forceDraw = true;
-//        if (this.context.getContent().isGraphLoaded()) {
-//            this.loadAnalysis(this.analysisStatus); //IMPORTANT: This needs to be done once context is been set up above
-//            this.eventBus.fireEventFromSource(new ContentLoadedEvent(context), this);
-//        }
+        if (this.context.getContent().isGraphLoaded()) {
+            this.loadAnalysis(this.analysisStatus); //IMPORTANT: This needs to be done once context is been set up above
+            this.eventBus.fireEventFromSource(new ContentLoadedEvent(context), this);
+        }
 //        this.context.restoreDialogs();
-//    }
+    }
 
     @Override
     public void onKeyDown(KeyDownEvent keyDownEvent) {

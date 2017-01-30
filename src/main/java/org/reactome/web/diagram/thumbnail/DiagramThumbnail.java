@@ -2,11 +2,14 @@ package org.reactome.web.diagram.thumbnail;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import org.reactome.web.diagram.client.thumbnails.Thumbnail;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.Compartment;
@@ -18,6 +21,7 @@ import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.thumbnail.render.ThumbnailRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
+import org.reactome.web.diagram.util.Console;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.LinkedList;
@@ -28,35 +32,33 @@ import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelectedHandler, GraphObjectHoveredHandler,
-        DiagramRenderedHandler, DiagramZoomHandler, DiagramPanningHandler, ViewportResizedHandler, ContentRequestedHandler,
-        MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler,
-        DiagramProfileChangedHandler {
+public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
+        MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler {
 
     private static final int FRAME = 26;
     private static final int HEIGHT = 75;
     private static final double MIN_LINE_WIDTH = 0.15;
 
-    Content content;
-    Coordinate offset;
-    double factor;
-    Coordinate from;
-    Coordinate to;
-    Coordinate mouseDown = null;
-    Coordinate delta = null;
+    private EventBus eventBus;
 
+    private Content content;
+    private Coordinate offset;
+    private double factor;
+    private Coordinate from;
+    private Coordinate to;
+    private Coordinate mouseDown = null;
+
+    private Coordinate delta = null;
     private Canvas compartments;
     private Canvas items;
     private Canvas highlight;
     private Canvas selection;
     private Canvas frame;
-    private List<Canvas> canvases = new LinkedList<>();
 
-    private EventBus eventBus;
+    private List<Canvas> canvases = new LinkedList<>();
 
     public DiagramThumbnail(EventBus eventBus) {
         this.eventBus = eventBus;
-        this.initHandlers();
 
         this.compartments = this.createCanvas(0, 0);
         this.items = this.createCanvas(0, 0);
@@ -68,17 +70,6 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
         this.setStyle();
     }
 
-    private void initHandlers() {
-        this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
-        this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramRenderedEvent.TYPE, this);
-        this.eventBus.addHandler(ContentRequestedEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramZoomEvent.TYPE, this);
-        this.eventBus.addHandler(DiagramPanningEvent.TYPE, this);
-        this.eventBus.addHandler(ViewportResizedEvent.TYPE, this);
-    }
-
     private void initListeners() {
         this.frame.addMouseDownHandler(this);
         this.frame.addMouseMoveHandler(this);
@@ -87,11 +78,23 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
     }
 
     @Override
-    public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
-        if(content!=null && content.getType() == DIAGRAM) {
-            this.cleanCanvas(this.selection);
-            GraphObject graphObject = event.getGraphObject();
-            if (graphObject != null) {
+    public void graphObjectSelected(GraphObject graphObject) {
+        if (content == null) return;
+        this.cleanCanvas(this.selection);
+        if (graphObject != null) {
+            for (DiagramObject selected : graphObject.getDiagramObjects()) {
+                this.select(selected);
+            }
+        }
+    }
+
+    @Override
+    public void setSelectedItem(String id) {
+        if (content == null) return;
+        this.cleanCanvas(this.selection);
+        if (id != null) {
+            GraphObject graphObject = content.getDatabaseObject(id);
+            if(graphObject != null) {
                 for (DiagramObject selected : graphObject.getDiagramObjects()) {
                     this.select(selected);
                 }
@@ -100,48 +103,60 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
     }
 
     @Override
-    public void onGraphObjectHovered(GraphObjectHoveredEvent event) {
-        if(content!=null && content.getType() == DIAGRAM) {
-            this.cleanCanvas(this.highlight);
-            GraphObject hovered = event.getGraphObject();
-            List<DiagramObject> toHover = hovered != null ? hovered.getDiagramObjects() : new LinkedList<DiagramObject>();
-            for (DiagramObject item : toHover) {
-                this.highlight(item);
+    public void graphObjectHovered(GraphObject hovered) {
+        if (content == null)  return;
+        this.cleanCanvas(this.highlight);
+        List<DiagramObject> toHover = hovered != null ? hovered.getDiagramObjects() : new LinkedList<>();
+        for (DiagramObject item : toHover) {
+            this.highlight(item);
+        }
+    }
+
+    @Override
+    public void setHoveredItem(String id) {
+        if (content == null)  return;
+        this.cleanCanvas(this.highlight);
+        if (id != null) {
+            GraphObject hovered = content.getDatabaseObject(id);
+            if (hovered != null) {
+                List<DiagramObject> toHover = hovered != null ? hovered.getDiagramObjects() : new LinkedList<>();
+                for (DiagramObject item : toHover) {
+                    this.highlight(item);
+                }
             }
         }
     }
 
     @Override
-    public void onDiagramProfileChanged(DiagramProfileChangedEvent event) {
+    public void diagramProfileChanged() {
         this.setCanvasProperties();
         this.drawThumbnail();
     }
 
     @Override
-    public void onDiagramRendered(DiagramRenderedEvent event) {
-        this.setContent(event.getContent(), event.getVisibleArea());
+    public void diagramRendered(Content content, Box visibleArea) {
+        this.setContent(content, visibleArea);
     }
 
     @Override
-    public void onContentRequested(ContentRequestedEvent event) {
+    public void contentRequested() {
         this.content = null;
         this.clearThumbnail();
     }
 
     @Override
-    public void onDiagramPanningEvent(DiagramPanningEvent event) {
-        this.setVisibleArea(event.getVisibleArea());
+    public void diagramPanningEvent(Box visibleArea) {
+        this.setVisibleArea(visibleArea);
     }
 
     @Override
-    public void onDiagramZoomEvent(DiagramZoomEvent event) {
-        this.setVisibleArea(event.getVisibleArea());
+    public void diagramZoomEvent(Box visibleArea) {
+        this.setVisibleArea(visibleArea);
     }
 
-
     @Override
-    public void onViewportResized(ViewportResizedEvent event) {
-        this.setVisibleArea(event.getVisibleArea());
+    public void viewportResized(Box visibleArea) {
+        this.setVisibleArea(visibleArea);
     }
 
     @Override
@@ -192,7 +207,7 @@ public class DiagramThumbnail extends AbsolutePanel implements GraphObjectSelect
         this.mouseDown = null;
     }
 
-    public void clearThumbnail() {
+    private void clearThumbnail() {
         for (Canvas canvas : this.canvases) {
             this.cleanCanvas(canvas);
         }
