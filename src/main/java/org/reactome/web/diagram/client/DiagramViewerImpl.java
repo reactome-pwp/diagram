@@ -6,29 +6,19 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
-import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.diagram.client.visualisers.Visualiser;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.GraphObjectFactory;
-import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
-import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
-import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
-import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.data.loader.AnalysisDataLoader;
 import org.reactome.web.diagram.data.loader.AnalysisTokenValidator;
 import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
-import org.reactome.web.diagram.renderers.common.HoveredItem;
-import org.reactome.web.diagram.util.Console;
-import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -104,23 +94,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(identifier), this);
     }
 
-//    @Override
-//    public DiagramStatus getDiagramStatus() {
-//        return this.context.getDiagramStatus();
-//    }
-//
-//    @Override
-//    public void transform(Coordinate offset, double factor) {
-//        //An animation can be working and a new pathway might be requested :(
-//        if (this.context == null) return;
-//        DiagramStatus status = this.context.getDiagramStatus();
-//        status.setOffset(offset);
-//        status.setFactor(factor);
-//        this.forceDraw = true;
-//        Box visibleArea = this.context.getVisibleModelArea(viewportWidth, viewportHeight);
-//        this.eventBus.fireEventFromSource(new DiagramZoomEvent(factor, visibleArea), this);
-//    }
-
     @Override
     public void highlightItem(String stableIdentifier) {
         try {
@@ -136,37 +109,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
             viewerContainer.highlightGraphObject(item, true);
         } catch (Exception e) {/*Nothing here*/}
     }
-
-//    private void highlightGraphObject(GraphObject graphObject) {
-//        viewerContainer.highlightGraphObject(graphObject);
-//        //we don't rely on the listener of the following event because finer grain of the hovering is lost
-//        GraphObjectHoveredEvent event = new GraphObjectHoveredEvent(graphObject);
-//        this.eventBus.fireEventFromSource(event, this);
-//    }
-
-//    private void highlightHoveredItem(HoveredItem hovered) {
-//        if (layoutManager.isHighlighted(hovered)) return;
-//        canvas.highlight(hovered, context);
-//        canvas.decorators(hovered, context);
-//        GraphObjectHoveredEvent event = layoutManager.setHovered(hovered);
-//        if (event != null) {
-//            this.eventBus.fireEventFromSource(event, this);
-//            fireEvent(event); //needs outside notification
-//        }
-//    }
-
-//    private void highlightInteractor(DiagramInteractor hovered) {
-//        if (interactorsManager.isHighlighted(hovered)) return;
-//        // setInteractorHovered knows when an interactor is being dragged, so it won't set a new one if that case
-//        if (userActionsManager.setInteractorHovered(hovered)) {
-//            canvas.highlightInteractor(hovered, context);
-//            InteractorHoveredEvent event = interactorsManager.setHovered(hovered);
-//            if (event != null) {
-//                this.eventBus.fireEventFromSource(event, this);
-//                fireEvent(event); //needs outside notification
-//            }
-//        }
-//    }
 
     @Override
     public void loadDiagram(String stId) { //TODO: stay here
@@ -284,12 +226,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
 
     @Override
     public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
-//        Scheduler.get().scheduleDeferred(() -> {
-//            Coordinate model = context.getDiagramStatus().getModelCoordinate(mouseCurrent);
-//            DiagramObject hovered = layoutManager.getHoveredDiagramObject();
-////            canvas.notifyHoveredExpression(hovered, model);
-////            forceDraw = true; //We give priority to other listeners here
-//        });
         Scheduler.get().scheduleDeferred(() -> {
             viewerContainer.expressionColumnChanged();
         });
@@ -399,21 +335,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         Scheduler.get().scheduleDeferred(() -> initialise());
     }
 
-//    @Override
-//    public void onDiagramProfileChanged(DiagramProfileChangedEvent event) {
-//        forceDraw = true;
-//    }
-//
-//    @Override
-//    public void onInteractorProfileChanged(InteractorProfileChangedEvent event) {
-//        forceDraw = true;
-//    }
-//
-//    @Override
-//    public void onLayoutImageLoaded(StructureImageLoadedEvent event) {
-//        forceDraw = true;
-//    }
-
     @Override
     public void onResize() {
         super.onResize(); //Need to call super to propagate the resizing to the contained elements
@@ -488,11 +409,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         });
     }
 
-//    @Override
-//    public void setMousePosition(Coordinate mouse){
-//        mouseCurrent = mouse;
-//    }
-
     @Override
     public void setVisible(boolean visible) {
         super.setVisible(visible);
@@ -502,60 +418,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
             else context.hideDialogs();
         }
     }
-
-//    @Override
-//    public void showDialog(DiagramObject item){
-//        this.context.showDialog(this.eventBus, item, this.canvas);
-//    }
-
-//    @Override
-//    public HoveredItem getHoveredDiagramObject() {
-//        Coordinate model = context.getDiagramStatus().getModelCoordinate(mouseCurrent);
-//        Collection<HoveredItem> hoveredItems = layoutManager.getHovered(model);
-//        for (HoveredItem hovered : hoveredItems) {
-//            DiagramObject item = context.getContent().getDiagramObject(hovered.getDiagramId());
-//            hovered.setDiagramObject(item); //VERY IMPORTANT! Here we have access to the content and can transform diagramId to diagramObject
-//
-//            //TODO: The graph has to be pruned in the server side
-//            if (item == null || item.getIsFadeOut() != null) continue;
-//
-//            if (item.getGraphObject() instanceof GraphPhysicalEntity || item.getGraphObject() instanceof GraphEvent) {
-//                this.notifyHoveredExpression(item, model);
-//                return hovered;
-//            }
-//        }
-//        this.notifyHoveredExpression(null, model);
-//        return null;
-//    }
-
-//    @Override
-//    public DiagramInteractor getHoveredInteractor(){
-//        Coordinate model = context.getDiagramStatus().getModelCoordinate(mouseCurrent);
-//        Collection<DiagramInteractor> hoveredItems = interactorsManager.getHovered(model);
-//        DiagramInteractor rtn = null;
-//        for (DiagramInteractor item : hoveredItems) {
-//            if(item.isVisible()) {
-//                if (item instanceof InteractorEntity) { //Preference to nodes
-//                    return item;
-//                } else if (rtn == null) {
-//                    rtn = item; //In case there aren't nodes hovered, the "first" hovered link is returned
-//                }
-//            }
-//        }
-//        return rtn;
-//    }
-
-//    //Before notifying is good practise to check whether there is expression overlay or not
-//    private void notifyHoveredExpression(DiagramObject item, Coordinate model) {
-//        if (context.getAnalysisStatus() != null) {
-//            AnalysisType type = context.getAnalysisStatus().getAnalysisType();
-//            if (type.equals(AnalysisType.EXPRESSION)) {
-//                //The reason why the notification is delegated to the canvas is because it keeps track of the
-//                //expression changes already, so this do not need to be done here.
-//                this.canvas.notifyHoveredExpression(item, model);
-//            }
-//        }
-//    }
 
     private void resetContext() {
         viewerContainer.resetContext();

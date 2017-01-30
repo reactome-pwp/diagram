@@ -8,7 +8,10 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.RequiresResize;
 import org.reactome.web.diagram.client.visualisers.Visualiser;
 import org.reactome.web.diagram.controls.navigation.NavigationControlPanel;
 import org.reactome.web.diagram.controls.settings.HideableContainerPanel;
@@ -27,12 +30,10 @@ import org.reactome.web.diagram.legends.*;
 import org.reactome.web.diagram.messages.AnalysisMessage;
 import org.reactome.web.diagram.messages.ErrorMessage;
 import org.reactome.web.diagram.messages.LoadingMessage;
-import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.svg.SVGPanel;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
@@ -42,11 +43,9 @@ import static org.reactome.web.diagram.data.content.Content.Type.SVG;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class ViewerContainer extends AbsolutePanel implements RequiresResize,
-//        ContentLoadedHandler, ContentRequestedHandler,
-        GraphObjectSelectedHandler,
         CanvasExportRequestedHandler, ControlActionHandler,
         DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler,
-        IllustrationSelectedHandler {
+        GraphObjectSelectedHandler, IllustrationSelectedHandler {
 
     private EventBus eventBus;
     private Context context;
@@ -139,15 +138,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         activeVisualiser.highlightInteractor(diagramInteractor);
     }
 
-//    @Override
-//    public void onContentLoaded(ContentLoadedEvent event) {
-//        context = event.getContext();
-//        setWatermarkVisible(true);
-//        setWatermarkURL(context, null, this.flagTerm);
-//        setActiveVisualiser(context);
-//        activeVisualiser.contentLoaded(context);
-//    }
-
     public void contentLoaded(final Context context) {
         this.context = context;
         setWatermarkVisible(true);
@@ -155,14 +145,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         setActiveVisualiser(context);
         activeVisualiser.contentLoaded(context);
     }
-
-//    @Override
-//    public void onContentRequested(ContentRequestedEvent event) {
-//        context = null;
-//        setWatermarkVisible(false);
-//        this.resetIllustration();
-//        activeVisualiser.contentRequested(); //TODO maybe iterate all visualisers and content request
-//    }
 
     public void contentRequested() {
 //        activeVisualiser.resetSelection(true);
@@ -348,39 +330,16 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     private void initHandlers() {
-//        eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
-//        eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
-//        eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
-//        eventBus.addHandler(AnalysisResetEvent.TYPE, this);
-//        eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
-
         eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
-//        eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
 
-//        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
-//        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
-//        eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
         eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
 
-//        eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
         eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
-//
-//        eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
-//        eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
-//        eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
-//        eventBus.addHandler(InteractorsLayoutUpdatedEvent.TYPE, this);
-//        eventBus.addHandler(InteractorsFilteredEvent.TYPE, this);
-//        eventBus.addHandler(InteractorSelectedEvent.TYPE, this);
-//        eventBus.addHandler(InteractorProfileChangedEvent.TYPE, this);
-//
-//        eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
-//        eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
-//        eventBus.addHandler(ThumbnailAreaMovedEvent.TYPE, this);
+
         eventBus.addHandler(ControlActionEvent.TYPE, this);
 
-//        eventBus.addHandler(StructureImageLoadedEvent.TYPE, this);
     }
 
     private void overview(){
