@@ -65,6 +65,7 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     }
 
     public void cancel() {
+        svgLoader.cancel();
         layoutLoader.cancel();
         graphLoader.cancel();
         interactorsLoader.cancel();
