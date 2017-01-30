@@ -13,7 +13,6 @@ import org.reactome.web.diagram.common.DisplayManager;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.DiagramStatus;
-import org.reactome.web.diagram.data.GraphObjectFactory;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
@@ -30,6 +29,7 @@ import org.reactome.web.diagram.data.loader.AnalysisTokenValidator;
 import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
+import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.util.ViewportUtils;
 import org.reactome.web.diagram.util.chemical.ChemicalImageLoader;
@@ -40,8 +40,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.reactome.web.diagram.data.GraphObjectFactory.content;
 import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 import static org.reactome.web.diagram.data.content.Content.Type.SVG;
+import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option.IMAGE;
+import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option.PPTX;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -347,14 +350,14 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     public void onControlAction(ControlActionEvent event) {
         double zoomDelta = UserActionsManager.ZOOM_DELTA;
         switch (event.getAction()) {
-            case FIT_ALL:       this.fitDiagram(true);          break;
-            case ZOOM_IN:       this.zoomDelta(zoomDelta);      break;
-            case ZOOM_OUT:      this.zoomDelta(-zoomDelta);     break;
+            case FIT_ALL:       this.fitDiagram(true);         break;
+            case ZOOM_IN:       this.zoomDelta(zoomDelta);               break;
+            case ZOOM_OUT:      this.zoomDelta(-zoomDelta);              break;
             case UP:            this.padding(0, 10);            break;
             case RIGHT:         this.padding(-10, 0);           break;
             case DOWN:          this.padding(0, -10);           break;
             case LEFT:          this.padding(10, 0);            break;
-            case FIREWORKS:     this.overview();                break;
+            case FIREWORKS:     this.overview();                         break;
         }
     }
 
@@ -362,9 +365,20 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
     public void onDiagramExportRequested(CanvasExportRequestedEvent event) {
         if (context != null) {
             Content content = context.getContent();
-            switch(content.getType()) {
-                case DIAGRAM:     canvas.exportImage(content.getStableId());        break;
-                case SVG:         canvas.exportEHLDImage(content.getStableId());    break;
+            switch (content.getType()) {
+                case DIAGRAM:
+                    if(event.getOption() == IMAGE) {
+                        canvas.exportImage(content.getStableId());
+                        break;
+                    } else if(event.getOption() == PPTX) {
+                        String url = "/ContentService/exporter/diagram/"
+                                + content.getStableId() + ".pptx?profile="
+                                + DiagramColours.get().getSelectedProfileName();
+                        Window.open(url, "_self", "");
+                    }
+                case SVG:
+                    canvas.exportEHLDImage(content.getStableId());
+                    break;
             }
         }
     }
@@ -731,14 +745,14 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
             clearAnalysisOverlay();
             this.context = null;
         }
-        GraphObjectFactory.content = null;
+        content = null;
     }
 
     private void setContext(final Context context) {
         this.resetContext();
 
         this.context = context;
-        GraphObjectFactory.content = context.getContent();
+        content = context.getContent();
 
         layoutManager.resetHovered();
 

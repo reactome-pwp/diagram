@@ -15,6 +15,9 @@ import org.reactome.web.diagram.events.CanvasExportRequestedEvent;
 import org.reactome.web.diagram.events.ContentLoadedEvent;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
 
+import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option.IMAGE;
+import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option.PPTX;
+
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -28,6 +31,7 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
 
     private PwpButton illustrationsBtn;
     private PwpButton captureBtn;
+    private PwpButton exportBtn;
     private PwpButton diagramKeyBtn;
 
     public RightTopLauncherPanel(EventBus eventBus) {
@@ -43,6 +47,9 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         this.captureBtn = new PwpButton("Diagram export", RESOURCES.getCSS().camera(), this);
         this.add(this.captureBtn);
 
+        this.exportBtn = new PwpButton("Export to pptx", RESOURCES.getCSS().export(), this);
+        this.add(this.exportBtn);
+
         this.diagramKeyBtn = new PwpButton("Diagram key", RESOURCES.getCSS().key(), this);
         this.add(this.diagramKeyBtn);
 
@@ -54,7 +61,7 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
     public void onClick(ClickEvent event) {
         PwpButton btn = (PwpButton) event.getSource();
         if (btn.equals(this.captureBtn)) {
-            this.eventBus.fireEventFromSource(new CanvasExportRequestedEvent(), this);
+            this.eventBus.fireEventFromSource(new CanvasExportRequestedEvent(IMAGE), this);
         } else if (btn.equals(this.diagramKeyBtn)) {
             if (this.diagramKey.isShowing()) {
                 this.diagramKey.hide();
@@ -67,14 +74,23 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
             } else {
                 this.diagramIllustrations.showRelativeTo(btn);
             }
+        }  else if (btn.equals(this.exportBtn)) {
+            this.eventBus.fireEventFromSource(new CanvasExportRequestedEvent(PPTX), this);
         }
+
     }
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
         switch (event.getContext().getContent().getType()) {
-            case DIAGRAM:   diagramKeyBtn.setEnabled(true);     break;
-            case SVG:       diagramKeyBtn.setEnabled(false);    break;
+            case DIAGRAM:
+                diagramKeyBtn.setEnabled(true);
+                exportBtn.setEnabled(true);
+                break;
+            case SVG:
+                diagramKeyBtn.setEnabled(false);
+                exportBtn.setEnabled(false);
+                break;
         }
     }
 
@@ -126,6 +142,18 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         @Source("images/key_normal.png")
         ImageResource keyNormal();
 
+        @Source("images/export2ppt_clicked.png")
+        ImageResource export2pptClicked();
+
+        @Source("images/export2ppt_disabled.png")
+        ImageResource export2pptDisabled();
+
+        @Source("images/export2ppt_hovered.png")
+        ImageResource export2pptHovered();
+
+        @Source("images/export2ppt_normal.png")
+        ImageResource export2pptNormal();
+
         @Source("images/settings_clicked.png")
         ImageResource settingsClicked();
 
@@ -146,6 +174,8 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         String launcherPanel();
 
         String camera();
+
+        String export();
 
         String illustrations();
 
