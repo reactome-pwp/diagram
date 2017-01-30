@@ -21,6 +21,7 @@ import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
+import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimation;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimationHandler;
@@ -53,7 +54,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
         DoubleClickHandler, ContextMenuHandler,
         SVGAnimationHandler, SVGThumbnailAreaMovedHandler,
-        AnalysisResultLoadedHandler, AnalysisProfileChangedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler {
+        AnalysisProfileChangedHandler, ExpressionColumnChangedHandler {
 
     private static final String REGION = "REGION-";
     private static final String OVERLAY ="OVERLAY-";
@@ -88,7 +89,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
     private AnalysisType analysisType;
     private ExpressionSummary expressionSummary;
-    private List<PathwaySummary> pathwaySummaries;
+//    private List<PathwaySummary> pathwaySummaries;
     private int selectedExpCol = 0;
 
     private SVGContextPanel contextPanel;
@@ -97,10 +98,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     public SVGPanel(EventBus eventBus) {
         super(eventBus);
         this.getElement().addClassName("pwp-SVGPanel");
-
-//        contextPanel = new SVGContextPanel(eventBus);
-//        svgThumbnail = new SVGThumbnail(eventBus);
-
         initHandlers();
 //        setSize(width, height);
     }
@@ -108,6 +105,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     protected void initialise() {
         if (!initialised) {
             this.initialised = true;
+
             contextPanel = new SVGContextPanel(eventBus);
             thumbnail = new SVGThumbnail(eventBus);
             this.add(thumbnail);
@@ -140,7 +138,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void padding(int dX, int dY) {
-        translate((int) dX, (int) dY);
+        translate(dX, dY);
     }
 
     @Override
@@ -154,7 +152,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     public void contentLoaded(Context context) {
         this.context = context;
         Content content = context.getContent();
-        if (content.getType() == SVG) {
+//        if (content.getType() == SVG) {
             this.svg = (OMSVGSVGElement) ((EHLDContent)content).getSVG().cloneNode(true);
 //            setVisible(true); //TODO remove this. Should be handled at container level
 
@@ -198,7 +196,8 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
                 div.appendChild(svg.getElement());
             }
 
-//            thumbnail.diagramRendered(content, null);
+            // Render thumbnail
+            thumbnail.diagramRendered(content, null);
 
             // Set initial translation matrix
             initialTM = getInitialCTM();
@@ -210,7 +209,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
                 clearOverlay();
                 overlayAnalysisResults();
             }
-        }
+//        }
     }
 
     @Override
@@ -218,68 +217,142 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 //        setVisible(false); //TODO remove this. Should be handled at container level
         context = null;
         if(svg!=null) {
-//            getElement().removeChild(svg.getNode());
-//            getElement().removeAllChildren();
             if(getElement().getChildCount()>1) {
-                getElement().getLastChild().removeFromParent();
+                svg.getElement().removeFromParent();
+//                getElement().getLastChild().removeFromParent();
             }
             svg = null;
         }
+        thumbnail.contentRequested();
     }
 
-
-
-    public void highlight(GraphObject obj){
-        resetHighlight();
-        if(obj!=null) {
-            SVGEntity svgEntity = entities.get(obj.getStId());
-            if (svgEntity != null) {
-                highlightElement(svgEntity.getHoverableElement());
+//    public void highlight(GraphObject obj){
+//        resetHighlight(true);
+//        if(obj!=null) {
+//            SVGEntity svgEntity = entities.get(obj.getStId());
+//            if (svgEntity != null) {
+//                highlightElement(svgEntity.getHoverableElement());
 //                thumbnail.setHoveredItem(svgEntity.getHoverableElement().getId());
-                eventBus.fireEventFromSource(new SVGEntityHoveredEvent(svgEntity.getHoverableElement().getId()), this);
+////                eventBus.fireEventFromSource(new SVGEntityHoveredEvent(svgEntity.getHoverableElement().getId()), this);
+//            }
+//        }
+//    }
+
+    @Override
+    public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
+        boolean rtn = false;
+        if (graphObject != null) {
+            SVGEntity svgEntity = entities.get(graphObject.getStId());
+            if (svgEntity != null && hovered != svgEntity.getHoverableElement()) {
+                resetHighlight(false);
+                highlightElement(svgEntity.getHoverableElement());
+                thumbnail.setHoveredItem(svgEntity.getHoverableElement().getId());
+                if (notify) {
+                    eventBus.fireEventFromSource(new GraphObjectHoveredEvent(graphObject), this);
+                }
+                rtn = true;
             }
         }
+        return rtn;
     }
 
-    public void resetHighlight() {
-        if(hovered!=null) {
-            unHighlightElement(hovered);
+//    public void resetHighlight() {
+//        if(hovered!=null) {
+//            unHighlightElement(hovered);
 //            thumbnail.setHoveredItem(null);
-            eventBus.fireEventFromSource(new SVGEntityHoveredEvent(null), this);
-        }
-    }
+////            eventBus.fireEventFromSource(new SVGEntityHoveredEvent(null), this);
+//        }
+//    }
 
-    public void select(GraphObject obj) {
-        resetSelection();
-        if (obj != null) {
-            SVGEntity svgEntity = entities.get(obj.getStId());
-            if (svgEntity != null) {
-                OMElement toSelect = svgEntity.getHoverableElement();
-                setSelectedElement(toSelect);
-//                thumbnail.setSelectedItem(toSelect.getId());
-                eventBus.fireEventFromSource(new SVGEntitySelectedEvent(toSelect.getId()), this);
+    @Override
+    public boolean resetHighlight(boolean notify) {
+        boolean rtn = false;
+        if (context == null) return rtn;
+        if (hovered != null) {
+            unHighlightElement(hovered);
+            thumbnail.setHoveredItem(null);
+            if (notify) {
+                eventBus.fireEventFromSource(new GraphObjectHoveredEvent(), this);
             }
+            rtn = true;
         }
-    }
-
-    public void resetSelection() {
-        if(selected!=null) {
-            resetSelectedElement();
-//            thumbnail.setSelectedItem(null);
-            eventBus.fireEventFromSource(new SVGEntitySelectedEvent(null), this);
-        }
+        return rtn;
     }
 
     @Override
+    public boolean selectGraphObject(GraphObject graphObject, boolean notify) {
+        boolean rtn = false;
+        if (graphObject != null) {
+            SVGEntity svgEntity = entities.get(graphObject.getStId());
+            if (svgEntity != null && selected != svgEntity.getHoverableElement()) {
+                resetSelection(false);
+                setSelectedElement(svgEntity.getHoverableElement());
+                thumbnail.setSelectedItem(svgEntity.getHoverableElement().getId());
+                if (notify) {
+                    eventBus.fireEventFromSource(new GraphObjectHoveredEvent(graphObject), this);
+                }
+                rtn = true;
+            }
+        }
+        return rtn;
+    }
+
+//    public void select(GraphObject obj) {
+//        resetSelection();
+//        if (obj != null) {
+//            SVGEntity svgEntity = entities.get(obj.getStId());
+//            if (svgEntity != null) {
+//                OMElement toSelect = svgEntity.getHoverableElement();
+//                setSelectedElement(toSelect);
+//                thumbnail.setSelectedItem(toSelect.getId());
+////                eventBus.fireEventFromSource(new SVGEntitySelectedEvent(toSelect.getId()), this);
+//            }
+//        }
+//    }
+
+    @Override
+    public boolean resetSelection(boolean notify) {
+        boolean rtn = false;
+        if (context == null) return rtn;
+        if (selected != null) {
+            resetSelectedElement();
+            thumbnail.setSelectedItem(null);
+            if (notify) {
+                eventBus.fireEventFromSource(new GraphObjectSelectedEvent(null, false), this);
+            }
+            rtn = true;
+        }
+        return rtn;
+    }
+
+//    public void resetSelection() {
+//        if(selected!=null) {
+//            resetSelectedElement();
+//            thumbnail.setSelectedItem(null);
+////            eventBus.fireEventFromSource(new SVGEntitySelectedEvent(null), this);
+//        }
+//    }
+
+    @Override
     public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
-        if(svg!=null) {
+        if(context!=null && svg!=null) {
             clearOverlay();
             overlayAnalysisResults();
         }
     }
 
+//    @Override
+//    public void onAnalysisReset(AnalysisResetEvent event) {
+//        analysisType = AnalysisType.NONE;
+//        expressionSummary = null;
+//        selectedExpCol = 0;
+//        if(svg!=null) {
+//            clearOverlay();
+//        }
+//    }
+
     @Override
-    public void onAnalysisReset(AnalysisResetEvent event) {
+    public void resetAnalysis() {
         analysisType = AnalysisType.NONE;
         expressionSummary = null;
         selectedExpCol = 0;
@@ -288,14 +361,26 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         }
     }
 
+//    @Override
+//    public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
+//        //!!! Important !!!
+//        //For the moment analysis results are loaded from the EVENT, as the context does not yet include them.
+//        //TODO: When integration of the SVGPanel is completed, Analysis results have to be read by the context
+//        analysisType = event.getType();
+//        pathwaySummaries = event.getPathwaySummaries();
+//        expressionSummary = event.getExpressionSummary();
+//        selectedExpCol = 0;
+//        if(svg!=null) {
+//            clearOverlay();
+//            overlayAnalysisResults();
+//        }
+//    }
+
     @Override
-    public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
-        //!!! Important !!!
-        //For the moment analysis results are loaded from the EVENT, as the context does not yet include them.
-        //TODO: When integration of the SVGPanel is completed, Analysis results have to be read by the context
-        analysisType = event.getType();
+    public void loadAnalysis() {
+        analysisType = context.getAnalysisStatus().getAnalysisType();
         pathwaySummaries = event.getPathwaySummaries();
-        expressionSummary = event.getExpressionSummary();
+        expressionSummary = context.getAnalysisStatus().getExpressionSummary();
         selectedExpCol = 0;
         if(svg!=null) {
             clearOverlay();
@@ -308,21 +393,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         event.preventDefault();
         event.stopPropagation();
     }
-
-//    @Override
-//    public void onControlAction(ControlActionEvent event) {
-////        if(context.getContent().getType() != SVG) return;
-//
-//        switch (event.getAction()) {
-//            case FIT_ALL:       fitALL(true);                  break;
-//            case ZOOM_IN:       zoom(1.1f, getCentrePoint());     break;
-//            case ZOOM_OUT:      zoom(0.9f, getCentrePoint());     break;
-//            case UP:            translate(0, 10);                 break;
-//            case RIGHT:         translate(-10, 0);                break;
-//            case DOWN:          translate(0, -10);                break;
-//            case LEFT:          translate(10, 0);                 break;
-//        }
-//    }
 
     @Override
     public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
@@ -337,77 +407,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         Console.error("Error getting pathway information...");
         //TODO: Decide what to do in this case
     }
-
-//    @Override
-//    public void onContentRequested(ContentRequestedEvent event) {
-//        setVisible(false);
-//        context = null;
-//        if(svg!=null) {
-//            svg = null;
-//            getElement().removeAllChildren();
-//        }
-//    }
-
-//    @Override
-//    public void onContentLoaded(ContentLoadedEvent event) {
-//        context = event.getContext();
-//        Content content = context.getContent();
-//        if (content.getType() == SVG) {
-//            this.svg = ((EHLDContent)content).getSVG();
-//            setVisible(true);
-//
-//            entities = new HashMap<>();
-//            for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
-//                addOrUpdateSVGEntity(child);
-//            }
-//
-//            for (SVGEntity svgEntity : entities.values()) {
-//                OMElement child = svgEntity.getHoverableElement();
-//                if(child!=null) {
-//                    child.addDomHandler(SVGPanel.this, MouseUpEvent.getType());
-//                    child.addDomHandler(SVGPanel.this, MouseOverEvent.getType());
-//                    child.addDomHandler(SVGPanel.this, MouseOutEvent.getType());
-//                    child.addDomHandler(SVGPanel.this, DoubleClickEvent.getType());
-//                    // Set the pointer to the active regions
-//                    child.setAttribute("style", CURSOR);
-//                }
-//            }
-//
-//            // Identify all layers by getting all top-level g elements
-//            svgLayers = getRootLayers();
-//
-//            // Clone and attach defs (filters - clipping paths) to the root SVG structure
-//            defs = (OMSVGDefsElement) baseDefs.cloneNode(true);
-//            svg.appendChild(defs);
-//
-//            // Add the event handlers
-//            svg.addMouseDownHandler(this);
-//            svg.addMouseMoveHandler(this);
-//            svg.addMouseUpHandler(this);
-//
-//            // Remove viewbox and set size
-//            svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
-//            setSize(getOffsetWidth(), getOffsetHeight());
-//
-//            Element div = SVGPanel.this.getElement();
-//            if(div.hasChildNodes()) {
-//                div.replaceChild(svg.getElement(), div.getFirstChild());
-//            } else {
-//                div.appendChild(svg.getElement());
-//            }
-//
-//            // Set initial translation matrix
-//            initialTM = getInitialCTM();
-//            initialBB = svg.getBBox();
-//            ctm = initialTM;
-//            fitALL(false);
-//
-//            if(analysisType!=null && analysisType!=AnalysisType.NONE) {
-//                clearOverlay();
-//                overlayAnalysisResults();
-//            }
-//        }
-//    }
 
     @Override
     public void onDoubleClick(DoubleClickEvent event) {
@@ -471,16 +470,16 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
                         contextPanel.show(SVGUtil.keepStableId(elementId), event.getClientX(), event.getClientY());
                         break;
                     default:
-                        setSelectedElement(el);
-//                        thumbnail.setSelectedItem(elementId);
-                        eventBus.fireEventFromSource(new SVGEntitySelectedEvent(elementId), this);
-                        notifySelection(elementId);
+                        if(selected != el) {
+                            setSelectedElement(el);
+                            thumbnail.setSelectedItem(elementId);
+                            notifySelection(elementId);
+                        }
                         break;
                 }
             } else {
                 resetSelectedElement();
-//                thumbnail.setSelectedItem(null);
-                eventBus.fireEventFromSource(new SVGEntitySelectedEvent(null), this);
+                thumbnail.setSelectedItem(null);
                 notifySelection(null);
             }
         }
@@ -492,11 +491,10 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     public void onMouseOver(MouseOverEvent event) {
         event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
-        resetHighlight();
+        resetHighlight(false);
         highlightElement(el);
         applyCTM(false);  //TODO Have a look why this is required
-//        thumbnail.setHoveredItem(el.getId());
-        eventBus.fireEventFromSource(new SVGEntityHoveredEvent(el.getId()), this);
+        thumbnail.setHoveredItem(el.getId());
         notifyHovering(el.getId());
     }
 
@@ -506,8 +504,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         OMElement el = (OMElement) event.getSource();
         unHighlightElement(el);
         applyCTM(false);  //TODO Have a look why this is required
-//        thumbnail.setHoveredItem(null);
-        eventBus.fireEventFromSource(new SVGEntityHoveredEvent(null), this);
+        thumbnail.setHoveredItem(null);
         notifyHovering(null);
     }
 
@@ -656,13 +653,10 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     }
 
     private void initHandlers() {
-//        eventBus.addHandler(ControlActionEvent.TYPE, this);
-//        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
-//        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(SVGThumbnailAreaMovedEvent.TYPE, this);
 
 //        eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
-//        eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
+        eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
 //        eventBus.addHandler(AnalysisResetEvent.TYPE, this);
 //        eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
 
@@ -771,44 +765,17 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     }
 
     @Override
-    public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
-        return false;
-    }
-
-    @Override
     public void highlightInteractor(DiagramInteractor diagramInteractor) {
         //Nothing here
     }
 
     @Override
-    public boolean resetHighlight(boolean notify) {
-        return false;
-    }
-
-    @Override
-    public boolean resetSelection(boolean notify) {
-        return false;
-    }
-
-    @Override
-    public boolean selectGraphObject(GraphObject graphObject, boolean notify) {
-        return false;
-    }
-
-    @Override
     public GraphObject getSelected() {
-        Console.info("Helloooooooooooooooooooooooooooo");
-        return null;
-    }
-
-    @Override
-    public void loadAnalysis() {
-
-    }
-
-    @Override
-    public void resetAnalysis() {
-
+        GraphObject rtn = null;
+        if(selected !=null) {
+            rtn = context.getContent().getDatabaseObject(SVGUtil.keepStableId(selected.getId()));
+        }
+        return rtn;
     }
 
     @Override

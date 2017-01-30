@@ -261,7 +261,9 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
     public boolean selectItem(GraphObject item, boolean notify) {
         resetIllustration();
-        return activeVisualiser.selectGraphObject(item, notify);
+        boolean rtn =  activeVisualiser.selectGraphObject(item, notify);
+        Console.error(activeVisualiser.getSelected());
+        return rtn;
     }
 
     public void setIllustration(String url){

@@ -38,7 +38,6 @@ import static org.reactome.web.diagram.data.content.Content.Type.SVG;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
-//        ContentRequestedHandler, ContentLoadedHandler,
         MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, ContextMenuHandler
 //        SVGPanZoomHandler, SVGEntityHoveredHandler, SVGEntitySelectedHandler,
 {

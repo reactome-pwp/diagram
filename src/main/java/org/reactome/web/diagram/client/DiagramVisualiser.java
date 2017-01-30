@@ -568,10 +568,6 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
         }
     }
 
-//    private void resetIllustration() { //TODO: remove from here. Move it to ViewerContainer
-//        this.canvas.resetIllustration();
-//    }
-
     @Override
     public boolean resetHighlight(boolean notify) {
         boolean rtn = false;
