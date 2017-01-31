@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.thumbnail;
+package org.reactome.web.diagram.thumbnail.ehld;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
@@ -10,6 +10,7 @@ import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.content.EHLDContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.thumbnail.Thumbnail;
 import org.reactome.web.diagram.util.svg.AbstractSVGPanel;
 import org.reactome.web.diagram.util.svg.events.SVGThumbnailAreaMovedEvent;
 import org.vectomatic.dom.svg.*;

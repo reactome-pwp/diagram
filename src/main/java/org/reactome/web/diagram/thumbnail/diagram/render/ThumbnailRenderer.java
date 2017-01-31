@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.thumbnail.render;
+package org.reactome.web.diagram.thumbnail.diagram.render;
 
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;

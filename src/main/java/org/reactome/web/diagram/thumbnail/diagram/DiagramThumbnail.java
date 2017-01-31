@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.thumbnail;
+package org.reactome.web.diagram.thumbnail.diagram;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
@@ -15,7 +15,8 @@ import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.events.ThumbnailAreaMovedEvent;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
-import org.reactome.web.diagram.thumbnail.render.ThumbnailRenderer;
+import org.reactome.web.diagram.thumbnail.Thumbnail;
+import org.reactome.web.diagram.thumbnail.diagram.render.ThumbnailRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 

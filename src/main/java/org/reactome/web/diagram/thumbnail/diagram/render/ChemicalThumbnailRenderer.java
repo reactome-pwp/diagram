@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.thumbnail.render;
+package org.reactome.web.diagram.thumbnail.diagram.render;
 
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
@@ -10,14 +10,14 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class OtherEntityThumbnailRenderer extends AbstractThumbnailRenderer {
+public class ChemicalThumbnailRenderer extends AbstractThumbnailRenderer {
 
     @Override
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         ctx.save();
         DiagramProfile profile = DiagramColours.get().PROFILE;
-        ctx.setStrokeStyle(profile.getOtherentity().getStroke());
-        ctx.setFillStyle(profile.getOtherentity().getFill());
+        ctx.setStrokeStyle(profile.getChemical().getStroke());
+        ctx.setFillStyle(profile.getChemical().getFill());
         drawNode(ctx, (Node) item, factor, offset);
         ctx.restore();
     }
