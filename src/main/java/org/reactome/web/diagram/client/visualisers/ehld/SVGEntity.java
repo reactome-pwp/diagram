@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.util.svg;
+package org.reactome.web.diagram.client.visualisers.ehld;
 
 import org.vectomatic.dom.svg.OMElement;
 

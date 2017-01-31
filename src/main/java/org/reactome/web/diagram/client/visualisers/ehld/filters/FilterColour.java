@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.util.svg.filters;
+package org.reactome.web.diagram.client.visualisers.ehld.filters;
 
 /**
  * An enumeration of all ColorMatrices used.

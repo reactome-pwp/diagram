@@ -1,7 +1,7 @@
-package org.reactome.web.diagram.util.svg.events;
+package org.reactome.web.diagram.client.visualisers.ehld.events;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.reactome.web.diagram.util.svg.handlers.SVGEntityHoveredHandler;
+import org.reactome.web.diagram.client.visualisers.ehld.handlers.SVGEntityHoveredHandler;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>

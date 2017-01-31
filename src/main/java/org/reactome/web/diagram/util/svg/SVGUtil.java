@@ -53,10 +53,6 @@ public abstract class SVGUtil {
         return rtn;
     }
 
-    /*
-     * Checks whether two transform matrices are the same
-     */
-
     /***
      * Checks whether two transformation matrices are equal.
      *

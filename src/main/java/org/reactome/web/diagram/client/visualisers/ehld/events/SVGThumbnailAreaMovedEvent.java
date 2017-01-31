@@ -1,7 +1,7 @@
-package org.reactome.web.diagram.util.svg.events;
+package org.reactome.web.diagram.client.visualisers.ehld.events;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.reactome.web.diagram.util.svg.handlers.SVGThumbnailAreaMovedHandler;
+import org.reactome.web.diagram.client.visualisers.ehld.handlers.SVGThumbnailAreaMovedHandler;
 import org.vectomatic.dom.svg.OMSVGPoint;
 
 /**

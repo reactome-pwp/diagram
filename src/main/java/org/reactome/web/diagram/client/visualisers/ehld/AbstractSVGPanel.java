@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.util.svg;
+package org.reactome.web.diagram.client.visualisers.ehld;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -6,9 +6,9 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
+import org.reactome.web.diagram.client.visualisers.ehld.filters.FilterColour;
+import org.reactome.web.diagram.client.visualisers.ehld.filters.FilterFactory;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
-import org.reactome.web.diagram.util.svg.filters.FilterColour;
-import org.reactome.web.diagram.util.svg.filters.FilterFactory;
 import org.vectomatic.dom.svg.*;
 
 import java.util.*;

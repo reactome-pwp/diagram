@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.util.svg.filters;
+package org.reactome.web.diagram.client.visualisers.ehld.filters;
 
 import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.SVGConstants;

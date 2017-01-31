@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.util.svg.animation;
+package org.reactome.web.diagram.client.visualisers.ehld.animation;
 
 import org.vectomatic.dom.svg.OMSVGMatrix;
 
