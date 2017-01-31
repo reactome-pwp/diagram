@@ -362,7 +362,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
                         contextPanel.show(SVGUtil.keepStableId(elementId), event.getClientX(), event.getClientY());
                         break;
                     default:
-                        if(selected != el) {
+                        if (selected != el) {
                             setSelectedElement(el);
                             thumbnail.setSelectedItem(elementId);
                             notifySelection(elementId);
@@ -370,9 +370,11 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
                         break;
                 }
             } else {
-                resetSelectedElement();
-                thumbnail.setSelectedItem(null);
-                notifySelection(null);
+                if(selected != null) {
+                    resetSelectedElement();
+                    thumbnail.setSelectedItem(null);
+                    notifySelection(null);
+                }
             }
         }
         isPanning = false;
