@@ -92,7 +92,7 @@ public class SVGContextPanel extends DialogBox implements ClickHandler, Database
     @CssResource.ImportedWithPrefix("diagram-SVGContextPanel")
     public interface ResourceCSS extends CssResource {
 
-        String CSS = "org/reactome/web/diagram/util/svg/SVGContextPanel.css";
+        String CSS = "org/reactome/web/diagram/client/SVGContextPanel.css";
 
         String popup();
 

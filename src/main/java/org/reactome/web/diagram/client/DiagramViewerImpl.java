@@ -112,7 +112,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     }
 
     @Override
-    public void loadDiagram(String stId) { //TODO: stay here
+    public void loadDiagram(String stId) {
         if (stId != null) {
             if (context == null || !stId.equals(context.getContent().getStableId())) {
                 load(stId); //Names are interchangeable because there are symlinks
@@ -121,7 +121,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     }
 
     @Override
-    public void loadDiagram(Long dbId) { //TODO: stay here
+    public void loadDiagram(Long dbId) {
         if (dbId != null) {
             if (context == null || !dbId.equals(context.getContent().getDbId())) {
                 load("" + dbId); //Names are interchangeable because there are symlinks
@@ -156,7 +156,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
             fireEvent(event);
         }
         this.resetAnalysis();
-//        this.viewerContainer.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
     }
 
     @Override
@@ -168,9 +167,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         Scheduler.get().scheduleDeferred(() -> { //TODO NOT SURE THIS IS NEEDED...
             viewerContainer.loadAnalysis();
         });
-
-//        this.viewerContainer.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
-//        forceDraw = true;
     }
 
     @Override
@@ -178,7 +174,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         clearAnalysisOverlay();
         this.analysisStatus.setExpressionSummary(null);
         viewerContainer.resetAnalysis();
-        //        forceDraw = true;
     }
 
     @Override
@@ -347,10 +342,9 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     }
 
     @Override
-    public void resetAnalysis() { //TODO: stay here
+    public void resetAnalysis() {
         this.analysisStatus = null;
         clearAnalysisOverlay();
-//        forceDraw = true;
         viewerContainer.resetAnalysis();
     }
 

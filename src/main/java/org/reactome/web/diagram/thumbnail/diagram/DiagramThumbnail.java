@@ -338,7 +338,7 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
         this.updateViewport(from, to);
     }
 
-    void updateViewport(Coordinate from, Coordinate to) {
+    private void updateViewport(Coordinate from, Coordinate to) {
         if (this.content != null) {
             this.from = from.add(this.offset).multiply(this.factor);
             this.to = to.add(this.offset).multiply(this.factor);
