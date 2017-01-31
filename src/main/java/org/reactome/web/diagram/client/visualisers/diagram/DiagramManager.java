@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.client;
+package org.reactome.web.diagram.client.visualisers.diagram;
 
 import org.reactome.web.diagram.common.DisplayManager;
 import org.reactome.web.diagram.data.content.Content;

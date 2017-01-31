@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import org.reactome.web.diagram.client.visualisers.Visualiser;
+import org.reactome.web.diagram.client.visualisers.diagram.InteractorsManager;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.GraphObjectFactory;
@@ -164,7 +165,10 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         analysisStatus.setExpressionSummary(event.getExpressionSummary());
         context.setAnalysisOverlay(analysisStatus, event.getFoundElements(), event.getPathwaySummaries());
         interactorsManager.setAnalysisOverlay(event.getFoundElements(), context.getContent().getIdentifierMap());
-        viewerContainer.loadAnalysis();
+        Scheduler.get().scheduleDeferred(() -> { //TODO NOT SURE THIS IS NEEDED...
+            viewerContainer.loadAnalysis();
+        });
+
 //        this.viewerContainer.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
 //        forceDraw = true;
     }

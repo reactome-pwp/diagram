@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.client;
+package org.reactome.web.diagram.client.visualisers.diagram;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;

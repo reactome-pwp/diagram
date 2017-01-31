@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RequiresResize;
 import org.reactome.web.diagram.client.visualisers.Visualiser;
+import org.reactome.web.diagram.client.visualisers.diagram.DiagramVisualiser;
 import org.reactome.web.diagram.controls.navigation.NavigationControlPanel;
 import org.reactome.web.diagram.controls.settings.HideableContainerPanel;
 import org.reactome.web.diagram.controls.settings.RightContainerPanel;
@@ -30,7 +31,6 @@ import org.reactome.web.diagram.legends.*;
 import org.reactome.web.diagram.messages.AnalysisMessage;
 import org.reactome.web.diagram.messages.ErrorMessage;
 import org.reactome.web.diagram.messages.LoadingMessage;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.svg.SVGPanel;
 
 import java.util.HashMap;
@@ -243,9 +243,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
     public boolean selectItem(GraphObject item, boolean notify) {
         resetIllustration();
-        boolean rtn =  activeVisualiser.selectGraphObject(item, notify);
-        Console.error(activeVisualiser.getSelected());
-        return rtn;
+        return activeVisualiser.selectGraphObject(item, notify);
     }
 
     public void setIllustration(String url){

@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.util.svg.thumbnail;
+package org.reactome.web.diagram.thumbnail;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
@@ -7,40 +7,23 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
-import org.reactome.web.diagram.client.thumbnails.Thumbnail;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.content.EHLDContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
-import org.reactome.web.diagram.events.ContentLoadedEvent;
-import org.reactome.web.diagram.events.ContentRequestedEvent;
-import org.reactome.web.diagram.handlers.ContentLoadedHandler;
-import org.reactome.web.diagram.handlers.ContentRequestedHandler;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.svg.AbstractSVGPanel;
-import org.reactome.web.diagram.util.svg.events.SVGEntityHoveredEvent;
-import org.reactome.web.diagram.util.svg.events.SVGEntitySelectedEvent;
-import org.reactome.web.diagram.util.svg.events.SVGPanZoomEvent;
 import org.reactome.web.diagram.util.svg.events.SVGThumbnailAreaMovedEvent;
-import org.reactome.web.diagram.util.svg.handlers.SVGEntityHoveredHandler;
-import org.reactome.web.diagram.util.svg.handlers.SVGEntitySelectedHandler;
-import org.reactome.web.diagram.util.svg.handlers.SVGPanZoomHandler;
 import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.DOMHelper;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
-import java.util.HashSet;
 import java.util.List;
-
-import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
-        MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, ContextMenuHandler
-//        SVGPanZoomHandler, SVGEntityHoveredHandler, SVGEntitySelectedHandler,
-{
+        MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, ContextMenuHandler {
     private static final int HEIGHT = 75;
     private static final int FALLBACK_WIDTH = 100;
 
@@ -61,7 +44,6 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
         this.frame = this.createCanvas(0, 0);
 
         this.setStyle();
-        this.initHandlers();
         this.initListeners();
     }
 
@@ -106,6 +88,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
         setSize((int) Math.ceil(factor * (svgSize.getWidth() + FRAME)), HEIGHT);
 
         svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
+        svg.removeAttribute(SVGConstants.SVG_ENABLE_BACKGROUND_ATTRIBUTE);
 
         Element div = getElement();
         if(div.getChildCount() == 1) {
@@ -130,7 +113,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
             initialBB = svg.getBBox();
             OMSVGMatrix fitTM = calculateFitAll(FRAME);
             ctm = initialTM.multiply(fitTM);
-            applyCTM(false);
+            applyCTM();
         });
     }
 
@@ -231,6 +214,17 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
         ctx.setLineWidth(0.5);
     }
 
+    private void applyCTM() {
+        sb.setLength(0);
+        sb.append("matrix(").append(ctm.getA()).append(",").append(ctm.getB()).append(",").append(ctm.getC()).append(",")
+                .append(ctm.getD()).append(",").append(ctm.getE()).append(",").append(ctm.getF()).append(")");
+        for (OMSVGElement svgLayer : svgLayers) {
+            svgLayer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, sb.toString());
+        }
+        zFactor = ctm.getA();
+    }
+
+
     private void cleanFrame() {
         frame.getContext2d().clearRect(0, 0, frame.getOffsetWidth(), frame.getOffsetHeight());
     }
@@ -262,14 +256,6 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
         return svg.getViewBox().getBaseVal()!=null ? svg.getViewBox().getBaseVal() : svg.createSVGRect(0, 0, FALLBACK_WIDTH, HEIGHT);
     }
 
-    private void initHandlers() {
-//        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
-//        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
-//        eventBus.addHandler(SVGEntityHoveredEvent.TYPE, this);
-//        eventBus.addHandler(SVGEntitySelectedEvent.TYPE, this);
-//        eventBus.addHandler(SVGPanZoomEvent.TYPE, this);
-    }
-
     private void initListeners() {
         frame.addMouseDownHandler(this);
         frame.addMouseMoveHandler(this);
@@ -297,7 +283,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
                 hovered = newHovered;
             }
         }
-        applyCTM(false);
+        applyCTM();
     }
 
     private void setSelected(String elementId) {
@@ -311,7 +297,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
             newSelected.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_OVERLAY_FILTER));
             selected = newSelected;
         }
-        applyCTM(false);
+        applyCTM();
     }
 
     @SuppressWarnings("Duplicates")
@@ -326,12 +312,15 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
     }
 
     private void updateFrame(Box visibleArea) {
-        from = svg.createSVGPoint((float)visibleArea.getMinX(), (float) visibleArea.getMinY());
-        to = svg.createSVGPoint((float)visibleArea.getMaxX(), (float) visibleArea.getMaxY());
+        if(svg!=null) {
+            from = svg.createSVGPoint((float) visibleArea.getMinX(), (float) visibleArea.getMinY());
+            to = svg.createSVGPoint((float) visibleArea.getMaxX(), (float) visibleArea.getMaxY());
 
-        from = from.matrixTransform(ctm);
-        to = to.matrixTransform(ctm);
+            from = from.matrixTransform(ctm);
+            to = to.matrixTransform(ctm);
 
-        drawFrame(from, to);
+            drawFrame(from, to);
+        }
     }
+
 }

@@ -1,23 +1,16 @@
-package org.reactome.web.diagram.client;
+package org.reactome.web.diagram.client.visualisers.diagram;
 
 import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.RequiresResize;
-import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.SimplePanel;
 import org.reactome.web.analysis.client.model.AnalysisType;
-import org.reactome.web.diagram.client.thumbnails.Thumbnail;
 import org.reactome.web.diagram.client.visualisers.Visualiser;
 import org.reactome.web.diagram.common.DiagramAnimationHandler;
 import org.reactome.web.diagram.common.DisplayManager;
-import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.DiagramStatus;
-import org.reactome.web.diagram.data.GraphObjectFactory;
 import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
@@ -29,20 +22,16 @@ import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
-import org.reactome.web.diagram.data.loader.AnalysisDataLoader;
-import org.reactome.web.diagram.data.loader.AnalysisTokenValidator;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
-import org.reactome.web.diagram.util.Console;
+import org.reactome.web.diagram.thumbnail.Thumbnail;
 import org.reactome.web.diagram.util.ViewportUtils;
 import org.reactome.web.diagram.util.chemical.ChemicalImageLoader;
 import org.reactome.web.diagram.util.pdbe.PDBeLoader;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.Collection;
-
-import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -80,7 +69,7 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
 
     private boolean forceDraw = false;
 
-    DiagramVisualiser(EventBus eventBus) {
+    public DiagramVisualiser(EventBus eventBus) {
         super();
         this.eventBus = eventBus;
         this.canvas = new DiagramCanvas(eventBus);
@@ -114,9 +103,9 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
             AnimationScheduler.get().requestAnimationFrame(new AnimationScheduler.AnimationCallback() {
                 @Override
                 public void execute(double timestamp) {
-//                    if(isVisible()) {
+                    if(isVisible()) {
                         doUpdate();
-//                    }
+                    }
                     AnimationScheduler.get().requestAnimationFrame(this); // Call it again.
                 }
             });

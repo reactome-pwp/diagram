@@ -6,15 +6,10 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
-import org.reactome.web.diagram.client.thumbnails.Thumbnail;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
-import org.reactome.web.diagram.util.Console;
-import org.reactome.web.diagram.util.svg.events.SVGPanZoomEvent;
 import org.reactome.web.diagram.util.svg.filters.FilterColour;
 import org.reactome.web.diagram.util.svg.filters.FilterFactory;
 import org.vectomatic.dom.svg.*;
-import org.vectomatic.dom.svg.utils.SVGConstants;
-import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.*;
 
@@ -42,10 +37,11 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     protected OMSVGRect initialBB;
     protected float zFactor = 1;
 
-    private StringBuilder sb;
+    protected StringBuilder sb;
 
     public AbstractSVGPanel(EventBus eventBus) {
         this.eventBus = eventBus;
+        getElement().getStyle().setBackgroundColor("white");
         initFilters();
         sb = new StringBuilder();
     }
@@ -67,20 +63,6 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         if(svg != null) {
             svg.setWidth(Style.Unit.PX, width);
             svg.setHeight(Style.Unit.PX, height);
-        }
-    }
-
-    protected void applyCTM(boolean fireEvent) {
-        sb.setLength(0);
-        sb.append("matrix(").append(ctm.getA()).append(",").append(ctm.getB()).append(",").append(ctm.getC()).append(",")
-                .append(ctm.getD()).append(",").append(ctm.getE()).append(",").append(ctm.getF()).append(")");
-        for (OMSVGElement svgLayer : svgLayers) {
-            svgLayer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, sb.toString());
-        }
-        zFactor = ctm.getA();
-
-        if(fireEvent) {
-            notifyAboutChangeInView();
         }
     }
 
@@ -154,17 +136,6 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
 //        baseDefs.appendChild(FilterFactory.combine(COMBINED_FILTER, FilterFactory.getShadowFilter(HOVERRING_FILTER), FilterFactory.getOutlineFilter(SELECTION_FILTER, FilterColour.BLUE)));
         baseDefs.appendChild(FilterFactory.getColouredOverlayFilter(HOVERING_OVERLAY_FILTER, FilterColour.YELLOW));
         baseDefs.appendChild(FilterFactory.getColouredOverlayFilter(SELECTION_OVERLAY_FILTER, FilterColour.BLUE));
-    }
-    protected void notifyAboutChangeInView() {
-        if(svg != null && ctm !=null) {
-            OMSVGPoint from = svg.createSVGPoint(0, 0);
-            from = from.matrixTransform(ctm.inverse());
-
-            OMSVGPoint to = svg.createSVGPoint(getOffsetWidth(), getOffsetHeight());
-            to = to.matrixTransform(ctm.inverse());
-
-            eventBus.fireEventFromSource(new SVGPanZoomEvent(from, to), this);
-        }
     }
 
     protected void removeAttributeFromChildren(final OMNode root, final String attribute) {

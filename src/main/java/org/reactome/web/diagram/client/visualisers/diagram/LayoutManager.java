@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.client;
+package org.reactome.web.diagram.client.visualisers.diagram;
 
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.data.Context;

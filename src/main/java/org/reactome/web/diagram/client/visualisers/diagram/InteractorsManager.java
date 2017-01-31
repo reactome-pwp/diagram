@@ -1,8 +1,9 @@
-package org.reactome.web.diagram.client;
+package org.reactome.web.diagram.client.visualisers.diagram;
 
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.analysis.client.model.FoundElements;
 import org.reactome.web.analysis.client.model.FoundInteractor;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;

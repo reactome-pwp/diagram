@@ -10,27 +10,29 @@ import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.analysis.client.model.PathwaySummary;
-import org.reactome.web.diagram.client.thumbnails.Thumbnail;
 import org.reactome.web.diagram.client.visualisers.Visualiser;
+import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.content.EHLDContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
-import org.reactome.web.diagram.events.*;
-import org.reactome.web.diagram.handlers.*;
+import org.reactome.web.diagram.events.AnalysisProfileChangedEvent;
+import org.reactome.web.diagram.events.ContentRequestedEvent;
+import org.reactome.web.diagram.events.GraphObjectHoveredEvent;
+import org.reactome.web.diagram.events.GraphObjectSelectedEvent;
+import org.reactome.web.diagram.handlers.AnalysisProfileChangedHandler;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
-import org.reactome.web.diagram.renderers.common.HoveredItem;
+import org.reactome.web.diagram.thumbnail.SVGThumbnail;
+import org.reactome.web.diagram.thumbnail.Thumbnail;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimation;
 import org.reactome.web.diagram.util.svg.animation.SVGAnimationHandler;
 import org.reactome.web.diagram.util.svg.context.SVGContextPanel;
-import org.reactome.web.diagram.util.svg.events.SVGEntityHoveredEvent;
-import org.reactome.web.diagram.util.svg.events.SVGEntitySelectedEvent;
 import org.reactome.web.diagram.util.svg.events.SVGThumbnailAreaMovedEvent;
 import org.reactome.web.diagram.util.svg.handlers.SVGThumbnailAreaMovedHandler;
-import org.reactome.web.diagram.util.svg.thumbnail.SVGThumbnail;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
 import org.reactome.web.pwp.model.classes.Pathway;
 import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
@@ -38,12 +40,11 @@ import org.reactome.web.pwp.model.handlers.DatabaseObjectCreatedHandler;
 import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.DOMHelper;
 import org.vectomatic.dom.svg.utils.SVGConstants;
+import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
-import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 
 
 /**
@@ -54,7 +55,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
         DoubleClickHandler, ContextMenuHandler,
         SVGAnimationHandler, SVGThumbnailAreaMovedHandler,
-        AnalysisProfileChangedHandler, ExpressionColumnChangedHandler {
+        AnalysisProfileChangedHandler {
 
     private static final String REGION = "REGION-";
     private static final String OVERLAY ="OVERLAY-";
@@ -89,7 +90,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
     private AnalysisType analysisType;
     private ExpressionSummary expressionSummary;
-//    private List<PathwaySummary> pathwaySummaries;
     private int selectedExpCol = 0;
 
     private SVGContextPanel contextPanel;
@@ -150,71 +150,11 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void contentLoaded(Context context) {
-        this.context = context;
-        Content content = context.getContent();
-//        if (content.getType() == SVG) {
-            this.svg = (OMSVGSVGElement) ((EHLDContent)content).getSVG().cloneNode(true);
-//            setVisible(true); //TODO remove this. Should be handled at container level
-
-            entities = new HashMap<>();
-            for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
-                addOrUpdateSVGEntity(child);
-            }
-
-            for (SVGEntity svgEntity : entities.values()) {
-                OMElement child = svgEntity.getHoverableElement();
-                if(child!=null) {
-                    child.addDomHandler(SVGPanel.this, MouseUpEvent.getType());
-                    child.addDomHandler(SVGPanel.this, MouseOverEvent.getType());
-                    child.addDomHandler(SVGPanel.this, MouseOutEvent.getType());
-                    child.addDomHandler(SVGPanel.this, DoubleClickEvent.getType());
-                    // Set the pointer to the active regions
-                    child.setAttribute("style", CURSOR);
-                }
-            }
-
-            // Identify all layers by getting all top-level g elements
-            svgLayers = getRootLayers();
-
-            // Clone and attach defs (filters - clipping paths) to the root SVG structure
-            defs = (OMSVGDefsElement) baseDefs.cloneNode(true);
-            svg.appendChild(defs);
-
-            // Add the event handlers
-            svg.addMouseDownHandler(this);
-            svg.addMouseMoveHandler(this);
-            svg.addMouseUpHandler(this);
-
-            // Remove viewbox and set size
-            svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
-            setSize(getOffsetWidth(), getOffsetHeight());
-
-            Element div = SVGPanel.this.getElement();
-            if(div.getChildCount()>1) {
-                div.replaceChild(svg.getElement(), div.getLastChild());
-            } else {
-                div.appendChild(svg.getElement());
-            }
-
-            // Render thumbnail
-            thumbnail.diagramRendered(content, null);
-
-            // Set initial translation matrix
-            initialTM = getInitialCTM();
-            initialBB = svg.getBBox();
-            ctm = initialTM;
-            fitALL(false);
-
-            if(analysisType!=null && analysisType!=AnalysisType.NONE) {
-                clearOverlay();
-                overlayAnalysisResults();
-            }
-//        }
+        setContext(context);
     }
 
     @Override
     public void contentRequested() {
-//        setVisible(false); //TODO remove this. Should be handled at container level
         context = null;
         if(svg!=null) {
             if(getElement().getChildCount()>1) {
@@ -226,17 +166,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         thumbnail.contentRequested();
     }
 
-//    public void highlight(GraphObject obj){
-//        resetHighlight(true);
-//        if(obj!=null) {
-//            SVGEntity svgEntity = entities.get(obj.getStId());
-//            if (svgEntity != null) {
-//                highlightElement(svgEntity.getHoverableElement());
-//                thumbnail.setHoveredItem(svgEntity.getHoverableElement().getId());
-////                eventBus.fireEventFromSource(new SVGEntityHoveredEvent(svgEntity.getHoverableElement().getId()), this);
-//            }
-//        }
-//    }
 
     @Override
     public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
@@ -255,14 +184,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         }
         return rtn;
     }
-
-//    public void resetHighlight() {
-//        if(hovered!=null) {
-//            unHighlightElement(hovered);
-//            thumbnail.setHoveredItem(null);
-////            eventBus.fireEventFromSource(new SVGEntityHoveredEvent(null), this);
-//        }
-//    }
 
     @Override
     public boolean resetHighlight(boolean notify) {
@@ -297,19 +218,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         return rtn;
     }
 
-//    public void select(GraphObject obj) {
-//        resetSelection();
-//        if (obj != null) {
-//            SVGEntity svgEntity = entities.get(obj.getStId());
-//            if (svgEntity != null) {
-//                OMElement toSelect = svgEntity.getHoverableElement();
-//                setSelectedElement(toSelect);
-//                thumbnail.setSelectedItem(toSelect.getId());
-////                eventBus.fireEventFromSource(new SVGEntitySelectedEvent(toSelect.getId()), this);
-//            }
-//        }
-//    }
-
     @Override
     public boolean resetSelection(boolean notify) {
         boolean rtn = false;
@@ -325,14 +233,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         return rtn;
     }
 
-//    public void resetSelection() {
-//        if(selected!=null) {
-//            resetSelectedElement();
-//            thumbnail.setSelectedItem(null);
-////            eventBus.fireEventFromSource(new SVGEntitySelectedEvent(null), this);
-//        }
-//    }
-
     @Override
     public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
         if(context!=null && svg!=null) {
@@ -340,16 +240,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
             overlayAnalysisResults();
         }
     }
-
-//    @Override
-//    public void onAnalysisReset(AnalysisResetEvent event) {
-//        analysisType = AnalysisType.NONE;
-//        expressionSummary = null;
-//        selectedExpCol = 0;
-//        if(svg!=null) {
-//            clearOverlay();
-//        }
-//    }
 
     @Override
     public void resetAnalysis() {
@@ -378,9 +268,10 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void loadAnalysis() {
-        analysisType = context.getAnalysisStatus().getAnalysisType();
-        pathwaySummaries = event.getPathwaySummaries();
-        expressionSummary = context.getAnalysisStatus().getExpressionSummary();
+        AnalysisStatus analysisStatus = context.getAnalysisStatus();
+        analysisType = analysisStatus.getAnalysisType();
+//        pathwaySummaries = event.getPathwaySummaries();
+        expressionSummary = analysisStatus.getExpressionSummary();
         selectedExpCol = 0;
         if(svg!=null) {
             clearOverlay();
@@ -418,14 +309,14 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         }
     }
 
-    @Override
-    public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
-        selectedExpCol = e.getColumn();
-        if(svg!=null) {
-            clearOverlay();
-            overlayAnalysisResults();
-        }
-    }
+//    @Override
+//    public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
+//        selectedExpCol = e.getColumn();
+//        if(svg!=null) {
+//            clearOverlay();
+//            overlayAnalysisResults();
+//        }
+//    }
 
     @Override
     protected void onLoad() {
@@ -535,6 +426,20 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         applyCTM(true);
     }
 
+    private void applyCTM(boolean fireEvent) {
+        sb.setLength(0);
+        sb.append("matrix(").append(ctm.getA()).append(",").append(ctm.getB()).append(",").append(ctm.getC()).append(",")
+                .append(ctm.getD()).append(",").append(ctm.getE()).append(",").append(ctm.getF()).append(")");
+        for (OMSVGElement svgLayer : svgLayers) {
+            svgLayer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, sb.toString());
+        }
+        zFactor = ctm.getA();
+
+        if(fireEvent) {
+            notifyAboutChangeInView();
+        }
+    }
+
     private SVGEntity addOrUpdateSVGEntity(OMElement element) {
         String elementId = element.getId();
         String stId = elementId.substring(elementId.indexOf("-") + 1);
@@ -626,6 +531,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         }
     }
 
+    @Deprecated
     private double getRatio(PathwaySummary p) {
         EntityStatistics stats = p.getEntities();
         Integer found = stats.getFound() != null ? stats.getFound() : 0;
@@ -668,6 +574,18 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         addDomHandler(SVGPanel.this, ContextMenuEvent.getType());
     }
 
+    private void notifyAboutChangeInView() {
+        if(svg != null && ctm !=null) {
+            OMSVGPoint from = svg.createSVGPoint(0, 0);
+            from = from.matrixTransform(ctm.inverse());
+
+            OMSVGPoint to = svg.createSVGPoint(getOffsetWidth(), getOffsetHeight());
+            to = to.matrixTransform(ctm.inverse());
+
+            thumbnail.diagramZoomEvent(new Box(from.getX(), from.getY(), to.getX(), to.getY()));
+        }
+    }
+
     private void notifySelection(String elementId){
         GraphObject selected = null;
         if(elementId!=null) {
@@ -685,29 +603,32 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     }
 
     private void overlayAnalysisResults() {
-        for (PathwaySummary p : pathwaySummaries) {
-            overlayEntity(p);
+        for (GraphPathway graphPathway : context.getContent().getEncapsulatedPathways()){
+            overlayEntity(graphPathway);
         }
     }
 
-    private void overlayEntity(PathwaySummary pathwaySummary) {
-        SVGEntity entity = entities.get(pathwaySummary.getStId());
+    private void overlayEntity(GraphPathway graphPathway) {
+        SVGEntity entity = entities.get(graphPathway.getStId());
         if(entity!=null) {
             OMElement el = entity.getOverlay();
             if(el!=null) {
+                float percentage;
                 switch (analysisType) {
                     case SPECIES_COMPARISON:
                     case OVERREPRESENTATION:
                         String enrichColour = hex2Rgb(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax(), 0.9f);
-                        overlayEntity(pathwaySummary.getStId(), (float) getRatio(pathwaySummary), enrichColour);
+                        percentage = graphPathway.isHit() ? graphPathway.getPercentage().floatValue() : MIN_OVERLAY;
+                        overlayEntity(graphPathway.getStId(), percentage, enrichColour);
                         break;
                     case EXPRESSION:
+                        percentage = graphPathway.isHit() ? graphPathway.getPercentage().floatValue() : MIN_OVERLAY;
                         String expressionColour = AnalysisColours.get().expressionGradient.getColor(
-                                pathwaySummary.getEntities().getExp().get(selectedExpCol),
+                                graphPathway.getExpression(selectedExpCol).floatValue(),
                                 expressionSummary.getMin(),
                                 expressionSummary.getMax()
                         );
-                        overlayEntity(pathwaySummary.getStId(), (float) getRatio(pathwaySummary), hex2Rgb(expressionColour, 0.9f));
+                        overlayEntity(graphPathway.getStId(), percentage, hex2Rgb(expressionColour, 0.9f));
                         break;
                 }
             }
@@ -749,21 +670,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         }
     }
 
-    //ONLY for testing purpoces
-    private void testOverlay() {
-        clearOverlay();
-        String enrichColour = hex2Rgb(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax(), 0.7f);
-        //Apoptosis - Marissa's draft EHDL
-        overlayEntity("R-HSA-169911", 0.5f, enrichColour);
-        overlayEntity("R-HSA-5357769", 0.5f, enrichColour);
-        overlayEntity("R-HSA-109606", 0.5f, enrichColour);
-        overlayEntity("R-HSA-75153", 0.5f, enrichColour);
-
-        //Collagen Formation - for cristoffer's draft EHLD
-//        overlayEntity("R-HSA-1650814", 0.5f, enrichColour);
-//        overlayEntity("R-HSA-2022090", 0.5f, enrichColour);
-    }
-
     @Override
     public void highlightInteractor(DiagramInteractor diagramInteractor) {
         //Nothing here
@@ -780,17 +686,74 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void setContext(Context context) {
+        this.context = context;
+        Content content = context.getContent();
+        this.svg = (OMSVGSVGElement) ((EHLDContent)content).getSVG().cloneNode(true);
 
+        entities = new HashMap<>();
+        for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
+            addOrUpdateSVGEntity(child);
+        }
+
+        for (SVGEntity svgEntity : entities.values()) {
+            OMElement child = svgEntity.getHoverableElement();
+            if(child!=null) {
+                child.addDomHandler(SVGPanel.this, MouseUpEvent.getType());
+                child.addDomHandler(SVGPanel.this, MouseOverEvent.getType());
+                child.addDomHandler(SVGPanel.this, MouseOutEvent.getType());
+                child.addDomHandler(SVGPanel.this, DoubleClickEvent.getType());
+                // Set the pointer to the active regions
+                child.setAttribute("style", CURSOR);
+            }
+        }
+
+        // Identify all layers by getting all top-level g elements
+        svgLayers = getRootLayers();
+
+        // Clone and attach defs (filters - clipping paths) to the root SVG structure
+        defs = (OMSVGDefsElement) baseDefs.cloneNode(true);
+        svg.appendChild(defs);
+
+        // Add the event handlers
+        svg.addMouseDownHandler(this);
+        svg.addMouseMoveHandler(this);
+        svg.addMouseUpHandler(this);
+
+        // Remove viewbox and set size
+        svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
+        setSize(getOffsetWidth(), getOffsetHeight());
+
+        Element div = SVGPanel.this.getElement();
+        if(div.getChildCount()>1) {
+            div.replaceChild(svg.getElement(), div.getLastChild());
+        } else {
+            div.appendChild(svg.getElement());
+        }
+
+        // Render thumbnail
+        thumbnail.diagramRendered(content, null);
+
+        // Set initial translation matrix
+        initialTM = getInitialCTM();
+        initialBB = svg.getBBox();
+        ctm = initialTM;
+        fitALL(false);
     }
 
     @Override
     public void resetContext() {
-
+        this.context = null;
     }
 
     @Override
     public void expressionColumnChanged() {
-
+        if (context != null) {
+            selectedExpCol = context.getAnalysisStatus().getColumn();
+            if (svg != null) {
+                clearOverlay();
+                overlayAnalysisResults();
+            }
+        }
     }
 
     @Override

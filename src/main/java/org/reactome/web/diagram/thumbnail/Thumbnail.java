@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.client.thumbnails;
+package org.reactome.web.diagram.thumbnail;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.reactome.web.diagram.data.content.Content;

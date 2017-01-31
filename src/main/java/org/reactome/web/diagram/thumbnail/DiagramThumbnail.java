@@ -2,32 +2,25 @@ package org.reactome.web.diagram.thumbnail;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import org.reactome.web.diagram.client.thumbnails.Thumbnail;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.Compartment;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
-import org.reactome.web.diagram.events.*;
-import org.reactome.web.diagram.handlers.*;
+import org.reactome.web.diagram.events.ThumbnailAreaMovedEvent;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.thumbnail.render.ThumbnailRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
-import org.reactome.web.diagram.util.Console;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
