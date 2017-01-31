@@ -6,6 +6,7 @@ import org.reactome.web.diagram.util.svg.handlers.SVGEntityHoveredHandler;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
+@Deprecated
 public class SVGEntityHoveredEvent extends GwtEvent<SVGEntityHoveredHandler> {
     public static Type<SVGEntityHoveredHandler> TYPE = new Type<>();
 

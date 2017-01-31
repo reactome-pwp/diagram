@@ -7,6 +7,7 @@ import org.reactome.web.diagram.util.svg.events.SVGEntitySelectedEvent;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
+@Deprecated
 public interface SVGEntitySelectedHandler extends EventHandler {
 
     void onSVGEntitySelected(SVGEntitySelectedEvent event);

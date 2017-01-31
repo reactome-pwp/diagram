@@ -6,6 +6,7 @@ import org.reactome.web.diagram.util.svg.handlers.SVGEntitySelectedHandler;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
+@Deprecated
 public class SVGEntitySelectedEvent extends GwtEvent<SVGEntitySelectedHandler> {
     public static Type<SVGEntitySelectedHandler> TYPE = new Type<>();
 

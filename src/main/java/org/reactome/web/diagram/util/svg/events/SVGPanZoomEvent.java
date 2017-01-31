@@ -7,6 +7,7 @@ import org.vectomatic.dom.svg.OMSVGPoint;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
+@Deprecated
 public class SVGPanZoomEvent extends GwtEvent<SVGPanZoomHandler> {
     public static Type<SVGPanZoomHandler> TYPE = new Type<>();
 
