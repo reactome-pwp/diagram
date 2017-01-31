@@ -34,6 +34,7 @@ import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.util.ViewportUtils;
 import org.reactome.web.diagram.util.chemical.ChemicalImageLoader;
 import org.reactome.web.diagram.util.pdbe.PDBeLoader;
+import org.reactome.web.pwp.model.client.RESTFulClient;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.Collection;
@@ -371,7 +372,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements UserActionsMana
                         canvas.exportImage(content.getStableId());
                         break;
                     } else if(event.getOption() == PPTX) {
-                        String url = "/ContentService/exporter/diagram/"
+                        //The following uses the SERVER because the widget needs to work when stand-alone
+                        String url = RESTFulClient.SERVER + "/ContentService/exporter/diagram/"
                                 + content.getStableId() + ".pptx?profile="
                                 + DiagramColours.get().getSelectedProfileName();
                         Window.open(url, "_self", "");
