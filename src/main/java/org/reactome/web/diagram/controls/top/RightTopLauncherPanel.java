@@ -9,11 +9,20 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.controls.top.common.AbstractMenuDialog;
 import org.reactome.web.diagram.controls.top.illustrations.DiagramIllustrations;
 import org.reactome.web.diagram.controls.top.key.DiagramKey;
+import org.reactome.web.diagram.controls.top.key.EHLDKey;
+import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.events.CanvasExportRequestedEvent;
 import org.reactome.web.diagram.events.ContentLoadedEvent;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
+import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 
 
 /**
@@ -24,7 +33,8 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
     private EventBus eventBus;
 
     private DiagramIllustrations diagramIllustrations;
-    private DiagramKey diagramKey;
+    private AbstractMenuDialog diagramKey;
+    private Map<Content.Type, AbstractMenuDialog> keys;
 
     private PwpButton illustrationsBtn;
     private PwpButton captureBtn;
@@ -32,10 +42,14 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
 
     public RightTopLauncherPanel(EventBus eventBus) {
         this.setStyleName(RESOURCES.getCSS().launcherPanel());
-
         this.eventBus = eventBus;
+
+        this.keys = new HashMap<>();
+        this.keys.put(DIAGRAM, new DiagramKey(eventBus));
+        this.keys.put(SVG, new EHLDKey(eventBus));
+        this.diagramKey = keys.get(SVG);
+
         this.diagramIllustrations = new DiagramIllustrations(eventBus);
-        this.diagramKey = new DiagramKey(eventBus);
 
         this.illustrationsBtn = new PwpButton("Show illustrations", RESOURCES.getCSS().illustrations(), this);
         this.add(illustrationsBtn);
@@ -72,10 +86,8 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        switch (event.getContext().getContent().getType()) {
-            case DIAGRAM:   diagramKeyBtn.setEnabled(true);     break;
-            case SVG:       diagramKeyBtn.setEnabled(false);    break;
-        }
+        diagramKey.hide();
+        diagramKey = keys.get(event.getContext().getContent().getType());
     }
 
 
