@@ -18,8 +18,14 @@ import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.factory.DiagramObjectException;
 import org.reactome.web.diagram.data.layout.factory.DiagramObjectsFactory;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
-import org.reactome.web.diagram.events.*;
-import org.reactome.web.diagram.handlers.*;
+import org.reactome.web.diagram.events.ControlActionEvent;
+import org.reactome.web.diagram.events.DiagramProfileChangedEvent;
+import org.reactome.web.diagram.events.GraphObjectHoveredEvent;
+import org.reactome.web.diagram.events.GraphObjectSelectedEvent;
+import org.reactome.web.diagram.handlers.ControlActionHandler;
+import org.reactome.web.diagram.handlers.DiagramProfileChangedHandler;
+import org.reactome.web.diagram.handlers.GraphObjectHoveredHandler;
+import org.reactome.web.diagram.handlers.GraphObjectSelectedHandler;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
@@ -31,13 +37,11 @@ import org.reactome.web.diagram.util.Console;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.reactome.web.diagram.data.content.Content.Type.SVG;
-
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class DiagramKey extends AbstractMenuDialog implements GraphObjectHoveredHandler, GraphObjectSelectedHandler,
-        ContentLoadedHandler, DiagramProfileChangedHandler, ControlActionHandler {
+        DiagramProfileChangedHandler, ControlActionHandler {
 
     private static final Double FACTOR = 0.82;
     private static final Coordinate OFFSET = CoordinateFactory.get(0, 0);
@@ -170,7 +174,6 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
         this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
         this.eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
         this.eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
-        this.eventBus.addHandler(ContentLoadedEvent.TYPE, this);
         this.eventBus.addHandler(ControlActionEvent.TYPE, this);
     }
 
@@ -193,13 +196,6 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
         highlight(selection, this.selected);
     }
 
-
-    @Override
-    public void onContentLoaded(ContentLoadedEvent event) {
-        if(event.getContext().getContent().getType() == SVG) {
-            setVisible(false);
-        }
-    }
 
     @Override
     public void onControlAction(ControlActionEvent event) {
