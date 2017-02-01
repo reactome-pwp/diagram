@@ -47,6 +47,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
+
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -143,7 +145,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     }
 
     @Override
-    public void exportView() {
+    public void exportView(Option option) {
         if (context != null) {
             exportView(context.getContent().getStableId());
         }
@@ -681,7 +683,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     @Override
     public GraphObject getSelected() {
         GraphObject rtn = null;
-        if(selected !=null) {
+        if(context!=null && selected !=null) {
             rtn = context.getContent().getDatabaseObject(SVGUtil.keepStableId(selected.getId()));
         }
         return rtn;
@@ -783,5 +785,4 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     public void interactorsResourceChanged(OverlayResource resource) {
         //Nothing here
     }
-
 }

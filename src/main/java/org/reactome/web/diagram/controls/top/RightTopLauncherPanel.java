@@ -23,6 +23,7 @@ import java.util.Map;
 
 import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 import static org.reactome.web.diagram.data.content.Content.Type.SVG;
+import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option.IMAGE;
 
 
 /**
@@ -68,7 +69,7 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
     public void onClick(ClickEvent event) {
         PwpButton btn = (PwpButton) event.getSource();
         if (btn.equals(this.captureBtn)) {
-            this.eventBus.fireEventFromSource(new CanvasExportRequestedEvent(), this);
+            this.eventBus.fireEventFromSource(new CanvasExportRequestedEvent(IMAGE), this);
         } else if (btn.equals(this.diagramKeyBtn)) {
             if (this.diagramKey.isShowing()) {
                 this.diagramKey.hide();

@@ -182,7 +182,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
     @Override
     public void onDiagramExportRequested(CanvasExportRequestedEvent event) {
-        activeVisualiser.exportView();
+        activeVisualiser.exportView(event.getOption());
     }
 
     @Override
