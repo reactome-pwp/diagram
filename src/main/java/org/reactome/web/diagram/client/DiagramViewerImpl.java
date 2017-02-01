@@ -12,14 +12,17 @@ import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.GraphObjectFactory;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
-import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.loader.AnalysisDataLoader;
 import org.reactome.web.diagram.data.loader.AnalysisTokenValidator;
+import org.reactome.web.diagram.data.loader.FlaggedElementsLoader;
 import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
+import org.reactome.web.diagram.util.Console;
+import org.reactome.web.pwp.model.classes.DatabaseObject;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,7 +37,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         GraphObjectHoveredHandler, GraphObjectSelectedHandler,
         DiagramObjectsFlagRequestHandler, DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler,
         IllustrationSelectedHandler,
-        FireworksOpenedHandler {
+        FireworksOpenedHandler, FlaggedElementsLoader.Handler {
 
     private Context context;
     private final ViewerContainer viewerContainer;
@@ -183,24 +186,27 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         }
     }
 
+    FlaggedElementsLoader flaggedElementsLoader = new FlaggedElementsLoader(this);
+
     @Override
     public void onDiagramObjectsFlagRequested(DiagramObjectsFlagRequestedEvent event) {
-        String term = event.getTerm();
-        Set<GraphObject> items = context.getContent().getIdentifierMap().getElements(term);
-        Set<DiagramObject> flagged = new HashSet<>();
-        if (items != null) {
-            for (GraphObject item : items) {
-                flagged.addAll(item.getDiagramObjects());
-                if (item instanceof GraphPhysicalEntity) {
-                    GraphPhysicalEntity pe = (GraphPhysicalEntity) item;
-                    for (GraphPhysicalEntity entity : pe.getParentLocations()) {
-                        flagged.addAll(entity.getDiagramObjects());
-                    }
-                }
-            }
-        }
         boolean notify = !event.getSource().equals(this);
+        flaggedElementsLoader.load(context.getContent(), event.getTerm(), notify);
+    }
+
+    @Override
+    public void flaggedElementsLoaded(String term, Collection<DatabaseObject> toFlag, boolean notify) {
+        Set<DiagramObject> flagged = new HashSet<>();
+        for (DatabaseObject object : toFlag) {
+            GraphObject graphObject = context.getContent().getDatabaseObject(object.getDbId());
+            flagged.addAll(graphObject.getDiagramObjects());
+        }
         eventBus.fireEventFromSource(new DiagramObjectsFlaggedEvent(term, flagged, notify), this);
+    }
+
+    @Override
+    public void onFlaggedElementsLoaderError(Throwable exception) {
+        Console.error(exception.getMessage());
     }
 
     @Override
@@ -225,9 +231,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
 
     @Override
     public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
-        Scheduler.get().scheduleDeferred(() -> {
-            viewerContainer.expressionColumnChanged();
-        });
+        Scheduler.get().scheduleDeferred(viewerContainer::expressionColumnChanged);
     }
 
     @Override
@@ -420,6 +424,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     private void resetContext() {
         viewerContainer.resetContext();
         if (this.context != null) {
+            resetFlaggedItems();
             //Once a context is due to be replaced, the analysis overlay has to be cleaned up
             clearAnalysisOverlay();
             this.context = null;
