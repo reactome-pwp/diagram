@@ -341,7 +341,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     private void overview(){
-        eventBus.fireEvent(new FireworksOpenedEvent(context.getContent().getDbId()));
+        fireEvent(new FireworksOpenedEvent(context.getContent().getDbId()));
     }
 
     private void setActiveVisualiser(Context context){
