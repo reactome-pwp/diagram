@@ -98,14 +98,8 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
     private Thumbnail thumbnail;
     private List<Canvas> canvases = new LinkedList<>();
 
-//    private IllustrationPanel illustration;
-//    private SVGPanel svgPanel;
-//    private SVGThumbnail svgThumbnail;
-
     private int column = 0;
     private Double hoveredExpression = null;
-
-//    private Anchor watermark;
 
     public DiagramCanvas(EventBus eventBus) {
         this.getElement().addClassName("pwp-DiagramCanvas");
@@ -123,7 +117,6 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         InteractorColours.initialise(eventBus);
 
         this.thumbnail = new DiagramThumbnail(eventBus);
-//        this.svgThumbnail = new SVGThumbnail(eventBus);
 
         this.initHandlers();
     }
@@ -242,25 +235,9 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         }
     }
 
-//    public void setIllustration(String url){
-//        this.illustration.setUrl(url);
-//    }
-//
-//    public void resetIllustration(){
-//        if(this.illustration!=null) {
-//            this.illustration.reset();
-//        }
-//    }
-
     public void setCursor(Style.Cursor cursor) {
         this.buffer.getCanvas().getStyle().setCursor(cursor);
     }
-
-//    @Override
-//    protected void onLoad() {
-//        super.onLoad();
-//        Scheduler.get().scheduleDeferred(() -> initialise());
-//    }
 
     public void setSize(int width, int height){
         this.setWidth(width+"px");
@@ -343,35 +320,6 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
     public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
         this.column = e.getColumn();
     }
-
-//    public void setWatermarkURL(Context context, GraphObject selection, String flag) {
-//        if(watermark!=null) {
-//            StringBuilder href = new StringBuilder(DiagramFactory.WATERMARK_BASE_URL);
-//            String pathwayStId = context == null ? null : context.getContent().getStableId();
-//            if (pathwayStId != null && !pathwayStId.isEmpty()) {
-//                href.append("#/").append(pathwayStId);
-//                if (selection != null) {
-//                    if (selection.getStId() != null && !selection.getStId().isEmpty()) {
-//                        href.append("&SEL=").append(selection.getStId());
-//                    }
-//                }
-//                AnalysisStatus analysisStatus = context.getAnalysisStatus();
-//                if (analysisStatus != null) {
-//                    href.append("&DTAB=AN").append("&ANALYSIS=").append(analysisStatus.getToken()).append("&RESOURCE=").append(analysisStatus.getResource());
-//                }
-//                if (flag != null && !flag.isEmpty()) {
-//                    href.append("&FLG=").append(flag);
-//                }
-//            }
-//            watermark.setHref(href.toString());
-//        }
-//    }
-//
-//    public void setWatermarkVisible(boolean visible){
-//        if(watermark!=null) {
-//            watermark.setVisible(visible);
-//        }
-//    }
 
     public void renderInteractors(Collection<DiagramInteractor> items, Context context){
         cleanCanvas(interactors);
