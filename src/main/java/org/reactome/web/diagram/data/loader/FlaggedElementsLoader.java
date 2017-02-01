@@ -98,8 +98,8 @@ public class FlaggedElementsLoader implements RequestCallback {
     private String getPathways(Collection<String> pathways) {
         StringBuilder rtn = new StringBuilder();
         for (String pathway : pathways) {
-            rtn.append(pathway);
+            rtn.append(pathway).append(",");
         }
-        return rtn.delete(rtn.length() - 2, rtn.length() - 1).toString();
+        return rtn.delete(rtn.length() - 1, rtn.length()).toString();
     }
 }
