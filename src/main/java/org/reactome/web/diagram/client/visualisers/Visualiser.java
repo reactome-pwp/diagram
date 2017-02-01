@@ -5,7 +5,9 @@ import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
-import org.reactome.web.diagram.renderers.common.HoveredItem;
+
+import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
+
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -22,7 +24,7 @@ public interface Visualiser extends IsWidget {
 
     void padding(int dX, int dY);
 
-    void exportView();
+    void exportView(Option option);
 
     void contentLoaded(Context context);
 

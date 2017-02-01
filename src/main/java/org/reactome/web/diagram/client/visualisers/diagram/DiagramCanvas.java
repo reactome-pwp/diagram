@@ -7,9 +7,11 @@ import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.analysis.client.model.AnalysisType;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
@@ -319,9 +321,13 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         }).scheduleRepeating(20);
     }
 
-//    public void exportEHLDImage(final String diagramStId){
-//        svgPanel.exportView(diagramStId);
-//    }
+    public void exportPPT(final String diagramStId) {
+        //The following uses the SERVER because the widget needs to work when stand-alone
+        String url = DiagramFactory.SERVER + "/ContentService/exporter/diagram/"
+                + diagramStId + ".pptx?profile="
+                + DiagramColours.get().getSelectedProfileName();
+        Window.open(url, "_self", "");
+    }
 
     public void notifyHoveredExpression(DiagramObject item, Coordinate model) {
         Renderer renderer = rendererManager.getRenderer(item);
