@@ -6,6 +6,9 @@ import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
 import org.vectomatic.dom.svg.utils.ParserException;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
@@ -13,10 +16,11 @@ public class SVGLoader implements RequestCallback {
 
     public interface Handler {
         void onSvgLoaded(String stId, OMSVGSVGElement svg, long time);
+
         void onSvgLoaderError(String stId, Throwable exception);
     }
 
-    private static String PREFIX = DiagramFactory.SERVER + "/svg/";
+    private static String PREFIX = DiagramFactory.SERVER + "/download/current/ehld/";
     private static String SUFFIX = "?v=" + LoaderManager.version;
 
 
@@ -28,21 +32,19 @@ public class SVGLoader implements RequestCallback {
         this.handler = handler;
     }
 
-    public void cancel(){
-        if(this.request!=null && this.request.isPending()){
+    public void cancel() {
+        if (this.request != null && this.request.isPending()) {
             this.stId = null;
             this.request.cancel();
         }
     }
 
-    void load(String stId){
+    void load(String stId) {
         this.stId = stId;
-        
-        if(!stId.endsWith(".svg")) {
-            stId = stId + ".svg";
-        }
 
-        String url = PREFIX + stId +  SUFFIX;
+        if (!stId.endsWith(".svg")) stId = stId + ".svg";
+
+        String url = PREFIX + stId + SUFFIX;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             this.request = requestBuilder.sendRequest(null, this);
@@ -72,5 +74,41 @@ public class SVGLoader implements RequestCallback {
     @Override
     public void onError(Request request, Throwable exception) {
         this.handler.onSvgLoaderError(stId, exception);
+    }
+
+    public static boolean isSVGAvailable(String identifier) {
+        //If availableSVG is null, we cannot ensure the SVG isn't available because the data is not yet retrieved
+        return availableSVG == null || availableSVG.contains(identifier);
+    }
+
+    private static Set<String> availableSVG = null;
+
+    static {
+        String url = PREFIX + "svgsummary.txt";
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
+        try {
+            requestBuilder.sendRequest(null, new RequestCallback() {
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                    switch (response.getStatusCode()) {
+                        case Response.SC_OK:
+                            availableSVG = new HashSet<>();
+                            for (String identifier : response.getText().split("\\n")) {
+                                availableSVG.add(identifier);
+                            }
+                            break;
+                        default:
+                            //Nothing here
+                    }
+                }
+
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    //Nothing here
+                }
+            });
+        } catch (RequestException e) {
+            //Nothing here
+        }
     }
 }

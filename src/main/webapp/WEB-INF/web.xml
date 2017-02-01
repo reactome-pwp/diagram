@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
     <!-- Default page to serve -->
     <welcome-file-list>
@@ -15,8 +15,8 @@
         <init-param>
             <param-name>proxyHost</param-name>
             <!--<param-value>localhost</param-value>-->
-            <param-value>www.reactome.org</param-value>
-            <!--<param-value>reactomedev.oicr.on.ca</param-value>-->
+            <!--<param-value>www.reactome.org</param-value>-->
+            <param-value>reactomedev.oicr.on.ca</param-value>
             <!--<param-value>reactomecurator.oicr.on.ca</param-value>-->
             <!--<param-value>reactomerelease.oicr.on.ca</param-value>-->
         </init-param>
@@ -90,8 +90,8 @@
         <init-param>
             <param-name>proxyHost</param-name>
             <!--<param-value>localhost</param-value>-->
-            <param-value>www.reactome.org</param-value>
-            <!--<param-value>reactomedev.oicr.on.ca</param-value>-->
+            <!--<param-value>www.reactome.org</param-value>-->
+            <param-value>reactomedev.oicr.on.ca</param-value>
             <!--<param-value>reactomerelease.oicr.on.ca</param-value>-->
         </init-param>
         <init-param>
@@ -143,7 +143,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>SVGProxy</servlet-name>
-        <url-pattern>/svg/*</url-pattern>
+        <url-pattern>/download/current/ehld/*</url-pattern>
     </servlet-mapping>
 
 </web-app>

@@ -79,7 +79,11 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
         if (context != null) {
             eventBus.fireEventFromSource(new ContentLoadedEvent(context), this);
         } else {
-            svgLoader.load(identifier);
+            if (SVGLoader.isSVGAvailable(identifier)) {
+                svgLoader.load(identifier);
+            } else {
+                layoutLoader.load(identifier);
+            }
         }
     }
 
@@ -95,6 +99,8 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
         Context context = new Context(ContentFactory.getContent(stId, svg));
         this.context = context;
         graphLoader.load(stId);
+//        eventBus.fireEventFromSource(new ContentLoadedEvent(svg), this);
+//        Nothing else here. Plan A finishes if there is an SVG
     }
 
     @Override
