@@ -11,7 +11,7 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
  */
 public abstract class FilterFactory {
 
-    private static int SHADOW_RADIUS = 8;
+    private static int SHADOW_RADIUS = 10;
     private static float OUTLINE_THICKNESS = 2f;
 
     /**
@@ -280,6 +280,16 @@ public abstract class FilterFactory {
         return combinedFilter;
     }
 
+    /**
+     * Returns a filter that combines the steps of a ShadowFilter with 2 outlines nested.
+     * It is used for double highlighting purposes (e.g hovering and flagging)
+     *
+     * @param id The id of the returned filter
+     * @param colour1 The colour of the inner outline
+     * @param colour2 The colour of the outer outline
+     * @return
+     */
+
     public static OMSVGFilterElement getShadowWithDoubleOutlineFilter(String id, FilterColour colour1, FilterColour colour2) {
         OMSVGFEColorMatrixElement cMatrix1 = new OMSVGFEColorMatrixElement();
         cMatrix1.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
@@ -304,21 +314,6 @@ public abstract class FilterFactory {
         morpho2.setAttribute(SVGConstants.SVG_RADIUS_ATTRIBUTE, "" + (OUTLINE_THICKNESS + 2));
         morpho2.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "morphoOut2");
 
-//        OMSVGFEMergeElement merge = new OMSVGFEMergeElement();
-//        OMSVGFEMergeNodeElement mergeNode1 = new OMSVGFEMergeNodeElement();
-//        mergeNode1.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "morphoOut2");
-//
-//        OMSVGFEMergeNodeElement mergeNode2 = new OMSVGFEMergeNodeElement();
-//        mergeNode2.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "morphoOut1");
-//
-//        OMSVGFEMergeNodeElement mergeNode3 = new OMSVGFEMergeNodeElement();
-//        mergeNode3.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
-//
-//        merge.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "mergeOut");
-//        merge.appendChild(mergeNode1);
-//        merge.appendChild(mergeNode2);
-//        merge.appendChild(mergeNode3);
-
         //========== Shadow Filter =========//
         OMSVGFEOffsetElement offSet = new OMSVGFEOffsetElement();
         offSet.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
@@ -331,15 +326,6 @@ public abstract class FilterFactory {
 
 
         //Final combination of the two filters
-//        OMSVGFEMergeElement result = new OMSVGFEMergeElement();
-//        OMSVGFEMergeNodeElement resultNode1 = new OMSVGFEMergeNodeElement();
-//        resultNode1.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "blurOut");
-//        OMSVGFEMergeNodeElement resultNode2 = new OMSVGFEMergeNodeElement();
-//        resultNode2.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "mergeOut");
-//        result.appendChild(resultNode1);
-//        result.appendChild(resultNode2);
-
-
         OMSVGFEMergeElement merge = new OMSVGFEMergeElement();
 
         OMSVGFEMergeNodeElement mergeNode1 = new OMSVGFEMergeNodeElement();
