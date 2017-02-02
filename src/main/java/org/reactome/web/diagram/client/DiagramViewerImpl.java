@@ -91,6 +91,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
 
         eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
+
+        eventBus.addHandler(FireworksOpenedEvent.TYPE, this);
     }
 
     @Override

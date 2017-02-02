@@ -127,7 +127,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
         //Illustration panel
         this.add(this.illustration = new IllustrationPanel(), 0 , 0);
-//        this.getElement().getStyle().setBackgroundColor("green");
     }
 
     public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
@@ -341,7 +340,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     private void overview(){
-        eventBus.fireEvent(new FireworksOpenedEvent(context.getContent().getDbId()));
+        eventBus.fireEventFromSource(new FireworksOpenedEvent(context.getContent().getDbId()), this);
     }
 
     private void setActiveVisualiser(Context context){
