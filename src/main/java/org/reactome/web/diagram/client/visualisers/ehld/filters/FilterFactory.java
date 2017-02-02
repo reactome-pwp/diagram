@@ -311,7 +311,7 @@ public abstract class FilterFactory {
         OMSVGFEMorphologyElement morpho2 = new OMSVGFEMorphologyElement();
         morpho2.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "cMatrixOut2");
         morpho2.setAttribute(SVGConstants.SVG_OPERATOR_ATTRIBUTE, SVGConstants.SVG_DILATE_VALUE);
-        morpho2.setAttribute(SVGConstants.SVG_RADIUS_ATTRIBUTE, "" + (OUTLINE_THICKNESS + 2));
+        morpho2.setAttribute(SVGConstants.SVG_RADIUS_ATTRIBUTE, "" + (OUTLINE_THICKNESS + 3));
         morpho2.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "morphoOut2");
 
         //========== Shadow Filter =========//
