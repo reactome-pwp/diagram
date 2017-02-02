@@ -146,7 +146,6 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         baseDefs.appendChild(FilterFactory.getDoubleOutlineFilter(SELECTION_FLAGGING_FILTER, FilterColour.BLUE, FilterColour.CYAN));
         baseDefs.appendChild(FilterFactory.getShadowWithDoubleOutlineFilter(SELECTION_FLAGGING_HOVERING_FILTER, FilterColour.BLUE, FilterColour.CYAN));
 
-//        baseDefs.appendChild(FilterFactory.combine(SELECTION_HOVERING_FILTER, FilterFactory.getShadowFilter(HOVERRING_FILTER), FilterFactory.getOutlineFilter(SELECTION_FILTER, FilterColour.BLUE)));
         baseDefs.appendChild(FilterFactory.getColouredOverlayFilter(HOVERING_OVERLAY_FILTER, FilterColour.YELLOW));
         baseDefs.appendChild(FilterFactory.getColouredOverlayFilter(SELECTION_OVERLAY_FILTER, FilterColour.BLUE));
     }

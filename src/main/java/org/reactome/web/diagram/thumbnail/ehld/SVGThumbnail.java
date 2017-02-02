@@ -79,7 +79,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
         }
 
         // Remove the reactome logo from the thumbnail
-//        removeLogoFrom(svg);
+        removeLogoFrom(svg);
 
         from = svg.createSVGPoint();
         to = svg.createSVGPoint();
