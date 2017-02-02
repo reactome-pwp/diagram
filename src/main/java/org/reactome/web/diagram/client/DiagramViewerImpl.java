@@ -391,11 +391,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
 
     private void selectItem(GraphObject item, boolean notify) {
         viewerContainer.selectItem(item, notify);
-//        if (item != null) {
-//            this.setSelection(new HoveredItem(item), true, false);
-//        } else {
-//            this.resetSelection();
-//        }
     }
 
     @Override
@@ -426,7 +421,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     private void resetContext() {
         viewerContainer.resetContext();
         if (this.context != null) {
-            resetFlaggedItems();
             //Once a context is due to be replaced, the analysis overlay has to be cleaned up
             clearAnalysisOverlay();
             this.context = null;

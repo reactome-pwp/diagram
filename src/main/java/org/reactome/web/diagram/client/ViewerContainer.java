@@ -277,6 +277,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
     public void resetContext() {
         this.context = null;
+        activeVisualiser.resetFlag();
         activeVisualiser.resetContext();
     }
 
