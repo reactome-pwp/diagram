@@ -35,7 +35,6 @@ public class ContentLoadedEvent extends GwtEvent<ContentLoadedHandler> {
     public String toString() {
         return "ContentLoadedEvent{" +
                 "context=" + context +
-                "type=" + context.getContent().getType() +
                 '}';
     }
 }
