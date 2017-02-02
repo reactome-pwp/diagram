@@ -27,8 +27,6 @@ import org.reactome.web.diagram.search.searchbox.*;
 
 import java.util.List;
 
-import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
-
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
@@ -123,13 +121,9 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        if(event.getContext().getContent().getType() == DIAGRAM) {
-            this.searchBtn.setEnabled(true);
-            this.suggestionsProvider = new SuggestionsProviderImpl(event.getContext());
-            fireEvent(new SuggestionResetEvent());
-        } else {
-            this.searchBtn.setEnabled(false);
-        }
+        this.searchBtn.setEnabled(true);
+        this.suggestionsProvider = new SuggestionsProviderImpl(event.getContext());
+        fireEvent(new SuggestionResetEvent());
     }
 
     @Override
