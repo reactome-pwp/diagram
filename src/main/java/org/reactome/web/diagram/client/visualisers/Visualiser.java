@@ -5,6 +5,9 @@ import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.layout.DiagramObject;
+
+import java.util.Set;
 
 import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
 
@@ -29,12 +32,13 @@ public interface Visualiser extends IsWidget {
     void contentLoaded(Context context);
 
     void contentRequested();
-//    void layoutLoaded(Context context);
 
     boolean highlightGraphObject(GraphObject graphObject, boolean notify);
+
     void highlightInteractor(DiagramInteractor diagramInteractor);
 
     boolean resetHighlight(boolean notify);
+
     boolean resetSelection(boolean notify);
 
     boolean selectGraphObject(GraphObject graphObject, boolean notify);
@@ -42,18 +46,28 @@ public interface Visualiser extends IsWidget {
     GraphObject getSelected();
 
     void loadAnalysis();
+
     void resetAnalysis();
 
     void setContext(final Context context);
+
     void resetContext();
 
     void expressionColumnChanged();
 
     void interactorsCollapsed(String resource);
+
     void interactorsFiltered();
+
     void interactorsLayoutUpdated();
+
     void interactorsLoaded();
+
     void interactorsResourceChanged(OverlayResource resource);
 
     void setSize(int width, int height);
+
+    void flagItems(Set<DiagramObject> flaggedItems);
+
+    void resetFlag();
 }

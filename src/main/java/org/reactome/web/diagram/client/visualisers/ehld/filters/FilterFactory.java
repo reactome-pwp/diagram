@@ -11,7 +11,7 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
  */
 public abstract class FilterFactory {
 
-    private static int SHADOW_RADIUS = 6;
+    private static int SHADOW_RADIUS = 10;
     private static float OUTLINE_THICKNESS = 2f;
 
     /**
@@ -102,6 +102,64 @@ public abstract class FilterFactory {
 
         selectionFilter.appendChild(cMatrix);
         selectionFilter.appendChild(morpho);
+        selectionFilter.appendChild(merge);
+
+        return selectionFilter;
+    }
+
+
+    public static OMSVGFilterElement getDoubleOutlineFilter(String id, FilterColour colour1, FilterColour colour2) {
+        OMSVGFEColorMatrixElement cMatrix1 = new OMSVGFEColorMatrixElement();
+        cMatrix1.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
+        cMatrix1.setAttribute(SVGConstants.SVG_VALUES_ATTRIBUTE, colour1.colourMatrix);
+        cMatrix1.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "cMatrixOut1");
+
+        OMSVGFEMorphologyElement morpho1 = new OMSVGFEMorphologyElement();
+        morpho1.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "cMatrixOut1");
+        morpho1.setAttribute(SVGConstants.SVG_OPERATOR_ATTRIBUTE, SVGConstants.SVG_DILATE_VALUE);
+        morpho1.setAttribute(SVGConstants.SVG_RADIUS_ATTRIBUTE, "" + OUTLINE_THICKNESS);
+        morpho1.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "morphoOut1");
+
+
+        OMSVGFEColorMatrixElement cMatrix2 = new OMSVGFEColorMatrixElement();
+        cMatrix2.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
+        cMatrix2.setAttribute(SVGConstants.SVG_VALUES_ATTRIBUTE, colour2.colourMatrix);
+        cMatrix2.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "cMatrixOut2");
+
+        OMSVGFEMorphologyElement morpho2 = new OMSVGFEMorphologyElement();
+        morpho2.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "cMatrixOut2");
+        morpho2.setAttribute(SVGConstants.SVG_OPERATOR_ATTRIBUTE, SVGConstants.SVG_DILATE_VALUE);
+        morpho2.setAttribute(SVGConstants.SVG_RADIUS_ATTRIBUTE, "" + (OUTLINE_THICKNESS + 2));
+        morpho2.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "morphoOut2");
+
+        OMSVGFEMergeElement merge = new OMSVGFEMergeElement();
+        OMSVGFEMergeNodeElement mergeNode1 = new OMSVGFEMergeNodeElement();
+        mergeNode1.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "morphoOut2");
+
+        OMSVGFEMergeNodeElement mergeNode2 = new OMSVGFEMergeNodeElement();
+        mergeNode2.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "morphoOut1");
+
+        OMSVGFEMergeNodeElement mergeNode3 = new OMSVGFEMergeNodeElement();
+        mergeNode3.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
+
+        merge.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "mergeOut");
+        merge.appendChild(mergeNode1);
+        merge.appendChild(mergeNode2);
+        merge.appendChild(mergeNode3);
+
+
+        //Compose the filter from the primitives
+        OMSVGFilterElement selectionFilter = new OMSVGFilterElement();
+        selectionFilter.setId(id);
+        selectionFilter.setAttribute(SVGConstants.SVG_X_ATTRIBUTE, "-25%");
+        selectionFilter.setAttribute(SVGConstants.SVG_Y_ATTRIBUTE, "-25%");
+        selectionFilter.setAttribute(SVGConstants.SVG_WIDTH_ATTRIBUTE, "150%");
+        selectionFilter.setAttribute(SVGConstants.SVG_HEIGHT_ATTRIBUTE, "150%");
+
+        selectionFilter.appendChild(cMatrix1);
+        selectionFilter.appendChild(morpho1);
+        selectionFilter.appendChild(cMatrix2);
+        selectionFilter.appendChild(morpho2);
         selectionFilter.appendChild(merge);
 
         return selectionFilter;
@@ -223,13 +281,98 @@ public abstract class FilterFactory {
     }
 
     /**
-     * A generic method for combining two filters in one.
+     * Returns a filter that combines the steps of a ShadowFilter with 2 outlines nested.
+     * It is used for double highlighting purposes (e.g hovering and flagging)
      *
      * @param id The id of the returned filter
-     * @param f1 The first filter to be combined
-     * @param f2 The second filter to be combined
+     * @param colour1 The colour of the inner outline
+     * @param colour2 The colour of the outer outline
      * @return
      */
+
+    public static OMSVGFilterElement getShadowWithDoubleOutlineFilter(String id, FilterColour colour1, FilterColour colour2) {
+        OMSVGFEColorMatrixElement cMatrix1 = new OMSVGFEColorMatrixElement();
+        cMatrix1.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
+        cMatrix1.setAttribute(SVGConstants.SVG_VALUES_ATTRIBUTE, colour1.colourMatrix);
+        cMatrix1.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "cMatrixOut1");
+
+        OMSVGFEMorphologyElement morpho1 = new OMSVGFEMorphologyElement();
+        morpho1.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "cMatrixOut1");
+        morpho1.setAttribute(SVGConstants.SVG_OPERATOR_ATTRIBUTE, SVGConstants.SVG_DILATE_VALUE);
+        morpho1.setAttribute(SVGConstants.SVG_RADIUS_ATTRIBUTE, "" + OUTLINE_THICKNESS);
+        morpho1.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "morphoOut1");
+
+
+        OMSVGFEColorMatrixElement cMatrix2 = new OMSVGFEColorMatrixElement();
+        cMatrix2.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
+        cMatrix2.setAttribute(SVGConstants.SVG_VALUES_ATTRIBUTE, colour2.colourMatrix);
+        cMatrix2.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "cMatrixOut2");
+
+        OMSVGFEMorphologyElement morpho2 = new OMSVGFEMorphologyElement();
+        morpho2.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "cMatrixOut2");
+        morpho2.setAttribute(SVGConstants.SVG_OPERATOR_ATTRIBUTE, SVGConstants.SVG_DILATE_VALUE);
+        morpho2.setAttribute(SVGConstants.SVG_RADIUS_ATTRIBUTE, "" + (OUTLINE_THICKNESS + 2));
+        morpho2.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "morphoOut2");
+
+        //========== Shadow Filter =========//
+        OMSVGFEOffsetElement offSet = new OMSVGFEOffsetElement();
+        offSet.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
+        offSet.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "offOut");
+
+        OMSVGFEGaussianBlurElement blur = new OMSVGFEGaussianBlurElement();
+        blur.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "offOut");
+        blur.setAttribute(SVGConstants.SVG_STD_DEVIATION_ATTRIBUTE, "" + SHADOW_RADIUS);
+        blur.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "blurOut");
+
+
+        //Final combination of the two filters
+        OMSVGFEMergeElement merge = new OMSVGFEMergeElement();
+
+        OMSVGFEMergeNodeElement mergeNode1 = new OMSVGFEMergeNodeElement();
+        mergeNode1.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "blurOut");
+
+        OMSVGFEMergeNodeElement mergeNode2 = new OMSVGFEMergeNodeElement();
+        mergeNode2.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "morphoOut2");
+
+        OMSVGFEMergeNodeElement mergeNode3 = new OMSVGFEMergeNodeElement();
+        mergeNode3.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "morphoOut1");
+
+        OMSVGFEMergeNodeElement mergeNode4 = new OMSVGFEMergeNodeElement();
+        mergeNode4.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, OMSVGFilterElement.IN_SOURCE_GRAPHIC);
+
+        merge.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "mergeOut");
+        merge.appendChild(mergeNode1);
+        merge.appendChild(mergeNode2);
+        merge.appendChild(mergeNode3);
+        merge.appendChild(mergeNode4);
+
+        //Compose the filter from the primitives
+        OMSVGFilterElement selectionFilter = new OMSVGFilterElement();
+        selectionFilter.setId(id);
+        selectionFilter.setAttribute(SVGConstants.SVG_X_ATTRIBUTE, "-25%");
+        selectionFilter.setAttribute(SVGConstants.SVG_Y_ATTRIBUTE, "-25%");
+        selectionFilter.setAttribute(SVGConstants.SVG_WIDTH_ATTRIBUTE, "150%");
+        selectionFilter.setAttribute(SVGConstants.SVG_HEIGHT_ATTRIBUTE, "150%");
+
+        selectionFilter.appendChild(cMatrix1);
+        selectionFilter.appendChild(morpho1);
+        selectionFilter.appendChild(cMatrix2);
+        selectionFilter.appendChild(morpho2);
+        selectionFilter.appendChild(offSet);
+        selectionFilter.appendChild(blur);
+        selectionFilter.appendChild(merge);
+
+        return selectionFilter;
+    }
+
+        /**
+         * A generic method for combining two filters in one.
+         *
+         * @param id The id of the returned filter
+         * @param f1 The first filter to be combined
+         * @param f2 The second filter to be combined
+         * @return
+         */
     public static OMSVGFilterElement combine(String id, OMSVGFilterElement f1, OMSVGFilterElement f2) {
         OMSVGFilterElement rtn = new OMSVGFilterElement();
 

@@ -20,10 +20,12 @@ import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.content.EHLDContent;
+import org.reactome.web.diagram.data.content.EHLDObject;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.AnalysisProfileChangedEvent;
 import org.reactome.web.diagram.events.ContentRequestedEvent;
 import org.reactome.web.diagram.events.GraphObjectHoveredEvent;
@@ -43,9 +45,7 @@ import org.vectomatic.dom.svg.utils.DOMHelper;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
 
@@ -53,12 +53,12 @@ import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public class SVGPanel extends AbstractSVGPanel implements Visualiser,
-        DatabaseObjectCreatedHandler,
+        AnalysisProfileChangedHandler, DatabaseObjectCreatedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
         DoubleClickHandler, ContextMenuHandler,
-        SVGAnimationHandler, SVGThumbnailAreaMovedHandler,
-        AnalysisProfileChangedHandler {
+        SVGAnimationHandler, SVGThumbnailAreaMovedHandler {
 
     private static final String REGION = "REGION-";
     private static final String OVERLAY ="OVERLAY-";
@@ -88,6 +88,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     private OMElement selected;
     private OMElement hovered;
     private OMSVGPoint origin;
+    private Set<OMElement> flagged;
 
     private SVGAnimation animation;
 
@@ -101,6 +102,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     public SVGPanel(EventBus eventBus) {
         super(eventBus);
         this.getElement().addClassName("pwp-SVGPanel");
+        flagged = new HashSet<>();
         initHandlers();
 //        setSize(width, height);
     }
@@ -273,7 +275,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     public void loadAnalysis() {
         AnalysisStatus analysisStatus = context.getAnalysisStatus();
         analysisType = analysisStatus.getAnalysisType();
-//        pathwaySummaries = event.getPathwaySummaries();
         expressionSummary = analysisStatus.getExpressionSummary();
         selectedExpCol = 0;
         if(svg!=null) {
@@ -547,29 +548,42 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
     private void highlightElement(OMElement el){
         hovered = el;
-        if(!el.equals(selected)) {
-            el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(HOVERING_FILTER));
+        boolean isFlagged = flagged.contains(el);
+        if(el.equals(selected)) {
+            if(isFlagged) {
+                el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FLAGGING_HOVERING_FILTER));
+            } else {
+                el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_HOVERING_FILTER));
+            }
         } else {
-            el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(COMBINED_FILTER));
+            if(isFlagged) {
+                el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(FLAGGING_HOVERING_FILTER));
+            } else {
+                el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(HOVERING_FILTER));
+            }
         }
     }
 
     private void unHighlightElement(OMElement el){
         hovered = null;
         if(!el.equals(selected)) {
-            el.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
+            if(flagged.contains(el)) {
+                el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(FLAGGING_FILTER));
+            } else {
+                el.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
+            }
         } else {
-            el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FILTER));
+            if(flagged.contains(el)) {
+                el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FLAGGING_FILTER));
+            } else {
+                el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FILTER));
+            }
         }
     }
 
     private void initHandlers() {
         eventBus.addHandler(SVGThumbnailAreaMovedEvent.TYPE, this);
-
-//        eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
         eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
-//        eventBus.addHandler(AnalysisResetEvent.TYPE, this);
-//        eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
 
         // !!! Important !!! //
         // Adding the MouseWheelEvent directly on the SVG is not working
@@ -647,8 +661,22 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
     private void resetSelectedElement() {
         if(selected!=null) {
-            selected.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
+            boolean isFlagged = flagged.contains(selected);
+            if (selected.equals(hovered)) {
+                if (isFlagged) {
+                    selected.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(FLAGGING_HOVERING_FILTER));
+                } else {
+                    selected.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(HOVERING_FILTER));
+                }
+            } else {
+                if (isFlagged) {
+                    selected.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(FLAGGING_FILTER));
+                } else {
+                    selected.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
+                }
+            }
             selected = null;
+            applyCTM(false);
         }
     }
 
@@ -656,7 +684,22 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         if(selected!=null && !selected.equals(element)) {
             resetSelectedElement();
         }
-        element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(COMBINED_FILTER));
+
+        boolean isFlagged = flagged.contains(element);
+        if (element.equals(hovered)) {
+            if (isFlagged) {
+                element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FLAGGING_HOVERING_FILTER));
+            } else {
+                element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_HOVERING_FILTER));
+            }
+        } else {
+            if (isFlagged) {
+                element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FLAGGING_FILTER));
+            } else {
+                element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FILTER));
+            }
+        }
+
         selected = element;
         applyCTM(false);
     }
@@ -784,5 +827,64 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     @Override
     public void interactorsResourceChanged(OverlayResource resource) {
         //Nothing here
+    }
+
+    private void flagElement(OMElement element) {
+        if (element!=null) {
+            if(element.equals(selected)) {
+                if(element.equals(hovered)) {
+                    element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FLAGGING_HOVERING_FILTER));
+                } else {
+                    element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FLAGGING_FILTER));
+                }
+            } else {
+                if(element.equals(hovered)) {
+                    element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(FLAGGING_HOVERING_FILTER));
+                } else {
+                    element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(FLAGGING_FILTER));
+                }
+            }
+        }
+    }
+
+    private void unFlagElement(OMElement element) {
+        if (element!=null) {
+            if(element.equals(selected)) {
+                if(element.equals(hovered)) {
+                    element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_HOVERING_FILTER));
+                } else {
+                    element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FILTER));
+                }
+            } else {
+                if(element.equals(hovered)) {
+                    element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(HOVERING_FILTER));
+                } else {
+                    element.removeAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void flagItems(Set<DiagramObject> flaggedItems){
+        flagged.clear();
+        for (DiagramObject diagramObject : flaggedItems) {
+            if(diagramObject instanceof EHLDObject){
+                EHLDObject item = (EHLDObject) diagramObject;
+                SVGEntity svg = entities.get(item.getStableId());
+                if(svg!=null) {
+                    flagged.add(svg.getHoverableElement());
+                    flagElement(svg.getHoverableElement());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void resetFlag(){
+        for (OMElement item : flagged) {
+            unFlagElement(item);
+        }
+        flagged.clear();
     }
 }
