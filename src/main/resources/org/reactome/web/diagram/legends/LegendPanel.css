@@ -252,7 +252,7 @@
     /*centers in the middle*/
     width: 260px;
     margin-left:-130px; /* width and margin-left are related, please change both if needed */
-    left:50%;
+    left: 50%;
 }
 
 .flaggedItemsControl span {
@@ -262,7 +262,7 @@
 }
 
 .flaggedItemsLabel {
-    width: 197px !important;
+    width: 180px !important;
     overflow:hidden;
     white-space:nowrap;
     text-overflow:ellipsis;

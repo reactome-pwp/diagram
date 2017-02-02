@@ -3,17 +3,12 @@ package org.reactome.web.diagram.legends;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.events.AnalysisResetEvent;
-import org.reactome.web.diagram.events.AnalysisResultLoadedEvent;
-import org.reactome.web.diagram.events.DiagramObjectsFlagResetEvent;
-import org.reactome.web.diagram.events.DiagramObjectsFlaggedEvent;
-import org.reactome.web.diagram.handlers.AnalysisResetHandler;
-import org.reactome.web.diagram.handlers.AnalysisResultLoadedHandler;
-import org.reactome.web.diagram.handlers.DiagramObjectsFlagResetHandler;
-import org.reactome.web.diagram.handlers.DiagramObjectsFlaggedHandler;
+import org.reactome.web.diagram.events.*;
+import org.reactome.web.diagram.handlers.*;
 
 import java.util.Set;
 
@@ -21,10 +16,12 @@ import java.util.Set;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class FlaggedItemsControl extends LegendPanel implements ClickHandler,
-        DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler,
+        DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler, DiagramObjectsFlagRequestHandler,
         AnalysisResultLoadedHandler, AnalysisResetHandler {
-    private InlineLabel term;
+
+    private InlineLabel msgLabel;
     private PwpButton closeBtn;
+    private Image loadingIcon;
 
     public FlaggedItemsControl(final EventBus eventBus) {
         super(eventBus);
@@ -34,9 +31,13 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler,
         addStyleName(css.analysisControl());
         addStyleName(css.flaggedItemsControl());
 
-        this.term = new InlineLabel();
-        this.term.setStyleName(RESOURCES.getCSS().flaggedItemsLabel());
-        this.add(this.term);
+        loadingIcon = new Image(RESOURCES.loader());
+        loadingIcon.setStyleName(css.interactorsControlLoadingIcon());
+        this.add(loadingIcon);
+
+        this.msgLabel = new InlineLabel();
+        this.msgLabel.setStyleName(RESOURCES.getCSS().flaggedItemsLabel());
+        this.add(this.msgLabel);
 
         this.closeBtn = new PwpButton("Close and un-flag entities", css.close(), this);
         this.add(this.closeBtn);
@@ -68,7 +69,16 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler,
         String term = event.getTerm();
         Set<DiagramObject> flaggedItems =  event.getFlaggedItems();
         String msg = " - " + flaggedItems.size() + (flaggedItems.size() == 1 ? " entity" : " entities") + " flagged";
-        this.term.setText(term + msg);
+        this.msgLabel.setText(term + msg);
+        loadingIcon.setVisible(false);
+        setVisible(true);
+    }
+
+    @Override
+    public void onDiagramObjectsFlagRequested(DiagramObjectsFlagRequestedEvent event) {
+        String term = event.getTerm();
+        loadingIcon.setVisible(true);
+        msgLabel.setText("Flagging entities for " + term + "...");
         this.setVisible(true);
     }
 
@@ -80,6 +90,7 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler,
     private void initHandlers() {
         this.eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
 //        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
 //        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
     }
