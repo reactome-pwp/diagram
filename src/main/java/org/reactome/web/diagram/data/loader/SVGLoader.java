@@ -6,6 +6,7 @@ import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
 import org.vectomatic.dom.svg.utils.ParserException;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -90,25 +91,21 @@ public class SVGLoader implements RequestCallback {
             requestBuilder.sendRequest(null, new RequestCallback() {
                 @Override
                 public void onResponseReceived(Request request, Response response) {
+                    availableSVG = new HashSet<>();
                     switch (response.getStatusCode()) {
                         case Response.SC_OK:
-                            availableSVG = new HashSet<>();
-                            for (String identifier : response.getText().split("\\n")) {
-                                availableSVG.add(identifier);
-                            }
+                            Collections.addAll(availableSVG, response.getText().split("\\n"));
                             break;
-                        default:
-                            //Nothing here
                     }
                 }
 
                 @Override
                 public void onError(Request request, Throwable exception) {
-                    //Nothing here
+                    availableSVG = new HashSet<>();
                 }
             });
         } catch (RequestException e) {
-            //Nothing here
+            availableSVG = new HashSet<>();
         }
     }
 }
