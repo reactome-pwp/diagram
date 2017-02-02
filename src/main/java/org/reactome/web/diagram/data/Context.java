@@ -148,7 +148,7 @@ public class Context {
     @Override
     public String toString() {
         return "DiagramContext{" +
-                "content=" + content +
+                "content=" + content.getType() +
                 ", status=" + diagramStatus +
                 '}';
     }
