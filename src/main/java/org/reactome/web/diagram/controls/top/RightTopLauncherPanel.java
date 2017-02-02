@@ -9,6 +9,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.common.fab.ExpandibleButton;
 import org.reactome.web.diagram.controls.top.common.AbstractMenuDialog;
 import org.reactome.web.diagram.controls.top.illustrations.DiagramIllustrations;
 import org.reactome.web.diagram.controls.top.key.DiagramKey;
@@ -62,6 +63,8 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
 
         this.exportBtn = new PwpButton("Export to pptx", RESOURCES.getCSS().export(), this);
         this.add(this.exportBtn);
+
+        add(new ExpandibleButton());
 
         this.diagramKeyBtn = new PwpButton("Diagram key", RESOURCES.getCSS().key(), this);
         this.add(this.diagramKeyBtn);
