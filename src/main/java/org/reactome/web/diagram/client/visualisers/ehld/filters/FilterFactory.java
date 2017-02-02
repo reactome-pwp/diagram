@@ -12,7 +12,7 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
 public abstract class FilterFactory {
 
     private static int SHADOW_RADIUS = 10;
-    private static float OUTLINE_THICKNESS = 2f;
+    private static float OUTLINE_THICKNESS = 4f;
 
     /**
      * Returns a filter producing a simple shadow (like a halo)
@@ -129,7 +129,7 @@ public abstract class FilterFactory {
         OMSVGFEMorphologyElement morpho2 = new OMSVGFEMorphologyElement();
         morpho2.setAttribute(SVGConstants.SVG_IN_ATTRIBUTE, "cMatrixOut2");
         morpho2.setAttribute(SVGConstants.SVG_OPERATOR_ATTRIBUTE, SVGConstants.SVG_DILATE_VALUE);
-        morpho2.setAttribute(SVGConstants.SVG_RADIUS_ATTRIBUTE, "" + (OUTLINE_THICKNESS + 2));
+        morpho2.setAttribute(SVGConstants.SVG_RADIUS_ATTRIBUTE, "" + (OUTLINE_THICKNESS + 3));
         morpho2.setAttribute(SVGConstants.SVG_RESULT_ATTRIBUTE, "morphoOut2");
 
         OMSVGFEMergeElement merge = new OMSVGFEMergeElement();
