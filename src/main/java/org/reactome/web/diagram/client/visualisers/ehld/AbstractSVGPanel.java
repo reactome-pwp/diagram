@@ -56,11 +56,16 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     public void exportView(String stableId){
         if(svg != null) {
             Image image = new Image();
-            image.setUrl("data:image/svg+xml," + svg.getMarkup());
+            String base64 = btoa(svg.getMarkup());
+            image.setUrl("data:image/svg+xml;base64," + base64);
             final ImageDownloadDialog downloadDialogBox = new ImageDownloadDialog(image, "svg", stableId);
             downloadDialogBox.show();
         }
     }
+
+    native String btoa(String b64) /*-{
+        return btoa(b64);
+    }-*/;
 
     public void setSize(int width, int height) {
         //Set the size of the panel
