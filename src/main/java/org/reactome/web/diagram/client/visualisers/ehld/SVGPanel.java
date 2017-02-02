@@ -24,6 +24,7 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.AnalysisProfileChangedEvent;
 import org.reactome.web.diagram.events.ContentRequestedEvent;
 import org.reactome.web.diagram.events.GraphObjectHoveredEvent;
@@ -46,6 +47,7 @@ import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
 
@@ -54,11 +56,10 @@ import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class SVGPanel extends AbstractSVGPanel implements Visualiser,
-        DatabaseObjectCreatedHandler,
+        AnalysisProfileChangedHandler, DatabaseObjectCreatedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
         DoubleClickHandler, ContextMenuHandler,
-        SVGAnimationHandler, SVGThumbnailAreaMovedHandler,
-        AnalysisProfileChangedHandler {
+        SVGAnimationHandler, SVGThumbnailAreaMovedHandler {
 
     private static final String REGION = "REGION-";
     private static final String OVERLAY ="OVERLAY-";
@@ -273,7 +274,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     public void loadAnalysis() {
         AnalysisStatus analysisStatus = context.getAnalysisStatus();
         analysisType = analysisStatus.getAnalysisType();
-//        pathwaySummaries = event.getPathwaySummaries();
         expressionSummary = analysisStatus.getExpressionSummary();
         selectedExpCol = 0;
         if(svg!=null) {
@@ -550,7 +550,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         if(!el.equals(selected)) {
             el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(HOVERING_FILTER));
         } else {
-            el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(COMBINED_FILTER));
+            el.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_HOVERING_FILTER));
         }
     }
 
@@ -565,11 +565,11 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
     private void initHandlers() {
         eventBus.addHandler(SVGThumbnailAreaMovedEvent.TYPE, this);
-
-//        eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
         eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
-//        eventBus.addHandler(AnalysisResetEvent.TYPE, this);
-//        eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
+
+//        eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
+//        eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
+//        eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
 
         // !!! Important !!! //
         // Adding the MouseWheelEvent directly on the SVG is not working
@@ -656,7 +656,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         if(selected!=null && !selected.equals(element)) {
             resetSelectedElement();
         }
-        element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(COMBINED_FILTER));
+        element.setAttribute(SVGConstants.SVG_FILTER_ATTRIBUTE, DOMHelper.toUrl(SELECTION_FLAGGING_HOVERING_FILTER));
         selected = element;
         applyCTM(false);
     }
@@ -784,5 +784,15 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     @Override
     public void interactorsResourceChanged(OverlayResource resource) {
         //Nothing here
+    }
+
+    @Override
+    public void flagItems(Set<DiagramObject> flaggedItems){
+        //TODO Implement this
+    }
+
+    @Override
+    public void resetFlag(){
+        //TODO Implement this
     }
 }
