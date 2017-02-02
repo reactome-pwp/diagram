@@ -24,6 +24,7 @@ import java.util.Map;
 import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option.IMAGE;
+import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option.PPTX;
 
 
 /**
@@ -39,6 +40,7 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
 
     private PwpButton illustrationsBtn;
     private PwpButton captureBtn;
+    private PwpButton exportBtn;
     private PwpButton diagramKeyBtn;
 
     public RightTopLauncherPanel(EventBus eventBus) {
@@ -57,6 +59,9 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
 
         this.captureBtn = new PwpButton("Diagram export", RESOURCES.getCSS().camera(), this);
         this.add(this.captureBtn);
+
+        this.exportBtn = new PwpButton("Export to pptx", RESOURCES.getCSS().export(), this);
+        this.add(this.exportBtn);
 
         this.diagramKeyBtn = new PwpButton("Diagram key", RESOURCES.getCSS().key(), this);
         this.add(this.diagramKeyBtn);
@@ -82,13 +87,24 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
             } else {
                 this.diagramIllustrations.showRelativeTo(btn);
             }
+        } else if (btn.equals(this.exportBtn)) {
+            this.eventBus.fireEventFromSource(new CanvasExportRequestedEvent(PPTX), this);
         }
     }
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
+        switch (event.getContext().getContent().getType()) {
+            case DIAGRAM:
+                exportBtn.setEnabled(true);
+                break;
+            case SVG:
+                exportBtn.setEnabled(false);
+                break;
+        }
         diagramKey.hide();
         diagramKey = keys.get(event.getContext().getContent().getType());
+
     }
 
 
@@ -139,6 +155,18 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         @Source("images/key_normal.png")
         ImageResource keyNormal();
 
+        @Source("images/export2ppt_clicked.png")
+        ImageResource export2pptClicked();
+
+        @Source("images/export2ppt_disabled.png")
+        ImageResource export2pptDisabled();
+
+        @Source("images/export2ppt_hovered.png")
+        ImageResource export2pptHovered();
+
+        @Source("images/export2ppt_normal.png")
+        ImageResource export2pptNormal();
+
         @Source("images/settings_clicked.png")
         ImageResource settingsClicked();
 
@@ -159,6 +187,8 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         String launcherPanel();
 
         String camera();
+
+        String export();
 
         String illustrations();
 
