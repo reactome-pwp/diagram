@@ -20,9 +20,16 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     protected EventBus eventBus;
 
     protected static final float FRAME = 40;
-    protected static final String HOVERING_FILTER = "shadowFilter";
+    protected static final String HOVERING_FILTER = "hoveringFilter";
     protected static final String SELECTION_FILTER = "selectionFilter";
-    protected static final String COMBINED_FILTER = "combinedFilter";
+    protected static final String FLAGGING_FILTER = "flaggingFilter";
+
+    protected static final String FLAGGING_HOVERING_FILTER = "flaggingHoveringFilter";
+    protected static final String SELECTION_HOVERING_FILTER = "selectionHoveredFilter";
+    protected static final String SELECTION_FLAGGING_FILTER = "selectionFlaggingFilter";
+
+    protected static final String SELECTION_FLAGGING_HOVERING_FILTER = "selectionFlaggingHoveringFilter";
+
     protected static final String HOVERING_OVERLAY_FILTER = "hoveringOverlayFilter";
     protected static final String SELECTION_OVERLAY_FILTER = "selectionOverlayFilter";
 
@@ -132,8 +139,14 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         baseDefs = new OMSVGDefsElement();
         baseDefs.appendChild(FilterFactory.getShadowFilter(HOVERING_FILTER));
         baseDefs.appendChild(FilterFactory.getOutlineFilter(SELECTION_FILTER, FilterColour.BLUE));
-        baseDefs.appendChild(FilterFactory.getShadowWithOutlineFilter(COMBINED_FILTER, FilterColour.BLUE));
-//        baseDefs.appendChild(FilterFactory.combine(COMBINED_FILTER, FilterFactory.getShadowFilter(HOVERRING_FILTER), FilterFactory.getOutlineFilter(SELECTION_FILTER, FilterColour.BLUE)));
+        baseDefs.appendChild(FilterFactory.getOutlineFilter(FLAGGING_FILTER, FilterColour.CYAN));
+
+        baseDefs.appendChild(FilterFactory.getShadowWithOutlineFilter(SELECTION_HOVERING_FILTER, FilterColour.BLUE));
+        baseDefs.appendChild(FilterFactory.getShadowWithOutlineFilter(FLAGGING_HOVERING_FILTER, FilterColour.CYAN));
+        baseDefs.appendChild(FilterFactory.getDoubleOutlineFilter(SELECTION_FLAGGING_FILTER, FilterColour.BLUE, FilterColour.CYAN));
+        baseDefs.appendChild(FilterFactory.getShadowWithDoubleOutlineFilter(SELECTION_FLAGGING_HOVERING_FILTER, FilterColour.BLUE, FilterColour.CYAN));
+
+//        baseDefs.appendChild(FilterFactory.combine(SELECTION_HOVERING_FILTER, FilterFactory.getShadowFilter(HOVERRING_FILTER), FilterFactory.getOutlineFilter(SELECTION_FILTER, FilterColour.BLUE)));
         baseDefs.appendChild(FilterFactory.getColouredOverlayFilter(HOVERING_OVERLAY_FILTER, FilterColour.YELLOW));
         baseDefs.appendChild(FilterFactory.getColouredOverlayFilter(SELECTION_OVERLAY_FILTER, FilterColour.BLUE));
     }

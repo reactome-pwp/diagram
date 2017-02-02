@@ -11,12 +11,18 @@ public enum FilterColour {
     YELLOW( "1 0 0 1 0 " +
             "0 1 0 1 0 " +
             "0 0 0 0 0 " +
-            "0 0 0 1 0"),
+            "0 0 0 1 0 " ),
 
     BLUE(   "0 0 0 0 0 " +
             "0 0 0 0 0 " +
             "0 0 1 1 0 " +
-            "0 0 0 1 0");
+            "0 0 0 1 0 " ),
+
+    CYAN(   "1 0 0 1 0 " +
+            "0 0 0 0 0 " +
+            "0 0 1 1 0 " +
+            "0 0 0 1 0 " );
+
 
     public final String colourMatrix;
 
