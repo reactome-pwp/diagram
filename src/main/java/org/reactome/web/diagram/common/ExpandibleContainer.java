@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.common.fab;
+package org.reactome.web.diagram.common;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
@@ -47,7 +47,7 @@ public class ExpandibleContainer extends AbsolutePanel {
 
     @CssResource.ImportedWithPrefix("diagram-ExpandibleButton")
     public interface ResourceCSS extends CssResource {
-        String CSS = "org/reactome/web/diagram/common/fab/ExpandibleContainer.css";
+        String CSS = "org/reactome/web/diagram/common/ExpandibleContainer.css";
 
         String container();
 
