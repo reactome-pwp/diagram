@@ -9,6 +9,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.common.fab.ExpandibleContainer;
 import org.reactome.web.diagram.controls.top.common.AbstractMenuDialog;
 import org.reactome.web.diagram.controls.top.illustrations.DiagramIllustrations;
 import org.reactome.web.diagram.controls.top.key.DiagramKey;
@@ -43,6 +44,8 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
     private PwpButton exportBtn;
     private PwpButton diagramKeyBtn;
 
+    private ExpandibleContainer expContainer;
+
     public RightTopLauncherPanel(EventBus eventBus) {
         this.setStyleName(RESOURCES.getCSS().launcherPanel());
         this.eventBus = eventBus;
@@ -57,13 +60,16 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         this.illustrationsBtn = new PwpButton("Show illustrations", RESOURCES.getCSS().illustrations(), this);
         this.add(illustrationsBtn);
 
-        this.captureBtn = new PwpButton("Diagram export", RESOURCES.getCSS().camera(), this);
-        this.add(this.captureBtn);
+        this.captureBtn = new PwpButton("Export image", RESOURCES.getCSS().camera(), this);
+//        this.add(this.captureBtn);
 
         this.exportBtn = new PwpButton("Export to pptx", RESOURCES.getCSS().export(), this);
-        this.add(this.exportBtn);
+//        this.add(this.exportBtn);
 
-        //add(new ExpandibleButton());
+        expContainer = new ExpandibleContainer(new PwpButton("Select one export option", RESOURCES.getCSS().camera(), this));
+        expContainer.addButton(captureBtn);
+        expContainer.addButton(exportBtn);
+        add(expContainer);
 
         this.diagramKeyBtn = new PwpButton("Diagram key", RESOURCES.getCSS().key(), this);
         this.add(this.diagramKeyBtn);
@@ -98,10 +104,10 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
     public void onContentLoaded(ContentLoadedEvent event) {
         switch (event.getContext().getContent().getType()) {
             case DIAGRAM:
-                exportBtn.setEnabled(true);
+                exportBtn.setVisible(true);
                 break;
             case SVG:
-                exportBtn.setEnabled(false);
+                exportBtn.setVisible(false);
                 break;
         }
         diagramKey.hide();

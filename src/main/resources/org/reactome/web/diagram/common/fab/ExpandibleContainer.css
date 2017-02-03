@@ -1,0 +1,49 @@
+.container {
+    position: relative;
+    width: 40px;
+    float:left;
+    margin-right: 2px;
+    padding-bottom:7px;
+
+    /*height: 35px;*/
+    /*-webkit-transition: all .3s ease-out;*/
+    /*-moz-transition: all .3s ease-out;*/
+    /*-o-transition: all .3s ease-out;*/
+    /*transition: all .3s ease-out;*/
+}
+
+/*.container:hover {*/
+/*height: 150px;*/
+/*}*/
+
+.baseButtons {
+    display: block;
+    margin: 10px auto 0;
+    position: relative;
+    -webkit-transition: all .2s ease-out;
+    -moz-transition: all .2s ease-out;
+    -o-transition: all .2s ease-out;
+    transition: all .2s ease-out;
+}
+
+.optionButtons {
+    margin: 5px auto 0;
+    opacity: 0.0;
+    -webkit-transform: translateY(-50px);
+    -ms-transform: translateY(-50px);
+    transform: translateY(-50px);
+}
+
+.container:hover .optionButtons {
+    opacity: 1.0;
+    -webkit-transform: none;
+    -ms-transform: none;
+    transform: none;
+    margin: 8px auto 0;
+}
+
+.primaryButton{
+    margin: 0 auto 0;
+    position: relative;
+    z-index: 1;
+}
