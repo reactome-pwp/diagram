@@ -5,16 +5,16 @@
     margin-right: 2px;
     padding-bottom:7px;
 
-    /*height: 35px;*/
-    /*-webkit-transition: all .3s ease-out;*/
-    /*-moz-transition: all .3s ease-out;*/
-    /*-o-transition: all .3s ease-out;*/
-    /*transition: all .3s ease-out;*/
+    height: 35px;
+    -webkit-transition: all .1s linear;
+    -moz-transition: all .1s linear;
+    -o-transition: all .1s linear;
+    transition: all .1s linear;
 }
 
-/*.container:hover {*/
-/*height: 150px;*/
-/*}*/
+.container:hover {
+    height: 150px;
+}
 
 .baseButtons {
     display: block;

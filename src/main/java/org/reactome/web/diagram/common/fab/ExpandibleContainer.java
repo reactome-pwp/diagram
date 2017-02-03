@@ -33,7 +33,7 @@ public class ExpandibleContainer extends AbsolutePanel {
         buttons.add(button);
         add(button);
     }
-    
+
     public static Resources RESOURCES;
     static {
         RESOURCES = GWT.create(Resources.class);
