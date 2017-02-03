@@ -6,14 +6,18 @@
     padding-bottom:7px;
 
     height: 35px;
-    -webkit-transition: all .1s linear;
-    -moz-transition: all .1s linear;
-    -o-transition: all .1s linear;
-    transition: all .1s linear;
+    -webkit-transition: all .3s linear;
+    -moz-transition: all .3s linear;
+    -o-transition: all .3s linear;
+    transition: all .3s linear;
 }
 
 .container:hover {
     height: 150px;
+    -webkit-transition: all .1s linear;
+    -moz-transition: all .1s linear;
+    -o-transition: all .1s linear;
+    transition: all .1s linear;
 }
 
 .baseButtons {
