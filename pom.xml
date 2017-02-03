@@ -43,7 +43,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
 
-        <reactome.web.analysis-client>1.2.0-SNAPSHOT</reactome.web.analysis-client>
+        <reactome.web.analysis-client>1.2.2</reactome.web.analysis-client>
         <reactome.web.model>1.2.0</reactome.web.model>
         <reactome.web.carrousel>1.0.0</reactome.web.carrousel>
         <reactome.web.quadtree>1.1.0</reactome.web.quadtree>
