@@ -33,11 +33,7 @@ public class ExpandibleContainer extends AbsolutePanel {
         buttons.add(button);
         add(button);
     }
-
-    public void setButtonVisible(boolean isVisible) {
-
-    }
-
+    
     public static Resources RESOURCES;
     static {
         RESOURCES = GWT.create(Resources.class);
