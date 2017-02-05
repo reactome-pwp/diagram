@@ -148,10 +148,13 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     @Override
     public void onSearchKeyPressed(SearchKeyPressedEvent event) {
-        if (!isExpanded) {
-            expandPanel();
-        } else {
-            collapsePanel();
+        //Expand only if search is enabled
+        if(searchBtn.isEnabled()) {
+            if (!isExpanded) {
+                expandPanel();
+            } else {
+                collapsePanel();
+            }
         }
     }
 
