@@ -5,6 +5,7 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,17 +15,19 @@ import java.util.Set;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class ExpandibleContainer extends AbsolutePanel {
-    private Button primaryButton;
+    private SimplePanel primaryButton;
     private Set<Button> buttons;
 
-    public ExpandibleContainer(Button primaryButton) {
-        this.primaryButton = primaryButton;
-        buttons = new HashSet<>();
-
+    public ExpandibleContainer(String tooltip, String style) {
         setStyleName(RESOURCES.getCSS().container());
-        primaryButton.addStyleName(RESOURCES.getCSS().baseButtons());
-        primaryButton.addStyleName(RESOURCES.getCSS().primaryButton());
-        add(primaryButton);
+        this.primaryButton = new SimplePanel();
+        this.primaryButton.setTitle(tooltip);
+        this.primaryButton.addStyleName(style);
+        this.primaryButton.addStyleName(RESOURCES.getCSS().baseButtons());
+        this.primaryButton.addStyleName(RESOURCES.getCSS().primaryButton());
+        this.add(primaryButton);
+
+        buttons = new HashSet<>();
     }
 
     public void addButton(Button button) {

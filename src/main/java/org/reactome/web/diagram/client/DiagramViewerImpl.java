@@ -435,14 +435,11 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         GraphObjectFactory.content = context.getContent();
 
         viewerContainer.setContext(context);
-//        layoutManager.resetHovered();
 
-//        this.forceDraw = true;
         if (this.context.getContent().isGraphLoaded()) {
             this.loadAnalysis(this.analysisStatus); //IMPORTANT: This needs to be done once context is been set up above
             this.eventBus.fireEventFromSource(new ContentLoadedEvent(context), this);
         }
-//        this.context.restoreDialogs();
     }
 
     @Override

@@ -61,12 +61,10 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         this.add(illustrationsBtn);
 
         this.captureBtn = new PwpButton("Export image", RESOURCES.getCSS().camera(), this);
-//        this.add(this.captureBtn);
 
-        this.exportBtn = new PwpButton("Export to pptx", RESOURCES.getCSS().export(), this);
-//        this.add(this.exportBtn);
+        this.exportBtn = new PwpButton("Export to pptx", RESOURCES.getCSS().exportPPT(), this);
 
-        expContainer = new ExpandibleContainer(new PwpButton("Select one export option", RESOURCES.getCSS().camera(), this));
+        expContainer = new ExpandibleContainer("Select one export option", RESOURCES.getCSS().export());
         expContainer.addButton(captureBtn);
         expContainer.addButton(exportBtn);
         add(expContainer);
@@ -163,6 +161,12 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         @Source("images/key_normal.png")
         ImageResource keyNormal();
 
+        @Source("images/export_hovered.png")
+        ImageResource exportHovered();
+
+        @Source("images/export_normal.png")
+        ImageResource exportNormal();
+
         @Source("images/export2ppt_clicked.png")
         ImageResource export2pptClicked();
 
@@ -195,6 +199,8 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         String launcherPanel();
 
         String camera();
+
+        String exportPPT();
 
         String export();
 
