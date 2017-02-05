@@ -179,17 +179,6 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         @Source("images/export2ppt_normal.png")
         ImageResource export2pptNormal();
 
-        @Source("images/settings_clicked.png")
-        ImageResource settingsClicked();
-
-        @Source("images/settings_disabled.png")
-        ImageResource settingsDisabled();
-
-        @Source("images/settings_hovered.png")
-        ImageResource settingsHovered();
-
-        @Source("images/settings_normal.png")
-        ImageResource settingsNormal();
     }
 
     @CssResource.ImportedWithPrefix("diagram-LeftTopLauncher")
