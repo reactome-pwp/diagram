@@ -61,12 +61,12 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         SVGAnimationHandler, SVGThumbnailAreaMovedHandler {
 
     private static final String REGION = "REGION-";
-    private static final String OVERLAY ="OVERLAY-";
-    private static final String OVERLAY_CLONE ="OVERLAYCLONE-";
+    private static final String OVERLAY = "OVERLAY-";
+    private static final String OVERLAY_CLONE = "OVERLAYCLONE-";
+    private static final String OVERLAY_BASE = "OVERLAYBASE-";
 
     private static final String CLIPPING_PATH = "CLIPPINGPATH-";
     private static final String CLIPPING_RECT = "CLIPPINGRECT-";
-    private static final float MIN_OVERLAY = 0.05f;
 
     private static final String CURSOR = "cursor: pointer;";
     private static final float ZOOM_IN_STEP = 1.1f;
@@ -454,7 +454,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     private void createOrUpdateClippingPath(String stId, float ratio){
         OMSVGRectElement rect = (OMSVGRectElement) svg.getElementById(CLIPPING_RECT + stId);
         // Important !!! Correct ratio so that it is visible
-        ratio = ratio > MIN_OVERLAY ? ratio : MIN_OVERLAY;
+        ratio = ratio > 0 && ratio < (float) Context.ANALYSIS_MIN_PERCENTAGE ? (float) Context.ANALYSIS_MIN_PERCENTAGE : ratio;
 
         if(rect == null) {
             //Clipping path is not present.
@@ -476,6 +476,20 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         OMSVGGElement overlay = (OMSVGGElement) svg.getElementById(OVERLAY_CLONE + stId);
         if(overlay == null) {
             SVGEntity entity = entities.get(stId); //Entity cannot be null as it has been checked in a previous step.
+
+            // Copy and prepare the base of the overlay
+            OMSVGGElement base = (OMSVGGElement) entity.getOverlay().cloneNode(true);
+            base.setId(OVERLAY_BASE + stId);
+            removeAttributeFromChildren(base, SVGConstants.SVG_CLASS_ATTRIBUTE);
+            base.setAttribute(SVGConstants.SVG_FILL_ATTRIBUTE, "#FFFFFF");
+
+            // Remove Text elements
+            List<OMElement> textElements = getAllTextElementsFrom(base);
+            Iterator<OMElement> it = textElements.iterator();
+            while(it.hasNext()){
+                it.next().getElement().removeFromParent();
+            }
+
             overlay = (OMSVGGElement) entity.getOverlay().cloneNode(true);
             overlay.setId(OVERLAY_CLONE + stId);
             overlay.setAttribute(SVGConstants.SVG_CLIP_PATH_ATTRIBUTE, DOMHelper.toUrl(CLIPPING_PATH + stId));
@@ -485,13 +499,17 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
             // Create a group to put the clone and the text
             OMSVGGElement overlayGroup = new OMSVGGElement();
+            overlayGroup.appendChild(base);
             overlayGroup.appendChild(overlay);
 
-            // Make sure all text elements are put in front of the overlay
-            List<OMElement> textElements = getAllTextElementsFrom(overlay);
-            Iterator<OMElement> it = textElements.iterator();
+            // Make sure all text elements are put in
+            // front of the overlay with the proper style
+            textElements = getAllTextElementsFrom(overlay);
+            it = textElements.iterator();
             while(it.hasNext()){
-                overlayGroup.appendChild(it.next());
+                OMElement el = it.next();
+                addClassName(el, OVERLAY_TEXT_CLASS);
+                overlayGroup.appendChild(el);
             }
             // Remove styling and add the overlay group under the OVERLAY-R-SSS-NNNNNNN
             removeAttributeFromChildren(overlay, SVGConstants.SVG_CLASS_ATTRIBUTE);
@@ -613,11 +631,11 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
                     case SPECIES_COMPARISON:
                     case OVERREPRESENTATION:
                         String enrichColour = hex2Rgb(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax(), 0.9f);
-                        percentage = graphPathway.isHit() ? graphPathway.getPercentage().floatValue() : MIN_OVERLAY;
+                        percentage = graphPathway.isHit() ? graphPathway.getPercentage().floatValue() : 0;
                         overlayEntity(graphPathway.getStId(), percentage, enrichColour);
                         break;
                     case EXPRESSION:
-                        percentage = graphPathway.isHit() ? graphPathway.getPercentage().floatValue() : MIN_OVERLAY;
+                        percentage = graphPathway.isHit() ? graphPathway.getPercentage().floatValue() : 0;
                         String expressionColour = AnalysisColours.get().expressionGradient.getColor(
                                 graphPathway.getExpression(selectedExpCol).floatValue(),
                                 expressionSummary.getMin(),
@@ -737,6 +755,9 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         // Clone and attach defs (filters - clipping paths) to the root SVG structure
         defs = (OMSVGDefsElement) baseDefs.cloneNode(true);
         svg.appendChild(defs);
+
+        // Add the inline CSS class for overlaying analysis results
+        addInlineStyle(OVERLAY_TEXT_CLASS, OVERLAY_TEXT_STYLE);
 
         // Add the event handlers
         svg.addMouseDownHandler(this);

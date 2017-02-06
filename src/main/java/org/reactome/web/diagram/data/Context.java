@@ -27,7 +27,7 @@ import java.util.Set;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class Context {
-    static final double ANALYSIS_MIN_PERCENTAGE = 0.03;
+    public static final double ANALYSIS_MIN_PERCENTAGE = 0.03;
 
     private DiagramStatus diagramStatus;
     private AnalysisStatus analysisStatus;
