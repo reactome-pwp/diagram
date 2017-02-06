@@ -256,21 +256,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         }
     }
 
-//    @Override
-//    public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
-//        //!!! Important !!!
-//        //For the moment analysis results are loaded from the EVENT, as the context does not yet include them.
-//        //TODO: When integration of the SVGPanel is completed, Analysis results have to be read by the context
-//        analysisType = event.getType();
-//        pathwaySummaries = event.getPathwaySummaries();
-//        expressionSummary = event.getExpressionSummary();
-//        selectedExpCol = 0;
-//        if(svg!=null) {
-//            clearOverlay();
-//            overlayAnalysisResults();
-//        }
-//    }
-
     @Override
     public void loadAnalysis() {
         AnalysisStatus analysisStatus = context.getAnalysisStatus();
@@ -312,15 +297,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
             DatabaseObjectFactory.get(stableId, this);
         }
     }
-
-//    @Override
-//    public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
-//        selectedExpCol = e.getColumn();
-//        if(svg!=null) {
-//            clearOverlay();
-//            overlayAnalysisResults();
-//        }
-//    }
 
     @Override
     protected void onLoad() {
@@ -390,7 +366,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         OMElement el = (OMElement) event.getSource();
         resetHighlight(false);
         highlightElement(el);
-        applyCTM(false);  //TODO Have a look why this is required
+        applyCTM(false);
         thumbnail.setHoveredItem(el.getId());
         notifyHovering(el.getId());
     }
@@ -400,7 +376,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
         unHighlightElement(el);
-        applyCTM(false);  //TODO Have a look why this is required
+        applyCTM(false);
         thumbnail.setHoveredItem(null);
         notifyHovering(null);
     }
