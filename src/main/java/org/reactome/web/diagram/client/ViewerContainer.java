@@ -104,6 +104,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         bottomContainerPanel.add(new FlaggedItemsControl(eventBus));
 
         //Enrichment legend and control panels
+        rightContainerPanel.add(new EnrichmentLegend(eventBus));
         bottomContainerPanel.add(new EnrichmentControl(eventBus));
 
         //Expression legend and control panels
@@ -220,13 +221,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     public void onIllustrationSelected(IllustrationSelectedEvent event) {
         this.setIllustration(event.getUrl());
     }
-
-//    @Override
-//    public void onLayoutLoaded(LayoutLoadedEvent event) {
-//        context = event.getContext();
-//        setActiveVisualiser(context);
-//        activeVisualiser.layoutLoaded(context);
-//    }
 
     @Override
     public void onResize() {

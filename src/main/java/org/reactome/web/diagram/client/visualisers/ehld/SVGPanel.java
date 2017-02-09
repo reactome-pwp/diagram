@@ -6,6 +6,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.i18n.client.NumberFormat;
 import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
@@ -53,7 +54,7 @@ import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-@SuppressWarnings("Duplicates")
+@SuppressWarnings("All")
 public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         AnalysisProfileChangedHandler, DatabaseObjectCreatedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
@@ -67,6 +68,8 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
     private static final String CLIPPING_PATH = "CLIPPINGPATH-";
     private static final String CLIPPING_RECT = "CLIPPINGRECT-";
+
+    private static final String ANALYSIS_INFO = "ANALINFO";
 
     private static final String CURSOR = "cursor: pointer;";
     private static final float ZOOM_IN_STEP = 1.1f;
@@ -424,7 +427,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
     private SVGEntity addOrUpdateSVGEntity(OMElement element) {
         String elementId = element.getId();
-        String stId = elementId.substring(elementId.indexOf("-") + 1);
+        String stId = SVGUtil.keepStableId(elementId);
         SVGEntity entity = entities.get(stId);
         if(entity == null) {
             entity = new SVGEntity(stId);
@@ -433,10 +436,39 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
         if(elementId.startsWith(REGION)) {
             entity.setRegion(element);
+            //Check if there is an analysis info box and add it in the entity
+            OMElement info = getAnalysisInfo(element);
+            if(info != null) {
+                entity.setAnalysisInfo(info);
+                entity.setAnalysisText(getAnalysisText(info));
+            }
         } else if(elementId.startsWith(OVERLAY)) {
             entity.setOverlay(element);
         }
         return entity;
+    }
+
+    private OMElement getAnalysisInfo(OMElement element){
+        OMElement rtn = null;
+        OMNodeList<OMElement> els = element.getElementsByTagName("g");
+        if(els!=null) {
+            for (OMElement target : els) {
+                if (target.getId().startsWith(ANALYSIS_INFO)) {
+                    rtn = target;
+                    break;
+                }
+            }
+        }
+        return rtn;
+    }
+
+    private OMElement getAnalysisText(OMElement element){
+        OMElement rtn = null;
+        List<OMElement> textElements = getAllTextElementsFrom((OMNode) element);
+        if(textElements != null && textElements.size()>0) {
+            rtn = textElements.get(0);
+        }
+        return rtn;
     }
 
     private void clearOverlay() {
@@ -447,6 +479,9 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
                 OMNode parent = overlay.getParentNode();
                 parent.getParentNode().removeChild(parent);
             }
+
+            // Make analysis info invisible again
+            SVGUtil.removeClassName(entity.getAnalysisInfo(), ANALYSIS_INFO_CLASS);
         }
     }
 
@@ -472,7 +507,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         }
     }
 
-    private void createOrUpdateOverlayElement(String stId, String overlayColour) {
+    private void createOrUpdateOverlayElement(String stId, String overlayColour, String baseColour) {
         OMSVGGElement overlay = (OMSVGGElement) svg.getElementById(OVERLAY_CLONE + stId);
         if(overlay == null) {
             SVGEntity entity = entities.get(stId); //Entity cannot be null as it has been checked in a previous step.
@@ -481,7 +516,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
             OMSVGGElement base = (OMSVGGElement) entity.getOverlay().cloneNode(true);
             base.setId(OVERLAY_BASE + stId);
             removeAttributeFromChildren(base, SVGConstants.SVG_CLASS_ATTRIBUTE);
-            base.setAttribute(SVGConstants.SVG_FILL_ATTRIBUTE, "#FFFFFF");
+            base.setAttribute(SVGConstants.SVG_FILL_ATTRIBUTE, baseColour);
 
             // Remove Text elements
             List<OMElement> textElements = getAllTextElementsFrom(base);
@@ -508,7 +543,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
             it = textElements.iterator();
             while(it.hasNext()){
                 OMElement el = it.next();
-                addClassName(el, OVERLAY_TEXT_CLASS);
+                SVGUtil.addClassName(el, OVERLAY_TEXT_CLASS);
                 overlayGroup.appendChild(el);
             }
             // Remove styling and add the overlay group under the OVERLAY-R-SSS-NNNNNNN
@@ -630,9 +665,18 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
                 switch (analysisType) {
                     case SPECIES_COMPARISON:
                     case OVERREPRESENTATION:
-                        String enrichColour = hex2Rgb(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax(), 0.9f);
                         percentage = graphPathway.isHit() ? graphPathway.getPercentage().floatValue() : 0;
-                        overlayEntity(graphPathway.getStId(), percentage, enrichColour);
+
+                        String enrichColour = "#C2C2C2";
+                        if (graphPathway.isHit()) {
+                            Double pValue = graphPathway.getStatistics().getpValue();
+                            if (pValue > 0 && pValue < AnalysisColours.ENRICHMENT_THRESHOLD) {
+                                enrichColour = AnalysisColours.get().enrichmentGradient.getColor(pValue/AnalysisColours.ENRICHMENT_THRESHOLD);
+                            }
+                        }
+
+                        overlayEntity(graphPathway.getStId(), percentage, hex2Rgb(enrichColour, 0.9f), HIT_BASIS_COLOUR);
+                        showAnalysisInfo(entity, graphPathway);
                         break;
                     case EXPRESSION:
                         percentage = graphPathway.isHit() ? graphPathway.getPercentage().floatValue() : 0;
@@ -641,16 +685,56 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
                                 expressionSummary.getMin(),
                                 expressionSummary.getMax()
                         );
-                        overlayEntity(graphPathway.getStId(), percentage, hex2Rgb(expressionColour, 0.9f));
+                        overlayEntity(graphPathway.getStId(), percentage, hex2Rgb(expressionColour, 0.9f), HIT_BASIS_COLOUR);
                         break;
                 }
             }
         }
     }
 
-    private void overlayEntity(String stId, float percentage, String overlayColour) {
+    private void overlayEntity(String stId, float percentage, String overlayColour, String baseColour) {
         createOrUpdateClippingPath(stId, percentage);
-        createOrUpdateOverlayElement(stId, overlayColour);
+        createOrUpdateOverlayElement(stId, overlayColour, baseColour);
+    }
+
+    private void showAnalysisInfo(SVGEntity entity, GraphPathway graphPathway) {
+        if(!graphPathway.isHit()) return;
+
+        if(entity.hasAnalysisInfo()) {
+            // Make the info box visible
+            SVGUtil.addClassName(entity.getAnalysisInfo(), ANALYSIS_INFO_CLASS);
+        }
+        if(entity.hasAnalysisText()) {
+            OMElement info = entity.getAnalysisText();
+
+            // Center text
+            OMSVGGElement analysisInfo = (OMSVGGElement) entity.getAnalysisInfo();
+
+            OMSVGPoint center = svg.createSVGPoint(
+                    analysisInfo.getBBox().getCenterX(),
+                    analysisInfo.getBBox().getCenterY()
+            );
+
+            center = center.matrixTransform(getInitialCTM());
+
+            info.removeAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE);
+            info.setAttribute(SVGConstants.CSS_ALIGNMENT_BASELINE_PROPERTY, "middle");
+            info.setAttribute(SVGConstants.SVG_TEXT_ANCHOR_ATTRIBUTE, "middle");
+            info.setAttribute(SVGConstants.SVG_X_ATTRIBUTE, center.getX() + "");
+            info.setAttribute(SVGConstants.SVG_Y_ATTRIBUTE, center.getY() + "");
+
+            EntityStatistics stats = graphPathway.getStatistics();
+            String msg;
+            if (stats.getCuratedTotal()==null) {
+                msg = graphPathway.getStId() + " - " + graphPathway.getStatistics().getpValue();
+//                msg = "Hit: " + stats.getFound() + "/" + stats.getTotal() + " - FDR: " + NumberFormat.getFormat("#.##E0").format(stats.getFdr());
+            } else {
+                msg = "Hit: Curated(" + stats.getCuratedFound() + "/" + stats.getCuratedTotal()
+                        + ") Interactors(" + stats.getInteractorsFound() + "/" + stats.getInteractorsTotal()
+                        + ") - FDR: " + NumberFormat.getFormat("#.##E0").format(stats.getFdr());
+            }
+            info.getElement().setInnerText(msg);
+        }
     }
 
     private void resetSelectedElement() {
@@ -756,8 +840,9 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         defs = (OMSVGDefsElement) baseDefs.cloneNode(true);
         svg.appendChild(defs);
 
-        // Add the inline CSS class for overlaying analysis results
-        addInlineStyle(OVERLAY_TEXT_CLASS, OVERLAY_TEXT_STYLE);
+        // Add the inline CSS classes for overlaying analysis results
+        SVGUtil.addInlineStyle(svg, OVERLAY_TEXT_CLASS, OVERLAY_TEXT_STYLE);
+        SVGUtil.addInlineStyle(svg, ANALYSIS_INFO_CLASS, ANALYSIS_INFO_STYLE);
 
         // Add the event handlers
         svg.addMouseDownHandler(this);

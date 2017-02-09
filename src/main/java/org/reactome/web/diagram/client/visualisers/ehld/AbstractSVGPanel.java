@@ -10,7 +10,6 @@ import org.reactome.web.diagram.client.visualisers.ehld.filters.FilterColour;
 import org.reactome.web.diagram.client.visualisers.ehld.filters.FilterFactory;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
 import org.vectomatic.dom.svg.*;
-import org.vectomatic.dom.svg.utils.SVGConstants;
 
 import java.util.*;
 
@@ -35,7 +34,12 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     protected static final String SELECTION_OVERLAY_FILTER = "selectionOverlayFilter";
 
     protected static final String OVERLAY_TEXT_CLASS = "ST-OVERLAY-TEXT";
-    protected static final String OVERLAY_TEXT_STYLE = "{ fill: #FFFFFF !important; stroke:#000000; stroke-width:0.5px }";
+    protected static final String OVERLAY_TEXT_STYLE = "{ fill: #000000 !important; stroke:#000000; stroke-width:0.5px }";
+
+    protected static final String ANALYSIS_INFO_CLASS = "ST-ANALYSIS-INFO";
+    protected static final String ANALYSIS_INFO_STYLE = "{ opacity: 1 !important; }";
+
+    protected static final String HIT_BASIS_COLOUR = "#FFFFFF";
 
     protected OMSVGSVGElement svg;
     protected List<OMSVGElement> svgLayers;
@@ -157,32 +161,6 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
 
         baseDefs.appendChild(FilterFactory.getColouredOverlayFilter(HOVERING_OVERLAY_FILTER, FilterColour.YELLOW));
         baseDefs.appendChild(FilterFactory.getColouredOverlayFilter(SELECTION_OVERLAY_FILTER, FilterColour.BLUE));
-    }
-
-    protected void addClassName(OMElement element, String className) {
-        if(element != null) {
-            sb.setLength(0);
-            sb.append(element.getAttribute(SVGConstants.SVG_CLASS_ATTRIBUTE))
-              .append(" ")
-              .append(OVERLAY_TEXT_CLASS);
-            element.setAttribute(SVGConstants.SVG_CLASS_ATTRIBUTE, sb.toString());
-        }
-    }
-
-    protected void addInlineStyle(String className, String cssStyle){
-        OMNodeList<OMElement> styles = svg.getElementsByTagName("style");
-        if (styles!=null && styles.getLength()>0) {
-            OMSVGStyleElement style = (OMSVGStyleElement) styles.getItem(0);
-            OMNode omNode  = style.getFirstChild();
-            if (omNode != null) {
-                sb.setLength(0);
-                sb.append(omNode.getNodeValue())
-                  .append(".")
-                  .append(OVERLAY_TEXT_CLASS)
-                  .append(OVERLAY_TEXT_STYLE);
-                omNode.setNodeValue(sb.toString());
-            }
-        }
     }
 
     protected void removeAttributeFromChildren(final OMNode root, final String attribute) {

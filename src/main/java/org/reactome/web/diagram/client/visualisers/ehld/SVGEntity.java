@@ -9,9 +9,19 @@ public class SVGEntity {
     private String stId;
     private OMElement region;
     private OMElement overlay;
+    private OMElement analysisInfo;
+    private OMElement analysisText;
 
     public SVGEntity(String stId) {
         this.stId = stId;
+    }
+
+    public OMElement getAnalysisInfo() {
+        return analysisInfo;
+    }
+
+    public OMElement getAnalysisText() {
+        return analysisText;
     }
 
     public String getStId() {
@@ -30,12 +40,28 @@ public class SVGEntity {
         return hasRegion() ? region : overlay;
     }
 
+    public boolean hasAnalysisInfo() {
+        return analysisInfo!=null;
+    }
+
+    public boolean hasAnalysisText() {
+        return analysisText!=null;
+    }
+
     public boolean hasRegion() {
         return region!=null;
     }
 
     public boolean hasOverlay() {
         return overlay!=null;
+    }
+
+    public void setAnalysisInfo(OMElement analysisInfo) {
+        this.analysisInfo = analysisInfo;
+    }
+
+    public void setAnalysisText(OMElement analysisText) {
+        this.analysisText = analysisText;
     }
 
     public void setRegion(OMElement region) {
@@ -68,6 +94,8 @@ public class SVGEntity {
                 "stId='" + stId + '\'' +
                 ", hasRegion=" + hasRegion() +
                 ", hasOverlay=" + hasOverlay() +
+                ", hasAnalysisInfo=" + hasAnalysisInfo() +
+                ", hasAnalysisText=" + hasAnalysisText() +
                 '}';
     }
 }
