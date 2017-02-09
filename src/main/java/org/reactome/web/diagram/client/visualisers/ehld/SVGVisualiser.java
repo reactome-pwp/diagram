@@ -172,7 +172,6 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         thumbnail.contentRequested();
     }
 
-
     @Override
     public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
         boolean rtn = false;
@@ -725,8 +724,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             EntityStatistics stats = graphPathway.getStatistics();
             String msg;
             if (stats.getCuratedTotal()==null) {
-                msg = graphPathway.getStId() + " - " + graphPathway.getStatistics().getpValue();
-//                msg = "Hit: " + stats.getFound() + "/" + stats.getTotal() + " - FDR: " + NumberFormat.getFormat("#.##E0").format(stats.getFdr());
+                msg = "Hit: " + stats.getFound() + "/" + stats.getTotal() + " - FDR: " + NumberFormat.getFormat("#.##E0").format(stats.getFdr());
             } else {
                 msg = "Hit: Curated(" + stats.getCuratedFound() + "/" + stats.getCuratedTotal()
                         + ") Interactors(" + stats.getInteractorsFound() + "/" + stats.getInteractorsTotal()
