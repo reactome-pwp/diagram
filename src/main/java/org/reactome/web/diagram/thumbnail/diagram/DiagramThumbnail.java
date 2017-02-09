@@ -123,6 +123,7 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
 
     @Override
     public void diagramProfileChanged() {
+        if (content == null) return;
         this.setCanvasProperties();
         this.drawThumbnail();
     }
