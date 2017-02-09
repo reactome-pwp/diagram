@@ -90,7 +90,7 @@ public class Context {
                     GraphPathway pathway = (GraphPathway) this.content.getDatabaseObject(pathwaySummary.getDbId());
                     Double percentage = statistics.getFound() / statistics.getTotal().doubleValue();
                     if (percentage < ANALYSIS_MIN_PERCENTAGE) percentage = ANALYSIS_MIN_PERCENTAGE;
-                    pathway.setIsHit(percentage, pathwaySummary.getEntities().getExp());
+                    pathway.setIsHit(percentage, pathwaySummary.getEntities().getExp(), statistics);
                 }
             }
         }
