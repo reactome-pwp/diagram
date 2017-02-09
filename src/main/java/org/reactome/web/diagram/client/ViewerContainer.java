@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RequiresResize;
 import org.reactome.web.diagram.client.visualisers.Visualiser;
 import org.reactome.web.diagram.client.visualisers.diagram.DiagramVisualiser;
-import org.reactome.web.diagram.client.visualisers.ehld.SVGPanel;
+import org.reactome.web.diagram.client.visualisers.ehld.SVGVisualiser;
 import org.reactome.web.diagram.controls.navigation.NavigationControlPanel;
 import org.reactome.web.diagram.controls.settings.HideableContainerPanel;
 import org.reactome.web.diagram.controls.settings.RightContainerPanel;
@@ -72,7 +72,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     protected void initialise() {
         //All Viewers with their thumbnails
         visualisers.put(DIAGRAM, new DiagramVisualiser(eventBus));
-        visualisers.put(SVG, new SVGPanel(eventBus)); //TODO change this
+        visualisers.put(SVG, new SVGVisualiser(eventBus)); //TODO change this
 
         for (Visualiser vis: visualisers.values()) {
             this.add(vis);

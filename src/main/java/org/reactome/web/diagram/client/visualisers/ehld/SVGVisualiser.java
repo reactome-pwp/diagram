@@ -7,7 +7,6 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.NumberFormat;
-import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.analysis.client.model.PathwaySummary;
@@ -55,7 +54,7 @@ import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 @SuppressWarnings("All")
-public class SVGPanel extends AbstractSVGPanel implements Visualiser,
+public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         AnalysisProfileChangedHandler, DatabaseObjectCreatedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
         DoubleClickHandler, ContextMenuHandler,
@@ -95,14 +94,14 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
     private SVGAnimation animation;
 
-    private AnalysisType analysisType;
+    private AnalysisStatus analysisStatus;
     private ExpressionSummary expressionSummary;
     private int selectedExpCol = 0;
 
     private SVGContextPanel contextPanel;
     private Thumbnail thumbnail;
 
-    public SVGPanel(EventBus eventBus) {
+    public SVGVisualiser(EventBus eventBus) {
         super(eventBus);
         this.getElement().addClassName("pwp-SVGPanel");
         flagged = new HashSet<>();
@@ -167,7 +166,6 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         if(svg!=null) {
             if(getElement().getChildCount()>1) {
                 svg.getElement().removeFromParent();
-//                getElement().getLastChild().removeFromParent();
             }
             svg = null;
         }
@@ -251,7 +249,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void resetAnalysis() {
-        analysisType = AnalysisType.NONE;
+        analysisStatus = null;
         expressionSummary = null;
         selectedExpCol = 0;
         if(svg!=null) {
@@ -261,8 +259,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void loadAnalysis() {
-        AnalysisStatus analysisStatus = context.getAnalysisStatus();
-        analysisType = analysisStatus.getAnalysisType();
+        analysisStatus = context.getAnalysisStatus();
         expressionSummary = analysisStatus.getExpressionSummary();
         selectedExpCol = 0;
         if(svg!=null) {
@@ -619,7 +616,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         // on certain browsers. This is why we are adding the event handling
         // on the wrapping div.
         addDomHandler(this, MouseWheelEvent.getType());
-        addDomHandler(SVGPanel.this, ContextMenuEvent.getType());
+        addDomHandler(SVGVisualiser.this, ContextMenuEvent.getType());
     }
 
     private void notifyAboutChangeInView() {
@@ -651,8 +648,10 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
     }
 
     private void overlayAnalysisResults() {
-        for (GraphPathway graphPathway : context.getContent().getEncapsulatedPathways()){
-            overlayEntity(graphPathway);
+        if (analysisStatus!=null) {
+            for (GraphPathway graphPathway : context.getContent().getEncapsulatedPathways()) {
+                overlayEntity(graphPathway);
+            }
         }
     }
 
@@ -662,7 +661,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
             OMElement el = entity.getOverlay();
             if(el!=null) {
                 float percentage;
-                switch (analysisType) {
+                switch (analysisStatus.getAnalysisType()) {
                     case SPECIES_COMPARISON:
                     case OVERREPRESENTATION:
                         percentage = graphPathway.isHit() ? graphPathway.getPercentage().floatValue() : 0;
@@ -824,10 +823,10 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         for (SVGEntity svgEntity : entities.values()) {
             OMElement child = svgEntity.getHoverableElement();
             if(child!=null) {
-                child.addDomHandler(SVGPanel.this, MouseUpEvent.getType());
-                child.addDomHandler(SVGPanel.this, MouseOverEvent.getType());
-                child.addDomHandler(SVGPanel.this, MouseOutEvent.getType());
-                child.addDomHandler(SVGPanel.this, DoubleClickEvent.getType());
+                child.addDomHandler(SVGVisualiser.this, MouseUpEvent.getType());
+                child.addDomHandler(SVGVisualiser.this, MouseOverEvent.getType());
+                child.addDomHandler(SVGVisualiser.this, MouseOutEvent.getType());
+                child.addDomHandler(SVGVisualiser.this, DoubleClickEvent.getType());
                 // Set the pointer to the active regions
                 child.setAttribute("style", CURSOR);
             }
@@ -853,7 +852,7 @@ public class SVGPanel extends AbstractSVGPanel implements Visualiser,
         svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
         setSize(getOffsetWidth(), getOffsetHeight());
 
-        Element div = SVGPanel.this.getElement();
+        Element div = SVGVisualiser.this.getElement();
         if(div.getChildCount()>1) {
             div.replaceChild(svg.getElement(), div.getLastChild());
         } else {
