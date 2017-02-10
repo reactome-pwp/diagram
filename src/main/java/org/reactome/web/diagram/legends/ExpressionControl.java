@@ -218,6 +218,7 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
 
     @Override
     public void onAnalysisResultRequested(AnalysisResultRequestedEvent event) {
+        pause();
         this.setVisible(false);
     }
 
