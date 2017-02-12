@@ -112,4 +112,21 @@ public abstract class SVGUtil {
             }
         }
     }
+
+    @SuppressWarnings("ConstantConditions")
+    public static OMSVGDefsElement getOrCreateDefs(OMSVGSVGElement svg, OMSVGDefsElement baseDefs) {
+        OMSVGDefsElement rtn;
+        OMNodeList<OMElement> defs = svg.getElementsByTagName("defs");
+        if (defs != null && defs.getLength() > 0) {
+            rtn = (OMSVGDefsElement) defs.getItem(0);
+        } else {
+            rtn = new OMSVGDefsElement();
+            svg.appendChild(rtn);
+        }
+
+        for (OMNode omNode : baseDefs.getChildNodes()) {
+            rtn.insertBefore(omNode.cloneNode(true), rtn.getFirstChild());
+        }
+        return rtn;
+    }
 }

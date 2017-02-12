@@ -2,7 +2,6 @@ package org.reactome.web.diagram.thumbnail.ehld;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
@@ -13,6 +12,7 @@ import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.content.EHLDContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.thumbnail.Thumbnail;
+import org.reactome.web.diagram.util.svg.SVGUtil;
 import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.DOMHelper;
 import org.vectomatic.dom.svg.utils.SVGConstants;
@@ -78,6 +78,13 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
             textElement.getElement().removeFromParent();
         }
 
+        // Move all region elements under root
+        for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
+            if (child.getId().startsWith(REGION)) {
+                svg.appendChild(child);
+            }
+        }
+
         // Remove the reactome logo from the thumbnail
         removeLogoFrom(svg);
 
@@ -104,18 +111,16 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
         svgLayers = getRootLayers();
 
         // Append the filters
-        svg.appendChild(baseDefs);
+        SVGUtil.getOrCreateDefs(svg, baseDefs);
 
         // Set initial translation matrix
         initialTM = getInitialCTM();
         ctm = initialTM;
 
-        Scheduler.get().scheduleDeferred(() -> {
-            initialBB = svg.getBBox();
-            OMSVGMatrix fitTM = calculateFitAll(FRAME);
-            ctm = initialTM.multiply(fitTM);
-            applyCTM();
-        });
+        initialBB = svg.getBBox();
+        OMSVGMatrix fitTM = calculateFitAll(FRAME);
+        ctm = initialTM.multiply(fitTM);
+        applyCTM();
     }
 
     @Override
