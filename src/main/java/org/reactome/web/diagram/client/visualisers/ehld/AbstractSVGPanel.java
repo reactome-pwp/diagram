@@ -20,6 +20,9 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     protected EventBus eventBus;
 
     protected static final float FRAME = 40;
+    protected static final String REGION = "REGION-";
+    protected static final String OVERLAY = "OVERLAY-";
+
     protected static final String HOVERING_FILTER = "hoveringFilter";
     protected static final String SELECTION_FILTER = "selectionFilter";
     protected static final String FLAGGING_FILTER = "flaggingFilter";
@@ -37,7 +40,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     protected static final String OVERLAY_TEXT_STYLE = "{ fill: #000000 !important; stroke:#000000; stroke-width:0.5px }";
 
     protected static final String ANALYSIS_INFO_CLASS = "ST-ANALYSIS-INFO";
-    protected static final String ANALYSIS_INFO_STYLE = "{ opacity: 1 !important; }";
+    protected static final String ANALYSIS_INFO_STYLE = "{ opacity: 1 !important; -webkit-transition: all .9s ease-in-out;  -moz-transition: all .9s ease-in-out; transition: all .9s ease-in-out;}";
 
     protected static final String HIT_BASIS_COLOUR = "#FFFFFF";
 
