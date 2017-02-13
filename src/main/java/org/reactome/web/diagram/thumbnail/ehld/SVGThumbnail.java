@@ -2,27 +2,31 @@ package org.reactome.web.diagram.thumbnail.ehld;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.client.visualisers.ehld.AbstractSVGPanel;
+import org.reactome.web.diagram.client.visualisers.ehld.SVGEntity;
 import org.reactome.web.diagram.client.visualisers.ehld.events.SVGThumbnailAreaMovedEvent;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.content.EHLDContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.thumbnail.Thumbnail;
+import org.reactome.web.diagram.util.svg.SVGUtil;
 import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.DOMHelper;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
+@SuppressWarnings("all")
 public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
         MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, ContextMenuHandler {
     private static final int HEIGHT = 75;
@@ -78,6 +82,34 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
             textElement.getElement().removeFromParent();
         }
 
+        entities = new HashMap<>();
+        for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
+            addOrUpdateSVGEntity(child);
+        }
+
+        // Some browsers fail to redraw after the filter attribute has changed.
+        // To avoid this known bug, we move all active regions and their siblings to the root.
+        // This forces the application of the transformation matrix on these layers and thus their redraw.
+        if (!entities.isEmpty()) {
+            Map.Entry<String, SVGEntity> entry = entities.entrySet().iterator().next();
+            OMElement region = entry.getValue().getHoverableElement();
+
+            OMNode parent = region.getParentNode();
+            OMNodeList<OMNode> list = parent.getChildNodes();
+
+            //aux contains a static list of elements to be moved
+            final OMNode[] aux = new OMNode[list.getLength()];
+            for (int i = 0; i < list.getLength(); i++) {
+                aux[i] = list.getItem(i);
+            }
+
+            //swap node from its current location to the svg root
+            for (OMNode node : aux) {
+                parent.removeChild(node);
+                svg.appendChild(node);
+            }
+        }
+
         // Remove the reactome logo from the thumbnail
         removeLogoFrom(svg);
 
@@ -104,18 +136,16 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
         svgLayers = getRootLayers();
 
         // Append the filters
-        svg.appendChild(baseDefs);
+        SVGUtil.getOrCreateDefs(svg, baseDefs);
 
         // Set initial translation matrix
         initialTM = getInitialCTM();
         ctm = initialTM;
 
-        Scheduler.get().scheduleDeferred(() -> {
-            initialBB = svg.getBBox();
-            OMSVGMatrix fitTM = calculateFitAll(FRAME);
-            ctm = initialTM.multiply(fitTM);
-            applyCTM();
-        });
+        initialBB = svg.getBBox();
+        OMSVGMatrix fitTM = calculateFitAll(FRAME);
+        ctm = initialTM.multiply(fitTM);
+        applyCTM();
     }
 
     @Override

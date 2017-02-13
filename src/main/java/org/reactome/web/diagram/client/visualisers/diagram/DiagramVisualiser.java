@@ -116,42 +116,10 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
     private void initHandlers() {
         canvas.addUserActionsHandlers(userActionsManager);
 
-//        //Attaching this as a KeyDownHandler
-//        RootPanel.get().addDomHandler(this, KeyDownEvent.getType());
-
         eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
-//        eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
-//        eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
-//        eventBus.addHandler(AnalysisResetEvent.TYPE, this);
-//        eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
-//
-//        eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
-//        eventBus.addHandler(GraphObjectHoveredEvent.TYPE, this);
-//
-//        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
-//        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
-//        eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
-//        eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
-//        eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
-//        eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
-//
         eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
-//        eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
-//
-//        eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
-//        eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
-//        eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
-//        eventBus.addHandler(InteractorsLayoutUpdatedEvent.TYPE, this);
-//        eventBus.addHandler(InteractorsFilteredEvent.TYPE, this);
-//        eventBus.addHandler(InteractorSelectedEvent.TYPE, this);
         eventBus.addHandler(InteractorProfileChangedEvent.TYPE, this);
-//
-//        eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
-//        eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
         eventBus.addHandler(ThumbnailAreaMovedEvent.TYPE, this);
-//        eventBus.addHandler(ControlActionEvent.TYPE, this);
-//
-//        eventBus.addHandler(StructureImageLoadedEvent.TYPE, this);
     }
 
     private void doUpdate() {
@@ -332,59 +300,12 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
         this.context = null;
     }
 
-//    @Override
-//    public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
-//        Scheduler.get().scheduleDeferred(() -> {
-//            Coordinate model = context.getDiagramStatus().getModelCoordinate(mouseCurrent);
-//            DiagramObject hovered = layoutManager.getHoveredDiagramObject();
-//            canvas.notifyHoveredExpression(hovered, model);
-//            forceDraw = true; //We give priority to other listeners here
-//        });
-//    }
-
     public void expressionColumnChanged() {
             Coordinate model = context.getDiagramStatus().getModelCoordinate(mouseCurrent);
             DiagramObject hovered = layoutManager.getHoveredDiagramObject();
             canvas.notifyHoveredExpression(hovered, model);
             forceDraw = true; //We give priority to other listeners here
     }
-
-//    @Override
-//    public void onGraphObjectSelected(final GraphObjectSelectedEvent event) {
-//        GraphObject graphObject = event.getGraphObject();
-//        if (!layoutManager.isSelected(graphObject)) {
-//            layoutManager.setSelected(graphObject);
-//            this.canvas.setWatermarkURL(this.context, layoutManager.getSelected(), this.flagTerm);
-//            if (event.getZoom()) {
-//                this.diagramManager.displayDiagramObjects(layoutManager.getHalo());
-//            }
-//            forceDraw = true;
-//            if (event.getFireExternally()) {
-//                fireEvent(event);
-//            }
-//        }
-//    }
-
-//    @Override
-//    public void onIllustrationSelected(IllustrationSelectedEvent event) {
-//        this.canvas.setIllustration(event.getUrl());
-//    }
-
-//    @Override //Todo have a more thorough look
-//    public void onInteractorHovered(InteractorHoveredEvent event) {
-//        //In order to have fine grain hovering capabilities, this class is not taking actions for onInteractorHovered
-//        //when it is fired by its own, so we ONLY want to do the STANDARD action (highlight) when the event comes from
-//        //the outside. That is the reason of the next line of code
-//        if (event.getSource().equals(this)) return;
-//        highlightInteractor(event.getInteractor());
-//    }
-
-//    @Override
-//    public void onInteractorsCollapsed(InteractorsCollapsedEvent event) {
-//        Collection<DiagramObject> diagramObjects = context.getContent().getDiagramObjects();
-//        context.getInteractors().resetBurstInteractors(event.getResource(), diagramObjects);
-//        forceDraw = true;
-//    }
 
     @Override
     public void interactorsCollapsed(String resource){
@@ -393,23 +314,11 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
         forceDraw = true;
     }
 
-//    @Override
-//    public void onInteractorsFiltered(InteractorsFilteredEvent event) {
-//        Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
-//        drawInteractors(visibleArea);
-//    }
-
     @Override
     public void interactorsFiltered() {
         Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
         drawInteractors(visibleArea);
     }
-
-//    @Override
-//    public void onInteractorsLayoutUpdated(InteractorsLayoutUpdatedEvent event) {
-//        Box visibleArea = context.getVisibleModelArea(viewportWidth, viewportHeight);
-//        drawInteractors(visibleArea);
-//    }
 
     @Override
     public void interactorsLayoutUpdated() {
@@ -417,24 +326,10 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
         drawInteractors(visibleArea);
     }
 
-//    @Override
-//    public void onInteractorsLoaded(InteractorsLoadedEvent event) {
-//        forceDraw = true;
-//    }
-
     @Override
     public void interactorsLoaded() {
         forceDraw = true;
     }
-
-//    @Override
-//    public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-//        context.getContent().clearDisplayedInteractors();
-//        if(context.getInteractors().isInteractorResourceCached(event.getResource().getIdentifier())) {
-//            context.getInteractors().restoreInteractorsSummary(event.getResource().getIdentifier(), context.getContent());
-//        }
-//        forceDraw = true;
-//    }
 
     @Override
     public void interactorsResourceChanged(OverlayResource resource) {
@@ -444,20 +339,6 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
         }
         forceDraw = true;
     }
-
-//    @Override
-//    public void onInteractorSelected(InteractorSelectedEvent event) {
-//        String url = event.getUrl();
-//        if (url != null) {
-//            Window.open(url, "_blank", "");
-//        }
-//    }
-
-//    @Override
-//    public void layoutLoaded(Context context) {
-//        this.setContext(context);
-//        this.fitDiagram(false);
-//    }
 
     @Override
     protected void onLoad() {
@@ -548,21 +429,6 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
             return resetSelection(notify);
         }
     }
-
-//    @Override
-//    public void setAnalysisToken(String token, String resource) {
-//        final AnalysisStatus analysisStatus = (token == null) ? null : new AnalysisStatus(eventBus, token, resource);
-//        AnalysisTokenValidator.checkTokenAvailability(token, new AnalysisTokenValidator.TokenAvailabilityHandler() {
-//            @Override
-//            public void onTokenAvailabilityChecked(boolean available, String message) {
-//                if (available) {
-//                    loadAnalysis(analysisStatus);
-//                } else {
-//                    eventBus.fireEventFromSource(new DiagramInternalErrorEvent(message), DiagramVisualiser.this);
-//                }
-//            }
-//        });
-//    }
 
     @Override
     public void setMousePosition(Coordinate mouse){

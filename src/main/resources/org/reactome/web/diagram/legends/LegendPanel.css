@@ -167,13 +167,12 @@
 }
 
 .enrichmentLegend {
-    bottom: 30%;
-    right: 10px;
     width: 50px;
-    /*centers in the middle*/
     height: 250px;
-    margin-top: -125px; /* height and margin-top are related, please change both if needed */
-    top: 50%;
+    top: 25px;     /*centers in the middle*/
+    overflow: visible !important;
+    float: left;
+    margin-right: 10px;
 }
 
 .enrichmentControl {

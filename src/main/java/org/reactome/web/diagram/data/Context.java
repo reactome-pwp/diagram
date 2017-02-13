@@ -27,7 +27,7 @@ import java.util.Set;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class Context {
-    static final double ANALYSIS_MIN_PERCENTAGE = 0.03;
+    public static final double ANALYSIS_MIN_PERCENTAGE = 0.03;
 
     private DiagramStatus diagramStatus;
     private AnalysisStatus analysisStatus;
@@ -90,7 +90,7 @@ public class Context {
                     GraphPathway pathway = (GraphPathway) this.content.getDatabaseObject(pathwaySummary.getDbId());
                     Double percentage = statistics.getFound() / statistics.getTotal().doubleValue();
                     if (percentage < ANALYSIS_MIN_PERCENTAGE) percentage = ANALYSIS_MIN_PERCENTAGE;
-                    pathway.setIsHit(percentage, pathwaySummary.getEntities().getExp());
+                    pathway.setIsHit(percentage, pathwaySummary.getEntities().getExp(), statistics);
                 }
             }
         }

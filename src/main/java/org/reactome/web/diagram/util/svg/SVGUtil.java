@@ -2,10 +2,8 @@ package org.reactome.web.diagram.util.svg;
 
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
-import org.vectomatic.dom.svg.OMElement;
-import org.vectomatic.dom.svg.OMSVGGElement;
-import org.vectomatic.dom.svg.OMSVGMatrix;
-import org.vectomatic.dom.svg.OMSVGSVGElement;
+import org.vectomatic.dom.svg.*;
+import org.vectomatic.dom.svg.utils.SVGConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +75,57 @@ public abstract class SVGUtil {
             rtn = false;
         } else {
             rtn = true;
+        }
+        return rtn;
+    }
+
+
+    public static void addClassName(OMElement element, String className) {
+        if(element != null) {
+            String classAtr = element.getAttribute(SVGConstants.SVG_CLASS_ATTRIBUTE);
+            if(!classAtr.contains(className)) {
+                StringBuilder sb = new StringBuilder(classAtr);
+                sb.append(" ").append(className);
+                element.setAttribute(SVGConstants.SVG_CLASS_ATTRIBUTE, sb.toString());
+            }
+        }
+    }
+
+    public static void removeClassName(OMElement element, String className) {
+        if(element != null) {
+            String aux = element.getAttribute(SVGConstants.SVG_CLASS_ATTRIBUTE);
+            if(aux !=null && !aux.isEmpty()) {
+                element.setAttribute(SVGConstants.SVG_CLASS_ATTRIBUTE, aux.replaceAll(className, "").trim());
+            }
+        }
+    }
+
+    public static void addInlineStyle(OMSVGSVGElement svg, String className, String cssStyle){
+        OMNodeList<OMElement> styles = svg.getElementsByTagName("style");
+        if (styles!=null && styles.getLength()>0) {
+            OMSVGStyleElement style = (OMSVGStyleElement) styles.getItem(0);
+            OMNode omNode  = style.getFirstChild();
+            if (omNode != null) {
+                StringBuilder sb = new StringBuilder(omNode.getNodeValue());
+                sb.append(".").append(className).append(cssStyle);
+                omNode.setNodeValue(sb.toString());
+            }
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public static OMSVGDefsElement getOrCreateDefs(OMSVGSVGElement svg, OMSVGDefsElement baseDefs) {
+        OMSVGDefsElement rtn;
+        OMNodeList<OMElement> defs = svg.getElementsByTagName("defs");
+        if (defs != null && defs.getLength() > 0) {
+            rtn = (OMSVGDefsElement) defs.getItem(0);
+        } else {
+            rtn = new OMSVGDefsElement();
+            svg.appendChild(rtn);
+        }
+
+        for (OMNode omNode : baseDefs.getChildNodes()) {
+            rtn.insertBefore(omNode.cloneNode(true), rtn.getFirstChild());
         }
         return rtn;
     }
