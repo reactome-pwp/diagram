@@ -27,8 +27,8 @@ import java.util.Map;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 @SuppressWarnings("all")
-public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
-        MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, ContextMenuHandler {
+public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, ContextMenuHandler,
+        MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, MouseWheelHandler {
     private static final int HEIGHT = 75;
     private static final int FALLBACK_WIDTH = 100;
 
@@ -174,7 +174,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
             if (from != null && to != null) {
                 //Do not change any property of the status since it will be updated once the corresponding
                 //action is performed in the main view and notified (thumbnail status changes on demand)
-                OMSVGPoint padding = from.substract(p.substract(delta));
+                OMSVGPoint padding = from.substract(p.substract(delta)).scale(ctm.inverse().getA());
                 eventBus.fireEventFromSource(new SVGThumbnailAreaMovedEvent(padding), this);
             }
         } else {
@@ -293,6 +293,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
         frame.addMouseUpHandler(this);
         frame.addMouseOutHandler(this);
         addDomHandler(this, ContextMenuEvent.getType());
+        addDomHandler(this, MouseWheelEvent.getType());
     }
 
     private boolean isMouseInVisibleArea(OMSVGPoint mouse) {
@@ -354,4 +355,9 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
         }
     }
 
+    @Override
+    public void onMouseWheel(MouseWheelEvent event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
 }
