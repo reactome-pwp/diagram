@@ -16,6 +16,7 @@ import java.util.Set;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class FlaggedItemsControl extends LegendPanel implements ClickHandler,
+        ContentRequestedHandler,
         DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler, DiagramObjectsFlagRequestHandler,
         AnalysisResultLoadedHandler, AnalysisResetHandler {
 
@@ -88,10 +89,14 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler,
     }
 
     private void initHandlers() {
+        this.eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
         this.eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
         this.eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
-//        this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
-//        this.eventBus.addHandler(AnalysisResetEvent.TYPE, this);
+    }
+
+    @Override
+    public void onContentRequested(ContentRequestedEvent event) {
+        this.setVisible(false);
     }
 }

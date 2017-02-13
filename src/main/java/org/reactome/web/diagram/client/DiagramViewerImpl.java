@@ -44,6 +44,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     private LoaderManager loaderManager;
     private AnalysisStatus analysisStatus;
     private InteractorsManager interactorsManager;
+    private FlaggedElementsLoader flaggedElementsLoader = new FlaggedElementsLoader(this);
 
     DiagramViewerImpl() {
         super();
@@ -97,7 +98,14 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
 
     @Override
     public void flagItems(String identifier) {
-        eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(identifier), this);
+        if (context != null && identifier != null) {
+            Set<DiagramObject> flagged = context.getFlagged(identifier);
+            if (flagged == null) {
+                eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(identifier), this);
+            } else {
+                eventBus.fireEventFromSource(new DiagramObjectsFlaggedEvent(identifier, flagged, false), this);
+            }
+        }
     }
 
     @Override
@@ -188,8 +196,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         }
     }
 
-    FlaggedElementsLoader flaggedElementsLoader = new FlaggedElementsLoader(this);
-
     @Override
     public void onDiagramObjectsFlagRequested(DiagramObjectsFlagRequestedEvent event) {
         boolean notify = !event.getSource().equals(this);
@@ -203,6 +209,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
             GraphObject graphObject = context.getContent().getDatabaseObject(object.getDbId());
             flagged.addAll(graphObject.getDiagramObjects());
         }
+        context.setFlagged(term, flagged);
         eventBus.fireEventFromSource(new DiagramObjectsFlaggedEvent(term, flagged, notify), this);
     }
 
@@ -227,6 +234,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
 
     @Override
     public void onContentRequested(ContentRequestedEvent event) {
+        flaggedElementsLoader.cancel();
         viewerContainer.contentRequested();
         this.resetContext();
     }
@@ -365,7 +373,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     }
 
     @Override
-    public void resetFlaggedItems() { //TODO: stay here
+    public void resetFlaggedItems() {
         this.eventBus.fireEventFromSource(new DiagramObjectsFlagResetEvent(), this);
     }
 

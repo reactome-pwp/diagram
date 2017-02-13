@@ -31,6 +31,7 @@ public class Context {
 
     private DiagramStatus diagramStatus;
     private AnalysisStatus analysisStatus;
+    private FlagStatus flagStatus;
 
     private Content content;
     private InteractorsContent interactors;
@@ -41,8 +42,18 @@ public class Context {
         //Status needs to be created every time we load a new content
         this.diagramStatus = new DiagramStatus();
 
+        this.flagStatus = new FlagStatus();
+
         this.content = content; //created and initialised by the DiagramContentFactory
         this.interactors = new InteractorsContent(content.getMinX(), content.getMinY(), content.getMaxX(), content.getMaxY());
+    }
+
+    public Set<DiagramObject> getFlagged(String term){
+        return flagStatus.getFlagged(term);
+    }
+
+    public void setFlagged(String term, Set<DiagramObject> flagged){
+        flagStatus.setFlagged(term, flagged);
     }
 
     public void clearAnalysisOverlay() {

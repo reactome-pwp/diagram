@@ -274,18 +274,16 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
     @Override
     public void flagItems(Set<DiagramObject> flaggedItems){
         layoutManager.setFlagged(flaggedItems);
-        this.canvas.flag(flaggedItems, this.context);
+        forceDraw = true;
     }
 
     @Override
     public void resetFlag(){
-        if(layoutManager.resetFlagged()){
-            this.canvas.flag(layoutManager.getFlagged(), this.context);
-        }
+        if(layoutManager.resetFlagged()) forceDraw = true;
     }
 
     @Override
-    public void contentLoaded(Context context) { //on contentFullyLoaded
+    public void contentLoaded(Context context) {
         this.context = context;
         this.context.restoreDialogs();
     }
@@ -578,9 +576,7 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
 
     @Override
     public void padding(int dX, int dY) {
-//        if(context.getContent().getType() == DIAGRAM) { //TODO to be moved to Viewer
-            padding(CoordinateFactory.get(dX, dY));
-//        }
+        padding(CoordinateFactory.get(dX, dY));
     }
 
     @Override

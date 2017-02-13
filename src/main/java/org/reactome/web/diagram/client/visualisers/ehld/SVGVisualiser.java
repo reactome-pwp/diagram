@@ -947,7 +947,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void flagItems(Set<DiagramObject> flaggedItems){
-        flagged.clear();
+        resetFlag();
         for (DiagramObject diagramObject : flaggedItems) {
             if(diagramObject instanceof EHLDObject){
                 EHLDObject item = (EHLDObject) diagramObject;
@@ -965,6 +965,6 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         for (OMElement item : flagged) {
             unFlagElement(item);
         }
-        flagged.clear();
+        flagged = new HashSet<>();
     }
 }
