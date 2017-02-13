@@ -1,9 +1,7 @@
 package org.reactome.web.diagram.client.visualisers.ehld;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -712,9 +710,9 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 //            }
                 info.getElement().setInnerText(msg);
 
-//                TitleElement title = Document.get().createTitleElement();
-//                title.setInnerText("lalalalala");
-//                entity.getHoverableElement().getElement().appendChild(title);
+                TitleElement title = Document.get().createTitleElement();
+                title.setInnerText("lalalalala");
+                entity.getHoverableElement().getElement().appendChild(title);
             }
         }
     }
@@ -835,11 +833,6 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                 child.addDomHandler(SVGVisualiser.this, DoubleClickEvent.getType());
                 // Set the pointer to the active regions
                 child.setAttribute("style", CURSOR);
-
-//                if (svgEntity.getAnalysisInfo()!=null) {
-//                    svgEntity.getAnalysisInfo().addDomHandler(SVGVisualiser.this, MouseOverEvent.getType());
-//                    svgEntity.getAnalysisInfo().addDomHandler(SVGVisualiser.this, MouseOutEvent.getType());
-//                }
             }
         }
 
