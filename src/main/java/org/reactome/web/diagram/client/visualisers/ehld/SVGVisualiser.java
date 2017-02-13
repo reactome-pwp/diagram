@@ -367,6 +367,13 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         applyCTM(false);
         thumbnail.setHoveredItem(el.getId());
         notifyHovering(el.getId());
+
+        SVGEntity entity = entities.get(SVGUtil.keepStableId(el.getId()));
+        if (entity != null) {
+
+            SVGTooltip.get().setText("lalalala");
+            SVGTooltip.get().setPositionAndShow(this, 100, 100, 10);
+        }
     }
 
     @Override
@@ -377,6 +384,9 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         applyCTM(false);
         thumbnail.setHoveredItem(null);
         notifyHovering(null);
+
+        SVGTooltip.get().hide();
+        SVGTooltip.get().setText("");
     }
 
     @Override
@@ -825,6 +835,11 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                 child.addDomHandler(SVGVisualiser.this, DoubleClickEvent.getType());
                 // Set the pointer to the active regions
                 child.setAttribute("style", CURSOR);
+
+//                if (svgEntity.getAnalysisInfo()!=null) {
+//                    svgEntity.getAnalysisInfo().addDomHandler(SVGVisualiser.this, MouseOverEvent.getType());
+//                    svgEntity.getAnalysisInfo().addDomHandler(SVGVisualiser.this, MouseOutEvent.getType());
+//                }
             }
         }
 

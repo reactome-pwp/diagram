@@ -17,7 +17,7 @@ import org.reactome.web.diagram.util.Console;
 public class WidgetTest implements EntryPoint {
 
     private final DiagramViewer diagram;
-    private static String currentPathway = "R-HSA-109582";
+    private static String currentPathway = "R-HSA-6806667";
 //    private static String currentPathway = "R-HSA-5693567"; //Big one with plenty of overlap
     private static String currentAnalysis = "MjAxNjA5MzAwNTU3MjdfMg%3D%3D";
 
@@ -126,6 +126,8 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("ORA 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+//                No interactors: MjAxNzAxMzEwNTEyMDJfMg==
+//                Interactors: MjAxNzAyMDcwOTMwMDVfMw==
                 diagram.setAnalysisToken("MjAxNzAxMzEwNTEyMDJfMg==","TOTAL");
             }
         }));
