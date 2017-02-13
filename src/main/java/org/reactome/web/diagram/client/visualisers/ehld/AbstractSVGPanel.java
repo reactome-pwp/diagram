@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.diagram.client.visualisers.ehld.filters.FilterColour;
 import org.reactome.web.diagram.client.visualisers.ehld.filters.FilterFactory;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
+import org.reactome.web.diagram.util.svg.SVGUtil;
 import org.vectomatic.dom.svg.*;
 
 import java.util.*;
@@ -22,6 +23,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     protected static final float FRAME = 40;
     protected static final String REGION = "REGION-";
     protected static final String OVERLAY = "OVERLAY-";
+    protected static final String ANALYSIS_INFO = "ANALINFO";
 
     protected static final String HOVERING_FILTER = "hoveringFilter";
     protected static final String SELECTION_FILTER = "selectionFilter";
@@ -87,6 +89,29 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
             svg.setWidth(Style.Unit.PX, width);
             svg.setHeight(Style.Unit.PX, height);
         }
+    }
+
+    protected SVGEntity addOrUpdateSVGEntity(OMElement element) {
+        String elementId = element.getId();
+        String stId = SVGUtil.keepStableId(elementId);
+        SVGEntity entity = entities.get(stId);
+        if(entity == null) {
+            entity = new SVGEntity(stId);
+            entities.put(stId, entity);
+        }
+
+        if(elementId.startsWith(REGION)) {
+            entity.setRegion(element);
+            //Check if there is an analysis info box and add it in the entity
+            OMElement info = getAnalysisInfo(element);
+            if(info != null) {
+                entity.setAnalysisInfo(info);
+                entity.setAnalysisText(getAnalysisText(info));
+            }
+        } else if(elementId.startsWith(OVERLAY)) {
+            entity.setOverlay(element);
+        }
+        return entity;
     }
 
     protected OMSVGMatrix calculateFitAll(final float frame){
@@ -197,6 +222,29 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
                 element.getElement().removeFromParent();
                 rtn = true;
             }
+        }
+        return rtn;
+    }
+
+    private OMElement getAnalysisInfo(OMElement element){
+        OMElement rtn = null;
+        OMNodeList<OMElement> els = element.getElementsByTagName("g");
+        if(els!=null) {
+            for (OMElement target : els) {
+                if (target.getId().startsWith(ANALYSIS_INFO)) {
+                    rtn = target;
+                    break;
+                }
+            }
+        }
+        return rtn;
+    }
+
+    private OMElement getAnalysisText(OMElement element){
+        OMElement rtn = null;
+        List<OMElement> textElements = getAllTextElementsFrom((OMNode) element);
+        if(textElements != null && textElements.size()>0) {
+            rtn = textElements.get(0);
         }
         return rtn;
     }

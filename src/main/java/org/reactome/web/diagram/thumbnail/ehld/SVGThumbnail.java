@@ -7,6 +7,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.client.visualisers.ehld.AbstractSVGPanel;
+import org.reactome.web.diagram.client.visualisers.ehld.SVGEntity;
 import org.reactome.web.diagram.client.visualisers.ehld.events.SVGThumbnailAreaMovedEvent;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.content.EHLDContent;
@@ -18,7 +19,9 @@ import org.vectomatic.dom.svg.utils.DOMHelper;
 import org.vectomatic.dom.svg.utils.SVGConstants;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -78,10 +81,28 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
             textElement.getElement().removeFromParent();
         }
 
-        // Move all region elements under root
+        entities = new HashMap<>();
         for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
-            if (child.getId().startsWith(REGION)) {
-                svg.appendChild(child);
+            addOrUpdateSVGEntity(child);
+        }
+
+        if (!entities.isEmpty()) {
+            Map.Entry<String, SVGEntity> entry = entities.entrySet().iterator().next();
+            OMElement region = entry.getValue().getHoverableElement();
+
+            OMNode parent = region.getParentNode();
+            OMNodeList<OMNode> list = parent.getChildNodes();
+
+            //aux contains a static list of elements to be moved
+            final OMNode[] aux = new OMNode[list.getLength()];
+            for (int i = 0; i < list.getLength(); i++) {
+                aux[i] = list.getItem(i);
+            }
+
+            //swap node from its current location to the svg root
+            for (OMNode node : aux) {
+                parent.removeChild(node);
+                svg.appendChild(node);
             }
         }
 

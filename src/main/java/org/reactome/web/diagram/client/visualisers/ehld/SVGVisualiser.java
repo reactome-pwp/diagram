@@ -66,8 +66,6 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     private static final String CLIPPING_PATH = "CLIPPINGPATH-";
     private static final String CLIPPING_RECT = "CLIPPINGRECT-";
 
-    private static final String ANALYSIS_INFO = "ANALINFO";
-
     private static final String CURSOR = "cursor: pointer;";
     private static final float ZOOM_IN_STEP = 1.1f;
     private static final float ZOOM_OUT_STEP = 0.9f;
@@ -422,52 +420,6 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         }
     }
 
-    private SVGEntity addOrUpdateSVGEntity(OMElement element) {
-        String elementId = element.getId();
-        String stId = SVGUtil.keepStableId(elementId);
-        SVGEntity entity = entities.get(stId);
-        if(entity == null) {
-            entity = new SVGEntity(stId);
-            entities.put(stId, entity);
-        }
-
-        if(elementId.startsWith(REGION)) {
-            entity.setRegion(element);
-            //Check if there is an analysis info box and add it in the entity
-            OMElement info = getAnalysisInfo(element);
-            if(info != null) {
-                entity.setAnalysisInfo(info);
-                entity.setAnalysisText(getAnalysisText(info));
-            }
-        } else if(elementId.startsWith(OVERLAY)) {
-            entity.setOverlay(element);
-        }
-        return entity;
-    }
-
-    private OMElement getAnalysisInfo(OMElement element){
-        OMElement rtn = null;
-        OMNodeList<OMElement> els = element.getElementsByTagName("g");
-        if(els!=null) {
-            for (OMElement target : els) {
-                if (target.getId().startsWith(ANALYSIS_INFO)) {
-                    rtn = target;
-                    break;
-                }
-            }
-        }
-        return rtn;
-    }
-
-    private OMElement getAnalysisText(OMElement element){
-        OMElement rtn = null;
-        List<OMElement> textElements = getAllTextElementsFrom((OMNode) element);
-        if(textElements != null && textElements.size()>0) {
-            rtn = textElements.get(0);
-        }
-        return rtn;
-    }
-
     private void clearOverlay() {
         for (SVGEntity entity : entities.values()) {
             String stId = entity.getStId();
@@ -492,8 +444,6 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             }
         }
     }
-
-
 
     private void createOrUpdateClippingPath(String stId, float ratio){
         OMSVGRectElement rect = (OMSVGRectElement) svg.getElementById(CLIPPING_RECT + stId);
@@ -841,10 +791,25 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         entities = new HashMap<>();
         for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
             addOrUpdateSVGEntity(child);
+        }
 
-            // Move all region elements under root
-            if (child.getId().startsWith(REGION)) {
-                svg.appendChild(child);
+        if (!entities.isEmpty()) {
+            Map.Entry<String, SVGEntity> entry = entities.entrySet().iterator().next();
+            OMElement region = entry.getValue().getHoverableElement();
+
+            OMNode parent = region.getParentNode();
+            OMNodeList<OMNode> list = parent.getChildNodes();
+
+            //aux contains a static list of elements to be moved
+            final OMNode[] aux = new OMNode[list.getLength()];
+            for (int i = 0; i < list.getLength(); i++) {
+                aux[i] = list.getItem(i);
+            }
+
+            //swap node from its current location to the svg root
+            for (OMNode node : aux) {
+                parent.removeChild(node);
+                svg.appendChild(node);
             }
         }
 
