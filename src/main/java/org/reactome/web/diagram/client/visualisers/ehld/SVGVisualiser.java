@@ -793,6 +793,9 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             addOrUpdateSVGEntity(child);
         }
 
+        // Some browsers fail to redraw after the filter attribute has changed.
+        // To avoid this known bug, we move all active regions and their siblings to the root.
+        // This forces the application of the transformation matrix on these layers and thus their redraw.
         if (!entities.isEmpty()) {
             Map.Entry<String, SVGEntity> entry = entities.entrySet().iterator().next();
             OMElement region = entry.getValue().getHoverableElement();

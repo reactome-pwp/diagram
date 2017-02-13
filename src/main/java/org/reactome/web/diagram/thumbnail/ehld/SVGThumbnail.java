@@ -26,6 +26,7 @@ import java.util.Map;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
+@SuppressWarnings("all")
 public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
         MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, ContextMenuHandler {
     private static final int HEIGHT = 75;
@@ -86,6 +87,9 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail,
             addOrUpdateSVGEntity(child);
         }
 
+        // Some browsers fail to redraw after the filter attribute has changed.
+        // To avoid this known bug, we move all active regions and their siblings to the root.
+        // This forces the application of the transformation matrix on these layers and thus their redraw.
         if (!entities.isEmpty()) {
             Map.Entry<String, SVGEntity> entry = entities.entrySet().iterator().next();
             OMElement region = entry.getValue().getHoverableElement();
