@@ -964,6 +964,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                 }
             }
         }
+        applyCTM(false);
     }
 
     @Override
@@ -972,5 +973,6 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             unFlagElement(item);
         }
         flagged = new HashSet<>();
+        applyCTM(false);
     }
 }
