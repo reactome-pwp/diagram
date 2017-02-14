@@ -25,7 +25,9 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
+import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.events.AnalysisProfileChangedEvent;
 import org.reactome.web.diagram.events.ContentRequestedEvent;
 import org.reactome.web.diagram.events.GraphObjectHoveredEvent;
@@ -80,8 +82,8 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     private int viewportWidth = 0;
     private int viewportHeight = 0;
 
-    private boolean isPanning;
-    private boolean avoidClicking;
+    private boolean mouseDown = false;
+    private boolean allowSelection = true;
 
     private OMElement selected;
     private OMElement hovered;
@@ -211,7 +213,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                 setSelectedElement(svgEntity.getHoverableElement());
                 thumbnail.setSelectedItem(svgEntity.getHoverableElement().getId());
                 if (notify) {
-                    eventBus.fireEventFromSource(new GraphObjectHoveredEvent(graphObject), this);
+                    eventBus.fireEventFromSource(new GraphObjectSelectedEvent(graphObject, false), this);
                 }
                 rtn = true;
             }
@@ -305,23 +307,27 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     @Override
     public void onMouseDown(MouseDownEvent event) {
         event.preventDefault(); event.stopPropagation();
-        if(animation!=null) animation.cancel();
+        if (animation != null) animation.cancel();
         origin = getTranslatedPoint(event);
-        isPanning = true;
+        mouseDown = true;
     }
 
     @Override
     public void onMouseMove(MouseMoveEvent event) {
         event.preventDefault(); event.stopPropagation();
-        if(isPanning) {
+        if (mouseDown) {
             getElement().getStyle().setCursor(Style.Cursor.MOVE);
-            avoidClicking = true;
             OMSVGPoint end = getTranslatedPoint(event);
+            Coordinate delta = CoordinateFactory.get(end.getX() - origin.getX(), end.getY() - origin.getY());
+            // On mouse move is sometimes called for delta 0 (we cannot control that, but only consider it)
+            if (delta.getX() != 0 && delta.getY() != 0) {
+                allowSelection = false; //Selection can only be denied in case of panning
 
-            OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(end.getX() - origin.getX(), end.getY() - origin.getY());
-            ctm = ctm.multiply(newMatrix);
+                OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(delta.getX().floatValue(), delta.getY().floatValue());
+                ctm = ctm.multiply(newMatrix);
 
-            applyCTM(true);
+                applyCTM(true);
+            }
         }
     }
 
@@ -330,32 +336,32 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         event.preventDefault(); event.stopPropagation();
         getElement().getStyle().setCursor(Style.Cursor.DEFAULT);
         OMElement el = (OMElement) event.getSource();
-        if(!avoidClicking) {
+        if (allowSelection) {
             String elementId = el.getId();
-            if(SVGUtil.isAnnotated(elementId)) {
+            if (SVGUtil.isAnnotated(elementId)) {
                 int button = event.getNativeEvent().getButton();
                 switch (button) {
                     case NativeEvent.BUTTON_RIGHT:
                         contextPanel.show(SVGUtil.keepStableId(elementId), event.getClientX(), event.getClientY());
                         break;
                     default:
-                        if (selected != el) {
-                            setSelectedElement(el);
+                        if (!Objects.equals(selected,el)) {
                             thumbnail.setSelectedItem(elementId);
+                            setSelectedElement(el);
                             notifySelection(elementId);
                         }
                         break;
                 }
             } else {
-                if(selected != null) {
+                if (selected != null) {
                     resetSelectedElement();
                     thumbnail.setSelectedItem(null);
                     notifySelection(null);
                 }
             }
         }
-        isPanning = false;
-        avoidClicking = false;
+        mouseDown = false;
+        allowSelection = true;
     }
 
     @Override
@@ -595,7 +601,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
     private void notifySelection(String elementId){
         GraphObject selected = null;
-        if(elementId!=null) {
+        if (elementId != null) {
             selected = context.getContent().getDatabaseObject(SVGUtil.keepStableId(elementId));
         }
         eventBus.fireEventFromSource(new GraphObjectSelectedEvent(selected, false), this);
