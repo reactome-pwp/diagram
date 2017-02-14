@@ -11,6 +11,7 @@ public class SVGEntity {
     private OMElement overlay;
     private OMElement analysisInfo;
     private OMElement analysisText;
+    private String tooltipText;
 
     public SVGEntity(String stId) {
         this.stId = stId;
@@ -70,6 +71,14 @@ public class SVGEntity {
 
     public void setOverlay(OMElement overlay) {
         this.overlay = overlay;
+    }
+
+    public String getTooltipText() {
+        return tooltipText;
+    }
+
+    public void setTooltipText(String tooltipText) {
+        this.tooltipText = tooltipText;
     }
 
     @Override

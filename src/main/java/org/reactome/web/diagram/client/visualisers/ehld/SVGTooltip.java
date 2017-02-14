@@ -10,7 +10,6 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
-import org.reactome.web.diagram.util.Console;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -54,7 +53,6 @@ public class SVGTooltip extends PopupPanel {
         this.setVisible(true);
         Coordinate optPosition = this.findOptimalPosition(offsetX, offsetY, distance);
         this.setPosition(optPosition.getX().intValue(), optPosition.getY().intValue());
-        Console.log("Hello tooltip");
     }
 
     private void setPosition(int left, int top) {

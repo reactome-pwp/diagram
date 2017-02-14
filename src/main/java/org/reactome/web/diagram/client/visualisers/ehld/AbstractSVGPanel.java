@@ -107,6 +107,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
             if(info != null) {
                 entity.setAnalysisInfo(info);
                 entity.setAnalysisText(getAnalysisText(info));
+                info.getElement().setId(ANALYSIS_INFO + "-" + stId);
             }
         } else if(elementId.startsWith(OVERLAY)) {
             entity.setOverlay(element);

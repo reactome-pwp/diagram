@@ -1,7 +1,9 @@
 package org.reactome.web.diagram.client.visualisers.ehld;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.*;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -360,29 +362,44 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     public void onMouseOver(MouseOverEvent event) {
         event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
-        resetHighlight(false);
-        highlightElement(el);
-        applyCTM(false);
-        thumbnail.setHoveredItem(el.getId());
-        notifyHovering(el.getId());
-
         SVGEntity entity = entities.get(SVGUtil.keepStableId(el.getId()));
-        if (entity != null) {
 
-            SVGTooltip.get().setText("lalalala");
-            SVGTooltip.get().setPositionAndShow(this, 100, 100, 10);
+        // Highlight the region which this analysis info is part of
+        OMElement toHighlight = entity.getHoverableElement();
+        if (!toHighlight.equals(hovered)) {
+            resetHighlight(false);
+            highlightElement(toHighlight);
+            applyCTM(false);
+            thumbnail.setHoveredItem(toHighlight.getId());
+            notifyHovering(toHighlight.getId());
+        }
+
+        // Show the tooltip
+        OMElement tooltipElement = entity.getAnalysisInfo();
+        if(el.equals(tooltipElement)) {
+            String tooltip = entity.getTooltipText();
+            if (tooltip != null) {
+                SVGTooltip.get().setText(tooltip);
+                SVGTooltip.get().setPositionAndShow(this, event.getClientX(), event.getClientY(), 8*(1-zFactor));
+            }
         }
     }
 
     @Override
     public void onMouseOut(MouseOutEvent event) {
-        event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
-        unHighlightElement(el);
-        applyCTM(false);
-        thumbnail.setHoveredItem(null);
-        notifyHovering(null);
+        SVGEntity entity = entities.get(SVGUtil.keepStableId(el.getId()));
 
+        // Unhighlight the region which this analysis info is part of
+        OMElement toUnHighlight = entity.getHoverableElement();
+        if(el.equals(toUnHighlight)) {
+            unHighlightElement(toUnHighlight);
+            applyCTM(false);
+            thumbnail.setHoveredItem(null);
+            notifyHovering(null);
+        }
+
+        // Hide the tooltip
         SVGTooltip.get().hide();
         SVGTooltip.get().setText("");
     }
@@ -448,6 +465,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                 // Remove garbage text in case the user decides to download the svg file
                 if (entity.hasAnalysisText()) {
                     entity.getAnalysisText().getElement().setInnerText("-");
+                    entity.setTooltipText(null);
                 }
             }
         }
@@ -700,19 +718,17 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                 info.setAttribute(SVGConstants.SVG_Y_ATTRIBUTE, center.getY() + "");
 
                 EntityStatistics stats = graphPathway.getStatistics();
-                String msg;
-//            if (stats.getCuratedTotal()==null) {
-                msg = "Hit: " + stats.getFound() + "/" + stats.getTotal() + " - FDR: " + NumberFormat.getFormat("#.##E0").format(stats.getFdr());
-//            } else {
-//                msg = "Hit: Cur(" + stats.getCuratedFound() + "/" + stats.getCuratedTotal()
-//                        + ") Int(" + stats.getInteractorsFound() + "/" + stats.getInteractorsTotal()
-//                        + ") - FDR: " + NumberFormat.getFormat("#.##E0").format(stats.getFdr());
-//            }
+                String msg = "Hit: " + stats.getFound() + "/" + stats.getTotal() + " - FDR: " + NumberFormat.getFormat("#.##E0").format(stats.getFdr());
                 info.getElement().setInnerText(msg);
 
-                TitleElement title = Document.get().createTitleElement();
-                title.setInnerText("lalalalala");
-                entity.getHoverableElement().getElement().appendChild(title);
+                if (stats.getCuratedTotal()==null) {
+                    entity.setTooltipText(null);
+                } else {
+                    entity.setTooltipText("Hit: Curated(" + stats.getCuratedFound() + "/" + stats.getCuratedTotal()
+                            + ") Interactors(" + stats.getInteractorsFound() + "/" + stats.getInteractorsTotal()
+                            + ") - FDR: " + NumberFormat.getFormat("#.##E0").format(stats.getFdr())
+                    );
+                }
             }
         }
     }
@@ -833,6 +849,12 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                 child.addDomHandler(SVGVisualiser.this, DoubleClickEvent.getType());
                 // Set the pointer to the active regions
                 child.setAttribute("style", CURSOR);
+
+                if(svgEntity.hasAnalysisInfo()) {
+                    // This is to show/hide the tooltip
+                    svgEntity.getAnalysisInfo().addDomHandler(SVGVisualiser.this, MouseOverEvent.getType());
+                    svgEntity.getAnalysisInfo().addDomHandler(SVGVisualiser.this, MouseOutEvent.getType());
+                }
             }
         }
 
