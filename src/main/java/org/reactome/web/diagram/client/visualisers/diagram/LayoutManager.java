@@ -111,7 +111,7 @@ public class LayoutManager implements ContentLoadedHandler, ContentRequestedHand
 
     public boolean resetFlagged() {
         if (this.flagged != null) {
-            this.flagged.clear();
+            this.flagged = new HashSet<>();
             return true;
         }
         return false;
@@ -119,7 +119,7 @@ public class LayoutManager implements ContentLoadedHandler, ContentRequestedHand
 
     public boolean resetSelected() {
         if (this.selected != null) {
-            halo.clear();
+            halo = new HashSet<>();
             this.selected = null;
             return true;
         }
