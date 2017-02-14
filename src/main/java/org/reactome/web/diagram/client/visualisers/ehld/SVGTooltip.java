@@ -4,21 +4,32 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.reactome.web.diagram.data.layout.Coordinate;
-import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class SVGTooltip extends PopupPanel {
     private static SVGTooltip tooltip;
+    private static int DELAY = 1000;
+    private Timer timer;
+
+    private int offsetX;
+    private int offsetY;
+    private int distance;
 
     private SVGTooltip() {
         this.setStyleName(RESOURCES.getCSS().popup());
+        timer = new Timer() {
+            @Override
+            public void run() {
+                showWithDelay();
+            }
+        };
     }
 
     public static SVGTooltip get() {
@@ -35,6 +46,7 @@ public class SVGTooltip extends PopupPanel {
 
     public void hide() {
         setVisible(false);
+        if (timer.isRunning()) { timer.cancel(); }
     }
 
     @Override
@@ -43,16 +55,19 @@ public class SVGTooltip extends PopupPanel {
         super.add(w);
     }
 
-    private Coordinate findOptimalPosition(double offsetX, double offsetY, double distance){
-        return CoordinateFactory.get(offsetX + distance,offsetY + distance );
-    }
-
     public void setPositionAndShow(AbsolutePanel container, double offsetX, double offsetY, double distance) {
+        if (timer.isRunning()) { timer.cancel(); }
+        this.offsetX = (int)offsetX;
+        this.offsetY = (int)offsetY;
+        this.distance = (int)distance;
         container.getElement().appendChild(this.getElement());
 
+        timer.schedule(DELAY);
+    }
+
+    private void showWithDelay() {
         this.setVisible(true);
-        Coordinate optPosition = this.findOptimalPosition(offsetX, offsetY, distance);
-        this.setPosition(optPosition.getX().intValue(), optPosition.getY().intValue());
+        this.setPosition(offsetX + distance, offsetY + distance);
     }
 
     private void setPosition(int left, int top) {
@@ -60,7 +75,6 @@ public class SVGTooltip extends PopupPanel {
         elem.getStyle().setPropertyPx("left", left);
         elem.getStyle().setPropertyPx("top", top);
     }
-
 
     public static Resources RESOURCES;
     static {
