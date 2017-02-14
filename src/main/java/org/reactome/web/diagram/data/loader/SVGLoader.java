@@ -85,7 +85,7 @@ public class SVGLoader implements RequestCallback {
     private static Set<String> availableSVG = null;
 
     static {
-        String url = PREFIX + "svgsummary.txt";
+        String url = PREFIX + "svgsummary.txt" + SUFFIX;
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             requestBuilder.sendRequest(null, new RequestCallback() {
