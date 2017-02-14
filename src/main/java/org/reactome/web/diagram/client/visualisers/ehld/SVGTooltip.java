@@ -44,7 +44,7 @@ public class SVGTooltip extends PopupPanel {
     }
 
     private Coordinate findOptimalPosition(double offsetX, double offsetY, double distance){
-        return CoordinateFactory.get(offsetX,offsetY + distance );
+        return CoordinateFactory.get(offsetX + distance,offsetY + distance );
     }
 
     public void setPositionAndShow(AbsolutePanel container, double offsetX, double offsetY, double distance) {

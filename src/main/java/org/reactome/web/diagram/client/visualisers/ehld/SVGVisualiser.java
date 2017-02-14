@@ -386,7 +386,12 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             String tooltip = entity.getTooltipText();
             if (tooltip != null) {
                 SVGTooltip.get().setText(tooltip);
-                SVGTooltip.get().setPositionAndShow(this, event.getClientX(), event.getClientY(), 8*(1-zFactor));
+                SVGTooltip.get().setPositionAndShow(
+                        this,
+                        event.getClientX() - getAbsoluteLeft(),
+                        event.getClientY() - getAbsoluteTop(),
+                        15 * zFactor
+                );
             }
         }
     }
