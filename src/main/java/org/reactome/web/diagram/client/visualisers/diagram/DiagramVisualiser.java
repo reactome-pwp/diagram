@@ -266,7 +266,7 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
             String stId = context.getContent().getStableId();
             switch (option) {
                 case IMAGE: canvas.exportImage(stId); break;
-                case PPTX:  canvas.exportPPT(stId); break;
+                case PPTX:  canvas.exportPPT(stId, layoutManager.getSelectedDiagramObjects(), layoutManager.getFlagged()); break;
             }
         }
     }

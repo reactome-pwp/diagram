@@ -54,6 +54,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -298,11 +299,21 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         }).scheduleRepeating(20);
     }
 
-    public void exportPPT(final String diagramStId) {
+    public void exportPPT(final String diagramStId, final List<DiagramObject> selected, final Set<DiagramObject> flagged) {
         //The following uses the SERVER because the widget needs to work when stand-alone
         String url = DiagramFactory.SERVER + "/ContentService/exporter/diagram/"
                 + diagramStId + ".pptx?profile="
                 + DiagramColours.get().getSelectedProfileName();
+        // Add selected items
+        if (selected != null && !selected.isEmpty()) {
+            String sel = "&sel=" + selected.stream().map(n -> n.getReactomeId().toString()).collect(Collectors.joining(","));
+            url = url + sel;
+        }
+        //Add flagged items
+        if (flagged != null && !flagged.isEmpty()) {
+            String flg = "&flg=" + flagged.stream().map(n -> n.getReactomeId().toString()).collect(Collectors.joining(","));
+            url = url + flg;
+        }
         Window.open(url, "_self", "");
     }
 

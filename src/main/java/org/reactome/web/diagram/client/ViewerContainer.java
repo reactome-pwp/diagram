@@ -72,7 +72,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     protected void initialise() {
         //All Viewers with their thumbnails
         visualisers.put(DIAGRAM, new DiagramVisualiser(eventBus));
-        visualisers.put(SVG, new SVGVisualiser(eventBus)); //TODO change this
+        visualisers.put(SVG, new SVGVisualiser(eventBus));
 
         for (Visualiser vis: visualisers.values()) {
             this.add(vis);
