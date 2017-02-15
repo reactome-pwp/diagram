@@ -19,7 +19,7 @@ import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import java.util.List;
 
 import static org.reactome.web.diagram.data.content.Content.Type.SVG;
-import static org.reactome.web.diagram.profiles.analysis.AnalysisColours.ENRICHMENT_THRESHOLD;
+import static org.reactome.web.diagram.profiles.analysis.AnalysisColours.THRESHOLD;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -153,9 +153,9 @@ public class EnrichmentLegend extends LegendPanel implements AnalysisResultLoade
             EntityStatistics statistics = ((GraphPathway)hovered).getStatistics();
             if (statistics != null) {
                 double pValue = statistics.getpValue();
-                if (pValue <= ENRICHMENT_THRESHOLD) {
+                if (pValue <= THRESHOLD) {
                     String colour = DiagramColours.get().PROFILE.getProperties().getHovering();
-                    int y = (int) Math.round(200 * pValue / ENRICHMENT_THRESHOLD) + 5;
+                    int y = (int) Math.round(200 * pValue / THRESHOLD) + 5;
                     ctx.setFillStyle(colour);
                     ctx.setStrokeStyle(colour);
                     ctx.beginPath();
@@ -182,9 +182,9 @@ public class EnrichmentLegend extends LegendPanel implements AnalysisResultLoade
             EntityStatistics statistics = ((GraphPathway)selected).getStatistics();
             if(statistics!=null){
                 double pValue = statistics.getpValue();
-                if(pValue<= ENRICHMENT_THRESHOLD) {
+                if(pValue<= THRESHOLD) {
                     String colour = DiagramColours.get().PROFILE.getProperties().getSelection();
-                    int y = (int) Math.round(200 * pValue / ENRICHMENT_THRESHOLD) + 5;
+                    int y = (int) Math.round(200 * pValue / THRESHOLD) + 5;
                     ctx.setFillStyle(colour);
                     ctx.setStrokeStyle(colour);
                     ctx.beginPath();

@@ -23,7 +23,7 @@ public class AnalysisColours implements AnalysisProfileChangedHandler {
 
     @SuppressWarnings("SpellCheckingInspection")
     private static final String PROFILE_COOKIE = "pathwaybrowser_analysis_colour";
-    public static final Double ENRICHMENT_THRESHOLD = 0.05;
+    public static final Double THRESHOLD = 0.05;
 
     private static AnalysisColours analysisColours;
 

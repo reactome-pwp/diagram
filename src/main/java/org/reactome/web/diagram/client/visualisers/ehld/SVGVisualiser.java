@@ -675,19 +675,28 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                         String enrichColour = "#C2C2C2";
                         if (graphPathway.isHit()) {
                             Double pValue = graphPathway.getStatistics().getpValue();
-                            if (pValue > 0 && pValue < AnalysisColours.ENRICHMENT_THRESHOLD) {
-                                enrichColour = AnalysisColours.get().enrichmentGradient.getColor(pValue/AnalysisColours.ENRICHMENT_THRESHOLD);
+                            if (pValue > 0 && pValue < AnalysisColours.THRESHOLD) {
+                                enrichColour = AnalysisColours.get().enrichmentGradient.getColor(pValue/AnalysisColours.THRESHOLD);
                             }
                         }
+
                         overlayEntity(graphPathway.getStId(), percentage, hex2Rgb(enrichColour, 0.9f), HIT_BASIS_COLOUR);
                         break;
                     case EXPRESSION:
                         percentage = graphPathway.isHit() ? graphPathway.getPercentage().floatValue() : 0;
-                        String expressionColour = AnalysisColours.get().expressionGradient.getColor(
-                                graphPathway.getExpression(selectedExpCol).floatValue(),
-                                expressionSummary.getMin(),
-                                expressionSummary.getMax()
-                        );
+
+                        String expressionColour = "#C2C2C2";
+                        if (graphPathway.isHit()) {
+                            Double pValue = graphPathway.getStatistics().getpValue();
+                            if (pValue > 0 && pValue < AnalysisColours.THRESHOLD) {
+                                expressionColour = AnalysisColours.get().expressionGradient.getColor(
+                                        graphPathway.getExpression(selectedExpCol).floatValue(),
+                                        expressionSummary.getMin(),
+                                        expressionSummary.getMax()
+                                );
+                            }
+                        }
+
                         overlayEntity(graphPathway.getStId(), percentage, hex2Rgb(expressionColour, 0.9f), HIT_BASIS_COLOUR);
                         break;
                 }
