@@ -32,6 +32,7 @@ public class Context {
     private DiagramStatus diagramStatus;
     private AnalysisStatus analysisStatus;
     private FlagStatus flagStatus;
+    private SVGStatus svgStatus;
 
     private Content content;
     private InteractorsContent interactors;
@@ -41,6 +42,7 @@ public class Context {
     public Context(Content content) {
         //Status needs to be created every time we load a new content
         this.diagramStatus = new DiagramStatus();
+        this.svgStatus = new SVGStatus();
 
         this.flagStatus = new FlagStatus();
 
@@ -133,6 +135,10 @@ public class Context {
         } else {
             return ColourProfileType.FADE_OUT;
         }
+    }
+
+    public SVGStatus getSvgStatus() {
+        return svgStatus;
     }
 
     public void hideDialogs() {

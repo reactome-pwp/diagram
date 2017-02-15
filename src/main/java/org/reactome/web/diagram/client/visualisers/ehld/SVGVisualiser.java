@@ -451,6 +451,11 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         }
         zFactor = ctm.getA();
 
+        // Put the status of the view in the context
+        if (context != null) {
+            context.getSvgStatus().setCTM(ctm);
+        }
+
         if(fireEvent) {
             notifyAboutChangeInView();
         }
@@ -901,8 +906,13 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         // Set initial translation matrix
         initialTM = getInitialCTM();
         initialBB = svg.getBBox();
-        ctm = initialTM;
-        fitALL(false);
+        if(context.getSvgStatus().getCTM() == null) {
+            ctm = initialTM;
+            fitALL(false);
+        } else {
+            ctm = context.getSvgStatus().getCTM();
+            applyCTM(false);
+        }
     }
 
     @Override
