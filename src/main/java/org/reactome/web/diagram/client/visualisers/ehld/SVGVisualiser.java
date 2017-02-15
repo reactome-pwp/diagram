@@ -518,6 +518,8 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             base.setId(OVERLAY_BASE + stId);
             removeAttributeFromChildren(base, SVGConstants.SVG_CLASS_ATTRIBUTE);
             base.setAttribute(SVGConstants.SVG_FILL_ATTRIBUTE, baseColour);
+            base.setAttribute(SVGConstants.SVG_STROKE_ATTRIBUTE, HIT_BASIS_STROKE_COLOUR);
+            base.setAttribute(SVGConstants.SVG_STROKE_WIDTH_ATTRIBUTE, HIT_BASIS_STROKE_WIDTH);
 
             // Remove Text elements
             List<OMElement> textElements = getAllTextElementsFrom(base);

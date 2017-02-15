@@ -45,6 +45,8 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     protected static final String ANALYSIS_INFO_STYLE = "{ opacity: 1 !important; -webkit-transition: all .9s ease-in-out;  -moz-transition: all .9s ease-in-out; transition: all .9s ease-in-out;}";
 
     protected static final String HIT_BASIS_COLOUR = "#FFFFFF";
+    protected static final String HIT_BASIS_STROKE_COLOUR = "#000000";
+    protected static final String HIT_BASIS_STROKE_WIDTH = "0.5";
 
     protected OMSVGSVGElement svg;
     protected List<OMSVGElement> svgLayers;
