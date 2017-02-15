@@ -44,7 +44,7 @@ import static org.reactome.web.diagram.data.content.Content.Type.SVG;
  */
 public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         CanvasExportRequestedHandler, ControlActionHandler,
-        DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler,
+        DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler, DiagramObjectsFlagRequestHandler,
         GraphObjectSelectedHandler, IllustrationSelectedHandler {
 
     private EventBus eventBus;
@@ -183,6 +183,12 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     @Override
     public void onDiagramExportRequested(CanvasExportRequestedEvent event) {
         activeVisualiser.exportView(event.getOption());
+    }
+
+    @Override
+    public void onDiagramObjectsFlagRequested(DiagramObjectsFlagRequestedEvent event) {
+        setWatermarkURL(context, activeVisualiser.getSelected(), this.flagTerm = null);
+        activeVisualiser.resetFlag();
     }
 
     @Override
@@ -326,8 +332,10 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     private void initHandlers() {
         eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
 
+        eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
         eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
+
         eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
 
         eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
