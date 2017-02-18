@@ -54,12 +54,9 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
     private final DiagramManager diagramManager;
 
     private Context context;
-//    private LoaderManager loaderManager;
 
     private UserActionsManager userActionsManager;
 
-//    private String flagTerm;
-//    private AnalysisStatus analysisStatus;
     private LayoutManager layoutManager;
     private InteractorsManager interactorsManager;
 
@@ -290,8 +287,8 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
 
     @Override
     public void contentRequested() {
-        this.resetSelection(true);
-        this.resetHighlight(true);
+        this.resetSelection(false);
+        this.resetHighlight(false);
         this.resetDialogs();
         thumbnail.contentRequested();
         this.diagramManager.cancelDisplayAnimation();
