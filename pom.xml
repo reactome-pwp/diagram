@@ -45,8 +45,8 @@
 
         <reactome.web.analysis-client>1.2.2</reactome.web.analysis-client>
         <reactome.web.model>1.2.0</reactome.web.model>
-        <reactome.web.carrousel>1.0.0</reactome.web.carrousel>
-        <reactome.web.quadtree>1.1.0</reactome.web.quadtree>
+        <reactome.web.carrousel>1.0.1</reactome.web.carrousel>
+        <reactome.web.quadtree>1.2.0</reactome.web.quadtree>
 
         <reactome.utils.version>1.0.3</reactome.utils.version>
 
