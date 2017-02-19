@@ -73,8 +73,12 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     }
 
     public void load(String identifier) {
-        cancel(); //First cancel possible loading process
         eventBus.fireEventFromSource(new ContentRequestedEvent(identifier), this);
+        loadOnRequest(identifier);
+    }
+
+    private void loadOnRequest(String identifier) {
+        cancel(); //First cancel possible loading process
         context = this.contextMap.get(identifier);
         if (context != null) {
             eventBus.fireEventFromSource(new ContentLoadedEvent(context), this);
@@ -90,7 +94,7 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     @Override
     public void onContentRequested(ContentRequestedEvent event) {
         if(!event.getSource().equals(this)) {
-            load(event.getIdentifier());
+            Scheduler.get().scheduleDeferred(() -> loadOnRequest(event.getIdentifier()));
         }
     }
 

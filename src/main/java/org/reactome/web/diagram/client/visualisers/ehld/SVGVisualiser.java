@@ -213,7 +213,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                 setSelectedElement(svgEntity.getHoverableElement());
                 thumbnail.setSelectedItem(svgEntity.getHoverableElement().getId());
                 if (notify) {
-                    eventBus.fireEventFromSource(new GraphObjectSelectedEvent(graphObject, false), this);
+                    eventBus.fireEventFromSource(new GraphObjectSelectedEvent(graphObject, false, false), this);
                 }
                 rtn = true;
             }
@@ -229,7 +229,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             resetSelectedElement();
             thumbnail.setSelectedItem(null);
             if (notify) {
-                eventBus.fireEventFromSource(new GraphObjectSelectedEvent(null, false), this);
+                eventBus.fireEventFromSource(new GraphObjectSelectedEvent(null, false, false), this);
             }
             rtn = true;
         }

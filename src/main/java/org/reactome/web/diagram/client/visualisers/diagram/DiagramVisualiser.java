@@ -287,8 +287,6 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
 
     @Override
     public void contentRequested() {
-        this.resetSelection(false);
-        this.resetHighlight(false);
         this.resetDialogs();
         thumbnail.contentRequested();
         this.diagramManager.cancelDisplayAnimation();

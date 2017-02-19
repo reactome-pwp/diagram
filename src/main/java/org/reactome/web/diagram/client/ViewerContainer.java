@@ -147,9 +147,8 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     public void contentRequested() {
-//        activeVisualiser.resetSelection(true);
-//        activeVisualiser.resetHighlight(true);
-//        activeVisualiser.resetDialogs();
+        activeVisualiser.resetSelection(false);
+        activeVisualiser.resetHighlight(false);
         activeVisualiser.contentRequested();
         resetIllustration();
         setWatermarkVisible(false);
