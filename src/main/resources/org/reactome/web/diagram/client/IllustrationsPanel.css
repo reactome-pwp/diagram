@@ -19,6 +19,8 @@
     background-color: white;
     width: 100%;
     height: 100%;
+
+    z-index: 2; /* This is to ensure that the illustrations are always on top of the download button */
 }
 
 .panelShown img {
