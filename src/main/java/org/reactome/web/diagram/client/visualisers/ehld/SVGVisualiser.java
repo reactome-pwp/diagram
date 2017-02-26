@@ -73,6 +73,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     private static final float ZOOM_OUT_STEP = 0.9f;
     private static final float MAX_ZOOM = 8.0f;
     private static final float MIN_ZOOM = 0.05f;
+    private static final float FRAME = 58;
 
     private Context context;
 

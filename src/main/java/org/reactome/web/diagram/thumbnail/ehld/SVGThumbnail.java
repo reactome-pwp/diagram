@@ -31,6 +31,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, Context
         MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseOutHandler, MouseWheelHandler {
     private static final int HEIGHT = 75;
     private static final int FALLBACK_WIDTH = 100;
+    private static final int FRAME = 14;
 
     private Canvas frame;
     private OMSVGPoint from;
@@ -337,7 +338,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, Context
         Style style = this.getElement().getStyle();
         style.setBackgroundColor("white");
         style.setBorderStyle(Style.BorderStyle.SOLID);
-        style.setBorderWidth(1, Style.Unit.PX);
+        style.setBorderWidth(0.5, Style.Unit.PX);
         style.setBorderColor("grey");
         style.setPosition(Style.Position.ABSOLUTE);
         style.setBottom(0, Style.Unit.PX);

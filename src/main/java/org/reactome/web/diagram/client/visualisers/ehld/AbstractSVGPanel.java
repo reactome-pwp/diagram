@@ -20,7 +20,6 @@ import java.util.*;
 public abstract class AbstractSVGPanel extends AbsolutePanel {
     protected EventBus eventBus;
 
-    protected static final float FRAME = 40;
     protected static final String REGION = "REGION-";
     protected static final String OVERLAY = "OVERLAY-";
     protected static final String ANALYSIS_INFO = "ANALINFO";
