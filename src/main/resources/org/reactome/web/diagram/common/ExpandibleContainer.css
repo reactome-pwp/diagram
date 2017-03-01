@@ -20,6 +20,10 @@
     transition: all .1s linear;
 }
 
+.container:hover .primaryButton {
+    z-index: 1;
+}
+
 .baseButtons {
     display: block;
     margin: 10px auto 0;
@@ -49,5 +53,5 @@
 .primaryButton{
     margin: 0 auto 0;
     position: relative;
-    z-index: 1;
+    z-index: auto;
 }
