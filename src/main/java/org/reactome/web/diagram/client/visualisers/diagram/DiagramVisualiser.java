@@ -184,6 +184,7 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
         this.forceDraw = true;
         Box visibleArea = this.context.getVisibleModelArea(viewportWidth, viewportHeight);
         this.eventBus.fireEventFromSource(new DiagramZoomEvent(factor, visibleArea), this);
+        thumbnail.diagramZoomEvent(visibleArea);
     }
 
     private void highlightHoveredItem(HoveredItem hovered) {
@@ -537,10 +538,6 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
             }
         }
         return makeSelection(toSelect, zoom, fireExternally, true);
-//        if (!layoutManager.isSelected(toSelect)) {
-//            //this.resetIllustration(); //TODO this has been moved to a higher layer
-//            this.eventBus.fireEventFromSource(new GraphObjectSelectedEvent(toSelect, zoom, fireExternally), this);
-//        }
     }
 
     private boolean makeSelection(GraphObject toSelect, boolean zoom, boolean fireExternally, boolean notify){
