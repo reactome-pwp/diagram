@@ -117,6 +117,10 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     }
 
     protected OMSVGMatrix calculateFitAll(final float frame){
+        return calculateFitAll(frame, getOffsetWidth(), getOffsetHeight());
+    }
+
+    protected OMSVGMatrix calculateFitAll(final float frame, final int width, final int height){
         OMSVGRect bb = svg.createSVGRect();
         // Add a frame around the image
         bb.setX(initialBB.getX() - frame);
@@ -124,19 +128,18 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         bb.setWidth(initialBB.getWidth() + (frame * 2));
         bb.setHeight(initialBB.getHeight() + (frame * 2));
 
-        float rWidth = getOffsetWidth() / bb.getWidth();
-        float rHeight = getOffsetHeight() / bb.getHeight();
+        float rWidth = width / bb.getWidth();
+        float rHeight = height / bb.getHeight();
         float zoom = (rWidth < rHeight) ? rWidth : rHeight;
 
-        float vpCX = getOffsetWidth() * 0.5f;
-        float vpCY = getOffsetHeight() * 0.5f;
+        float vpCX = width * 0.5f;
+        float vpCY = height * 0.5f;
 
         float newCX = bb.getX() + (bb.getWidth()  * 0.5f);
         float newCY = bb.getY() + (bb.getHeight() * 0.5f);
 
         float corX = vpCX/zoom - newCX;
         float corY = vpCY/zoom - newCY;
-
         return svg.createSVGMatrix().scale(zoom).translate(corX, corY);
     }
 

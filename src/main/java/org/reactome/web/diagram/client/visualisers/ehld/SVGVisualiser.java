@@ -444,6 +444,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     }
 
     private void applyCTM(boolean fireEvent) {
+        if (ctm == null) return;
         sb.setLength(0);
         sb.append("matrix(").append(ctm.getA()).append(",").append(ctm.getB()).append(",").append(ctm.getC()).append(",")
                 .append(ctm.getD()).append(",").append(ctm.getE()).append(",").append(ctm.getF()).append(")");
@@ -558,7 +559,6 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
     private void fitALL(boolean animated) {
         OMSVGMatrix fitTM = calculateFitAll(FRAME);
-
         if(!SVGUtil.areEqual(ctm, fitTM)) {
             if (animated) {
                 animation = new SVGAnimation(this, ctm);
@@ -901,6 +901,10 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         svg.addMouseMoveHandler(this);
         svg.addMouseUpHandler(this);
 
+        //Get viewport
+        OMSVGRect viewportBB = svg.createSVGRect();
+        svg.getViewBox().getBaseVal().assignTo(viewportBB);
+
         // Remove viewbox and set size
         svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
         setSize(getOffsetWidth(), getOffsetHeight());
@@ -912,12 +916,10 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             div.appendChild(svg.getElement());
         }
 
-        // Render thumbnail
-        thumbnail.diagramRendered(content, null);
-
         // Set initial translation matrix
         initialTM = getInitialCTM();
-        initialBB = svg.getBBox();
+        initialBB = viewportBB;
+
         if(context.getSvgStatus().getCTM() == null) {
             ctm = initialTM;
             fitALL(false);
@@ -925,6 +927,8 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             ctm = context.getSvgStatus().getCTM();
             applyCTM(false);
         }
+        // Render thumbnail
+        thumbnail.diagramRendered(content, null);
     }
 
     @Override

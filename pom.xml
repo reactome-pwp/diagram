@@ -128,7 +128,7 @@
         <dependency>
             <groupId>org.vectomatic</groupId>
             <artifactId>lib-gwt-svg</artifactId>
-            <version>0.5.11</version>
+            <version>0.5.12</version>
         </dependency>
 
         <!-- logging dependencies, delegate all to slf4j and use logback -->

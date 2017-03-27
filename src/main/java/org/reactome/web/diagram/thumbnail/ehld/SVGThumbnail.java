@@ -119,7 +119,12 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, Context
 
         OMSVGRect svgSize = getSVGInitialSize();
         double factor = HEIGHT / (svgSize.getHeight() + FRAME);
-        setSize((int) Math.ceil(factor * (svgSize.getWidth() + FRAME)), HEIGHT);
+        int width = (int) Math.ceil(factor * (svgSize.getWidth() + FRAME));
+        setSize(width, HEIGHT);
+
+        //Get viewport
+        OMSVGRect viewportBB = svg.createSVGRect();
+        svg.getViewBox().getBaseVal().assignTo(viewportBB);
 
         svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
         svg.removeAttribute(SVGConstants.SVG_ENABLE_BACKGROUND_ATTRIBUTE);
@@ -142,9 +147,8 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, Context
         // Set initial translation matrix
         initialTM = getInitialCTM();
         ctm = initialTM;
-
-        initialBB = svg.getBBox();
-        OMSVGMatrix fitTM = calculateFitAll(FRAME);
+        initialBB = viewportBB;
+        OMSVGMatrix fitTM = calculateFitAll(FRAME, width, HEIGHT);
         ctm = initialTM.multiply(fitTM);
         applyCTM();
     }
@@ -247,6 +251,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, Context
     }
 
     private void applyCTM() {
+        if (ctm == null) return;
         sb.setLength(0);
         sb.append("matrix(").append(ctm.getA()).append(",").append(ctm.getB()).append(",").append(ctm.getC()).append(",")
                 .append(ctm.getD()).append(",").append(ctm.getE()).append(",").append(ctm.getF()).append(")");

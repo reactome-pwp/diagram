@@ -83,7 +83,7 @@ public abstract class SVGUtil {
     public static void addClassName(OMElement element, String className) {
         if(element != null) {
             String classAtr = element.getAttribute(SVGConstants.SVG_CLASS_ATTRIBUTE);
-            if(!classAtr.contains(className)) {
+            if(classAtr != null && !classAtr.contains(className)) {
                 StringBuilder sb = new StringBuilder(classAtr);
                 sb.append(" ").append(className);
                 element.setAttribute(SVGConstants.SVG_CLASS_ATTRIBUTE, sb.toString());
