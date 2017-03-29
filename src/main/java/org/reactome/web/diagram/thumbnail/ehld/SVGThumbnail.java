@@ -179,7 +179,8 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, Context
             if (from != null && to != null) {
                 //Do not change any property of the status since it will be updated once the corresponding
                 //action is performed in the main view and notified (thumbnail status changes on demand)
-                OMSVGPoint padding = from.substract(p.substract(delta)).scale(ctm.inverse().getA());
+                OMSVGPoint padding = svg.createSVGPoint(from.substract(p.substract(delta)).scale(0.4f/ctm.getA()));
+                //This solution is not as accurate as scaling with 1/ctm.getA() but it reduces the shaky effect
                 eventBus.fireEventFromSource(new SVGThumbnailAreaMovedEvent(padding), this);
             }
         } else {
