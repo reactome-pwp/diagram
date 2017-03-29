@@ -60,11 +60,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, Context
 
     @Override
     public void contentRequested() {
-        if(svg != null) {
-            getElement().getFirstChild().removeFromParent();
-            svg = null;
-            cleanFrame();
-        }
+        clearThumbnail();
     }
 
     @Override
@@ -137,6 +133,8 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, Context
             // both the canvas and the svg have been added
             div.replaceChild(svg.getElement(), div.getFirstChild());
         }
+
+        this.setVisible(true);
 
         // Identify all layers by getting all top-level g elements
         svgLayers = getRootLayers();
@@ -265,6 +263,15 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, Context
 
     private void cleanFrame() {
         frame.getContext2d().clearRect(0, 0, frame.getOffsetWidth(), frame.getOffsetHeight());
+    }
+
+    private void clearThumbnail() {
+        if(svg != null) {
+            getElement().getFirstChild().removeFromParent();
+            svg = null;
+            cleanFrame();
+        }
+        this.setVisible(false);
     }
 
     private Canvas createCanvas(int width, int height) {
