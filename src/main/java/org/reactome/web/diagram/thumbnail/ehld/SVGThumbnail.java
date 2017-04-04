@@ -137,7 +137,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, Context
         this.setVisible(true);
 
         // Identify all layers by getting all top-level g elements
-        svgLayers = getRootLayers();
+        svgLayers = getRootLayers(svg);
 
         // Append the filters
         SVGUtil.getOrCreateDefs(svg, baseDefs);

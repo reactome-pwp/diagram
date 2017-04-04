@@ -11,6 +11,7 @@ import org.reactome.web.diagram.client.visualisers.ehld.filters.FilterFactory;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
 import org.reactome.web.diagram.util.svg.SVGUtil;
 import org.vectomatic.dom.svg.*;
+import org.vectomatic.dom.svg.utils.SVGConstants;
 
 import java.util.*;
 
@@ -69,9 +70,19 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
 
     public void exportView(String stableId){
         if(svg != null) {
+            OMSVGSVGElement auxSVG = (OMSVGSVGElement) svg.cloneNode(true);
+            auxSVG.setViewBox(initialBB);
+
+            //Reset all transformations
+            sb.setLength(0);
+            sb.append("matrix(").append(initialTM.getA()).append(",").append(initialTM.getB()).append(",").append(initialTM.getC()).append(",")
+                    .append(initialTM.getD()).append(",").append(initialTM.getE()).append(",").append(initialTM.getF()).append(")");
+            for (OMSVGElement svgLayer : getRootLayers(auxSVG)) {
+                svgLayer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, sb.toString());
+            }
+
             Image image = new Image();
-            String base64 = btoa(svg.getMarkup());
-            image.setUrl("data:image/svg+xml;base64," + base64);
+            image.setUrl("data:image/svg+xml;base64," + btoa(auxSVG.getMarkup()));
             final ImageDownloadDialog downloadDialogBox = new ImageDownloadDialog(image, "svg", stableId);
             downloadDialogBox.show();
         }
@@ -161,7 +172,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         return p.matrixTransform(ctm.inverse());
     }
 
-    protected List<OMSVGElement> getRootLayers() {
+    protected List<OMSVGElement> getRootLayers(OMSVGSVGElement svg) {
         // Identify all layers by getting all top-level <g> elements
         List<OMSVGElement> svgLayers = new ArrayList<>();
         OMNodeList<OMNode> cNodes = svg.getChildNodes();

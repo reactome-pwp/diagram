@@ -887,7 +887,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         }
 
         // Identify all layers by getting all top-level g elements
-        svgLayers = getRootLayers();
+        svgLayers = getRootLayers(svg);
 
         // Clone and attach defs (filters - clipping paths) to the root SVG structure
         defs = (OMSVGDefsElement) SVGUtil.getOrCreateDefs(svg, baseDefs);
