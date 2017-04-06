@@ -10,14 +10,13 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.controls.navigation.ControlAction;
 import org.reactome.web.diagram.controls.top.common.AbstractMenuDialog;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphSubpathway;
-import org.reactome.web.diagram.events.ContentLoadedEvent;
-import org.reactome.web.diagram.events.ControlActionEvent;
-import org.reactome.web.diagram.events.GraphObjectSelectedEvent;
-import org.reactome.web.diagram.events.IllustrationSelectedEvent;
+import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
+import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.handlers.ControlActionHandler;
 import org.reactome.web.diagram.handlers.GraphObjectSelectedHandler;
 import org.reactome.web.diagram.util.Console;
@@ -28,13 +27,16 @@ import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
 import org.reactome.web.pwp.model.handlers.DatabaseObjectCreatedHandler;
 import org.reactome.web.pwp.model.handlers.DatabaseObjectLoadedHandler;
 
+import static org.reactome.web.diagram.data.content.Content.Type.SVG;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class DiagramIllustrations extends AbstractMenuDialog implements ControlActionHandler,
-        ContentLoadedHandler, GraphObjectSelectedHandler {
+        ContentLoadedHandler, ContentRequestedHandler, GraphObjectSelectedHandler {
 
     private EventBus eventBus;
+    private Context context;
 
     private FlowPanel main = new FlowPanel();
     private FlowPanel other = new FlowPanel();
@@ -59,21 +61,33 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
         initialise();
-        setIllustrations(event.getContext().getContent().getDbId(), main);
+        context = event.getContext();
+        if(!context.getContent().getType().equals(SVG)) {
+            setIllustrations(context.getContent().getDbId(), main);
+        } else {
+            main.add(getErrorMsg("No illustrations found"));
+        }
+    }
+
+    @Override
+    public void onContentRequested(ContentRequestedEvent event) {
+        context = null;
     }
 
     @Override
     public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
-        GraphObject object = event.getGraphObject();
-        Long dbId = null;
-        if (object instanceof GraphPathway) {
-            GraphPathway pathway = (GraphPathway) object;
-            dbId = pathway.getDbId();
-        } else if (object instanceof GraphSubpathway) {
-            GraphSubpathway subpathway = (GraphSubpathway) object;
-            dbId = subpathway.getDbId();
+        if(!context.getContent().getType().equals(SVG)) {
+            GraphObject object = event.getGraphObject();
+            Long dbId = null;
+            if (object instanceof GraphPathway) {
+                GraphPathway pathway = (GraphPathway) object;
+                dbId = pathway.getDbId();
+            } else if (object instanceof GraphSubpathway) {
+                GraphSubpathway subpathway = (GraphSubpathway) object;
+                dbId = subpathway.getDbId();
+            }
+            setIllustrations(dbId, other);
         }
-        setIllustrations(dbId, other);
     }
 
     private void setIllustrations(Long dbId, final FlowPanel panel) {
@@ -163,12 +177,12 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
     private void initHandlers() {
         this.eventBus.addHandler(ControlActionEvent.TYPE, this);
         this.eventBus.addHandler(ContentLoadedEvent.TYPE, this);
+        this.eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         this.eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
     }
 
 
     public static Resources RESOURCES;
-
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
