@@ -4,3 +4,7 @@ Diagram Viewer
 ==============
 
 This is a new version of the Reactome diagram viewer. The aim is to improve the loading time and create a "pluginable" architecture.
+
+### More Information
+
+Please refer to the current [documentation](http://www.reactome.org/pages/documentation/developer-guide/diagram/)
