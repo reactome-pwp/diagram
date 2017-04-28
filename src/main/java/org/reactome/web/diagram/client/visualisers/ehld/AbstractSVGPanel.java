@@ -4,6 +4,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.diagram.client.visualisers.ehld.filters.FilterColour;
@@ -61,9 +62,15 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
 
     protected StringBuilder sb;
 
+    protected boolean isSafari;
+
     public AbstractSVGPanel(EventBus eventBus) {
         this.eventBus = eventBus;
         getElement().getStyle().setBackgroundColor("white");
+
+        String userAgent = Window.Navigator.getUserAgent().toLowerCase();
+        isSafari = userAgent.contains("safari") && !userAgent.contains("chrome");
+
         initFilters();
         sb = new StringBuilder();
     }

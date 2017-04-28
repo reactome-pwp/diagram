@@ -7,6 +7,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Timer;
 import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.analysis.client.model.PathwaySummary;
@@ -59,8 +60,7 @@ import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
 public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         AnalysisProfileChangedHandler, DatabaseObjectCreatedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
-        DoubleClickHandler, ContextMenuHandler,
-        SVGAnimationHandler, SVGThumbnailAreaMovedHandler {
+        DoubleClickHandler, ContextMenuHandler, SVGAnimationHandler, SVGThumbnailAreaMovedHandler {
 
     private static final String OVERLAY_CLONE = "OVERLAYCLONE-";
     private static final String OVERLAY_BASE = "OVERLAYBASE-";
@@ -99,6 +99,8 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
     private SVGContextPanel contextPanel;
     private Thumbnail thumbnail;
+
+    private Timer tapTimer;
 
     public SVGVisualiser(EventBus eventBus) {
         super(eventBus);
@@ -293,10 +295,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     public void onDoubleClick(DoubleClickEvent event) {
         event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
-        String stableId = SVGUtil.keepStableId(el.getAttribute("id"));
-        if(stableId != null) {
-            DatabaseObjectFactory.get(stableId, this);
-        }
+        openPathway(el);
     }
 
     @Override
@@ -376,7 +375,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         if (!toHighlight.equals(hovered)) {
             resetHighlight(false);
             highlightElement(toHighlight);
-            applyCTM(false);
+            updateUI();
             thumbnail.setHoveredItem(toHighlight.getId());
             notifyHovering(toHighlight.getId());
         }
@@ -406,7 +405,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         OMElement toUnHighlight = entity.getHoverableElement();
         if(el.equals(toUnHighlight)) {
             unHighlightElement(toUnHighlight);
-            applyCTM(false);
+            updateUI();
             thumbnail.setHoveredItem(null);
             notifyHovering(null);
         }
@@ -710,6 +709,13 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         createOrUpdateOverlayElement(stId, overlayColour, baseColour);
     }
 
+    private void openPathway(OMElement el) {
+        String stableId = SVGUtil.keepStableId(el.getAttribute("id"));
+        if(stableId != null) {
+            DatabaseObjectFactory.get(stableId, this);
+        }
+    }
+
     private void showAnalysisInfo(){
         if (analysisStatus!=null) {
             for (GraphPathway graphPathway : context.getContent().getEncapsulatedPathways()) {
@@ -761,6 +767,20 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         }
     }
 
+    private void updateUI() {
+        if (isSafari) {
+            forceRepaint();         //Force repaint and reflow in Safari
+        } else {
+            applyCTM(false); //Normal refresh
+        }
+    }
+
+    private void forceRepaint() {
+        final Style style = getElement().getStyle();
+        style.clearDisplay();
+        Scheduler.get().scheduleDeferred(() -> style.setDisplay(Style.Display.INLINE_BLOCK));
+    }
+
     private void resetSelectedElement() {
         if (selected != null) {
             boolean isFlagged = flagged.contains(selected);
@@ -778,7 +798,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                 }
             }
             selected = null;
-            applyCTM(false);
+            updateUI();
         }
     }
 
@@ -803,7 +823,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         }
 
         selected = element;
-        applyCTM(false);
+        updateUI();
     }
 
     private void translate(float x, float y) {
@@ -1025,7 +1045,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                 }
             }
         }
-        applyCTM(false);
+        updateUI();
     }
 
     @Override
@@ -1034,6 +1054,6 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             unFlagElement(item);
         }
         flagged = new HashSet<>();
-        applyCTM(false);
+        updateUI();
     }
 }
