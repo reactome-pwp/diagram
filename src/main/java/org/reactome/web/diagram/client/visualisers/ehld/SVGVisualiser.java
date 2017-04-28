@@ -181,6 +181,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             if (svgEntity != null && hovered != svgEntity.getHoverableElement()) {
                 resetHighlight(false);
                 highlightElement(svgEntity.getHoverableElement());
+                updateUI();
                 thumbnail.setHoveredItem(svgEntity.getHoverableElement().getId());
                 if (notify) {
                     eventBus.fireEventFromSource(new GraphObjectHoveredEvent(graphObject), this);
@@ -197,6 +198,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         if (context == null) return rtn;
         if (hovered != null) {
             unHighlightElement(hovered);
+            updateUI();
             thumbnail.setHoveredItem(null);
             if (notify) {
                 eventBus.fireEventFromSource(new GraphObjectHoveredEvent(), this);
@@ -769,7 +771,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
     private void updateUI() {
         if (isSafari) {
-            forceRepaint();         //Force repaint and reflow in Safari
+            forceRepaint();         //Force reflow and repaint in Safari
         } else {
             applyCTM(false); //Normal refresh
         }
