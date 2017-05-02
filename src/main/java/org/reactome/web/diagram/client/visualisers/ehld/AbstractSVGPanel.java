@@ -103,7 +103,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         //Set the size of the panel
         setWidth(width + "px");
         setHeight(height + "px");
-        //Set the size of the SVG
+        //Set the size of the SVG element itself
         if(svg != null) {
             svg.setWidth(Style.Unit.PX, width);
             svg.setHeight(Style.Unit.PX, height);
