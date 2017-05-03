@@ -4,6 +4,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -60,7 +61,8 @@ import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
 public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         AnalysisProfileChangedHandler, DatabaseObjectCreatedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
-        DoubleClickHandler, ContextMenuHandler, SVGAnimationHandler, SVGThumbnailAreaMovedHandler {
+        DoubleClickHandler, ContextMenuHandler, SVGAnimationHandler, SVGThumbnailAreaMovedHandler,
+        TouchStartHandler, TouchMoveHandler, TouchEndHandler {
 
     private static final String OVERLAY_CLONE = "OVERLAYCLONE-";
     private static final String OVERLAY_BASE = "OVERLAYBASE-";
@@ -106,6 +108,14 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         super(eventBus);
         this.getElement().addClassName("pwp-SVGPanel");
         flagged = new HashSet<>();
+
+        tapTimer =  new Timer() {
+            @Override
+            public void run() {
+                //Nothing here
+            }
+        };
+
         initHandlers();
 //        setSize(width, height);
     }
@@ -424,6 +434,94 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         float delta = event.getDeltaY() * 0.020f;
         float zoom = (1 - delta) > 0 ? (1 - delta) : 1;
         zoom(zoom, getTranslatedPoint(event));
+    }
+
+    @Override
+    public void onTouchEnd(TouchEndEvent event) {
+        event.preventDefault(); event.stopPropagation();
+        getElement().getStyle().setCursor(Style.Cursor.DEFAULT);
+        OMElement el = (OMElement) event.getSource();
+//        Console.error(">> TouchEnd " + ((OMElement) event.getSource()).getNodeName());
+        if (!tapTimer.isRunning()) {
+//            Console.error(">> TouchEnd - single" + ((OMElement) event.getSource()).getNodeName());
+            tapTimer.schedule(300);
+
+            if (allowSelection) {
+                String elementId = el.getId();
+                if (SVGUtil.isAnnotated(elementId)) {
+                    if (!Objects.equals(selected, el)) {
+                        thumbnail.setSelectedItem(elementId);
+                        setSelectedElement(el);
+                        notifySelection(elementId);
+                    }
+                } else {
+                    if (selected != null) {
+                        resetSelectedElement();
+                        thumbnail.setSelectedItem(null);
+                        notifySelection(null);
+                    }
+                }
+            }
+        } else {
+            tapTimer.cancel();
+//            Console.error(">> TouchEnd - doubleTap" + ((OMElement) event.getSource()).getNodeName());
+            String elementId = el.getId();
+            if (SVGUtil.isAnnotated(elementId)) {
+                openPathway(el);
+            }
+        }
+        mouseDown = false;
+        allowSelection = true;
+    }
+
+    @Override
+    public void onTouchMove(TouchMoveEvent event) {
+        event.preventDefault(); event.stopPropagation();
+        Console.error(">> TouchMove");
+        if (mouseDown) {
+//            this.diagramMoved = true;
+            // Get the first touch
+            getElement().getStyle().setCursor(Style.Cursor.MOVE);
+            Touch touch = event.getTouches().get(0);
+            OMSVGPoint end = getTranslatedPoint(
+                    touch.getRelativeX(svg.getElement()),
+                    touch.getRelativeY(svg.getElement())
+            );
+
+            Coordinate delta = CoordinateFactory.get(end.getX() - origin.getX(), end.getY() - origin.getY());
+            // On mouse move is sometimes called for delta 0 (we cannot control that, but only consider it)
+            if (delta.getX() != 0 && delta.getY() != 0) {
+                allowSelection = false; //Selection can only be denied in case of panning
+
+                OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(delta.getX().floatValue(), delta.getY().floatValue());
+                ctm = ctm.multiply(newMatrix);
+
+                applyCTM(true);
+            }
+        }
+    }
+
+    @Override
+    public void onTouchStart(TouchStartEvent event) {
+        event.preventDefault(); event.stopPropagation();
+        // Cancel any animation running
+        if (animation != null) animation.cancel();
+        if (event.getChangedTouches().length() == 1) {
+            Touch touch = event.getTouches().get(0);
+            this.origin = getTranslatedPoint(
+                    touch.getRelativeX(svg.getElement()),
+                    touch.getRelativeY(svg.getElement())
+            ); // Get the first touch
+            mouseDown = true;
+//            Console.error(">> TouchStart: " + origin.getDescription() );
+        } else {
+            mouseDown = false;
+            Touch finger1 = event.getTouches().get(0);
+            Touch finget2 = event.getTouches().get(1);
+//            Coordinate delta = finger1.minus(finger2);
+//            fingerDistance = Math.sqrt(delta.getX() * delta.getX() + delta.getY() * delta.getY());
+//            Console.error(">> TouchStart: [" + event.getChangedTouches().length() + "] - " + origin.getDescription() );
+        }
     }
 
     @Override
@@ -894,6 +992,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             OMElement child = svgEntity.getHoverableElement();
             if(child!=null) {
                 child.addDomHandler(SVGVisualiser.this, MouseUpEvent.getType());
+                child.addDomHandler(SVGVisualiser.this, TouchEndEvent.getType());
                 child.addDomHandler(SVGVisualiser.this, MouseOverEvent.getType());
                 child.addDomHandler(SVGVisualiser.this, MouseOutEvent.getType());
                 child.addDomHandler(SVGVisualiser.this, DoubleClickEvent.getType());
@@ -922,6 +1021,10 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         svg.addMouseDownHandler(this);
         svg.addMouseMoveHandler(this);
         svg.addMouseUpHandler(this);
+
+        svg.addTouchStartHandler(this);
+        svg.addTouchMoveHandler(this);
+        svg.addTouchEndHandler(this);
 
         //Get viewport
         OMSVGRect viewportBB = svg.createSVGRect();
