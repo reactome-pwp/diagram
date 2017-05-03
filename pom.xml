@@ -36,7 +36,7 @@
 
     <properties>
         <!-- Convenience property to set the GWT version -->
-        <gwtVersion>2.8.1</gwtVersion>
+        <gwtVersion>2.8.0</gwtVersion>
         <gwtStyle>OBF</gwtStyle> <!-- OBF | PRETTY | DETAILED -->
 
         <maven.compiler.source>1.8</maven.compiler.source>
