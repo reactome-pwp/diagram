@@ -130,7 +130,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
             this.viewportWidth = getParent().getOffsetWidth();
             this.viewportHeight = getParent().getOffsetHeight();
-//            setSize(viewportWidth, viewportHeight);
+            setSize(viewportWidth, viewportHeight);
         }
     }
 
@@ -1052,15 +1052,11 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             ctm = context.getSvgStatus().getCTM();
             applyCTM(false);
         }
-
-        // The following is to avoid the bug (Windows 10) where the SVG appears cropped
-        if(svg != null) {
-            svg.setWidth(Style.Unit.PX, getOffsetWidth());
-            svg.setHeight(Style.Unit.PX, getOffsetHeight());
-        }
-
         // Render thumbnail
         thumbnail.diagramRendered(content, null);
+
+        // The following is to avoid the bug (Windows) where the SVG appears cropped
+        svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE);
     }
 
     @Override

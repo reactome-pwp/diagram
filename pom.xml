@@ -36,7 +36,7 @@
 
     <properties>
         <!-- Convenience property to set the GWT version -->
-        <gwtVersion>2.8.0</gwtVersion>
+        <gwtVersion>2.8.1</gwtVersion>
         <gwtStyle>OBF</gwtStyle> <!-- OBF | PRETTY | DETAILED -->
 
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -128,7 +128,7 @@
         <dependency>
             <groupId>org.vectomatic</groupId>
             <artifactId>lib-gwt-svg</artifactId>
-            <version>0.5.12</version>
+            <version>0.5.11</version>
         </dependency>
 
         <!-- logging dependencies, delegate all to slf4j and use logback -->
