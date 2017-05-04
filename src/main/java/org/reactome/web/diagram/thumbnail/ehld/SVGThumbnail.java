@@ -2,6 +2,7 @@ package org.reactome.web.diagram.thumbnail.ehld;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
@@ -142,6 +143,12 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, Context
         // Append the filters
         SVGUtil.getOrCreateDefs(svg, baseDefs);
 
+        // The following is to avoid the bug (Windows 10) where the SVG appears cropped
+        if(svg != null) {
+            svg.setWidth(Style.Unit.PX, getOffsetWidth());
+            svg.setHeight(Style.Unit.PX, getOffsetHeight());
+        }
+
         // Set initial translation matrix
         initialTM = getInitialCTM();
         ctm = initialTM;
@@ -149,6 +156,9 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, Context
         OMSVGMatrix fitTM = calculateFitAll(FRAME, width, HEIGHT);
         ctm = initialTM.multiply(fitTM);
         applyCTM();
+
+        // The following is to avoid the bug (Windows 10) where the SVG appears cropped
+        Scheduler.get().scheduleDeferred(() -> svg.removeAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE));
     }
 
     @Override
