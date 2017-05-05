@@ -91,6 +91,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     private OMElement selected;
     private OMElement hovered;
     private OMSVGPoint origin;
+    private Double touchDistance;
     private Set<OMElement> flagged;
 
     private SVGAnimation animation;
@@ -439,88 +440,109 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     @Override
     public void onTouchEnd(TouchEndEvent event) {
         event.preventDefault(); event.stopPropagation();
-        getElement().getStyle().setCursor(Style.Cursor.DEFAULT);
         OMElement el = (OMElement) event.getSource();
-//        Console.error(">> TouchEnd " + ((OMElement) event.getSource()).getNodeName());
-        if (!tapTimer.isRunning()) {
-//            Console.error(">> TouchEnd - single" + ((OMElement) event.getSource()).getNodeName());
-            tapTimer.schedule(300);
+        if (allowSelection) {
+            String elementId = el.getId();
+            boolean isAnnotated = SVGUtil.isAnnotated(elementId);
+            if (!tapTimer.isRunning()) {                            // Single tap
+                tapTimer.schedule(300);
+                if (isAnnotated && !Objects.equals(selected, el)) {
+                    thumbnail.setSelectedItem(elementId);
+                    setSelectedElement(el);
+                    notifySelection(elementId);
+                } else if (!isAnnotated && selected != null) {
+                    resetSelectedElement();
+                    thumbnail.setSelectedItem(null);
+                    notifySelection(null);
+                }
 
-            if (allowSelection) {
-                String elementId = el.getId();
-                if (SVGUtil.isAnnotated(elementId)) {
-                    if (!Objects.equals(selected, el)) {
-                        thumbnail.setSelectedItem(elementId);
-                        setSelectedElement(el);
-                        notifySelection(elementId);
-                    }
-                } else {
-                    if (selected != null) {
-                        resetSelectedElement();
-                        thumbnail.setSelectedItem(null);
-                        notifySelection(null);
-                    }
+            } else {                                               // Double tap
+                tapTimer.cancel();
+                if (isAnnotated) {
+                    openPathway(el);
                 }
             }
-        } else {
-            tapTimer.cancel();
-//            Console.error(">> TouchEnd - doubleTap" + ((OMElement) event.getSource()).getNodeName());
-            String elementId = el.getId();
-            if (SVGUtil.isAnnotated(elementId)) {
-                openPathway(el);
-            }
         }
-        mouseDown = false;
-        allowSelection = true;
+        origin = null;
+        touchDistance = null;
     }
 
     @Override
     public void onTouchMove(TouchMoveEvent event) {
         event.preventDefault(); event.stopPropagation();
-        Console.error(">> TouchMove");
-        if (mouseDown) {
-//            this.diagramMoved = true;
-            // Get the first touch
-            getElement().getStyle().setCursor(Style.Cursor.MOVE);
+        Element viewport = this.getElement();
+        int numberOfTouches =  event.getTouches().length();
+
+        allowSelection = false; //Selection is denied in case of panning and zooming
+
+        if (numberOfTouches == 1) {             // Panning
             Touch touch = event.getTouches().get(0);
+
             OMSVGPoint end = getTranslatedPoint(
-                    touch.getRelativeX(svg.getElement()),
-                    touch.getRelativeY(svg.getElement())
+                    touch.getRelativeX(viewport),
+                    touch.getRelativeY(viewport)
             );
 
-            Coordinate delta = CoordinateFactory.get(end.getX() - origin.getX(), end.getY() - origin.getY());
-            // On mouse move is sometimes called for delta 0 (we cannot control that, but only consider it)
-            if (delta.getX() != 0 && delta.getY() != 0) {
-                allowSelection = false; //Selection can only be denied in case of panning
-
-                OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(delta.getX().floatValue(), delta.getY().floatValue());
-                ctm = ctm.multiply(newMatrix);
-
-                applyCTM(true);
+            if (origin == null) {
+                origin = end;
+            } else {
+                Coordinate delta = CoordinateFactory.get(end.getX() - origin.getX(), end.getY() - origin.getY());
+                // On mouse move is sometimes called for delta 0 (we cannot control that, but only consider it)
+                if (delta.getX() != 0 && delta.getY() != 0) {
+                    OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(delta.getX().floatValue(), delta.getY().floatValue());
+                    ctm = ctm.multiply(newMatrix);
+                    applyCTM(true);
+                }
             }
+        } else if (numberOfTouches == 2) {             // Zooming in and out
+            Touch touch1 = event.getTouches().get(0);
+            Touch touch2 = event.getTouches().get(1);
+
+            Coordinate delta = CoordinateFactory.get(
+                    touch2.getRelativeX(viewport) - touch1.getRelativeX(viewport),
+                    touch2.getRelativeY(viewport) - touch1.getRelativeY(viewport)
+            );
+            Double newDistance = Math.sqrt(delta.getX() * delta.getX() + delta.getY() * delta.getY());
+
+            if (touchDistance != null) {
+                Double factor = newDistance/touchDistance;
+                zoom(
+                        factor.floatValue(),
+                        getTranslatedPoint(         // Middle point between the 2 fingers is the zoom focus
+                                touch1.getRelativeX(viewport) + delta.getX().intValue()/2 ,
+                                touch1.getRelativeY(viewport) + delta.getY().intValue()/2
+                        )
+                );
+            }
+            touchDistance = newDistance;
         }
     }
 
     @Override
     public void onTouchStart(TouchStartEvent event) {
         event.preventDefault(); event.stopPropagation();
-        // Cancel any animation running
-        if (animation != null) animation.cancel();
-        if (event.getChangedTouches().length() == 1) {
+        Element viewport = this.getElement();
+        if (animation != null) animation.cancel(); // Cancel any animation running
+        int numberOfTouches =  event.getTouches().length();
+
+        if (numberOfTouches == 1) {
             Touch touch = event.getTouches().get(0);
+
             this.origin = getTranslatedPoint(
-                    touch.getRelativeX(svg.getElement()),
-                    touch.getRelativeY(svg.getElement())
-            ); // Get the first touch
-            mouseDown = true;
-//            Console.error(">> TouchStart: " + origin.getDescription() );
-        } else {
-            mouseDown = false;
-            Touch finger1 = event.getTouches().get(0);
-            Touch finget2 = event.getTouches().get(1);
-//            Coordinate delta = finger1.minus(finger2);
-//            fingerDistance = Math.sqrt(delta.getX() * delta.getX() + delta.getY() * delta.getY());
-//            Console.error(">> TouchStart: [" + event.getChangedTouches().length() + "] - " + origin.getDescription() );
+                    touch.getRelativeX(viewport),
+                    touch.getRelativeY(viewport)
+            ); // Get the origin touch
+
+            allowSelection = true;
+        } else if (numberOfTouches == 2) {
+            Touch touch1 = event.getTouches().get(0);
+            Touch touch2 = event.getTouches().get(1);
+
+            Coordinate delta = CoordinateFactory.get(
+                    touch2.getRelativeX(viewport) - touch1.getRelativeX(viewport),
+                    touch2.getRelativeY(viewport) - touch1.getRelativeY(viewport)
+            );
+            this.touchDistance = Math.sqrt(delta.getX() * delta.getX() + delta.getY() * delta.getY());
         }
     }
 
