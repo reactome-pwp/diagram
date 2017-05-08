@@ -452,7 +452,7 @@ public class Color {
     /**
      * Set the Hue, Saturation and Value (Brightness) variables. This will automatically populate the Red, Green, Blue, and Hexadecimal fields, too.
      *
-     * It represents points in the RGB color space, which attempt to describe perceptual color relationships more accurately than RGB. HSV describes colors as points in a cylinder whose central axis ranges from black at the bottom to white at the top with neutral colors between them, where angle around the axis corresponds to hue, distance from the axis corresponds to saturation, and distance along the axis corresponds to lightness, value, or brightness.
+     * It represents points in the RGB color space, which attempt to describe perceptual color relationships more accurately than RGB. HSV describes colors as points in a cylinder whose central axis ranges from black at the bottom to white at the top with neutral colors between them, where angle around the axis corresponds to hue, distance from the axis corresponds to saturation, and distance along the axis corresponds to lightness, value, or brightness.
      * @param h Hue - valid range is 0-359
      * @param s Saturation - valid range is 0-100
      * @param v Value (Brightness) - valid range is 0-100
