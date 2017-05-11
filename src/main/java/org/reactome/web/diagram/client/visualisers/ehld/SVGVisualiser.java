@@ -473,8 +473,6 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         Element viewport = this.getElement();
         int numberOfTouches =  event.getTouches().length();
 
-        allowSelection = false; //Selection is denied in case of panning and zooming
-
         if (numberOfTouches == 1) {             // Panning
             Touch touch = event.getTouches().get(0);
 
@@ -488,13 +486,14 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             } else {
                 Coordinate delta = CoordinateFactory.get(end.getX() - origin.getX(), end.getY() - origin.getY());
                 // On mouse move is sometimes called for delta 0 (we cannot control that, but only consider it)
-                if (delta.getX() != 0 && delta.getY() != 0) {
+                if (delta.getX() >= 2  || delta.getY() >= 2) {
                     OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(delta.getX().floatValue(), delta.getY().floatValue());
                     ctm = ctm.multiply(newMatrix);
                     applyCTM(true);
+                    allowSelection = false;             // Selection is denied in case of panning
                 }
             }
-        } else if (numberOfTouches == 2) {             // Zooming in and out
+        } else if (numberOfTouches == 2) {              // Zooming in and out
             Touch touch1 = event.getTouches().get(0);
             Touch touch2 = event.getTouches().get(1);
 
@@ -515,6 +514,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                 );
             }
             touchDistance = newDistance;
+            allowSelection = false;                     // Selection is denied in case of zooming
         }
     }
 
@@ -524,7 +524,6 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         Element viewport = this.getElement();
         if (animation != null) animation.cancel(); // Cancel any animation running
         int numberOfTouches =  event.getTouches().length();
-
         if (numberOfTouches == 1) {
             Touch touch = event.getTouches().get(0);
 
@@ -532,7 +531,6 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                     touch.getRelativeX(viewport),
                     touch.getRelativeY(viewport)
             ); // Get the origin touch
-
             allowSelection = true;
         } else if (numberOfTouches == 2) {
             Touch touch1 = event.getTouches().get(0);
