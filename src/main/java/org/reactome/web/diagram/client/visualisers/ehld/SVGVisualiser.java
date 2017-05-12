@@ -867,6 +867,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
                 info.removeAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE);
                 info.setAttribute(SVGConstants.CSS_ALIGNMENT_BASELINE_PROPERTY, "middle");
+                info.setAttribute(SVGConstants.CSS_DOMINANT_BASELINE_PROPERTY, "middle");   // Especially for Firefox
                 info.setAttribute(SVGConstants.SVG_TEXT_ANCHOR_ATTRIBUTE, "middle");
                 info.setAttribute(SVGConstants.SVG_X_ATTRIBUTE, center.getX() + "");
                 info.setAttribute(SVGConstants.SVG_Y_ATTRIBUTE, center.getY() + "");
