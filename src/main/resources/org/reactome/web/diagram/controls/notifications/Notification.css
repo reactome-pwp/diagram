@@ -1,0 +1,49 @@
+.container {
+    position: relative;
+    background-color: #066b9e;
+    color: white;
+
+    border: 1px solid cadetblue;
+    border-radius: 4px;
+    margin: 0 5px 5px 5px;
+    padding: 0 5px 0 3px;
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: 0.9em;
+    height: 20px;
+
+    /* Used to animate the positioning of the flaggedItems panel */
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+
+    opacity: 0;
+    visibility: hidden;
+    cursor: pointer;
+}
+
+.container:hover {
+    background-color: #0687bf;
+    border: 1px solid #6daeb0;
+}
+
+.container img {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    margin-right: 3px;
+}
+
+.container div {
+    display: inline-block;
+}
+
+.fadeIn {
+    opacity: 0.9 !important;
+    visibility: visible;
+}
+

@@ -16,6 +16,7 @@ import org.reactome.web.diagram.client.visualisers.Visualiser;
 import org.reactome.web.diagram.client.visualisers.diagram.DiagramVisualiser;
 import org.reactome.web.diagram.client.visualisers.ehld.SVGVisualiser;
 import org.reactome.web.diagram.controls.navigation.NavigationControlPanel;
+import org.reactome.web.diagram.controls.notifications.NotificationsContainer;
 import org.reactome.web.diagram.controls.settings.HideableContainerPanel;
 import org.reactome.web.diagram.controls.settings.RightContainerPanel;
 import org.reactome.web.diagram.controls.top.LeftTopLauncherPanel;
@@ -119,9 +120,13 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
             this.add(new DiagramInfo(eventBus));
         }
 
+        //Notifications Panel
+        this.add(new NotificationsContainer(eventBus));
+
         //Launcher panels
         this.add(new LeftTopLauncherPanel(eventBus));
         this.add(new RightTopLauncherPanel(eventBus));
+
 
         //Settings panel
         rightContainerPanel.add(new HideableContainerPanel(eventBus));
