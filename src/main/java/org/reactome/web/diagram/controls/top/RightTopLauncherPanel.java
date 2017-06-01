@@ -80,6 +80,7 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
     public void onClick(ClickEvent event) {
         PwpButton btn = (PwpButton) event.getSource();
         if (btn.equals(this.captureBtn)) {
+            expContainer.collapse();
             this.eventBus.fireEventFromSource(new CanvasExportRequestedEvent(IMAGE), this);
         } else if (btn.equals(this.diagramKeyBtn)) {
             if (this.diagramKey.isShowing()) {
@@ -94,6 +95,7 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
                 this.diagramIllustrations.showRelativeTo(btn);
             }
         } else if (btn.equals(this.exportBtn)) {
+            expContainer.collapse();
             this.eventBus.fireEventFromSource(new CanvasExportRequestedEvent(PPTX), this);
         }
     }
