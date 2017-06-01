@@ -11,9 +11,8 @@ import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.controls.navigation.ControlAction;
 import org.reactome.web.diagram.controls.top.common.AbstractMenuDialog;
 import org.reactome.web.diagram.data.Context;
+import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
-import org.reactome.web.diagram.data.graph.model.GraphPathway;
-import org.reactome.web.diagram.data.graph.model.GraphSubpathway;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
 import org.reactome.web.diagram.handlers.ContentRequestedHandler;
@@ -21,8 +20,8 @@ import org.reactome.web.diagram.handlers.ControlActionHandler;
 import org.reactome.web.diagram.handlers.GraphObjectSelectedHandler;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.pwp.model.classes.DatabaseObject;
+import org.reactome.web.pwp.model.classes.Event;
 import org.reactome.web.pwp.model.classes.Figure;
-import org.reactome.web.pwp.model.classes.Pathway;
 import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
 import org.reactome.web.pwp.model.handlers.DatabaseObjectCreatedHandler;
 import org.reactome.web.pwp.model.handlers.DatabaseObjectLoadedHandler;
@@ -78,15 +77,10 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
     public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
         if(!context.getContent().getType().equals(SVG)) {
             GraphObject object = event.getGraphObject();
-            Long dbId = null;
-            if (object instanceof GraphPathway) {
-                GraphPathway pathway = (GraphPathway) object;
-                dbId = pathway.getDbId();
-            } else if (object instanceof GraphSubpathway) {
-                GraphSubpathway subpathway = (GraphSubpathway) object;
-                dbId = subpathway.getDbId();
+            if (object instanceof GraphEvent) {
+                GraphEvent gevent = (GraphEvent) object;
+                setIllustrations(gevent.getDbId(), other);
             }
-            setIllustrations(dbId, other);
         }
     }
 
@@ -99,18 +93,18 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
         DatabaseObjectFactory.get(dbId, new DatabaseObjectCreatedHandler() {
             @Override
             public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
-                if (databaseObject instanceof Pathway) {
+                if (databaseObject instanceof Event) {
                     panel.clear();
-                    final Pathway pathway = (Pathway) databaseObject;
-                    if (pathway.getFigure().isEmpty()) {
-                        panel.add(getIllustration(pathway, null));
+                    final Event event = (Event) databaseObject;
+                    if (event.getFigure().isEmpty()) {
+                        panel.add(getIllustration(event, null));
                     } else {
-                        for (Figure figure : pathway.getFigure()) {
+                        for (Figure figure : event.getFigure()) {
                             figure.load(new DatabaseObjectLoadedHandler() {
                                 @Override
                                 public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
                                     Figure figure = (Figure) databaseObject;
-                                    panel.add(getIllustration(pathway, DiagramFactory.ILLUSTRATION_SERVER + figure.getUrl()));
+                                    panel.add(getIllustration(event, DiagramFactory.ILLUSTRATION_SERVER + figure.getUrl()));
                                 }
 
                                 @Override
@@ -131,19 +125,19 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
         });
     }
 
-    private Widget getIllustration(Pathway pathway, final String url) {
+    private Widget getIllustration(Event event, final String url) {
         FlowPanel fp = new FlowPanel();
         fp.setStyleName(RESOURCES.getCSS().illustration());
         if (url != null && !url.isEmpty()) {
             Image image = new Image(RESOURCES.illustration());
             fp.add(image);
-            Label label = new Label(pathway.getDisplayName());
-            label.setText(pathway.getDisplayName());
+            Label label = new Label(event.getDisplayName());
+            label.setText(event.getDisplayName());
             fp.add(label);
             Anchor anchor = new Anchor(SafeHtmlUtils.fromTrustedString(fp.toString()), url);
-            anchor.addClickHandler(event -> {
-                if (!event.isMetaKeyDown() && !event.isControlKeyDown()) event.preventDefault();
-                event.stopPropagation();
+            anchor.addClickHandler(e -> {
+                if (!e.isMetaKeyDown() && !e.isControlKeyDown()) e.preventDefault();
+                e.stopPropagation();
                 hide();
                 eventBus.fireEventFromSource(new IllustrationSelectedEvent(url), DiagramIllustrations.this);
             });
@@ -151,8 +145,8 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
         } else {
             Image image = new Image(RESOURCES.illustrationDisabled());
             fp.add(image);
-            Label label = new Label(pathway.getDisplayName());
-            label.setText("No illustrations for " + pathway.getDisplayName());
+            Label label = new Label(event.getDisplayName());
+            label.setText("No illustrations for " + event.getDisplayName());
             label.setStyleName(RESOURCES.getCSS().error());
             fp.add(label);
             return fp;
