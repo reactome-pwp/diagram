@@ -23,7 +23,11 @@ public class SVGLoader implements RequestCallback {
 
     private static String PREFIX = DiagramFactory.SERVER + "/download/current/ehld/";
     private static String SUFFIX = "?v=" + LoaderManager.version;
+    private static boolean BROWSER_SUPPORTED = true;
 
+    static {
+        BROWSER_SUPPORTED = !isIE11();
+    }
 
     private Handler handler;
     private Request request;
@@ -79,7 +83,7 @@ public class SVGLoader implements RequestCallback {
 
     public static boolean isSVGAvailable(String identifier) {
         //If availableSVG is null, we cannot ensure the SVG isn't available because the data is not yet retrieved
-        return availableSVG == null || availableSVG.contains(identifier);
+        return BROWSER_SUPPORTED && (availableSVG == null || availableSVG.contains(identifier));
     }
 
     private static Set<String> availableSVG = null;
@@ -108,4 +112,11 @@ public class SVGLoader implements RequestCallback {
             availableSVG = new HashSet<>();
         }
     }
+
+    private static native boolean isIE11()/*-{
+        // true on IE11 but false on Edge and other IEs/browsers (source https://stackoverflow.com/questions/21825157/internet-explorer-11-detection).
+        return !!window.MSInputMethodContext && !!document.documentMode;
+
+        //return !!navigator.userAgent.match(/Trident\/7\./);  //B plan
+    }-*/;
 }
