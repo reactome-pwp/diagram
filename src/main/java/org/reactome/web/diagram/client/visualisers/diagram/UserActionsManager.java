@@ -38,6 +38,7 @@ class UserActionsManager implements MouseActionsHandlers {
     static final double ZOOM_DELTA = 0.25;
     static final double ZOOM_TOUCH_DELTA = 200;
     static final int LONG_TOUCH_TIME = 2000;
+    static final int DOUBLE_TAP_TIME = 400;
 
     InteractorEntity hoveredInteractor;
 
@@ -177,7 +178,7 @@ class UserActionsManager implements MouseActionsHandlers {
             DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
             DiagramInteractor interactor = handler.getHoveredInteractor();
             if (!doubleTapTimer.isRunning()) {                    // Single tap
-                doubleTapTimer.schedule(400);
+                doubleTapTimer.schedule(DOUBLE_TAP_TIME);
                 if (interactor == null) {
                     handler.setSelection(false, true);
                 }
