@@ -5,6 +5,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.user.client.Timer;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
@@ -27,6 +28,7 @@ class UserActionsManager implements MouseActionsHandlers {
         void loadDiagram(String stId);
         void mouseZoom(double delta);
         void padding(Coordinate delta);
+        void refreshHoveredItem();
         void setMousePosition(Coordinate mouse);
         void setSelection(boolean zoom, boolean fireExternally);
         void showDialog(DiagramObject item);
@@ -35,6 +37,7 @@ class UserActionsManager implements MouseActionsHandlers {
     static final double ZOOM_FACTOR = 0.025;
     static final double ZOOM_DELTA = 0.25;
     static final double ZOOM_TOUCH_DELTA = 200;
+    static final int LONG_TOUCH_TIME = 2000;
 
     InteractorEntity hoveredInteractor;
 
@@ -47,9 +50,25 @@ class UserActionsManager implements MouseActionsHandlers {
     private boolean interactorDragged = false;
     private Double fingerDistance;
 
+    private Timer doubleTapTimer;
+    private Timer longTapTimer;
+
     public UserActionsManager(Handler handler, DiagramCanvas canvas) {
         this.handler = handler;
         this.canvas = canvas;
+
+        doubleTapTimer =  new Timer() {
+            @Override
+            public void run() {
+                //Nothing here
+            }
+        };
+        longTapTimer = new Timer() {
+            @Override
+            public void run() {
+                //Nothing here
+            }
+        };
     }
 
     @Override
@@ -141,6 +160,7 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onTouchCancel(TouchCancelEvent event) {
+        if (longTapTimer.isRunning()) { longTapTimer.cancel(); }
         mouseDown = null;
         diagramMoved = false;
         interactorDragged = false;
@@ -149,9 +169,27 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onTouchEnd(TouchEndEvent event) {
-        if (this.diagramMoved || !interactorDragged) {
-            //Do NOT use this.mouseCurrent in the next line
-            handler.setSelection(false, true);
+        event.preventDefault(); event.stopPropagation();
+        if (longTapTimer.isRunning()) { longTapTimer.cancel(); }
+        if (!this.diagramMoved && !interactorDragged) {
+            setMousePosition(getTouchCoordinate(event.getChangedTouches().get(0)));
+            HoveredItem hovered = handler.getHoveredDiagramObject();
+            DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
+            DiagramInteractor interactor = handler.getHoveredInteractor();
+            if (!doubleTapTimer.isRunning()) {                    // Single tap
+                doubleTapTimer.schedule(400);
+                if (interactor == null) {
+                    handler.setSelection(false, true);
+                }
+            } else {
+                doubleTapTimer.cancel();                          // Double tap
+                GraphObject toOpen = item != null ? item.getGraphObject() : null;
+                if (toOpen instanceof GraphPathway) {
+                    handler.loadDiagram(toOpen.getDbId().toString());
+                } else if (interactor != null) {
+                    handler.setSelection(false, true);
+                }
+            }
         }
         mouseDown = null;
         diagramMoved = false;
@@ -161,45 +199,79 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onTouchMove(TouchMoveEvent event) {
-        //TODO: Take into account interactor dragged scenario
-        event.stopPropagation();
-        event.preventDefault();
-        if (mouseDown != null) {
-            this.diagramMoved = true;
-            //Do NOT use this.mouseCurrent in the next line
+        event.stopPropagation(); event.preventDefault();
+        int numberOfTouches =  event.getTouches().length();
+        if (numberOfTouches == 1 && hoveredInteractor == null) {                     // Panning
+            Coordinate mouseCurrent = getTouchCoordinate(event.getTouches().get(0)); // Get the first touch
+            if (mouseDown == null) {
+                this.mouseDown = mouseCurrent;
+            } else {
+                Coordinate delta = mouseCurrent.minus(this.mouseDown);
+                // On mouse move is sometimes called for delta 0 (we cannot control that, but only consider it)
+                if (isDeltaValid(delta)) {
+                    handler.padding(delta);
+                    this.mouseDown = mouseCurrent;
+                    this.diagramMoved = true;                               //Selection is denied in case of panning
+                    interactorDragged = false;
+                    if (longTapTimer.isRunning()) { longTapTimer.cancel(); }
+                }
+
+            }
+        } else if (numberOfTouches == 1) {                                           //Interactor dragging
+            if (longTapTimer.isRunning()) { longTapTimer.cancel(); }
             Coordinate mouseCurrent = getTouchCoordinate(event.getTouches().get(0)); // Get the first touch
             Coordinate delta = mouseCurrent.minus(this.mouseDown);
-            handler.padding(delta);
+            handler.dragInteractor(hoveredInteractor, delta);
             this.mouseDown = mouseCurrent;
-        } else {
+            interactorDragged = true;
+        } else if (numberOfTouches == 2) {                                          // Zooming in and out
+            if (longTapTimer.isRunning()) { longTapTimer.cancel(); }
             Coordinate finger1 = getTouchCoordinate(event.getTouches().get(0));
             Coordinate finger2 = getTouchCoordinate(event.getTouches().get(1));
-            Coordinate delta = finger1.minus(finger2);
-            double distance = Math.sqrt(delta.getX() * delta.getX() + delta.getY() * delta.getY());
-            double deltaFactor = (distance - fingerDistance) / ZOOM_TOUCH_DELTA;
-            this.fingerDistance = distance;
+            Coordinate delta = finger2.minus(finger1);
+            Double newFingerDistance = Math.sqrt(delta.getX() * delta.getX() + delta.getY() * delta.getY());
+            double deltaFactor = (fingerDistance - newFingerDistance) / ZOOM_TOUCH_DELTA;
+            setMousePosition(finger1.add(delta.divide(2))); // Middle point between the 2 fingers is the zoom focus
             handler.mouseZoom(deltaFactor);
+            // With this we force to re-calculate the hovered element
+            // and avoid hovering anything at the point of zoom
+            setMousePosition(CoordinateFactory.get(-2000, -2000));
+            this.fingerDistance = newFingerDistance;
+            this.diagramMoved = true;                       //Selection is denied in case of zooming
         }
     }
 
     @Override
     public void onTouchStart(TouchStartEvent event) {
-        event.stopPropagation();
-        event.preventDefault();
-        if (event.getChangedTouches().length() == 1) {
+        event.stopPropagation(); event.preventDefault();
+        if (longTapTimer.isRunning()) { longTapTimer.cancel(); }
+        int numberOfTouches =  event.getTouches().length();
+        if (numberOfTouches == 1) {
+            setMousePosition(getTouchCoordinate(event.getTouches().get(0)));
+            handler.refreshHoveredItem();
             this.mouseDown = getTouchCoordinate(event.getTouches().get(0)); // Get the first touch
-        } else {
-            this.mouseDown = null;
+            this.diagramMoved = false;
+            longTapTimer = new Timer() {                   // Show context dialogs on long press
+                @Override
+                public void run() {
+                    HoveredItem hovered = handler.getHoveredDiagramObject();
+                    DiagramObject item = hovered != null ? hovered.getHoveredObject() : null;
+                    if (item != null) {
+                        handler.showDialog(item);
+                    }
+                }
+            };
+            longTapTimer.schedule(LONG_TOUCH_TIME);
+        } else if (numberOfTouches == 2){
             Coordinate finger1 = getTouchCoordinate(event.getTouches().get(0));
             Coordinate finger2 = getTouchCoordinate(event.getTouches().get(1));
-            Coordinate delta = finger1.minus(finger2);
+            Coordinate delta = finger2.minus(finger1);
             fingerDistance = Math.sqrt(delta.getX() * delta.getX() + delta.getY() * delta.getY());
         }
     }
 
     public boolean setInteractorHovered(DiagramInteractor hovered){
         if (mouseDown != null) return false;
-
         if (hovered != null && hovered instanceof InteractorEntity) {
             hoveredInteractor = (InteractorEntity) hovered;
         } else {
@@ -217,9 +289,17 @@ class UserActionsManager implements MouseActionsHandlers {
         handler.setMousePosition(mouseCurrent);
     }
 
+    protected void setMousePosition(Coordinate position) {
+        handler.setMousePosition(position);
+    }
+
     protected Coordinate getTouchCoordinate(Touch touch) {
         int x = touch.getRelativeX(canvas.getElement());
         int y = touch.getRelativeY(canvas.getElement());
         return CoordinateFactory.get(x, y);
+    }
+
+    private boolean isDeltaValid(Coordinate delta) {
+        return delta.getX() >= 2  || delta.getX() <= -2  || delta.getY() >= 2 || delta.getY() <= -2;
     }
 }
