@@ -486,7 +486,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             } else {
                 Coordinate delta = CoordinateFactory.get(end.getX() - origin.getX(), end.getY() - origin.getY());
                 // On mouse move is sometimes called for delta 0 (we cannot control that, but only consider it)
-                if (delta.getX() >= 2  || delta.getY() >= 2) {
+                if (isDeltaValid(delta)) {
                     OMSVGMatrix newMatrix = svg.createSVGMatrix().translate(delta.getX().floatValue(), delta.getY().floatValue());
                     ctm = ctm.multiply(newMatrix);
                     applyCTM(true);
@@ -1191,5 +1191,9 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         }
         flagged = new HashSet<>();
         updateUI();
+    }
+
+    private boolean isDeltaValid(Coordinate delta) {
+        return delta.getX() >= 2  || delta.getX() <= -2  || delta.getY() >= 2 || delta.getY() <= -2;
     }
 }
