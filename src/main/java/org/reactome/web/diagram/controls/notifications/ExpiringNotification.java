@@ -6,33 +6,36 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class ExpiringNotification extends AbsolutePanel implements Notification, ClickHandler {
-    private String message;
     private int timeToExpire;
 
     private Label msgLabel;
-    private Image icon;
+    private SimplePanel spinnerContainer;
+    private SimplePanel spinner;
     private Timer fadeoutTimer;
     private Timer removeTimer;
 
     public ExpiringNotification(String message, int timeToExpire) {
-        this.message = message;
         this.timeToExpire = timeToExpire;
         setStyleName(RESOURCES.getCSS().container());
 
-        icon = new Image(RESOURCES.spinner());
+        spinner = new SimplePanel();
+        spinner.setStyleName(RESOURCES.getCSS().loader());
+        spinnerContainer = new SimplePanel();
+        spinnerContainer.setStyleName(RESOURCES.getCSS().loaderContainer());
+        spinnerContainer.add(spinner);
+
         msgLabel = new Label(message);
-        add(icon);
+        add(spinnerContainer);
         add(msgLabel);
 
         addDomHandler(this, ClickEvent.getType());
@@ -84,10 +87,6 @@ public class ExpiringNotification extends AbsolutePanel implements Notification,
     public interface Resources extends ClientBundle {
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
-
-        @Source("images/loader.gif")
-        ImageResource spinner();
-
     }
 
     @CssResource.ImportedWithPrefix("diagram-Notification")
@@ -97,5 +96,9 @@ public class ExpiringNotification extends AbsolutePanel implements Notification,
         String container();
 
         String fadeIn();
+
+        String loaderContainer();
+
+        String loader();
     }
 }

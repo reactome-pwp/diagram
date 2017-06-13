@@ -31,19 +31,63 @@
     border: 1px solid #6daeb0;
 }
 
-.container img {
-    width: 12px;
-    height: 12px;
-    display: inline-block;
-    margin-right: 3px;
-}
+/*.container img {*/
+    /*width: 12px;*/
+    /*height: 12px;*/
+    /*display: inline-block;*/
+    /*margin-right: 3px;*/
+/*}*/
 
 .container div {
     display: inline-block;
+    margin: 1px;
+    vertical-align: top
 }
 
 .fadeIn {
     opacity: 0.9 !important;
     visibility: visible;
+}
+
+.loaderContainer {
+    height: 12px;
+    text-align: center;
+}
+
+.loader {
+    width: 12px;
+    height: 12px;
+    margin: 0 auto;
+    border: 1px solid rgb(255, 255, 255);
+    border-radius: 50%;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    animation: spin 875ms infinite linear;
+    -o-animation: spin 875ms infinite linear;
+    -ms-animation: spin 875ms infinite linear;
+    -webkit-animation: spin 875ms infinite linear;
+    -moz-animation: spin 875ms infinite linear;
+}
+
+
+
+@keyframes spin {
+    100%{ transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-o-keyframes spin {
+    100%{ -o-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-ms-keyframes spin {
+    100%{ -ms-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-webkit-keyframes spin {
+    100%{ -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@-moz-keyframes spin {
+    100%{ -moz-transform: rotate(360deg); transform: rotate(360deg); }
 }
 
