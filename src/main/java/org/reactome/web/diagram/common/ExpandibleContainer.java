@@ -1,10 +1,7 @@
 package org.reactome.web.diagram.common;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -18,20 +15,27 @@ import java.util.Set;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class ExpandibleContainer extends AbsolutePanel implements MouseOverHandler, MouseOutHandler {
+public class ExpandibleContainer extends AbsolutePanel implements ClickHandler, MouseOverHandler, MouseOutHandler {
+
     private SimplePanel primaryButton;
     private Set<Button> buttons;
+    private boolean isExpanded = false;
 
     public ExpandibleContainer(String tooltip, String style) {
         setStyleName(RESOURCES.getCSS().container());
         this.primaryButton = new SimplePanel();
         this.primaryButton.setTitle(tooltip);
-        this.primaryButton.addStyleName(style);
+        this.primaryButton.setStyleName(style);
         this.primaryButton.addStyleName(RESOURCES.getCSS().baseButtons());
         this.primaryButton.addStyleName(RESOURCES.getCSS().primaryButton());
         this.add(primaryButton);
 
         buttons = new HashSet<>();
+        primaryButton.addDomHandler(this, ClickEvent.getType());
+        primaryButton.addDomHandler(event -> {                  // This is required because some mobile browsers fire the
+            event.preventDefault(); event.stopPropagation();    // OnMouseOver event if before the Click event is fired
+        }, MouseOverEvent.getType());
+
         addDomHandler(this, MouseOverEvent.getType());
         addDomHandler(this, MouseOutEvent.getType());
     }
@@ -44,21 +48,36 @@ public class ExpandibleContainer extends AbsolutePanel implements MouseOverHandl
     }
 
     public void collapse() {
-        removeStyleName(RESOURCES.getCSS().expandedContainer());
+        if (isExpanded) {
+            removeStyleName(RESOURCES.getCSS().expandedContainer());
+            isExpanded = false;
+        }
+
     }
 
     public void expand() {
-        addStyleName(RESOURCES.getCSS().expandedContainer());
+        if (!isExpanded) {
+            addStyleName(RESOURCES.getCSS().expandedContainer());
+            isExpanded = true;
+        }
     }
 
     @Override
-    public void onMouseOver(MouseOverEvent mouseOverEvent) {
+    public void onClick(ClickEvent event) {
+        if (!isExpanded) {
+            expand();
+        } else {
+            collapse();
+        }
+    }
+
+    @Override
+    public void onMouseOver(MouseOverEvent event) {
         expand();
     }
 
-
     @Override
-    public void onMouseOut(MouseOutEvent mouseOutEvent) {
+    public void onMouseOut(MouseOutEvent event) {
         collapse();
     }
 
@@ -67,7 +86,6 @@ public class ExpandibleContainer extends AbsolutePanel implements MouseOverHandl
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
     }
-
 
     public interface Resources extends ClientBundle {
         @Source(ResourceCSS.CSS)
