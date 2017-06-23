@@ -24,6 +24,8 @@ public abstract class DiagramFactory {
     public static String INTERACTORS_INITIAL_RESOURCE = "static"; // -> null here means DO NOT LOAD interactors
     public static String INTERACTORS_INITIAL_RESOURCE_NAME = "IntAct/Static"; // --> it should be null if the one above is null
 
+    public static int SCROLL_SENSITIVITY = 0;
+
     //Added for testing
     public static DiagramViewer createDiagramViewer() {
         return new DiagramViewerImpl();

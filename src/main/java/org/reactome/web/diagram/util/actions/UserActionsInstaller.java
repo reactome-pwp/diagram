@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.util.actions;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FocusWidget;
 
 /**
@@ -21,5 +22,7 @@ public abstract class UserActionsInstaller {
         widget.addTouchEndHandler(handler);
         widget.addTouchMoveHandler(handler);
         widget.addTouchStartHandler(handler);
+
+        Window.addWindowScrollHandler(handler);
     }
 }
