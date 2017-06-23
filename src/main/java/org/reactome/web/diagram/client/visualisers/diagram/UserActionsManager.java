@@ -282,7 +282,9 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onWindowScroll(Window.ScrollEvent event) {
-        windowScrolling.schedule(DiagramFactory.SCROLL_SENSITIVITY);
+        if(DiagramFactory.SCROLL_SENSITIVITY > 0) {
+            windowScrolling.schedule(DiagramFactory.SCROLL_SENSITIVITY);
+        }
     }
 
     public boolean setInteractorHovered(DiagramInteractor hovered){
