@@ -6,8 +6,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
-import org.reactome.web.diagram.client.DiagramFactory;
+import org.reactome.web.diagram.client.ViewerContainer;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
@@ -55,11 +54,6 @@ class UserActionsManager implements MouseActionsHandlers {
 
     private Timer doubleTapTimer;
     private Timer longTapTimer;
-
-    private Timer windowScrolling = new Timer() {
-        @Override
-        public void run() { /* Nothing here */ }
-    };
 
     public UserActionsManager(Handler handler, DiagramCanvas canvas) {
         this.handler = handler;
@@ -160,7 +154,7 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onMouseWheel(MouseWheelEvent event) {
-        if(!windowScrolling.isRunning()) {
+        if(!ViewerContainer.windowScrolling.isRunning()) {
             event.stopPropagation();
             event.preventDefault();
             setMousePosition(event.getRelativeElement(), event);
@@ -277,13 +271,6 @@ class UserActionsManager implements MouseActionsHandlers {
             Coordinate finger2 = getTouchCoordinate(event.getTouches().get(1));
             Coordinate delta = finger2.minus(finger1);
             fingerDistance = Math.sqrt(delta.getX() * delta.getX() + delta.getY() * delta.getY());
-        }
-    }
-
-    @Override
-    public void onWindowScroll(Window.ScrollEvent event) {
-        if(DiagramFactory.SCROLL_SENSITIVITY > 0) {
-            windowScrolling.schedule(DiagramFactory.SCROLL_SENSITIVITY);
         }
     }
 

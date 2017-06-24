@@ -9,11 +9,10 @@ import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.analysis.client.model.PathwaySummary;
-import org.reactome.web.diagram.client.DiagramFactory;
+import org.reactome.web.diagram.client.ViewerContainer;
 import org.reactome.web.diagram.client.visualisers.Visualiser;
 import org.reactome.web.diagram.client.visualisers.ehld.animation.SVGAnimation;
 import org.reactome.web.diagram.client.visualisers.ehld.animation.SVGAnimationHandler;
@@ -64,8 +63,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         AnalysisProfileChangedHandler, DatabaseObjectCreatedHandler,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
         DoubleClickHandler, ContextMenuHandler, SVGAnimationHandler, SVGThumbnailAreaMovedHandler,
-        TouchStartHandler, TouchMoveHandler, TouchEndHandler,
-        Window.ScrollHandler{
+        TouchStartHandler, TouchMoveHandler, TouchEndHandler {
 
     private static final String OVERLAY_CLONE = "OVERLAYCLONE-";
     private static final String OVERLAY_BASE = "OVERLAYBASE-";
@@ -106,9 +104,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     private SVGContextPanel contextPanel;
     private Thumbnail thumbnail;
 
-    private Timer tapTimer;
-
-    private Timer windowScrolling = new Timer() {
+    private Timer tapTimer = new Timer() {
         @Override
         public void run() { /* Nothing here */ }
     };
@@ -117,13 +113,6 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         super(eventBus);
         this.getElement().addClassName("pwp-SVGPanel");
         flagged = new HashSet<>();
-
-        tapTimer =  new Timer() {
-            @Override
-            public void run() {
-                //Nothing here
-            }
-        };
 
         initHandlers();
 //        setSize(width, height);
@@ -438,7 +427,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void onMouseWheel(MouseWheelEvent event) {
-        if(!windowScrolling.isRunning()) {
+        if(!ViewerContainer.windowScrolling.isRunning()) {
             event.preventDefault();
             event.stopPropagation();
             contextPanel.hide();
@@ -747,7 +736,6 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     private void initHandlers() {
         eventBus.addHandler(SVGThumbnailAreaMovedEvent.TYPE, this);
         eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
-        Window.addWindowScrollHandler(this);
 
         // !!! Important !!! //
         // Adding the MouseWheelEvent directly on the SVG is not working
@@ -1207,12 +1195,5 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
     private boolean isDeltaValid(Coordinate delta) {
         return delta.getX() >= 2  || delta.getX() <= -2  || delta.getY() >= 2 || delta.getY() <= -2;
-    }
-
-    @Override
-    public void onWindowScroll(Window.ScrollEvent event) {
-        if(DiagramFactory.SCROLL_SENSITIVITY > 0) {
-            windowScrolling.schedule(DiagramFactory.SCROLL_SENSITIVITY);
-        }
     }
 }
