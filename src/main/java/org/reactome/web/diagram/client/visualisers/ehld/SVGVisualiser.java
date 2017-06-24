@@ -427,18 +427,22 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void onMouseWheel(MouseWheelEvent event) {
-        if(!ViewerContainer.windowScrolling.isRunning()) {
-            event.preventDefault();
-            event.stopPropagation();
-            contextPanel.hide();
-            float delta = event.getDeltaY() * 0.020f;
-            float zoom = (1 - delta) > 0 ? (1 - delta) : 1;
-            zoom(zoom, getTranslatedPoint(event));
-        }
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        contextPanel.hide();
+        float delta = event.getDeltaY() * 0.020f;
+        float zoom = (1 - delta) > 0 ? (1 - delta) : 1;
+        zoom(zoom, getTranslatedPoint(event));
     }
 
     @Override
     public void onTouchEnd(TouchEndEvent event) {
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
         event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
         if (allowSelection) {
@@ -469,6 +473,9 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void onTouchMove(TouchMoveEvent event) {
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
         event.preventDefault(); event.stopPropagation();
         Element viewport = this.getElement();
         int numberOfTouches =  event.getTouches().length();
@@ -520,6 +527,9 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void onTouchStart(TouchStartEvent event) {
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
         event.preventDefault(); event.stopPropagation();
         Element viewport = this.getElement();
         if (animation != null) animation.cancel(); // Cancel any animation running

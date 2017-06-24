@@ -154,12 +154,13 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onMouseWheel(MouseWheelEvent event) {
-        if(!ViewerContainer.windowScrolling.isRunning()) {
-            event.stopPropagation();
-            event.preventDefault();
-            setMousePosition(event.getRelativeElement(), event);
-            handler.mouseZoom(event.getDeltaY() * ZOOM_FACTOR);
-        }
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
+        event.stopPropagation();
+        event.preventDefault();
+        setMousePosition(event.getRelativeElement(), event);
+        handler.mouseZoom(event.getDeltaY() * ZOOM_FACTOR);
     }
 
     @Override
@@ -173,6 +174,9 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onTouchEnd(TouchEndEvent event) {
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
         event.preventDefault(); event.stopPropagation();
         if (longTapTimer.isRunning()) { longTapTimer.cancel(); }
         if (!this.diagramMoved && !interactorDragged) {
@@ -203,6 +207,9 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onTouchMove(TouchMoveEvent event) {
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
         event.stopPropagation(); event.preventDefault();
         int numberOfTouches =  event.getTouches().length();
         if (numberOfTouches == 1 && hoveredInteractor == null) {                     // Panning
@@ -247,6 +254,9 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onTouchStart(TouchStartEvent event) {
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
         event.stopPropagation(); event.preventDefault();
         if (longTapTimer.isRunning()) { longTapTimer.cancel(); }
         int numberOfTouches =  event.getTouches().length();
