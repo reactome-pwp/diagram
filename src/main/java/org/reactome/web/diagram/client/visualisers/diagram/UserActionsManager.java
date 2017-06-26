@@ -6,6 +6,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Timer;
+import org.reactome.web.diagram.client.ViewerContainer;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
@@ -153,6 +154,9 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onMouseWheel(MouseWheelEvent event) {
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
         event.stopPropagation();
         event.preventDefault();
         setMousePosition(event.getRelativeElement(), event);
@@ -170,6 +174,9 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onTouchEnd(TouchEndEvent event) {
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
         event.preventDefault(); event.stopPropagation();
         if (longTapTimer.isRunning()) { longTapTimer.cancel(); }
         if (!this.diagramMoved && !interactorDragged) {
@@ -200,6 +207,9 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onTouchMove(TouchMoveEvent event) {
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
         event.stopPropagation(); event.preventDefault();
         int numberOfTouches =  event.getTouches().length();
         if (numberOfTouches == 1 && hoveredInteractor == null) {                     // Panning
@@ -244,6 +254,9 @@ class UserActionsManager implements MouseActionsHandlers {
 
     @Override
     public void onTouchStart(TouchStartEvent event) {
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
         event.stopPropagation(); event.preventDefault();
         if (longTapTimer.isRunning()) { longTapTimer.cancel(); }
         int numberOfTouches =  event.getTouches().length();

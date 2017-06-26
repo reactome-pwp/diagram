@@ -12,6 +12,7 @@ import com.google.gwt.user.client.Timer;
 import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.analysis.client.model.PathwaySummary;
+import org.reactome.web.diagram.client.ViewerContainer;
 import org.reactome.web.diagram.client.visualisers.Visualiser;
 import org.reactome.web.diagram.client.visualisers.ehld.animation.SVGAnimation;
 import org.reactome.web.diagram.client.visualisers.ehld.animation.SVGAnimationHandler;
@@ -103,19 +104,15 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     private SVGContextPanel contextPanel;
     private Thumbnail thumbnail;
 
-    private Timer tapTimer;
+    private Timer tapTimer = new Timer() {
+        @Override
+        public void run() { /* Nothing here */ }
+    };
 
     public SVGVisualiser(EventBus eventBus) {
         super(eventBus);
         this.getElement().addClassName("pwp-SVGPanel");
         flagged = new HashSet<>();
-
-        tapTimer =  new Timer() {
-            @Override
-            public void run() {
-                //Nothing here
-            }
-        };
 
         initHandlers();
 //        setSize(width, height);
@@ -430,7 +427,11 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void onMouseWheel(MouseWheelEvent event) {
-        event.preventDefault(); event.stopPropagation();
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
+        event.preventDefault();
+        event.stopPropagation();
         contextPanel.hide();
         float delta = event.getDeltaY() * 0.020f;
         float zoom = (1 - delta) > 0 ? (1 - delta) : 1;
@@ -439,6 +440,9 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void onTouchEnd(TouchEndEvent event) {
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
         event.preventDefault(); event.stopPropagation();
         OMElement el = (OMElement) event.getSource();
         if (allowSelection) {
@@ -469,6 +473,9 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void onTouchMove(TouchMoveEvent event) {
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
         event.preventDefault(); event.stopPropagation();
         Element viewport = this.getElement();
         int numberOfTouches =  event.getTouches().length();
@@ -520,6 +527,9 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
     @Override
     public void onTouchStart(TouchStartEvent event) {
+        //Continue scrolling has priority to ehld user action
+        if(ViewerContainer.windowScrolling.isRunning()) return;
+
         event.preventDefault(); event.stopPropagation();
         Element viewport = this.getElement();
         if (animation != null) animation.cancel(); // Cancel any animation running

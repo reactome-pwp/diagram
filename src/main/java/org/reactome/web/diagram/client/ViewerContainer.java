@@ -8,6 +8,8 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
@@ -58,6 +60,11 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     private Anchor watermark;
 
     private String flagTerm;
+
+    public static Timer windowScrolling = new Timer() {
+        @Override
+        public void run() { /* Nothing here */ }
+    };
 
     public ViewerContainer(EventBus eventBus) {
         this.getElement().setClassName("pwp-ViewerContainer");
@@ -334,6 +341,11 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     private void initHandlers() {
+        //Only add the window scroll handler if it makes sense
+        if(DiagramFactory.SCROLL_SENSITIVITY > 0) {
+            Window.addWindowScrollHandler(event -> windowScrolling.schedule(DiagramFactory.SCROLL_SENSITIVITY));
+        }
+
         eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
 
         eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
@@ -345,7 +357,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
 
         eventBus.addHandler(ControlActionEvent.TYPE, this);
-
     }
 
     private void overview(){

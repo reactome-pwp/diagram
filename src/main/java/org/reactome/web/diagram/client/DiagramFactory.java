@@ -24,6 +24,10 @@ public abstract class DiagramFactory {
     public static String INTERACTORS_INITIAL_RESOURCE = "static"; // -> null here means DO NOT LOAD interactors
     public static String INTERACTORS_INITIAL_RESOURCE_NAME = "IntAct/Static"; // --> it should be null if the one above is null
 
+    //The Reactome use case does not need to be sensible to SCROLL
+    //This variable is meant to set up by DiagramJs or other resources using the GWT widget
+    public static int SCROLL_SENSITIVITY = 0;
+
     //Added for testing
     public static DiagramViewer createDiagramViewer() {
         return new DiagramViewerImpl();
