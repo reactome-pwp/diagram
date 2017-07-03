@@ -314,6 +314,6 @@ class UserActionsManager implements MouseActionsHandlers {
     }
 
     private boolean isDeltaValid(Coordinate delta) {
-        return delta.getX() >= 2  || delta.getX() <= -2  || delta.getY() >= 2 || delta.getY() <= -2;
+        return delta.getX() >= 4  || delta.getX() <= -4 || delta.getY() >= 4 || delta.getY() <= -4;
     }
 }
