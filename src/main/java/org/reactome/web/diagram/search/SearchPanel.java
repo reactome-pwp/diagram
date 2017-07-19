@@ -27,7 +27,7 @@ public class SearchPanel extends FlowPanel {
         final SearchLauncher launcher = new SearchLauncher(eventBus);
         this.add(launcher);
 
-        SuggestionPanel suggestions = new SuggestionPanel();
+        SuggestionPanel suggestions = new SuggestionPanel(eventBus);
         // Listen to click events on suggestions and return focus on SearchBox
         suggestions.addClickHandler(event -> launcher.setFocus(true));
         launcher.addSearchPerformedHandler(suggestions);

@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
@@ -20,6 +21,7 @@ import org.reactome.web.diagram.controls.top.search.SearchPerformedEvent;
 import org.reactome.web.diagram.controls.top.search.SearchPerformedHandler;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
+import org.reactome.web.diagram.events.GraphObjectSelectedEvent;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.events.SuggestionResetEvent;
 import org.reactome.web.diagram.search.events.SuggestionSelectedEvent;
@@ -36,6 +38,7 @@ import java.util.List;
  */
 public class SuggestionPanel extends AbstractAccordionPanel implements SearchPerformedHandler, SearchBoxArrowKeysHandler,
         SelectionChangeEvent.Handler, SuggestionResetHandler {
+    private EventBus eventBus;
     private final SingleSelectionModel<SearchResultObject> selectionModel;
     private CellList<SearchResultObject> suggestions;
     private ListDataProvider<SearchResultObject> dataProvider;
@@ -56,7 +59,8 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
         return null;
     };
 
-    public SuggestionPanel() {
+    public SuggestionPanel(EventBus eventBus) {
+        this.eventBus = eventBus;
         this.sinkEvents(Event.ONCLICK);
 
         // Add a selection model so we can select cells.
@@ -133,7 +137,13 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
 
     @Override
     public void onSelectionChange(SelectionChangeEvent event) {
-        fireEvent(new SuggestionSelectedEvent(selectionModel.getSelectedObject()));
+        SearchResultObject obj = selectionModel.getSelectedObject();
+        if (obj!=null) {
+            if (obj instanceof GraphObject) {
+                eventBus.fireEventFromSource(new GraphObjectSelectedEvent((GraphObject) obj, true), this);
+            }
+        }
+        fireEvent(new SuggestionSelectedEvent(obj));
     }
 
     @Override
@@ -158,8 +168,6 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
         @Source(SuggestionPanelCSS.CSS)
         SuggestionPanelCSS getCSS();
 
-//        @Source("images/image.png")
-//        ImageResource image();
     }
 
     /**

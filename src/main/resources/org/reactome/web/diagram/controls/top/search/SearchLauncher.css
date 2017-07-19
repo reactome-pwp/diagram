@@ -46,16 +46,17 @@
 
 .input {
     border-radius: 5px;
-    float: left;
+    position: relative;
     margin: 5px 0 0 4px;
     height: 20px;
-    width: 260px;
+    width: 240px;
     border: none;
     background-color: #23688b;
     font-size: 14px;
     opacity: 0.2;
     color: #23688b;
     padding-left: 5px;
+    padding-right: 22px;
     outline: none;
 
     transition: opacity .3s ease-in-out;
@@ -66,4 +67,48 @@
 .inputActive {
     opacity: 0.8;
     color: #FFFFFF;
+}
+
+.inputActive::-webkit-input-placeholder {
+    color: #bcbcbc;
+}
+
+.clearBtn {
+    position: absolute;
+    background-color: transparent;
+    border: none;
+    border-radius: 9px;
+    color: white;
+    margin-left: -18px;
+    margin-top: 9px;
+    padding: 1px 1px 0 1px;
+    outline: none;
+    opacity: 0.6;
+}
+
+.clearBtn span {
+    vertical-align: middle !important;
+    display: inline-block;
+}
+
+.clearBtn img {
+    height: 12px;
+    width: auto;
+
+    user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.clearBtn:hover {
+    cursor: pointer !important;
+    opacity: 0.8;
+}
+
+.clearBtn:active:hover {
+    cursor: pointer !important;
+    opacity: 1;
 }
