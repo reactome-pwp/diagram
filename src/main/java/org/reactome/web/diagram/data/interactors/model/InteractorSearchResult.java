@@ -3,6 +3,7 @@ package org.reactome.web.diagram.data.interactors.model;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.resources.client.ImageResource;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.graph.model.factory.SchemaClass;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.images.InteractorImages;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
@@ -99,6 +100,11 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     @Override
     public String getSecondarySearchDisplay() {
         return secondary;
+    }
+
+    @Override
+    public SchemaClass getSchemaClass() {
+        return SchemaClass.getSchemaClass("Interactor");
     }
 
     @Override

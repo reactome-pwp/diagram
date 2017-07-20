@@ -43,6 +43,7 @@ public enum SchemaClass {
     GO_CELLULAR_COMPONENT("GO_CellularComponent"),
     GROUP_MODIFIED_RESIDUE("GroupModifiedResidue"),
     INSTANCE_EDIT("InstanceEdit"),
+    INTERACTOR("Interactor"),                  // This is added although Interactors are not part of the model
     INTER_CHAIN_CROSSLINKED_RESIDUE("InterChainCrosslinkedResidue"),
     INTRA_CHAIN_CROSSLINKED_RESIDUE("IntraChainCrosslinkedResidue"),
     LITERATURE_REFERENCE("LiteratureReference"),

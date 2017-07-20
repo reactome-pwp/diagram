@@ -21,28 +21,28 @@ public class SuggestionCell extends AbstractCell<SearchResultObject> {
     interface Templates extends SafeHtmlTemplates {
         @SafeHtmlTemplates.Template("" +
                 "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis;\">" +
-                    "<div style=\"float:left; margin-left: 5px\">{0}</div>" +
+                    "<div title=\"{1}\" style=\"float:left; margin-left: 5px\">{0}</div>" +
                     "<div style=\"float:left; margin-left:10px; width:260px\">" +
                         "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:small\">" +
-                            "{1}" +
-                        "</div>" +
-                    "</div>" +
-                "</div>")
-        SafeHtml minCell(SafeHtml image, SafeHtml primary);
-
-        @SafeHtmlTemplates.Template("" +
-                "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis;\">" +
-                    "<div style=\"float:left;margin: 7px 0 0 5px\">{0}</div>" +
-                    "<div style=\"float:left;margin-left:10px; width:260px\">" +
-                        "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:small\">" +
-                            "{1}" +
-                        "</div>" +
-                        "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; margin-top:-2px; font-size:x-small;\">" +
                             "{2}" +
                         "</div>" +
                     "</div>" +
                 "</div>")
-        SafeHtml cell(SafeHtml image, SafeHtml primary, SafeHtml secondary);
+        SafeHtml minCell(SafeHtml image, String imgTooltip, SafeHtml primary);
+
+        @SafeHtmlTemplates.Template("" +
+                "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis;\">" +
+                    "<div title=\"{1}\" style=\"float:left;margin: 7px 0 0 5px\">{0}</div>" +
+                    "<div style=\"float:left;margin-left:10px; width:260px\">" +
+                        "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:small\">" +
+                            "{2}" +
+                        "</div>" +
+                        "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; margin-top:-2px; font-size:x-small;\">" +
+                            "{3}" +
+                        "</div>" +
+                    "</div>" +
+                "</div>")
+        SafeHtml cell(SafeHtml image, String imgTooltip, SafeHtml primary, SafeHtml secondary);
     }
 
     private static Templates templates = GWT.create(Templates.class);
@@ -66,12 +66,13 @@ public class SuggestionCell extends AbstractCell<SearchResultObject> {
         Image img = new Image(value.getImageResource());
         SafeHtml image = SafeHtmlUtils.fromTrustedString(img.toString());
 
+        String imgTooltip = value.getSchemaClass().name;
         SafeHtml primary = SafeHtmlUtils.fromTrustedString(value.getPrimarySearchDisplay());
         if(value.getSecondarySearchDisplay().isEmpty()) {
-            sb.append(templates.minCell(image, primary));
+            sb.append(templates.minCell(image, imgTooltip, primary));
         }else{
             SafeHtml secondary = SafeHtmlUtils.fromTrustedString(value.getSecondarySearchDisplay());
-            sb.append(templates.cell(image, primary, secondary));
+            sb.append(templates.cell(image, imgTooltip, primary, secondary));
         }
     }
 }
