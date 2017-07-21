@@ -105,9 +105,14 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         switch (event.getContext().getContent().getType()) {
             case DIAGRAM:
                 exportBtn.setVisible(true);
+                illustrationsBtn.setEnabled(true);
                 break;
             case SVG:
                 exportBtn.setVisible(false);
+                illustrationsBtn.setEnabled(false);
+                if (this.diagramIllustrations.isShowing()) {
+                    this.diagramIllustrations.hide();
+                }
                 break;
         }
         diagramKey.hide();

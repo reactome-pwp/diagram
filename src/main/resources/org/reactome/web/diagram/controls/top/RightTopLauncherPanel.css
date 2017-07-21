@@ -54,6 +54,10 @@
     gwt-image:'illustrationsHovered';
 }
 
+@sprite .illustrations:disabled {
+    gwt-image:'illustrationsDisabled';
+}
+
 @sprite .illustrations:active:hover {
     gwt-image: 'illustrationsClicked';
 }
