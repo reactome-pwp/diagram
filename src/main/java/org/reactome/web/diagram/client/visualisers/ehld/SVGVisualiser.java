@@ -1019,6 +1019,9 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             }
         }
 
+        // Remove title to avoid tooltips appearing in Safari
+        removeTitleFrom(svg);
+
         for (SVGEntity svgEntity : entities.values()) {
             OMElement child = svgEntity.getHoverableElement();
             if(child!=null) {

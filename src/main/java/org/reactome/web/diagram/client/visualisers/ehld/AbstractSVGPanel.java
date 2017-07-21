@@ -229,7 +229,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     protected List<OMElement> getAllTextElementsFrom(final OMNode root){
         List<OMElement> rtn = new LinkedList<>();
         OMElement el = (OMElement) root;
-        OMNodeList<OMElement> textEl = el.getElementsByTagName("text");
+        OMNodeList<OMElement> textEl = el.getElementsByTagName(SVGConstants.SVG_TEXT_TAG);
         for (OMElement element : textEl) {
             rtn.add(element);
         }
@@ -239,7 +239,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     protected boolean removeLogoFrom(final OMNode root){
         boolean rtn = false;
         OMElement el = (OMElement) root;
-        OMNodeList<OMElement> targetEl = el.getElementsByTagName("g");
+        OMNodeList<OMElement> targetEl = el.getElementsByTagName(SVGConstants.SVG_G_TAG);
         for (OMElement element : targetEl) {
             if(element.getId().toLowerCase().startsWith("logo")) {
                 element.getElement().removeFromParent();
@@ -249,9 +249,20 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         return rtn;
     }
 
+    protected boolean removeTitleFrom(final OMNode root) {
+        boolean rtn = false;
+        OMElement el = (OMElement) root;
+        OMNodeList<OMElement> targetEl = el.getElementsByTagName(SVGConstants.SVG_TITLE_TAG);
+        for (OMElement element : targetEl) {
+            element.getElement().removeFromParent();
+            rtn = true;
+        }
+        return rtn;
+    }
+
     private OMElement getAnalysisInfo(OMElement element){
         OMElement rtn = null;
-        OMNodeList<OMElement> els = element.getElementsByTagName("g");
+        OMNodeList<OMElement> els = element.getElementsByTagName(SVGConstants.SVG_G_TAG);
         if(els!=null) {
             for (OMElement target : els) {
                 if (target.getId().startsWith(ANALYSIS_INFO)) {
