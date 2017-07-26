@@ -1,12 +1,12 @@
 package org.reactome.web.diagram.context.popups;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.common.IconButton;
@@ -108,15 +108,21 @@ public class ImageDownloadDialog extends PopupPanel {
         this.removeFromParent();
     }
 
-    @Override
-    public void show() {
-        super.show();
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+    public void showCentered() {
+        super.center();
+        setVisible(false);
+        // This is necessary to center the panel in Firefox, where getOffsetWidth() and getOffsetHeight()
+        // do not return the correct values the first time they are called (even in a deferred call)
+        new Timer() {
             @Override
-            public void execute() {
-                center();
+            public void run() {
+                int left = (Window.getClientWidth() - getOffsetWidth()) >> 1;
+                int top = (Window.getClientHeight() - getOffsetHeight()) >> 1;
+                setPopupPosition(Math.max(Window.getScrollLeft() + left, 0),
+                        Math.max(Window.getScrollTop() + top, 0));
+                setVisible(true);
             }
-        });
+        }.schedule(20);
     }
 
     private static native boolean gsUploadByPostAvailable() /*-{

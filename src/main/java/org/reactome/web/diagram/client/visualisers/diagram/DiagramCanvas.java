@@ -292,7 +292,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
                     Image image = new Image();
                     image.setUrl(ctx.getCanvas().toDataUrl("image/png"));
                     final ImageDownloadDialog downloadDialogBox = new ImageDownloadDialog(image, "png",diagramStId);
-                    downloadDialogBox.show();
+                    downloadDialogBox.showCentered();
                     cleanCanvas(ctx);
                 }
             }

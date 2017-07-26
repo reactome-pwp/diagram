@@ -91,7 +91,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
             Image image = new Image();
             image.setUrl("data:image/svg+xml;base64," + btoa(auxSVG.getMarkup()));
             final ImageDownloadDialog downloadDialogBox = new ImageDownloadDialog(image, "svg", stableId);
-            downloadDialogBox.show();
+            downloadDialogBox.showCentered();
         }
     }
 
