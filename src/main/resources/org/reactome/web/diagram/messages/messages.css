@@ -13,7 +13,7 @@
     box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 
     font-family: Arial Unicode MS, Arial, sans-serif !important;
-    font-size: medium !important;
+    font-size: 1.18em !important;
 }
 
 .messagesPanel img {
@@ -80,19 +80,39 @@
 
 .errorMessageText {
     padding-left: 10px;
-    height: 60px;
-    overflow: auto;
+    height: 65px;
+    overflow: hidden;
     display: -webkit-box;
     display: -webkit-flex;
     display: -moz-box;
     display: -ms-flexbox;
     display: flex;
 
-    -webkit-flex-align: center;
-    -ms-flex-align: center;
+    flex-direction: column;
 
     -webkit-align-items: center;
     align-items: center;
+
+    justify-content: space-around;
+}
+
+.errorMessageTitle {
+    align-self: flex-start;
+}
+
+.errorMessageDetailsContainer {
+    align-self: flex-start;
+    overflow: hidden;
+    max-height: 45px;
+}
+
+.errorMessageDetails {
+    font-size: 0.8em !important;
+    max-height: 45px;
+    padding-right: 59px;
+
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 @sprite .close {

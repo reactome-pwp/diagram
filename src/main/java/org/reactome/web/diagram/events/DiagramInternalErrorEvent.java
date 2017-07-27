@@ -10,9 +10,15 @@ public class DiagramInternalErrorEvent extends GwtEvent<DiagramInternalErrorHand
     public static final Type<DiagramInternalErrorHandler> TYPE = new Type<>();
 
     private String message;
+    private String details;
+
+    public DiagramInternalErrorEvent(String message, String details) {
+        this.message = message;
+        this.details = details;
+    }
 
     public DiagramInternalErrorEvent(String message) {
-        this.message = message;
+        this(message, "");
     }
 
     @Override
@@ -29,10 +35,15 @@ public class DiagramInternalErrorEvent extends GwtEvent<DiagramInternalErrorHand
         return message;
     }
 
+    public String getDetails() {
+        return details;
+    }
+
     @Override
     public String toString() {
         return "DiagramInternalErrorEvent{" +
                 "message='" + message + '\'' +
+                ", details='" + details + '\'' +
                 '}';
     }
 }

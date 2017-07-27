@@ -6,6 +6,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.events.AnalysisResultLoadedEvent;
 import org.reactome.web.diagram.events.AnalysisResultRequestedEvent;
@@ -22,7 +23,8 @@ import org.reactome.web.diagram.handlers.DiagramInternalErrorHandler;
 public class ErrorMessage extends MessagesPanel implements AnalysisResultRequestedHandler, AnalysisResultLoadedHandler,
         ContentRequestedHandler, DiagramInternalErrorHandler, ClickHandler {
 
-    private Label message;
+    private Label msgTitle;
+    private Label msgDetails;
 
     public ErrorMessage(EventBus eventBus) {
         super(eventBus);
@@ -37,9 +39,21 @@ public class ErrorMessage extends MessagesPanel implements AnalysisResultRequest
         PwpButton closeBtn = new PwpButton("close", RESOURCES.getCSS().close(), this);
         fp.add(closeBtn);
 
-        message = new Label("Error holder");
-        message.setStyleName(MessagesPanel.RESOURCES.getCSS().errorMessageText());
-        fp.add(message);
+        msgTitle = new Label("Title placeHolder");
+        msgTitle.setStyleName(css.errorMessageTitle());
+
+        msgDetails = new Label("Details placeholder");
+        msgDetails.setStyleName(css.errorMessageDetails());
+        SimplePanel detailsContainer = new SimplePanel();
+        detailsContainer.setStyleName(css.errorMessageDetailsContainer());
+        detailsContainer.add(msgDetails);
+
+
+        FlowPanel textSpace = new FlowPanel();
+        textSpace.setStyleName(css.errorMessageText());
+        textSpace.add(msgTitle);
+        textSpace.add(detailsContainer);
+        fp.add(textSpace);
 
         this.add(fp);
         setVisible(false);
@@ -68,7 +82,8 @@ public class ErrorMessage extends MessagesPanel implements AnalysisResultRequest
 
     @Override
     public void onDiagramInternalError(DiagramInternalErrorEvent event) {
-        this.message.setText(event.getMessage());
+        this.msgTitle.setText(event.getMessage());
+        this.msgDetails.setText(event.getDetails());
         this.setVisible(true);
     }
 

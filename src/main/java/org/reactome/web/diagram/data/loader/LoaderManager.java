@@ -129,7 +129,10 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
 
     @Override
     public void onLayoutLoaderError(Throwable exception) {
-        eventBus.fireEventFromSource(new DiagramInternalErrorEvent("Diagram data " + exception.getMessage()), this);
+        eventBus.fireEventFromSource(
+                new DiagramInternalErrorEvent("There was a problem while loading the diagram",
+                        "Layout content error: " + exception.getMessage()
+                ), this);
     }
 
     @Override
@@ -144,7 +147,9 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
 
     @Override
     public void onGraphLoaderError(Throwable exception) {
-        eventBus.fireEventFromSource(new DiagramInternalErrorEvent("Graph content " + exception.getMessage()), this);
+        eventBus.fireEventFromSource(
+                new DiagramInternalErrorEvent("There was a problem while loading the diagram",
+                        "Graph content error: " + exception.getMessage()), this);
     }
 
     @Override

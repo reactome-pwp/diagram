@@ -96,7 +96,7 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
 
     @Override
     public void onResultSummaryError(AnalysisError error) {
-        eventBus.fireEventFromSource(new DiagramInternalErrorEvent(error.getReason()), this);
+        eventBus.fireEventFromSource(new DiagramInternalErrorEvent("Error while loading the analysis results", error.getReason()), this);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
 
     @Override
     public void onPathwayElementsError(AnalysisError error) {
-        eventBus.fireEventFromSource(new DiagramInternalErrorEvent(error.getReason()), this);
+        eventBus.fireEventFromSource(new DiagramInternalErrorEvent("Error while loading the analysis results", error.getReason()), this);
     }
 
     private void loadPathwaySummaries(long time) {
@@ -136,12 +136,12 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
 
     @Override
     public void onPathwaySummariesError(AnalysisError error) {
-        eventBus.fireEventFromSource(new DiagramInternalErrorEvent(error.getReason()), this);
+        eventBus.fireEventFromSource(new DiagramInternalErrorEvent("Error while loading the analysis results", error.getReason()), this);
     }
 
     @Override
     public void onAnalysisServerException(String message) {
-        eventBus.fireEventFromSource(new DiagramInternalErrorEvent(message), this);
+        eventBus.fireEventFromSource(new DiagramInternalErrorEvent("Error while loading the analysis results", message), this);
     }
 
     private void getPathwaySummaries(){

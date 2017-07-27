@@ -64,6 +64,12 @@ public abstract class MessagesPanel extends SimplePanel {
 
         String errorMessageText();
 
+        String errorMessageTitle();
+
+        String errorMessageDetailsContainer();
+
+        String errorMessageDetails();
+
         String close();
     }
 
