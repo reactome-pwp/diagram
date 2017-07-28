@@ -106,10 +106,16 @@
     max-height: 45px;
 }
 
+.errorMessageDetailsNotEmpty {
+    border-bottom: 1px solid #cccccc;
+    margin-bottom: 3px;
+    padding-bottom: 2px;
+}
+
 .errorMessageDetails {
     font-size: 0.8em !important;
     max-height: 45px;
-    padding-right: 59px;
+    padding-right: 75px;
 
     overflow-x: hidden;
     overflow-y: auto;

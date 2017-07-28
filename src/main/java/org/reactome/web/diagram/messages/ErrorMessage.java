@@ -44,6 +44,7 @@ public class ErrorMessage extends MessagesPanel implements AnalysisResultRequest
 
         msgDetails = new Label("Details placeholder");
         msgDetails.setStyleName(css.errorMessageDetails());
+
         SimplePanel detailsContainer = new SimplePanel();
         detailsContainer.setStyleName(css.errorMessageDetailsContainer());
         detailsContainer.add(msgDetails);
@@ -82,8 +83,13 @@ public class ErrorMessage extends MessagesPanel implements AnalysisResultRequest
 
     @Override
     public void onDiagramInternalError(DiagramInternalErrorEvent event) {
-        this.msgTitle.setText(event.getMessage());
-        this.msgDetails.setText(event.getDetails());
+        resetText();
+        msgTitle.setText(event.getMessage());
+        String details = event.getDetails();
+        if(!details.isEmpty()) {
+            msgDetails.setText(" ▶ " + details);
+            msgTitle.addStyleName(RESOURCES.getCSS().errorMessageDetailsNotEmpty());
+        }
         this.setVisible(true);
     }
 
@@ -92,5 +98,11 @@ public class ErrorMessage extends MessagesPanel implements AnalysisResultRequest
         this.eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResultRequestedEvent.TYPE, this);
         this.eventBus.addHandler(AnalysisResultLoadedEvent.TYPE, this);
+    }
+
+    private void resetText() {
+        msgTitle.setText("");
+        msgDetails.setText("");
+        msgTitle.removeStyleName(RESOURCES.getCSS().errorMessageDetailsNotEmpty());
     }
 }
