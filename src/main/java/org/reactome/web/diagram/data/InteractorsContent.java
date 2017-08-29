@@ -18,7 +18,7 @@ import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.util.MapSet;
-import org.reactome.web.pwp.model.util.LruCache;
+import org.reactome.web.pwp.model.client.util.LruCache;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 import uk.ac.ebi.pwp.structures.quadtree.client.QuadTree;
 

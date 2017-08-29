@@ -7,8 +7,8 @@ import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.pwp.model.classes.DatabaseObject;
-import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.factory.DatabaseObjectFactory;
 
 import java.util.Collection;
 import java.util.HashSet;

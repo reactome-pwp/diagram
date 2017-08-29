@@ -2,13 +2,13 @@ package org.reactome.web.diagram.data.graph.model;
 
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.resources.client.ImageResource;
-import org.reactome.web.diagram.data.graph.model.factory.SchemaClass;
 import org.reactome.web.diagram.data.graph.raw.GraphNode;
 import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
 import org.reactome.web.diagram.data.layout.Connector;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.search.SearchResultObject;
+import org.reactome.web.pwp.model.client.factory.SchemaClass;
 
 import java.util.*;
 

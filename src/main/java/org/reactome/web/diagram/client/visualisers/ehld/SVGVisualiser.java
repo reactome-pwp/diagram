@@ -41,10 +41,11 @@ import org.reactome.web.diagram.thumbnail.Thumbnail;
 import org.reactome.web.diagram.thumbnail.ehld.SVGThumbnail;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.svg.SVGUtil;
-import org.reactome.web.pwp.model.classes.DatabaseObject;
-import org.reactome.web.pwp.model.classes.Pathway;
-import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
-import org.reactome.web.pwp.model.handlers.DatabaseObjectCreatedHandler;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.classes.Pathway;
+import org.reactome.web.pwp.model.client.common.ContentClientHandler;
+import org.reactome.web.pwp.model.client.content.ContentClient;
+import org.reactome.web.pwp.model.client.content.ContentClientError;
 import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.DOMHelper;
 import org.vectomatic.dom.svg.utils.SVGConstants;
@@ -60,7 +61,7 @@ import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
  */
 @SuppressWarnings("All")
 public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
-        AnalysisProfileChangedHandler, DatabaseObjectCreatedHandler,
+        AnalysisProfileChangedHandler, ContentClientHandler.ObjectLoaded<DatabaseObject>,
         MouseOverHandler, MouseOutHandler, MouseDownHandler, MouseMoveHandler, MouseUpHandler, MouseWheelHandler,
         DoubleClickHandler, ContextMenuHandler, SVGAnimationHandler, SVGThumbnailAreaMovedHandler,
         TouchStartHandler, TouchMoveHandler, TouchEndHandler {
@@ -288,7 +289,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     }
 
     @Override
-    public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
+    public void onObjectLoaded(DatabaseObject databaseObject) {
         if(databaseObject instanceof Pathway) {
             Pathway p = (Pathway) databaseObject;
             eventBus.fireEventFromSource(new ContentRequestedEvent(p.getDbId() + ""), this);
@@ -296,7 +297,13 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     }
 
     @Override
-    public void onDatabaseObjectError(Throwable exception) {
+    public void onContentClientException(Type type, String message) {
+        Console.error("Error getting pathway information...");
+        //TODO: Decide what to do in this case
+    }
+
+    @Override
+    public void onContentClientError(ContentClientError error) {
         Console.error("Error getting pathway information...");
         //TODO: Decide what to do in this case
     }
@@ -842,7 +849,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     private void openPathway(OMElement el) {
         String stableId = SVGUtil.keepStableId(el.getAttribute("id"));
         if(stableId != null) {
-            DatabaseObjectFactory.get(stableId, this);
+            ContentClient.query(stableId, this);
         }
     }
 

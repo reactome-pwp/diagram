@@ -19,12 +19,12 @@ import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.handlers.ControlActionHandler;
 import org.reactome.web.diagram.handlers.GraphObjectSelectedHandler;
 import org.reactome.web.diagram.util.Console;
-import org.reactome.web.pwp.model.classes.DatabaseObject;
-import org.reactome.web.pwp.model.classes.Event;
-import org.reactome.web.pwp.model.classes.Figure;
-import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
-import org.reactome.web.pwp.model.handlers.DatabaseObjectCreatedHandler;
-import org.reactome.web.pwp.model.handlers.DatabaseObjectLoadedHandler;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.classes.Event;
+import org.reactome.web.pwp.model.client.classes.Figure;
+import org.reactome.web.pwp.model.client.common.ContentClientHandler;
+import org.reactome.web.pwp.model.client.content.ContentClient;
+import org.reactome.web.pwp.model.client.content.ContentClientError;
 
 import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 
@@ -90,9 +90,9 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
         Label loadingLbl = new Label("Loading...");
         loadingLbl.setStyleName(RESOURCES.getCSS().loading());
         panel.add(loadingLbl);
-        DatabaseObjectFactory.get(dbId, new DatabaseObjectCreatedHandler() {
+        ContentClient.query(dbId, new ContentClientHandler.ObjectLoaded<DatabaseObject>() {
             @Override
-            public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
+            public void onObjectLoaded(DatabaseObject databaseObject) {
                 if (databaseObject instanceof Event) {
                     panel.clear();
                     final Event event = (Event) databaseObject;
@@ -100,16 +100,21 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
                         panel.add(getIllustration(event, null));
                     } else {
                         for (Figure figure : event.getFigure()) {
-                            figure.load(new DatabaseObjectLoadedHandler() {
+                            figure.load(new ObjectLoaded() {
                                 @Override
-                                public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
+                                public void onObjectLoaded(DatabaseObject databaseObject) {
                                     Figure figure = (Figure) databaseObject;
                                     panel.add(getIllustration(event, DiagramFactory.ILLUSTRATION_SERVER + figure.getUrl()));
                                 }
 
                                 @Override
-                                public void onDatabaseObjectError(Throwable throwable) {
-                                    Console.error(throwable.getMessage());
+                                public void onContentClientException(Type type, String message) {
+                                    Console.error(message);
+                                }
+
+                                @Override
+                                public void onContentClientError(ContentClientError error) {
+                                    Console.error(error.getReason());
                                 }
                             });
                         }
@@ -118,7 +123,13 @@ public class DiagramIllustrations extends AbstractMenuDialog implements ControlA
             }
 
             @Override
-            public void onDatabaseObjectError(Throwable exception) {
+            public void onContentClientException(Type type, String message) {
+                panel.clear();
+                panel.add(getErrorMsg("There was an error retrieving data for the loaded diagram..."));
+            }
+
+            @Override
+            public void onContentClientError(ContentClientError error) {
                 panel.clear();
                 panel.add(getErrorMsg("There was an error retrieving data for the loaded diagram..."));
             }

@@ -4,11 +4,11 @@ import com.google.gwt.core.client.GWT;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.graph.model.factory.ModelFactoryException;
-import org.reactome.web.diagram.data.graph.model.factory.SchemaClass;
 import org.reactome.web.diagram.data.graph.raw.EntityNode;
 import org.reactome.web.diagram.data.graph.raw.EventNode;
 import org.reactome.web.diagram.data.graph.raw.GraphNode;
 import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
+import org.reactome.web.pwp.model.client.factory.SchemaClass;
 
 /**
  * This factory is created and kept for every diagram in its context. This is meant to keep previous loaded
@@ -33,6 +33,7 @@ public abstract class GraphObjectFactory {
 
         switch (schemaClass){
             case CANDIDATE_SET:                     dbObject = new GraphCandidateSet((EntityNode) node);                    break;
+            case CHEMICAL_DRUG:                     dbObject = new GraphChemicalDrug((EntityNode) node);                    break;
             case COMPLEX:                           dbObject = new GraphComplex((EntityNode) node);                         break;
             case DEFINED_SET:                       dbObject = new GraphDefinedSet((EntityNode) node);                      break;
             case ENTITY_SET:                        dbObject = new GraphEntitySet((EntityNode) node);                       break;

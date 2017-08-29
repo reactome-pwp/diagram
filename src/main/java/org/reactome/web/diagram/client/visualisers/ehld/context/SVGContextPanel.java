@@ -10,15 +10,16 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import org.reactome.web.diagram.events.ContentRequestedEvent;
-import org.reactome.web.pwp.model.classes.DatabaseObject;
-import org.reactome.web.pwp.model.classes.Pathway;
-import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
-import org.reactome.web.pwp.model.handlers.DatabaseObjectCreatedHandler;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.classes.Pathway;
+import org.reactome.web.pwp.model.client.common.ContentClientHandler;
+import org.reactome.web.pwp.model.client.content.ContentClient;
+import org.reactome.web.pwp.model.client.content.ContentClientError;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class SVGContextPanel extends DialogBox implements ClickHandler, DatabaseObjectCreatedHandler {
+public class SVGContextPanel extends DialogBox implements ClickHandler, ContentClientHandler.ObjectLoaded<DatabaseObject> {
     private static String MESSAGE = "Go to ";
 
     private EventBus eventBus;
@@ -52,23 +53,29 @@ public class SVGContextPanel extends DialogBox implements ClickHandler, Database
     }
 
     @Override
-    public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
+    public void onObjectLoaded(DatabaseObject databaseObject) {
         if(databaseObject instanceof Pathway) {
             targetPathway = (Pathway) databaseObject;
-            label.setText(MESSAGE + targetPathway.getDisplayName() + " (" + targetPathway.getStableIdentifier().getIdentifier() + ")");
+            label.setText(MESSAGE + targetPathway.getDisplayName() + " (" + targetPathway.getStId() + ")");
             super.show();
         }
     }
 
     @Override
-    public void onDatabaseObjectError(Throwable exception) {
+    public void onContentClientException(Type type, String message) {
+        label.setText("");
+        hide();
+    }
+
+    @Override
+    public void onContentClientError(ContentClientError error) {
         label.setText("");
         hide();
     }
 
     public void show(String stableId, int x, int y) {
         if(stableId != null) {
-            DatabaseObjectFactory.get(stableId, this);
+            ContentClient.query(stableId, this);
             setPosition(x, y);
         }
     }

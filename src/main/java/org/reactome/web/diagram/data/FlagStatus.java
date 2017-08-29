@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.data;
 
 import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.pwp.model.util.LruCache;
+import org.reactome.web.pwp.model.client.util.LruCache;
 
 import java.util.Set;
 

@@ -17,17 +17,15 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.ContentRequestedEvent;
 import org.reactome.web.diagram.util.Console;
-import org.reactome.web.pwp.model.classes.DatabaseObject;
-import org.reactome.web.pwp.model.classes.Event;
-import org.reactome.web.pwp.model.classes.Pathway;
-import org.reactome.web.pwp.model.classes.PhysicalEntity;
-import org.reactome.web.pwp.model.client.RESTFulClient;
-import org.reactome.web.pwp.model.client.handlers.AncestorsCreatedHandler;
-import org.reactome.web.pwp.model.client.handlers.PathwaysForEntitiesLoadedHandler;
-import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
-import org.reactome.web.pwp.model.handlers.DatabaseObjectCreatedHandler;
-import org.reactome.web.pwp.model.util.Ancestors;
-import org.reactome.web.pwp.model.util.Path;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.classes.Event;
+import org.reactome.web.pwp.model.client.classes.Pathway;
+import org.reactome.web.pwp.model.client.classes.PhysicalEntity;
+import org.reactome.web.pwp.model.client.common.ContentClientHandler;
+import org.reactome.web.pwp.model.client.content.ContentClient;
+import org.reactome.web.pwp.model.client.content.ContentClientError;
+import org.reactome.web.pwp.model.client.util.Ancestors;
+import org.reactome.web.pwp.model.client.util.Path;
 
 import java.util.*;
 
@@ -35,8 +33,11 @@ import java.util.*;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class PathwaysDialogPanel extends Composite implements DatabaseObjectCreatedHandler, PathwaysForEntitiesLoadedHandler,
-        SectionCellSelectedHandler, AncestorsCreatedHandler, ChangeLabelsHandler {
+public class PathwaysDialogPanel extends Composite implements SectionCellSelectedHandler,
+        ContentClientHandler.ObjectLoaded<DatabaseObject>,
+        ContentClientHandler.ObjectListLoaded<Pathway>,
+        ContentClientHandler.AncestorsLoaded,
+        ChangeLabelsHandler {
 
     private EventBus eventBus;
     private Context context;
@@ -48,49 +49,51 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
         this.eventBus = eventBus;
         this.context = context;
         this.container = new FlowPanel();
-        Image loadingIcon =new Image(RESOURCES.loader());
+        Image loadingIcon = new Image(RESOURCES.loader());
         loadingIcon.setStyleName(RESOURCES.getCSS().loaderIcon());
         this.container.add(loadingIcon);
         this.container.add(new InlineLabel("Loading pathways dialog content..."));
         initWidget(new ScrollPanel(this.container));
         this.graphObject = diagramObject.getGraphObject();
-        DatabaseObjectFactory.get(diagramObject.getReactomeId(), this);
+        ContentClient.query(diagramObject.getReactomeId(), this);
     }
 
     @Override
-    public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
+    public void onObjectLoaded(DatabaseObject databaseObject) {
         if (databaseObject instanceof PhysicalEntity) {
             PhysicalEntity pe = databaseObject.cast();
-            RESTFulClient.loadPathwaysWithDiagramForEntity(pe, this);
-        }else if (databaseObject instanceof Event){
+            String species = ""; //TODO: Add the species to the diagram.graph.json and use it here!
+            ContentClient.getPathwaysWithDiagramForEntity(pe.getReactomeIdentifier(), false, species, this);
+        } else if (databaseObject instanceof Event) {
             Event event = (Event) databaseObject;
-            RESTFulClient.getAncestors(event, this);
+            ContentClient.getAncestors(event, this);
         }
     }
 
     @Override
-    public void onDatabaseObjectError(Throwable exception) {
+    public void onContentClientException(Type type, String message) {
         this.container.clear();
-        this.container.add(new Label("An error has occurred. ERROR: " + exception.getMessage()));
+        this.container.add(new Label("An error has occurred. ERROR: " + message));
     }
 
     @Override
-    public void onPathwaysForEntitiesLoaded(List<Pathway> pathways) {
+    public void onContentClientError(ContentClientError error) {
+        this.container.clear();
+        this.container.add(new Label("An error has occurred. ERROR: " + error.getReason()));
+    }
+
+    @Override
+    public void onObjectListLoaded(List<Pathway> list) {
         Set<Pathway> rtn = new HashSet<>();
-        for (Pathway pathway : pathways) {
+        for (Pathway pathway : list) {
+            //TODO: When the species of the diagram is used above, the following condition can be removed
             // Keep only those pathways belonging to the same species as the displayed diagram
-            if(context.getContent().getStableId().substring(0, 5).equals(pathway.getIdentifier().substring(0,5))) {
+            if (context.getContent().getStableId().substring(0, 5).equals(pathway.getStId().substring(0, 5))) {
                 rtn.add(pathway);
             }
         }
         filterPathways(rtn);
         populatePathwaysTable(pathwaysIndex, false);
-    }
-
-    @Override
-    public void onPathwaysForEntitiesError(Throwable throwable) {
-        this.container.clear();
-        this.container.add(new Label("An error has occurred. ERROR: " + throwable.getMessage()));
     }
 
     @Override
@@ -104,16 +107,10 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
     }
 
     @Override
-    public void onAncestorsError(Throwable throwable) {
-        this.container.clear();
-        this.container.add(new Label("An error has occurred. ERROR: " + throwable.getMessage()));
-    }
-
-    @Override
     public void onCellSelected(SectionCellSelectedEvent event) {
         SelectionSummary selection = event.getSelection();
         final Pathway pathway = pathwaysIndex.get(selection.getRowIndex());
-        if (pathway == null){
+        if (pathway == null) {
             Console.error("No pathway associated with " + selection.getRowIndex(), this);
         } else if (pathway.getHasDiagram()) {
             eventBus.fireEventFromSource(new ContentRequestedEvent(pathway.getDbId() + ""), this);
@@ -127,7 +124,7 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
         populatePathwaysTable(pathwaysIndex, event.getShowIds());
     }
 
-    private void filterPathways(Collection<Pathway> pathways){
+    private void filterPathways(Collection<Pathway> pathways) {
         Long dbId = context.getContent().getDbId();
         if (pathways != null && !pathways.isEmpty()) {
             for (Pathway pathway : pathways) {
@@ -140,16 +137,16 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
         }
     }
 
-    private void populatePathwaysTable(Collection<Pathway> pathways, boolean showIds){
+    private void populatePathwaysTable(Collection<Pathway> pathways, boolean showIds) {
         this.container.clear();
         List<List<String>> tableContents = new LinkedList<>();
         if (pathways != null && !pathways.isEmpty()) {
             for (Pathway pathway : pathways) {
                 List<String> row = new LinkedList<>();
-                if(showIds){
-                    row.add(pathway.getIdentifier() + " [" + pathway.getSpecies().get(0).getDisplayName() + "]");
+                if (showIds) {
+                    row.add(pathway.getStId() + " [" + pathway.getSpeciesName() + "]");
                 } else {
-                    row.add(pathway.getDisplayName() + " [" + pathway.getSpecies().get(0).getDisplayName() + "]");
+                    row.add(pathway.getDisplayName() + " [" + pathway.getSpeciesName() + "]");
                 }
                 row.add("\u25b6");
                 tableContents.add(row);
@@ -169,6 +166,7 @@ public class PathwaysDialogPanel extends Composite implements DatabaseObjectCrea
     }
 
     public static Resources RESOURCES;
+
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
