@@ -129,6 +129,9 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
             this.viewportWidth = getParent().getOffsetWidth();
             this.viewportHeight = getParent().getOffsetHeight();
             setSize(viewportWidth, viewportHeight);
+
+            SummationTooltip.get();
+
         }
     }
 
@@ -404,6 +407,14 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                 );
             }
         }
+
+        OMSVGRect bBox = ((OMSVGGElement) toHighlight).getBBox();
+        SummationTooltip.get()
+                .setPopupTitle("This is a very very very long long long titleLabel")
+                .setSummation("Megakaryocytes (MKs) give rise to circulating platelets (thrombocytes) through terminal differentiation of MKs which release cytoplasmic fragments as circulating platelets. As MKs mature they undergo endoreduplication (polyploidisation) and expansion of cytoplasmic mass to cell sizes larger than 50-100 microns, and ploidy ranges up to 128 N. As MK's mature, the polyploid nucleus becomes horseshoe-shaped, the cytoplasm expands, and platelet organelles and the demarcation membrane system are amplified. Proplatelet projections form which give rise to de novo circulating platelets (Deutsch & Tomer 2006). \n" +
+                "The processes of megakaryocytopoiesis and platelet production occur within a complex microenvironment where chemokines, cytokines and adhesive interactions play major roles (Avecilla et al. 2004). Megakaryocytopoiesis is regulated at several levels including proliferation, differentiation and platelet release (Kaushansky 2003). Thrombopoietin (TPO/c-Mpl ligand) is the most potent cytokine stimulating proliferation and maturation of MK progenitors (Kaushansky 2005) but many other growth factors are involved. MK development is controlled by the action of multiple Transcriptin Factors, many MK-specific genes are co-regulated by GATA and friend of GATA (FOG), RUNX1 and ETS proteins. Nuclear factor erythroid 2 (NF-E2) which has an MK-erythroid specific 45-kDa subunit controls terminal MK maturation, proplatelet formation and platelet release (Schulze & Shivdasani 2004). NF-E2 deficient mice have profound thrombocytopenia (Shiraga et al. 1999). c-myb functions with p300 as a negative regulator of thrombopoiesis (Metcalf et al. 2005). During MK maturation, internal membrane systems, granules and organelles are assembled. Cytoplasmic fragmentation requires changes in the MK cytoskeleton and formation of organelles and channels. Individual organelles migrate from the cell body to the proplatelet ends, with approximately 30 percent of organelles/granules in motion at any given time (Richardson et al. 2005).")
+                .positionAndShow(bBox, svg.getBBox(), zFactor, this);
+
     }
 
     @Override
@@ -413,14 +424,19 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
 
         // Unhighlight the region which this analysis info is part of
         OMElement toUnHighlight = entity.getHoverableElement();
-        if(el.equals(toUnHighlight)) {
+        if (el.equals(toUnHighlight)) {
             unHighlightElement(toUnHighlight);
             updateUI();
             thumbnail.setHoveredItem(null);
             notifyHovering(null);
         }
 
-        // Hide the tooltip
+        //Check if the mouse is out of the analysis info
+        OMElement tooltipElement = entity.getAnalysisInfo();
+        if(!el.equals(tooltipElement)) {
+            // Hide the summation tooltip
+            SummationTooltip.get().hide();
+        }
         SVGTooltip.get().hide();
         SVGTooltip.get().setText("");
     }
