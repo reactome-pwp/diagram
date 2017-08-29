@@ -23,6 +23,9 @@ public interface GraphObjectImages extends ClientBundle {
     @Source("ConceptualEvent.png")
     ImageResource conceptualEvent();
 
+    @Source("SimpleEntity.png") //TODO
+    ImageResource chemicalDrug();
+
     @Source("DefinedSet.png")
     ImageResource definedSet();
 
