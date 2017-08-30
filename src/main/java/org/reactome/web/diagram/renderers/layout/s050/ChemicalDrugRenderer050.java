@@ -17,34 +17,11 @@ public class ChemicalDrugRenderer050 extends ChemicalAbstractRenderer {
     @Override
     @SuppressWarnings("Duplicates")
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
-        Node node = (Node) item;
-        if (node.getTrivial() == null || !node.getTrivial()) {
-            super.draw(ctx, item, factor, offset);
-            ctx.save();
-            ctx.setGlobalAlpha((factor - 0.5) * 2);
-            drawSummaryItems(ctx, (Node) item, factor, offset);
-            ctx.restore();
-        } else {
-            ctx.save();
-            ctx.setGlobalAlpha((factor - 0.5) * 2);
-            super.draw(ctx, node, factor, offset);
-            drawSummaryItems(ctx, node, factor, offset);
-            ctx.restore();
-        }
-    }
-
-    @Override
-    public void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
-        Node node = (Node) item;
-        if (node.getTrivial() == null || !node.getTrivial()) {
-            super.drawText(ctx, item, factor, offset);
-        } else {
-            double alpha = ctx.getGlobalAlpha();
-            ctx.save();
-            ctx.setGlobalAlpha((factor - 0.5) * alpha * 2);
-            super.drawText(ctx, item, factor, offset);
-            ctx.restore();
-        }
+        super.draw(ctx, item, factor, offset);
+        ctx.save();
+        ctx.setGlobalAlpha((factor - 0.5) * 2);
+        drawSummaryItems(ctx, (Node) item, factor, offset);
+        ctx.restore();
     }
 
     @Override
@@ -57,21 +34,6 @@ public class ChemicalDrugRenderer050 extends ChemicalAbstractRenderer {
             }
         }
         return super.getHovered(item, pos);
-    }
-
-    @Override
-    public void highlight(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
-        Node node = (Node) item;
-        if (node.getTrivial() == null || !node.getTrivial()) {
-            super.highlight(ctx, item, factor, offset);
-        } else {
-            double alpha = ctx.getGlobalAlpha();
-            ctx.save();
-            ctx.setGlobalAlpha((factor - 0.5) * alpha * 2);
-            super.highlight(ctx, item, factor, offset);
-            drawSummaryItems(ctx, node, factor, offset);
-            ctx.restore();
-        }
     }
 
     @Override

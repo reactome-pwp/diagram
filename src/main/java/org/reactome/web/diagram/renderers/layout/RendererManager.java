@@ -105,8 +105,8 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s050.put("Note", new NoteRenderer050());
         s050.put("Compartment", new CompartmentRenderer050());
         s050.put("Protein", new ProteinRenderer050());
-        s050.put("Chemical", new ChemicalDrugRenderer050());
-        s000.put("ChemicalDrug", new ChemicalRenderer000());
+        s050.put("Chemical", new ChemicalRenderer050());
+        s050.put("ChemicalDrug", new ChemicalDrugRenderer050());
         s050.put("Reaction", new ReactionRenderer050());
         s050.put("Complex", new ComplexRenderer050());
         s050.put("Entity", new OtherEntityRenderer050());
