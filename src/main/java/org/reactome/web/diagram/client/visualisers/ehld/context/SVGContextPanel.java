@@ -47,7 +47,7 @@ public class SVGContextPanel extends DialogBox implements ClickHandler, ContentC
     @Override
     public void onClick(ClickEvent event) {
         if(event.getSource().equals(label)) {
-            eventBus.fireEventFromSource(new ContentRequestedEvent(targetPathway.getDbId() + ""), this);
+            eventBus.fireEventFromSource(new ContentRequestedEvent(targetPathway.getReactomeIdentifier()), this);
         }
         hide();
     }
@@ -56,7 +56,7 @@ public class SVGContextPanel extends DialogBox implements ClickHandler, ContentC
     public void onObjectLoaded(DatabaseObject databaseObject) {
         if(databaseObject instanceof Pathway) {
             targetPathway = (Pathway) databaseObject;
-            label.setText(MESSAGE + targetPathway.getDisplayName() + " (" + targetPathway.getStId() + ")");
+            label.setText(MESSAGE + targetPathway.getDisplayName() + " (" + targetPathway.getReactomeIdentifier() + ")");
             super.show();
         }
     }

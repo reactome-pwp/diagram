@@ -292,7 +292,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     public void onObjectLoaded(DatabaseObject databaseObject) {
         if(databaseObject instanceof Pathway) {
             Pathway p = (Pathway) databaseObject;
-            eventBus.fireEventFromSource(new ContentRequestedEvent(p.getDbId() + ""), this);
+            eventBus.fireEventFromSource(new ContentRequestedEvent(p.getReactomeIdentifier()), this);
         }
     }
 
