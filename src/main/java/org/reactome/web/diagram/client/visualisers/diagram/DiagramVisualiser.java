@@ -117,6 +117,7 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
         eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
         eventBus.addHandler(InteractorProfileChangedEvent.TYPE, this);
         eventBus.addHandler(ThumbnailAreaMovedEvent.TYPE, this);
+        eventBus.addHandler(StructureImageLoadedEvent.TYPE, this);
     }
 
     private void doUpdate() {
