@@ -7,7 +7,7 @@
     <groupId>org.reactome.web</groupId>
     <artifactId>diagram</artifactId>
     <packaging>jar</packaging>
-    <version>3.4.1-SNAPSHOT</version>
+    <version>3.4.1</version>
     <name>Reactome Diagram Viewer</name>
 
     <description>
@@ -36,15 +36,15 @@
 
     <properties>
         <!-- Convenience property to set the GWT version -->
-        <gwtVersion>2.8.0</gwtVersion>
+        <gwtVersion>2.8.1</gwtVersion>
         <gwtStyle>OBF</gwtStyle> <!-- OBF | PRETTY | DETAILED -->
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
 
-        <reactome.web.analysis-client>1.4.0-SNAPSHOT</reactome.web.analysis-client>
-        <reactome.web.model>2.0.0-SNAPSHOT</reactome.web.model>
+        <reactome.web.analysis-client>1.4.0</reactome.web.analysis-client>
+        <reactome.web.model>2.0.0</reactome.web.model>
         <reactome.web.carrousel>1.0.2</reactome.web.carrousel>
         <reactome.web.quadtree>1.2.0</reactome.web.quadtree>
 
@@ -205,7 +205,6 @@
                     </startupUrls>
                 </configuration>
             </plugin>
-
 
             <!-- Copy static web files before executing gwt:run -->
             <plugin>
