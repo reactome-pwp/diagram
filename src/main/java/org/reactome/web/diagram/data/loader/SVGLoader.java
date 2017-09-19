@@ -1,5 +1,8 @@
 package org.reactome.web.diagram.data.loader;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.http.client.*;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
@@ -26,7 +29,8 @@ public class SVGLoader implements RequestCallback {
     private static boolean BROWSER_SUPPORTED = true;
 
     static {
-        BROWSER_SUPPORTED = !isIE11();
+        // EHLDs are not supported for IE11 and for Safari only in case the base tag of the document has been altered.
+        BROWSER_SUPPORTED = !isIE11() && !(isSafari() && containsBaseTag());
     }
 
     private Handler handler;
@@ -46,7 +50,6 @@ public class SVGLoader implements RequestCallback {
 
     void load(String stId) {
         this.stId = stId;
-
         if (!stId.endsWith(".svg")) stId = stId + ".svg";
 
         String url = PREFIX + stId + SUFFIX;
@@ -113,10 +116,26 @@ public class SVGLoader implements RequestCallback {
         }
     }
 
+    private static boolean containsBaseTag() {
+        NodeList<Element> list = Document.get().getElementsByTagName("base");
+        return (list != null && list.getLength() > 0);
+    }
+
     private static native boolean isIE11()/*-{
         // true on IE11 but false on Edge and other IEs/browsers (source https://stackoverflow.com/questions/21825157/internet-explorer-11-detection).
         return !!window.MSInputMethodContext && !!document.documentMode;
 
         //return !!navigator.userAgent.match(/Trident\/7\./);  //B plan
+    }-*/;
+
+    private static native boolean isSafari()/*-{
+        // true on Safari browsers (source https://stackoverflow.com/questions/7944460/detect-safari-browser).
+        var ua = navigator.userAgent.toLowerCase();
+        var isSafari = false;
+        try {
+            isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
+        } catch(err) {}
+        isSafari = (isSafari || ((ua.indexOf('safari') != -1)&& (!(ua.indexOf('chrome')!= -1) && (ua.indexOf('version/')!= -1))));
+        return isSafari;
     }-*/;
 }
