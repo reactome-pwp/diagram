@@ -149,7 +149,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         refreshTimer.scheduleRepeating(RESOURCES_REFRESH);
 
         updateCustomResources(ResourcesManager.get().getResources());
-        populateCustomResourceListPanel();
     }
 
     @Override
@@ -179,7 +178,12 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     public void onContentLoaded(ContentLoadedEvent event) {
         if (event.getContext().getContent().getType() == DIAGRAM) {
             context = event.getContext();
+            enableStaticResourceBtn(true);
+        } else {
+            enableStaticResourceBtn(false);
+            populateResourceListPanel();
         }
+        populateCustomResourceListPanel();
     }
 
     @Override
@@ -348,6 +352,9 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                         summaryLb.setText("" + iContent.getUniqueRawInteractorsCountPerResource(resource.getIdentifier()));
                         row.add(summaryLb);
                     }
+                } else {
+                    radioBtn.setEnabled(false);
+                    radioBtn.addStyleName(RESOURCES.getCSS().interactorResourceListBtnDisabled());
                 }
 
                 liveResourcesFP.add(row);
@@ -385,6 +392,12 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
                         }
                     }
                 });
+
+                if(context == null) {
+                    radioBtn.setEnabled(false);
+                    radioBtn.addStyleName(RESOURCES.getCSS().interactorResourceListBtnDisabled());
+                }
+
                 FlowPanel row = new FlowPanel();
                 row.add(radioBtn);
                 row.add(deleteBtn);
@@ -437,6 +450,15 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         if(loading) {
             liveResourcesFP.clear();
             liveResourcesFP.add(loadingPanel);
+        }
+    }
+
+    private void enableStaticResourceBtn(boolean isEnabled){
+        staticResourceBtn.setEnabled(isEnabled);
+        if (isEnabled) {
+            staticResourceBtn.removeStyleName(RESOURCES.getCSS().interactorResourceBtnDisabled());
+        } else {
+            staticResourceBtn.addStyleName(RESOURCES.getCSS().interactorResourceBtnDisabled());
         }
     }
 
@@ -514,6 +536,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         String liveInteractorLabel();
 
         String interactorResourceBtn();
+
+        String interactorResourceBtnDisabled();
 
         String liveResourcesOuterPanel();
 

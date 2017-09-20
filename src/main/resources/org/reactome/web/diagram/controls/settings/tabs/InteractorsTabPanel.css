@@ -22,19 +22,20 @@
     margin-left: 10px;
     display: inline-block;
     width: 200px;
-    color:rgb(0, 90, 117);
-}
-
-.interactorResourceBtn label{
-    margin-left: 5px;
-    cursor: pointer;
     color: white;
 }
 
-.interactorResourceBtn:hover label{
+.interactorResourceBtn label {
     margin-left: 5px;
     cursor: pointer;
+}
+
+.interactorResourceBtn:hover {
     color: rgb(6, 107, 158);
+}
+
+.interactorResourceBtnDisabled label {
+    color: dimgray;
 }
 
 .liveResourcesOuterPanel {
@@ -106,7 +107,8 @@
 }
 
 .interactorResourceListBtnDisabled{
-    width: 200px;
+    /*width: 200px;*/
+    color: dimgray;
 }
 
 .interactorResourceListBtnDisabled label{
