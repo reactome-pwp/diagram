@@ -7,9 +7,12 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.*;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.events.AnalysisProfileChangedEvent;
+import org.reactome.web.diagram.events.ContentLoadedEvent;
 import org.reactome.web.diagram.events.DiagramProfileChangedEvent;
 import org.reactome.web.diagram.events.InteractorProfileChangedEvent;
+import org.reactome.web.diagram.handlers.ContentLoadedHandler;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.profiles.analysis.model.AnalysisProfile;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
@@ -19,10 +22,12 @@ import org.reactome.web.diagram.profiles.interactors.model.InteractorProfile;
 
 import java.util.List;
 
+import static org.reactome.web.diagram.data.content.Content.Type.SVG;
+
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class ProfilesTabPanel extends Composite implements ChangeHandler {
+public class ProfilesTabPanel extends Composite implements ChangeHandler, ContentLoadedHandler {
     private EventBus eventBus;
     private ListBox colourProfiles;
     private ListBox analysisProfiles;
@@ -68,6 +73,18 @@ public class ProfilesTabPanel extends Composite implements ChangeHandler {
         }
     }
 
+    @Override
+    public void onContentLoaded(ContentLoadedEvent event) {
+        Context context = event.getContext();
+        if(context.getContent().getType().equals(SVG)) {
+            // Disable irrelevant colour profile options for SVG
+            colourProfiles.setEnabled(false);
+            interactorProfiles.setEnabled(false);
+        } else {
+            colourProfiles.setEnabled(true);
+            interactorProfiles.setEnabled(true);
+        }
+    }
 
     private Widget getProfilesWidget(String title, ListBox profileListBox, List<String> profileNames){
         profileListBox.setMultipleSelect(false);
@@ -99,11 +116,12 @@ public class ProfilesTabPanel extends Composite implements ChangeHandler {
         colourProfiles.addChangeHandler(this);
         analysisProfiles.addChangeHandler(this);
         interactorProfiles.addChangeHandler(this);
+
+        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
     }
 
 
     public static Resources RESOURCES;
-
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
