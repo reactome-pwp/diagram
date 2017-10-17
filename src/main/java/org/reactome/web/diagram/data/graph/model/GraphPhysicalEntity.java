@@ -162,18 +162,15 @@ public abstract class GraphPhysicalEntity extends GraphObject {
         return rtn;
     }
 
-    public static Comparator<GraphPhysicalEntity> getIdentifierComparator(){
-        return new Comparator<GraphPhysicalEntity>() {
-            @Override
-            public int compare(GraphPhysicalEntity o1, GraphPhysicalEntity o2) {
-                if(o1==null || o2==null){
-                    return 1;
-                }
-                if(o1.getIdentifier()==null || o2.getIdentifier()==null){
-                    return 1;
-                }
-                return o1.getIdentifier().compareTo(o2.getIdentifier());
+    public static Comparator<GraphPhysicalEntity> getDisplayNameComparator(){
+        return (o1, o2) -> {
+            if(o1==null || o2==null){
+                return 1;
             }
+            if(o1.getDisplayName()==null || o2.getDisplayName()==null){
+                return 1;
+            }
+            return o1.getDisplayName().compareTo(o2.getDisplayName());
         };
     }
 }

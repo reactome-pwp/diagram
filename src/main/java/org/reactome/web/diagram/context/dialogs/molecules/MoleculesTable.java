@@ -118,7 +118,7 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
     }
 
     private List<T> sortMolecules(List<T> molecules, AnalysisType analysisType){
-        Collections.sort(molecules, GraphPhysicalEntity.getIdentifierComparator());
+        Collections.sort(molecules, GraphPhysicalEntity.getDisplayNameComparator());
         List<T> list = new LinkedList<>();
         List<T> tailList = new LinkedList<>();
         if(analysisType==null || analysisType == AnalysisType.OVERREPRESENTATION || analysisType==AnalysisType.SPECIES_COMPARISON) {
