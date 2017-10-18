@@ -15,7 +15,7 @@ public abstract class DiagramFactory {
     public static boolean SHOW_FIREWORKS_BTN = true;
 
     public static boolean WATERMARK = true;
-    public static String WATERMARK_BASE_URL = "http://www.reactome.org/PathwayBrowser/";
+    public static String WATERMARK_BASE_URL = "https://reactome.org/PathwayBrowser/";
 
     public static boolean RESPOND_TO_SEARCH_SHORTCUT = true; // Listen to ctrl (or cmd) + F and expand the search input
 
