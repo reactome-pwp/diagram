@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.diagram.client.visualisers.ehld.filters.FilterColour;
 import org.reactome.web.diagram.client.visualisers.ehld.filters.FilterFactory;
 import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
+import org.reactome.web.diagram.util.MousePosition;
 import org.reactome.web.diagram.util.svg.SVGUtil;
 import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.SVGConstants;
@@ -170,7 +171,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     }
 
     protected OMSVGPoint getTranslatedPoint(MouseEvent event) {
-        return getTranslatedPoint(event.getX(), event.getY());
+        return getTranslatedPoint(MousePosition.getRelativeX(event), MousePosition.getRelativeY(event));
     }
 
     protected OMSVGPoint getTranslatedPoint(int x, int y) {
