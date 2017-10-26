@@ -2,6 +2,9 @@ package org.reactome.web.test;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
@@ -17,7 +20,7 @@ import org.reactome.web.diagram.util.Console;
 public class WidgetTest implements EntryPoint {
 
     private final DiagramViewer diagram;
-    private static String currentPathway = "R-HSA-6806667";
+    private static String currentPathway = "R-HSA-109582";
 //    private static String currentPathway = "R-HSA-5693567"; //Big one with plenty of overlap
     private static String currentAnalysis = "MjAxNjA5MzAwNTU3MjdfMg%3D%3D";
 
@@ -37,13 +40,16 @@ public class WidgetTest implements EntryPoint {
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
-                initialise();
+//                initialise();                 // For normal testing
+                initialiseInScrollablePage();   // For testing in a long page
                 Console.info("");
                 Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                     @Override
                     public void execute() {
                         diagram.loadDiagram(currentPathway);
-                        pathwayTB.setValue(currentPathway);
+                        if (pathwayTB!=null) {
+                            pathwayTB.setValue(currentPathway);
+                        }
                     }
                 });
                 diagram.addDiagramLoadedHandler(new ContentLoadedHandler() {
@@ -64,6 +70,18 @@ public class WidgetTest implements EntryPoint {
 //        slp.addNorth(getDiseasePanel(), 50);
         slp.add(diagram);
         RootLayoutPanel.get().add(slp);
+    }
+
+    private void initialiseInScrollablePage() {
+        SimpleLayoutPanel diagramContainer = new SimpleLayoutPanel();
+        diagramContainer.getElement().getStyle().setHeight(500, Style.Unit.PX);
+        diagramContainer.getElement().getStyle().setWidth(700, Style.Unit.PX);
+        diagramContainer.getElement().getStyle().setBackgroundColor("white");
+        diagramContainer.add(diagram);
+
+        final Element element = Document.get().getElementById("container");
+        HTMLPanel container = HTMLPanel.wrap(element);
+        container.add(diagramContainer);
     }
 
     Button getSelectionButton(final String stId, String title){
