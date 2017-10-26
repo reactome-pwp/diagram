@@ -1,9 +1,12 @@
 package org.reactome.web.diagram.util.position;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.MouseEvent;
 
 /**
- * This class is used to provide the correct mouse position within the widget
+ * Wraps around the {@link MouseEvent#getRelativeX(Element) getRelativeX()} and
+ * {@link MouseEvent#getRelativeY(Element) getRelativeY()} and provides them as
+ * default implementations.
  *
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
