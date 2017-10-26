@@ -14,8 +14,8 @@ import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
-import org.reactome.web.diagram.util.MousePosition;
 import org.reactome.web.diagram.util.actions.MouseActionsHandlers;
+import org.reactome.web.diagram.util.position.MousePosition;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -118,7 +118,7 @@ class UserActionsManager implements MouseActionsHandlers {
         setMousePosition(event);
         if (mouseDown != null) {
             canvas.setCursor(Style.Cursor.MOVE);
-            Coordinate mouse = CoordinateFactory.get(MousePosition.getRelativeX(event), MousePosition.getRelativeY(event));
+            Coordinate mouse = CoordinateFactory.get(MousePosition.getX(event), MousePosition.getY(event));
             Coordinate delta = mouse.minus(mouseDown);
             if(hoveredInteractor == null) {
                 diagramMoved = true;
@@ -294,11 +294,11 @@ class UserActionsManager implements MouseActionsHandlers {
     }
 
     protected void setMouseDownPosition(MouseEvent event) {
-        this.mouseDown = CoordinateFactory.get(MousePosition.getRelativeX(event), MousePosition.getRelativeY(event));
+        this.mouseDown = CoordinateFactory.get(MousePosition.getX(event), MousePosition.getY(event));
     }
 
     protected void setMousePosition(MouseEvent event) {
-        Coordinate mouseCurrent = CoordinateFactory.get(MousePosition.getRelativeX(event), MousePosition.getRelativeY(event));
+        Coordinate mouseCurrent = CoordinateFactory.get(MousePosition.getX(event), MousePosition.getY(event));
         handler.setMousePosition(mouseCurrent);
     }
 

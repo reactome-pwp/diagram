@@ -17,7 +17,7 @@ import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.thumbnail.Thumbnail;
 import org.reactome.web.diagram.thumbnail.diagram.render.ThumbnailRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
-import org.reactome.web.diagram.util.MousePosition;
+import org.reactome.web.diagram.util.position.MousePosition;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.LinkedList;
@@ -158,7 +158,7 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
     public void onMouseDown(MouseDownEvent event) {
         event.stopPropagation();
         event.preventDefault();
-        Coordinate c = CoordinateFactory.get(MousePosition.getRelativeX(event), MousePosition.getRelativeY(event));
+        Coordinate c = CoordinateFactory.get(MousePosition.getX(event), MousePosition.getY(event));
         if (this.isMouseInVisibleArea(c)) {
             this.mouseDown = c;
             this.delta = this.mouseDown.minus(this.from);
@@ -169,7 +169,7 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
     public void onMouseMove(MouseMoveEvent event) {
         event.stopPropagation();
         event.preventDefault();
-        Coordinate mouse = CoordinateFactory.get(MousePosition.getRelativeX(event), MousePosition.getRelativeY(event));
+        Coordinate mouse = CoordinateFactory.get(MousePosition.getX(event), MousePosition.getY(event));
         if (this.mouseDown != null) {
             if (this.from != null && this.to != null) {
                 //Do not change any property of the status since it will be updated once the corresponding

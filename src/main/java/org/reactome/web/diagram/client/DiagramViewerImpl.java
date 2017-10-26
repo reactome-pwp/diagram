@@ -20,6 +20,7 @@ import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.Console;
+import org.reactome.web.diagram.util.position.MousePosition;
 import org.reactome.web.pwp.model.client.classes.DatabaseObject;
 
 import java.util.Collection;
@@ -48,6 +49,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
 
     DiagramViewerImpl() {
         super();
+        MousePosition.initialise(isChrome());
         this.viewerContainer = new ViewerContainer(eventBus);
         this.loaderManager = new LoaderManager(eventBus);
         AnalysisDataLoader.initialise(eventBus);
@@ -464,4 +466,27 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
             }
         }
     }
+
+    private static native boolean isChrome()/*-{
+        var isChromium = window.chrome,
+            winNav = window.navigator,
+            vendorName = winNav.vendor,
+            isOpera = winNav.userAgent.indexOf("OPR") > -1,
+            isIEedge = winNav.userAgent.indexOf("Edge") > -1,
+            isIOSChrome = winNav.userAgent.match("CriOS");
+
+        if (isIOSChrome) {
+            return true;
+        } else if (
+            isChromium !== null &&
+            typeof isChromium !== "undefined" &&
+            vendorName === "Google Inc." &&
+            isOpera === false &&
+            isIEedge === false
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }-*/;
 }
