@@ -14,6 +14,7 @@ import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.content.EHLDContent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.thumbnail.Thumbnail;
+import org.reactome.web.diagram.util.position.MousePosition;
 import org.reactome.web.diagram.util.svg.SVGUtil;
 import org.vectomatic.dom.svg.*;
 import org.vectomatic.dom.svg.utils.DOMHelper;
@@ -170,8 +171,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, Context
     @Override
     public void onMouseDown(MouseDownEvent event) {
         event.stopPropagation(); event.preventDefault();
-        Element elem = event.getRelativeElement();
-        OMSVGPoint p = svg.createSVGPoint(event.getRelativeX(elem), event.getRelativeY(elem));
+        OMSVGPoint p = svg.createSVGPoint(MousePosition.getX(event), MousePosition.getY(event));
         if (isMouseInVisibleArea(p)) {
             mouseDown = svg.createSVGPoint(p);
             delta = svg.createSVGPoint(mouseDown.substract(from));
@@ -181,8 +181,7 @@ public class SVGThumbnail extends AbstractSVGPanel implements Thumbnail, Context
     @Override
     public void onMouseMove(MouseMoveEvent event) {
         event.stopPropagation(); event.preventDefault();
-        Element elem = event.getRelativeElement();
-        OMSVGPoint p = svg.createSVGPoint(event.getRelativeX(elem), event.getRelativeY(elem));
+        OMSVGPoint p = svg.createSVGPoint(MousePosition.getX(event), MousePosition.getY(event));
         if (mouseDown != null) {
             if (from != null && to != null) {
                 //Do not change any property of the status since it will be updated once the corresponding
