@@ -40,8 +40,8 @@ public class WidgetTest implements EntryPoint {
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
-//                initialise();                 // For normal testing
-                initialiseInScrollablePage();   // For testing in a long page
+                initialise();                 // For normal testing
+//                initialiseInScrollablePage();   // For testing in a long page
                 Console.info("");
                 Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                     @Override
