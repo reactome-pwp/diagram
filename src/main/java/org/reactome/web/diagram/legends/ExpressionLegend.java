@@ -374,12 +374,9 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
         this.helpPanel.add(text);
 
         Anchor close = new Anchor("Got it!");
-        close.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                Cookies.setCookie("pwp-diagram-expression-legend", "false");
-                hideHelp();
-            }
+        close.addClickHandler(event -> {
+            hideHelp();
+            hideHelpInTheFuture();
         });
         this.helpPanel.add(close);
 
@@ -396,6 +393,7 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
     public void onClick(ClickEvent event) {
         if (this.helpPanel.getOffsetWidth() > 0) {
             this.hideHelp();
+            hideHelpInTheFuture();
         } else {
             this.showHelp();
         }
@@ -421,5 +419,9 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
         LegendPanelCSS css = RESOURCES.getCSS();
         this.helpPanel.setStyleName(css.expressionLegendHelp());
         this.helpPanel.addStyleName(css.expressionLegendHelpHidden());
+    }
+
+    private void hideHelpInTheFuture() {
+        Cookies.setCookie("pwp-diagram-expression-legend", "false");
     }
 }
