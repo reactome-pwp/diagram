@@ -32,6 +32,10 @@ public abstract class ProteinAbstractRenderer extends NodeAbstractRenderer {
         return true;
     }
 
+    public boolean nodeAttachmentsVisible() {
+        return false;
+    }
+
     private void fillShape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed) {
         if (needsDashed != null && needsDashed) {
             //This is needed since the dashed rounded rectangle will always be filled
@@ -92,6 +96,7 @@ public abstract class ProteinAbstractRenderer extends NodeAbstractRenderer {
     }
 
     protected void drawAttachments(AdvancedContext2d ctx, Node node, Double factor, Coordinate offset, boolean fill) {
+        if(!nodeAttachmentsVisible()) return;
         List<NodeAttachment> atList = node.getNodeAttachments();
         if (atList != null) {
             for (NodeAttachment nodeAttachment : atList) {

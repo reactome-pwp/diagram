@@ -75,6 +75,11 @@ public class ProteinRenderer300 extends ProteinAbstractRenderer {
         return true;
     }
 
+    @Override
+    public boolean nodeAttachmentsVisible() {
+        return true;
+    }
+
     protected void drawProteinDetails(AdvancedContext2d ctx, Node node, Double factor, Coordinate offset, double fontSize){
         ctx.save();
 

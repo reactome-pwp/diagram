@@ -1,6 +1,9 @@
 package org.reactome.web.diagram.renderers.layout.s050;
 
-import org.reactome.web.diagram.data.layout.*;
+import org.reactome.web.diagram.data.layout.Coordinate;
+import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.data.layout.category.ShapeCategory;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.layout.abs.ProteinAbstractRenderer;
@@ -32,13 +35,6 @@ public class ProteinRenderer050 extends ProteinAbstractRenderer {
     @SuppressWarnings("Duplicates")
     public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
         Node node = (Node) item;
-        if (node.getNodeAttachments() != null) {
-            for (NodeAttachment attachment : node.getNodeAttachments()) {
-                if (ShapeCategory.isHovered(attachment.getShape(), pos)) {
-                    return new HoveredItem(node.getId(), attachment);
-                }
-            }
-        }
 
         SummaryItem interactorsSummary = node.getInteractorsSummary();
         if (interactorsSummary != null) {

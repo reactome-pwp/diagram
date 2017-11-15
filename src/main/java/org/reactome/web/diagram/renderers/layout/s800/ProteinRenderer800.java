@@ -24,4 +24,10 @@ public class ProteinRenderer800 extends ProteinRenderer300 {
             super.drawText(ctx, item, factor, offset);
         }
     }
+
+    @Override
+    public boolean nodeAttachmentsVisible() {
+        return true;
+    }
+
 }

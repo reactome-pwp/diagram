@@ -40,6 +40,7 @@ import org.reactome.web.diagram.renderers.layout.ConnectorRenderer;
 import org.reactome.web.diagram.renderers.layout.Renderer;
 import org.reactome.web.diagram.renderers.layout.RendererManager;
 import org.reactome.web.diagram.renderers.layout.abs.AttachmentAbstractRenderer;
+import org.reactome.web.diagram.renderers.layout.abs.ProteinAbstractRenderer;
 import org.reactome.web.diagram.renderers.layout.abs.SummaryItemAbstractRenderer;
 import org.reactome.web.diagram.thumbnail.Thumbnail;
 import org.reactome.web.diagram.thumbnail.diagram.DiagramThumbnail;
@@ -195,7 +196,10 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
 
         NodeAttachment attachment = hoveredItem.getAttachment();
         if(attachment!=null){
-            AttachmentAbstractRenderer.draw(entitiesDecorators, attachment, status.getFactor(), status.getOffset(), true);
+            ProteinAbstractRenderer proteinRenderer = (ProteinAbstractRenderer)rendererManager.getRenderer("Protein");
+            if(proteinRenderer.nodeAttachmentsVisible()) {
+                AttachmentAbstractRenderer.draw(entitiesDecorators, attachment, status.getFactor(), status.getOffset(), true);
+            }
         }
 
         SummaryItem summaryItem = hoveredItem.getSummaryItem();

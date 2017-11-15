@@ -53,4 +53,10 @@ public class ProteinRenderer100 extends ProteinAbstractRenderer {
     public boolean isVisible(DiagramObject item) {
         return true;
     }
+
+    @Override
+    public boolean nodeAttachmentsVisible() {
+        return true;
+    }
+
 }
