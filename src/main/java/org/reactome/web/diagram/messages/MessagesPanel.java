@@ -66,12 +66,6 @@ public abstract class MessagesPanel extends SimplePanel {
 
         String errorMessageTitle();
 
-        String errorMessageDetailsContainer();
-
-        String errorMessageDetailsNotEmpty();
-
-        String errorMessageDetails();
-
         String close();
     }
 
@@ -80,7 +74,6 @@ public abstract class MessagesPanel extends SimplePanel {
     public MessagesPanel(EventBus eventBus) {
         this.eventBus = eventBus;
         //Setting the legend style
-//        getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
         setStyleName(RESOURCES.getCSS().messagesPanel());
     }
 }
