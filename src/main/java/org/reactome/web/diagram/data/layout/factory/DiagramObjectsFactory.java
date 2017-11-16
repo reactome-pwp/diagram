@@ -12,6 +12,7 @@ import org.reactome.web.diagram.data.layout.category.DiagramObjectCategory;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public abstract class DiagramObjectsFactory {
 
     @SuppressWarnings("UnusedDeclaration")

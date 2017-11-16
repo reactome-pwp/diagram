@@ -12,6 +12,7 @@ import org.reactome.web.diagram.data.layout.factory.DiagramObjectException;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public class GraphFactory {
 
     @SuppressWarnings("UnusedDeclaration")
@@ -27,7 +28,7 @@ public class GraphFactory {
             AutoBean<T> bean = AutoBeanCodex.decode(factory, cls, json);
             return bean.as();
         }catch (Throwable e){
-            throw new DiagramObjectException("Error mapping json string for [" + cls + "]: " + json, e);
+            throw new DiagramObjectException("Error mapping json string for [" + cls + "]", e);
         }
     }
 }
