@@ -45,7 +45,7 @@ public class InteractorsResourceLoader implements RequestCallback {
     }
 
     private void load() {
-        String url = PREFIX + "psicquic/resources";
+        String url = PREFIX + "psicquic/resources/";
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         try {
             this.request = requestBuilder.sendRequest(null, this);
