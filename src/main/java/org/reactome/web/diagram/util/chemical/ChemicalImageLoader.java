@@ -54,6 +54,8 @@ public class ChemicalImageLoader {
             loadChEBI(handler, identifier);
         } else if(identifier.startsWith("CHEMBL")) {
             loadCHEMBL(handler, identifier);
+        } else if (identifier.startsWith("ZINC")) {
+            loadZINC(handler, identifier);
         } else {
             Console.warn("Chemical images for " + identifier + " have not been contemplated");
             handler.onChemicalImageLoaded(NOT_FOUND);
@@ -61,7 +63,7 @@ public class ChemicalImageLoader {
         }
     }
 
-    public void loadCHEMBL(final Handler handler, String identifier){
+    private void loadCHEMBL(final Handler handler, String identifier){
         String url = "https://www.ebi.ac.uk/chembl/api/data/image/" + identifier + "?format=png";
         forceLoadImage(handler, url);
     }
@@ -69,6 +71,11 @@ public class ChemicalImageLoader {
     private void loadChEBI(final Handler handler, String identifier){
         String id = identifier.replaceAll("^CHEBI[-:_]?", "");
         String url = "https://www.ebi.ac.uk/chebi/displayImage.do?defaultImage=true&chebiId=" + id + "&dimensions=200&transbg=true";
+        forceLoadImage(handler, url);
+    }
+
+    private void loadZINC(final Handler handler, String identifier){
+        String url = "https://zinc15.docking.org/substances/" + identifier +"-small.png";
         forceLoadImage(handler, url);
     }
 
