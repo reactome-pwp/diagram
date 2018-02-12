@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.controls.top.search;
+package org.reactome.web.diagram.search;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -15,7 +15,6 @@ import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
-import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.events.PanelCollapsedEvent;
 import org.reactome.web.diagram.search.events.PanelExpandedEvent;
 import org.reactome.web.diagram.search.events.SuggestionResetEvent;
@@ -241,19 +240,19 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         @Source(SearchLauncherCSS.CSS)
         SearchLauncherCSS getCSS();
 
-        @Source("../images/search_clicked.png")
+        @Source("images/search_clicked.png")
         ImageResource launchClicked();
 
-        @Source("../images/search_disabled.png")
+        @Source("images/search_disabled.png")
         ImageResource launchDisabled();
 
-        @Source("../images/search_hovered.png")
+        @Source("images/search_hovered.png")
         ImageResource launchHovered();
 
-        @Source("../images/search_normal.png")
+        @Source("images/search_normal.png")
         ImageResource launchNormal();
 
-        @Source("../images/cancel.png")
+        @Source("images/cancel.png")
         ImageResource clear();
     }
 
@@ -265,7 +264,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String CSS = "org/reactome/web/diagram/controls/top/search/SearchLauncher.css";
+        String CSS = "org/reactome/web/diagram/search/SearchLauncher.css";
 
         String launchPanel();
 

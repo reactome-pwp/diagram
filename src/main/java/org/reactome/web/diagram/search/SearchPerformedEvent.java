@@ -1,7 +1,6 @@
-package org.reactome.web.diagram.controls.top.search;
+package org.reactome.web.diagram.search;
 
 import com.google.gwt.event.shared.GwtEvent;
-import org.reactome.web.diagram.search.SearchResultObject;
 
 import java.util.List;
 

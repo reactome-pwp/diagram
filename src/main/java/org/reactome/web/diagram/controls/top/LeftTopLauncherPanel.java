@@ -6,7 +6,7 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.controls.navigation.MainControlPanel;
-import org.reactome.web.diagram.search.SearchPanel;
+import org.reactome.web.diagram.controls.top.search.SearchPanel;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>

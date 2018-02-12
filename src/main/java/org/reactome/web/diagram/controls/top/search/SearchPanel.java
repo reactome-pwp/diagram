@@ -1,11 +1,11 @@
-package org.reactome.web.diagram.search;
+package org.reactome.web.diagram.controls.top.search;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
-import org.reactome.web.diagram.controls.top.search.SearchLauncher;
+import org.reactome.web.diagram.search.SearchLauncher;
 import org.reactome.web.diagram.search.infopanel.SelectionInfoPanel;
 import org.reactome.web.diagram.search.suggester.SuggestionPanel;
 
@@ -63,7 +63,7 @@ public class SearchPanel extends FlowPanel {
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String CSS = "org/reactome/web/diagram/search/SearchPanel.css";
+        String CSS = "org/reactome/web/diagram/controls/top/search/SearchPanel.css";
 
         String searchPanel();
     }
