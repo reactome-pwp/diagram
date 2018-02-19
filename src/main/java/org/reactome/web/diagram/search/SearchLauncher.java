@@ -11,7 +11,9 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.common.IconButton;
+import org.reactome.web.diagram.common.IconToggleButton;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
@@ -24,6 +26,7 @@ import org.reactome.web.diagram.search.handlers.SuggestionResetHandler;
 import org.reactome.web.diagram.search.provider.SuggestionsProvider;
 import org.reactome.web.diagram.search.provider.SuggestionsProviderImpl;
 import org.reactome.web.diagram.search.searchbox.*;
+import org.reactome.web.diagram.util.Console;
 
 import java.util.List;
 
@@ -37,6 +40,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     @SuppressWarnings("FieldCanBeLocal")
     private static String OPENING_TEXT = "Search for any diagram term ...";
+    private static int FOCUS_IN_TEXTBOX_DELAY = 300;
 
     private EventBus eventBus;
     private SuggestionsProvider<SearchResultObject> suggestionsProvider;
@@ -44,8 +48,12 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     private SearchBox input = null;
     private PwpButton searchBtn = null;
     private IconButton clearBtn;
+    private IconToggleButton filtersBtn;
+
+    private FlowPanel filtersPanel;
 
     private Boolean isExpanded = false;
+    private Boolean isExpandedVertically = false;
 
     private Timer focusTimer;
 
@@ -69,6 +77,18 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         clearBtn.setTitle("Clear search");
         clearBtn.addClickHandler(event -> clearSearch());
         this.add(clearBtn);
+
+        filtersBtn = new IconToggleButton("", RESOURCES.options(), RESOURCES.optionsClose());
+        filtersBtn.setStyleName(RESOURCES.getCSS().filtersBtn());
+        filtersBtn.setVisible(true);
+        filtersBtn.setTitle("Filter your results");
+        filtersBtn.addClickHandler(this);
+//        filtersBtn.setEnabled(false);
+        this.add(filtersBtn);
+
+        filtersPanel = new FlowPanel();
+        filtersPanel.setHeight(100 + "px");
+        this.add(filtersPanel);
 
         focusTimer = new Timer() {
             @Override
@@ -112,11 +132,18 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     @Override
     public void onClick(ClickEvent event) {
-        if(event.getSource().equals(this.searchBtn)){
-            if(!isExpanded){
+        if (event.getSource().equals(this.searchBtn)) {
+            if (!isExpanded) {
                 expandPanel();
-            }else{
+            } else {
                 collapsePanel();
+            }
+        } else if (event.getSource().equals(this.filtersBtn)) {
+            Console.info("Hello");
+            if (!isExpandedVertically) {
+                expandPanelVertically();
+            } else {
+                collapsePanelVertically();
             }
         }
     }
@@ -136,7 +163,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     }
 
     @Override
-    public void onSearchUpdated(SearchBoxUpdatedEvent event) {
+    public void onSearchBoxUpdated(SearchBoxUpdatedEvent event) {
         performSearch();
     }
 
@@ -185,9 +212,16 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
             focusTimer.cancel();
         }
         removeStyleName(RESOURCES.getCSS().launchPanelExpanded());
+        collapsePanelVertically();
+        filtersBtn.setActive(false);
         input.removeStyleName(RESOURCES.getCSS().inputActive());
         isExpanded = false;
         fireEvent(new PanelCollapsedEvent());
+    }
+
+    private void collapsePanelVertically() {
+        removeStyleName(RESOURCES.getCSS().launchPanelExpandedVertically());
+        isExpandedVertically = false;
     }
 
     private void expandPanel(){
@@ -195,8 +229,14 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         input.addStyleName(RESOURCES.getCSS().inputActive());
         isExpanded = true;
         fireEvent(new PanelExpandedEvent());
-        focusTimer.schedule(300);
+        focusTimer.schedule(FOCUS_IN_TEXTBOX_DELAY);
     }
+
+    private void expandPanelVertically(){
+        addStyleName(RESOURCES.getCSS().launchPanelExpandedVertically());
+        isExpandedVertically = true;
+    }
+
 
     private void initHandlers(){
         this.input.addSearchBoxUpdatedHandler(this);
@@ -254,6 +294,12 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
         @Source("images/cancel.png")
         ImageResource clear();
+
+        @Source("images/search_options.png")
+        ImageResource options();
+
+        @Source("images/search_options_close.png")
+        ImageResource optionsClose();
     }
 
     /**
@@ -270,6 +316,8 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
         String launchPanelExpanded();
 
+        String launchPanelExpandedVertically();
+
         String launch();
 
         String input();
@@ -277,6 +325,8 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         String inputActive();
 
         String clearBtn();
+
+        String filtersBtn();
     }
 
 }

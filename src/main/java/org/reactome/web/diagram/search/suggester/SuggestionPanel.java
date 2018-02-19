@@ -47,12 +47,12 @@ public class SuggestionPanel extends AbstractAccordionPanel implements SearchPer
      * The key provider that provides the unique ID of a DatabaseObject.
      */
     public static final ProvidesKey<SearchResultObject> KEY_PROVIDER = item -> {
-        if(item == null){
+        if(item == null) {
             return null;
-        }else if(item instanceof GraphObject) {
+        } else if (item instanceof GraphObject) {
             GraphObject graphObject = (GraphObject) item;
             return graphObject.getDbId();
-        } else if( item instanceof InteractorSearchResult) {
+        } else if ( item instanceof InteractorSearchResult) {
             InteractorSearchResult interactorSearchResult = (InteractorSearchResult) item;
             return interactorSearchResult.getAccession();
         }

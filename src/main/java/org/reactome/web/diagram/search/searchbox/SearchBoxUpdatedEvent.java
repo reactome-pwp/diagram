@@ -21,7 +21,7 @@ public class SearchBoxUpdatedEvent extends GwtEvent<SearchBoxUpdatedHandler> {
 
     @Override
     protected void dispatch(SearchBoxUpdatedHandler handler) {
-        handler.onSearchUpdated(this);
+        handler.onSearchBoxUpdated(this);
     }
 
     public String getValue() {
