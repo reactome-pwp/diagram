@@ -77,6 +77,19 @@ public class AdvancedContext2d extends Context2d {
         closePath();
     }
 
+    public final void homePlate(double x,
+                                double y,
+                                double width,
+                                double height,
+                                double offset) {
+        beginPath();
+        moveTo(x, y);
+        lineTo(x, y + height);
+        lineTo(x + width - offset, y + height);
+        lineTo( x + width, y + height / 2);
+        lineTo(x + width - offset, y);
+        closePath();
+    }
 
     //////////////////////////////
     //  Methods for Octagons    //

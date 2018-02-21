@@ -21,15 +21,25 @@ public abstract class ProcessNodeAbstractRenderer extends NodeAbstractRenderer {
 
     @Override
     public void drawEnrichment(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, Double factor, Coordinate offset) {
-        drawAnalysisResult(ctx, item, factor, offset);
+        drawAnalysisResult(ctx, overlay, item, factor, offset);
     }
 
     @Override
     public void drawExpression(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset){
-        drawAnalysisResult(ctx, item, factor, offset);
+        drawAnalysisResult(ctx, overlay, item, factor, offset);
     }
 
-    public abstract void drawAnalysisResult(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset);
+    public abstract void drawAnalysisResult(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, Double factor, Coordinate offset);
+
+    @Override
+    @SuppressWarnings("Duplicates")
+    public void highlight(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
+        if (!isVisible(item)) return;
+        Node node = (Node) item;
+        NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+        shape(ctx, prop, node.getEncapsulated(), node.getNeedDashedBorder());
+        ctx.stroke();
+    }
 
     @Override
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
@@ -41,7 +51,7 @@ public abstract class ProcessNodeAbstractRenderer extends NodeAbstractRenderer {
         ctx.setStrokeStyle(ctx.getFillStyle());
         ctx.setLineWidth(RendererProperties.PROCESS_NODE_INSET_WIDTH);
         ctx.setFillStyle("#FEFDFF");
-        shape(ctx, prop, node.getNeedDashedBorder());
+        shape(ctx, prop, node.getEncapsulated(), node.getNeedDashedBorder());
         ctx.fill();
         ctx.stroke();
         ctx.restore();
@@ -87,4 +97,10 @@ public abstract class ProcessNodeAbstractRenderer extends NodeAbstractRenderer {
         ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
         type.setTextProfile(ctx, DiagramColours.get().PROFILE.getProcessnode());
     }
+
+    public void shape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed){
+        //Nothing here
+    }
+
+    public abstract void shape(AdvancedContext2d ctx, NodeProperties prop, Boolean encapsulated, Boolean needsDashed);
 }
