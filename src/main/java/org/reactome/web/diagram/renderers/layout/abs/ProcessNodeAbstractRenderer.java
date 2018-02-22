@@ -64,7 +64,7 @@ public abstract class ProcessNodeAbstractRenderer extends NodeAbstractRenderer {
 
         Node node = (Node) item;
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
-        double padding = RendererProperties.NODE_TEXT_PADDING * 3;
+        double padding = RendererProperties.NODE_TEXT_PADDING * (node.getEncapsulated() != null && node.getEncapsulated() ? 4.5 : 3);
         TextRenderer textRenderer = new TextRenderer(RendererProperties.WIDGET_FONT_SIZE, padding);
         double x = prop.getX() + prop.getWidth() / 2d;
         double y = prop.getY() + prop.getHeight() / 2d;
