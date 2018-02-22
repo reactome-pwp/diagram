@@ -72,10 +72,9 @@
         "width": 100,
         "height": 41
       }
-    },
-    {
-      "displayName": "Encapsulated Pathway",
+    },{
       "renderableClass": "ProcessNode",
+      "displayName": "Diagrammed Subpathway",
       "position": {
         "x": 125,
         "y": 250
@@ -87,15 +86,29 @@
         "height": 50
       }
     },{
+      "displayName": "Encapsulated Pathway",
+      "renderableClass": "ProcessNode",
+      "encapsulated": true,
+      "position": {
+        "x": 125,
+        "y": 307
+      },
+      "prop": {
+        "x": 75,
+        "y": 297,
+        "width": 100,
+        "height": 50
+      }
+    },{
       "displayName": "Input",
       "renderableClass": "Protein",
       "position": {
         "x": 40,
-        "y": 320
+        "y": 367
       },
       "prop": {
         "x": 10,
-        "y": 305,
+        "y": 352,
         "width": 60,
         "height": 30
       }
@@ -104,11 +117,11 @@
       "renderableClass": "Entity",
       "position": {
         "x": 40,
-        "y": 360
+        "y": 407
       },
       "prop": {
         "x": 10,
-        "y": 345,
+        "y": 392,
         "width": 60,
         "height": 30
       }
@@ -117,11 +130,11 @@
       "renderableClass": "Complex",
       "position": {
         "x": 205,
-        "y": 340
+        "y": 387
       },
       "prop": {
         "x": 175,
-        "y": 325,
+        "y": 372,
         "width": 60,
         "height": 30
       }
@@ -132,11 +145,11 @@
     "renderableClass": "Note",
     "position": {
       "x": 100,
-      "y": 340
+      "y": 387
     },
     "prop": {
       "x": 100,
-      "y": 340,
+      "y": 387,
       "width": 60,
       "height": 30
     }
@@ -149,50 +162,50 @@
         {
           "from": {
             "x": 70,
-            "y": 320
+            "y": 367
           },
           "to": {
             "x": 100,
-            "y": 340
+            "y": 387
           }
         },{
           "from": {
             "x": 70,
-            "y": 355
+            "y": 402
           },
           "to": {
             "x": 100,
-            "y": 340
+            "y": 387
           }
         },{
           "from": {
             "x": 100,
-            "y": 340
+            "y": 387
           },
           "to": {
             "x": 120,
-            "y": 340
+            "y": 387
           }
         },
         {
           "from": {
             "x": 130,
-            "y": 340
+            "y": 387
           },
           "to": {
             "x": 175,
-            "y": 340
+            "y": 387
           }
         }
       ],
       "reactionShape": {
         "a": {
           "x": 120,
-          "y": 335
+          "y": 382
         },
         "b": {
           "x": 130,
-          "y": 345
+          "y": 392
         },
         "type": "BOX",
         "empty": true
@@ -200,15 +213,15 @@
       "endShape" : {
         "a" : {
           "x" : 170,
-          "y" : 335
+          "y" : 382
         },
         "b" : {
           "x" : 175,
-          "y" : 340
+          "y" : 387
         },
         "c" : {
           "x" : 170,
-          "y" : 345
+          "y" : 392
         },
         "type" : "ARROW"
       }

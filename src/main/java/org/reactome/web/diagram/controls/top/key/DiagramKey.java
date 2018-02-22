@@ -36,6 +36,7 @@ import org.reactome.web.diagram.util.Console;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -63,9 +64,9 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
 
         AbsolutePanel canvases = new AbsolutePanel();
         canvases.setStyleName(RESOURCES.getCSS().diagramCanvases());
-        this.hover = this.createCanvas(canvases, 200, 315);
-        this.items = this.createCanvas(canvases, 200, 315);
-        this.selection = this.createCanvas(canvases, 200, 315);
+        this.hover = this.createCanvas(canvases, 200, 365);
+        this.items = this.createCanvas(canvases, 200, 365);
+        this.selection = this.createCanvas(canvases, 200, 365);
 
         add(canvases);
         add(new Image(RESOURCES.diagramKey()));
@@ -146,6 +147,8 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
         String renderableClass = diagramObject.getRenderableClass();
         for (Node node : diagram.getNodes()) {
             if (node.getRenderableClass().equals(renderableClass)) {
+                Node aux = (Node) diagramObject;
+                if(!Objects.equals(node.getEncapsulated(), aux.getEncapsulated())) continue;
                 Renderer renderer = RendererManager.get().getDiagramKeyRenderer(node);
                 if (renderer != null) {
                     renderer.highlight(ctx, node, FACTOR, OFFSET);
