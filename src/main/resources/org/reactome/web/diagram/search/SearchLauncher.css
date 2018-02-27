@@ -121,7 +121,7 @@
     opacity: 1;
 }
 
-.filtersBtn {
+.executeBtn {
     position: absolute;
     background-color: #1e94d0;
     border: none;
@@ -136,12 +136,12 @@
     height: 22px;
 }
 
-.filtersBtn span {
+.executeBtn span {
     vertical-align: middle !important;
     display: inline-block;
 }
 
-.filtersBtn img {
+.executeBtn img {
     height: 12px;
     width: auto;
 
@@ -153,16 +153,62 @@
     -ms-user-select: none;
 }
 
-.filtersBtn:hover {
+.executeBtn:hover {
     cursor: pointer !important;
     opacity: 0.9;
 }
 
-.filtersBtn:active:hover {
+.executeBtn:active:hover {
     cursor: pointer !important;
     opacity: 1;
 }
 
-.filtersBtn:disabled {
+.executeBtn:disabled {
+    background-color: darkgray;
+}
+
+.optionsBtn {
+    position: absolute;
+    background-color: #1e94d0;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    margin-left: 3px;
+    margin-top: 5px;
+    padding: 1px 1px 0 1px;
+    outline: none;
+    opacity: 0.8;
+    width: 22px;
+    height: 22px;
+}
+
+.optionsBtn span {
+    vertical-align: middle !important;
+    display: inline-block;
+}
+
+.optionsBtn img {
+    height: 12px;
+    width: auto;
+
+    user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.optionsBtn:hover {
+    cursor: pointer !important;
+    opacity: 0.9;
+}
+
+.optionsBtn:active:hover {
+    cursor: pointer !important;
+    opacity: 1;
+}
+
+.optionsBtn:disabled {
     background-color: darkgray;
 }

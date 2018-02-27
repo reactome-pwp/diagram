@@ -17,16 +17,11 @@ import org.reactome.web.diagram.common.IconToggleButton;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
-import org.reactome.web.diagram.search.events.PanelCollapsedEvent;
-import org.reactome.web.diagram.search.events.PanelExpandedEvent;
-import org.reactome.web.diagram.search.events.SuggestionResetEvent;
-import org.reactome.web.diagram.search.handlers.PanelCollapsedHandler;
-import org.reactome.web.diagram.search.handlers.PanelExpandedHandler;
-import org.reactome.web.diagram.search.handlers.SuggestionResetHandler;
+import org.reactome.web.diagram.search.events.*;
+import org.reactome.web.diagram.search.handlers.*;
 import org.reactome.web.diagram.search.provider.SuggestionsProvider;
 import org.reactome.web.diagram.search.provider.SuggestionsProviderImpl;
 import org.reactome.web.diagram.search.searchbox.*;
-import org.reactome.web.diagram.util.Console;
 
 import java.util.List;
 
@@ -48,7 +43,8 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     private SearchBox input = null;
     private PwpButton searchBtn = null;
     private IconButton clearBtn;
-    private IconToggleButton filtersBtn;
+    private IconToggleButton executeBtn;
+    private IconToggleButton optionsBtn;
 
     private FlowPanel filtersPanel;
 
@@ -78,13 +74,21 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         clearBtn.addClickHandler(event -> clearSearch());
         this.add(clearBtn);
 
-        filtersBtn = new IconToggleButton("", RESOURCES.options(), RESOURCES.optionsClose());
-        filtersBtn.setStyleName(RESOURCES.getCSS().filtersBtn());
-        filtersBtn.setVisible(true);
-        filtersBtn.setTitle("Filter your results");
-        filtersBtn.addClickHandler(this);
-//        filtersBtn.setEnabled(false);
-        this.add(filtersBtn);
+        executeBtn = new IconToggleButton("", RESOURCES.clear(), RESOURCES.optionsClose());
+        executeBtn.setStyleName(RESOURCES.getCSS().executeBtn());
+        executeBtn.setVisible(true);
+        executeBtn.setTitle("Search");
+        executeBtn.addClickHandler(this);
+//        executeBtn.setEnabled(false);
+        this.add(executeBtn);
+
+        optionsBtn = new IconToggleButton("", RESOURCES.options(), RESOURCES.optionsClose());
+        optionsBtn.setStyleName(RESOURCES.getCSS().optionsBtn());
+        optionsBtn.setVisible(true);
+        optionsBtn.setTitle("Filter your results");
+        optionsBtn.addClickHandler(this);
+//        optionsBtn.setEnabled(false);
+//        this.add(optionsBtn);
 
         filtersPanel = new FlowPanel();
         filtersPanel.setHeight(100 + "px");
@@ -113,6 +117,14 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         return addHandler(handler, PanelExpandedEvent.TYPE);
     }
 
+    public HandlerRegistration addOptionsCollapsedHandler(OptionsCollapsedHandler handler){
+        return addHandler(handler, OptionsCollapsedEvent.TYPE);
+    }
+
+    public HandlerRegistration addOptionsExpandedHandler(OptionsExpandedHandler handler){
+        return addHandler(handler, OptionsExpandedEvent.TYPE);
+    }
+
     public HandlerRegistration addSearchPerformedHandler(SearchPerformedHandler handler){
         return addHandler(handler, SearchPerformedEvent.TYPE);
     }
@@ -138,13 +150,14 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
             } else {
                 collapsePanel();
             }
-        } else if (event.getSource().equals(this.filtersBtn)) {
-            Console.info("Hello");
+        } else if (event.getSource().equals(this.optionsBtn)) {
             if (!isExpandedVertically) {
                 expandPanelVertically();
             } else {
                 collapsePanelVertically();
             }
+        } else if (event.getSource().equals(this.executeBtn)) {
+            performSearch();
         }
     }
 
@@ -163,7 +176,8 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     }
 
     @Override
-    public void onSearchBoxUpdated(SearchBoxUpdatedEvent event) {
+    public void onSearchBoxUpdated(SearchBoxUpdatedEvent evzent) {
+        //TODO call for autocomplete suggestions
         performSearch();
     }
 
@@ -213,7 +227,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         }
         removeStyleName(RESOURCES.getCSS().launchPanelExpanded());
         collapsePanelVertically();
-        filtersBtn.setActive(false);
+        optionsBtn.setActive(false);
         input.removeStyleName(RESOURCES.getCSS().inputActive());
         isExpanded = false;
         fireEvent(new PanelCollapsedEvent());
@@ -222,6 +236,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     private void collapsePanelVertically() {
         removeStyleName(RESOURCES.getCSS().launchPanelExpandedVertically());
         isExpandedVertically = false;
+        fireEvent(new OptionsCollapsedEvent());
     }
 
     private void expandPanel(){
@@ -235,6 +250,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     private void expandPanelVertically(){
         addStyleName(RESOURCES.getCSS().launchPanelExpandedVertically());
         isExpandedVertically = true;
+        fireEvent(new OptionsExpandedEvent());
     }
 
 
@@ -248,6 +264,10 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
         eventBus.addHandler(SearchKeyPressedEvent.TYPE, this);
+    }
+
+    private void getAutoCompleteSuggestions(String tag) {
+
     }
 
     private void performSearch() {
@@ -326,7 +346,9 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
         String clearBtn();
 
-        String filtersBtn();
+        String executeBtn();
+
+        String optionsBtn();
     }
 
 }

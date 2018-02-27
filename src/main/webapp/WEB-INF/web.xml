@@ -114,4 +114,32 @@
         <url-pattern>/download/current/ehld/*</url-pattern>
     </servlet-mapping>
 
+
+    <!-- Reactome Content (ONLY USED IN DEV MODE) -->
+    <servlet>
+        <servlet-name>AutoCompleteProxy</servlet-name>
+        <servlet-class>org.reactome.server.utils.proxy.ProxyServlet</servlet-class>
+        <init-param>
+            <param-name>proxyHost</param-name>
+            <!--<param-value>localhost</param-value>-->
+            <!--<param-value>www.reactome.org</param-value>-->
+            <param-value>reactomedev.oicr.on.ca</param-value>
+            <!--<param-value>reactomerelease.oicr.on.ca</param-value>-->
+        </init-param>
+        <init-param>
+            <param-name>proxyPort</param-name>
+            <!--<param-value>8686</param-value>-->
+            <param-value>80</param-value>
+        </init-param>
+        <init-param>
+            <param-name>proxyPath</param-name>
+            <!--<param-value>/</param-value>-->
+            <param-value>/content</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AutoCompleteProxy</servlet-name>
+        <url-pattern>/content/*</url-pattern>
+    </servlet-mapping>
+
 </web-app>

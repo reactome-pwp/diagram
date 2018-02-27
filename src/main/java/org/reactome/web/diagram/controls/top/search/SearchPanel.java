@@ -6,8 +6,7 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.search.SearchLauncher;
-import org.reactome.web.diagram.search.infopanel.SelectionInfoPanel;
-import org.reactome.web.diagram.search.suggester.SuggestionPanel;
+import org.reactome.web.diagram.search.autocomplete.AutoCompletePanel;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -21,21 +20,29 @@ public class SearchPanel extends FlowPanel {
         final SearchLauncher launcher = new SearchLauncher(eventBus);
         this.add(launcher);
 
-        SuggestionPanel suggestions = new SuggestionPanel(eventBus);
-        // Listen to click events on suggestions and return focus on SearchBox
-        suggestions.addClickHandler(event -> launcher.setFocus(true));
-        launcher.addSearchPerformedHandler(suggestions);
-        launcher.addPanelCollapsedHandler(suggestions);
-        launcher.addPanelExpandedHandler(suggestions);
-        launcher.addSearchBoxArrowKeysHandler(suggestions);
-        launcher.addSuggestionResetHandler(suggestions);
-        this.add(suggestions);
+        AutoCompletePanel autoCompletePanel = new AutoCompletePanel();
+        launcher.addSearchPerformedHandler(autoCompletePanel);
+        launcher.addPanelCollapsedHandler(autoCompletePanel);
+        launcher.addPanelExpandedHandler(autoCompletePanel);
+        launcher.addOptionsCollapsedHandler(autoCompletePanel);
+        launcher.addOptionsExpandedHandler(autoCompletePanel);
+        this.add(autoCompletePanel);
 
-        SelectionInfoPanel infoPanel = new SelectionInfoPanel(eventBus);
-        suggestions.addSuggestionSelectedHandler(infoPanel);
-        launcher.addPanelCollapsedHandler(infoPanel);
-        launcher.addPanelExpandedHandler(infoPanel);
-        this.add(infoPanel);
+//        SuggestionPanel suggestions = new SuggestionPanel(eventBus);
+        // Listen to click events on suggestions and return focus on SearchBox
+//        suggestions.addClickHandler(event -> launcher.setFocus(true));
+//        launcher.addSearchPerformedHandler(suggestions);
+//        launcher.addPanelCollapsedHandler(suggestions);
+//        launcher.addPanelExpandedHandler(suggestions);
+//        launcher.addSearchBoxArrowKeysHandler(suggestions);
+//        launcher.addSuggestionResetHandler(suggestions);
+//        this.add(suggestions);
+
+//        SelectionInfoPanel infoPanel = new SelectionInfoPanel(eventBus);
+//        suggestions.addSuggestionSelectedHandler(infoPanel);
+//        launcher.addPanelCollapsedHandler(infoPanel);
+//        launcher.addPanelExpandedHandler(infoPanel);
+//        this.add(infoPanel);
     }
 
 
