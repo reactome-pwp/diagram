@@ -14,9 +14,7 @@ public interface Node extends NodeCommon {
     List<Connector> getConnectors();
 
     Boolean getTrivial();
-
-    Boolean getEncapsulated();
-
+    
     SummaryItem getInteractorsSummary();
 
     //Keeping a pointer the the cached object improves performance avoiding searching for it every time it gets toggled

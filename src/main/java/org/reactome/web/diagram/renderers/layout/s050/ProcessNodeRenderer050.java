@@ -24,30 +24,20 @@ public class ProcessNodeRenderer050 extends ProcessNodeAbstractRenderer {
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
         ctx.save();
         ctx.setLineWidth(RendererProperties.PROCESS_NODE_INSET_WIDTH + 4);
-        shape(ctx, prop, node.getEncapsulated(), node.getNeedDashedBorder());
+        shape(ctx, prop, node.getNeedDashedBorder());
         ctx.stroke();
         ctx.restore();
     }
 
     @Override
-    public void shape(AdvancedContext2d ctx, NodeProperties prop, Boolean encapsulated, Boolean needsDashed) {
+    public void shape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed) {
         ctx.beginPath();
-        if(encapsulated!=null && encapsulated){
-            ctx.homePlate(
-                    prop.getX() + RendererProperties.PROCESS_NODE_INSET_WIDTH,
-                    prop.getY() + RendererProperties.PROCESS_NODE_INSET_WIDTH,
-                    prop.getWidth() - RendererProperties.PROCESS_NODE_INSET_WIDTH * 2,
-                    prop.getHeight() - RendererProperties.PROCESS_NODE_INSET_WIDTH * 2,
-                    RendererProperties.PROCESS_NODE_INSET_WIDTH
-            );
-        } else {
-            ctx.rect(
-                    prop.getX() + RendererProperties.PROCESS_NODE_INSET_WIDTH,
-                    prop.getY() + RendererProperties.PROCESS_NODE_INSET_WIDTH,
-                    prop.getWidth() - RendererProperties.PROCESS_NODE_INSET_WIDTH * 2,
-                    prop.getHeight() - RendererProperties.PROCESS_NODE_INSET_WIDTH * 2
-            );
-        }
+        ctx.rect(
+                prop.getX() + RendererProperties.PROCESS_NODE_INSET_WIDTH,
+                prop.getY() + RendererProperties.PROCESS_NODE_INSET_WIDTH,
+                prop.getWidth() - RendererProperties.PROCESS_NODE_INSET_WIDTH * 2,
+                prop.getHeight() - RendererProperties.PROCESS_NODE_INSET_WIDTH * 2
+        );
     }
     @Override
     public void drawAnalysisResult(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, Double factor, Coordinate offset){
@@ -61,7 +51,7 @@ public class ProcessNodeRenderer050 extends ProcessNodeAbstractRenderer {
         ctx.setStrokeStyle(ctx.getFillStyle());
         ctx.setLineWidth(RendererProperties.PROCESS_NODE_INSET_WIDTH);
         ctx.setFillStyle("#FEFDFF");
-        shape(ctx, prop, node.getEncapsulated(), node.getNeedDashedBorder());
+        shape(ctx, prop, node.getNeedDashedBorder());
         ctx.fill();
         ctx.stroke();
         ctx.restore();
@@ -78,7 +68,7 @@ public class ProcessNodeRenderer050 extends ProcessNodeAbstractRenderer {
         buffer.fillRect(prop.getX(), prop.getY(), prop.getWidth() * p, prop.getHeight());
 
         buffer.setGlobalCompositeOperation(Context2d.Composite.DESTINATION_IN);
-        shape(buffer, prop, node.getEncapsulated(), node.getNeedDashedBorder());
+        shape(buffer, prop, node.getNeedDashedBorder());
         buffer.stroke();
 
         ctx.drawImage(buffer.getCanvas(), 0, 0); //TODO: Improve this to copy only the region

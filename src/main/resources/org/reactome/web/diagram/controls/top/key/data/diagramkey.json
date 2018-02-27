@@ -87,8 +87,7 @@
       }
     },{
       "displayName": "Encapsulated Pathway",
-      "renderableClass": "ProcessNode",
-      "encapsulated": true,
+      "renderableClass": "EncapsulatedNode",
       "position": {
         "x": 125,
         "y": 307

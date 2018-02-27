@@ -712,21 +712,22 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
     private AdvancedContext2d getContext2d(String renderableClass) {
         AdvancedContext2d rtn = null;
         switch (renderableClass) {
-            case "Note":            rtn = this.notes;               break;
-            case "Compartment":     rtn = this.compartments;        break;
-            case "Protein":         rtn = this.entities;            break;
-            case "Chemical":        rtn = this.entities;            break;
-            case "ChemicalDrug":    rtn = this.entities;            break;
-            case "Reaction":        rtn = this.reactions;           break;
-            case "Complex":         rtn = this.entities;            break;
-            case "Entity":          rtn = this.entities;            break;
-            case "EntitySet":       rtn = this.entities;            break;
-            case "ProcessNode":     rtn = this.entities;            break;
-            case "FlowLine":        rtn = this.entities;            break;
-            case "Interaction":     rtn = this.entities;            break;
-            case "RNA":             rtn = this.entities;            break;
-            case "Gene":            rtn = this.entities;            break;
-            case "Shadow":          rtn = this.shadows;             break;
+            case "Note":                rtn = this.notes;               break;
+            case "Compartment":         rtn = this.compartments;        break;
+            case "Protein":             rtn = this.entities;            break;
+            case "Chemical":            rtn = this.entities;            break;
+            case "ChemicalDrug":        rtn = this.entities;            break;
+            case "Reaction":            rtn = this.reactions;           break;
+            case "Complex":             rtn = this.entities;            break;
+            case "Entity":              rtn = this.entities;            break;
+            case "EntitySet":           rtn = this.entities;            break;
+            case "ProcessNode":         rtn = this.entities;            break;
+            case "EncapsulatedNode":    rtn = this.entities;            break;
+            case "FlowLine":            rtn = this.entities;            break;
+            case "Interaction":         rtn = this.entities;            break;
+            case "RNA":                 rtn = this.entities;            break;
+            case "Gene":                rtn = this.entities;            break;
+            case "Shadow":              rtn = this.shadows;             break;
             case "EntitySetAndMemberLink":
             case "EntitySetAndEntitySetLink":
                 rtn = this.links;

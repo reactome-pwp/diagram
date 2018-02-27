@@ -17,7 +17,7 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public abstract class ProcessNodeAbstractRenderer extends NodeAbstractRenderer {
+public abstract class EncapsulatedNodeAbstractRenderer extends NodeAbstractRenderer {
 
     @Override
     public void drawEnrichment(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, Double factor, Coordinate offset) {
@@ -64,7 +64,7 @@ public abstract class ProcessNodeAbstractRenderer extends NodeAbstractRenderer {
 
         Node node = (Node) item;
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
-        double padding = RendererProperties.NODE_TEXT_PADDING * 3;
+        double padding = RendererProperties.NODE_TEXT_PADDING *  4.5;
         TextRenderer textRenderer = new TextRenderer(RendererProperties.WIDGET_FONT_SIZE, padding);
         double x = prop.getX() + prop.getWidth() / 2d;
         double y = prop.getY() + prop.getHeight() / 2d;
@@ -87,7 +87,7 @@ public abstract class ProcessNodeAbstractRenderer extends NodeAbstractRenderer {
 
     @Override
     public void setColourProperties(AdvancedContext2d ctx, ColourProfileType type) {
-        type.setColourProfile(ctx, DiagramColours.get().PROFILE.getProcessnode());
+        type.setColourProfile(ctx, DiagramColours.get().PROFILE.getEncapsulatednode());
     }
 
     @Override
@@ -95,7 +95,6 @@ public abstract class ProcessNodeAbstractRenderer extends NodeAbstractRenderer {
         ctx.setTextAlign(Context2d.TextAlign.CENTER);
         ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
         ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
-        type.setTextProfile(ctx, DiagramColours.get().PROFILE.getProcessnode());
+        type.setTextProfile(ctx, DiagramColours.get().PROFILE.getEncapsulatednode());
     }
-
 }

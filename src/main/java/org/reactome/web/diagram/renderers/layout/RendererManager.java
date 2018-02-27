@@ -93,6 +93,7 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s000.put("Entity", new OtherEntityRenderer000());
         s000.put("EntitySet", new SetRenderer000());
         s000.put("ProcessNode", new ProcessNodeRenderer000());
+        s000.put("EncapsulatedNode", new EncapsulatedNodeRenderer000());
         s000.put("FlowLine", new FlowlineRenderer000());
         s000.put("Interaction", new InteractionRenderer000());
         s000.put("RNA", new RNARenderer000());
@@ -112,6 +113,7 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s050.put("Entity", new OtherEntityRenderer050());
         s050.put("EntitySet", new SetRenderer050());
         s050.put("ProcessNode", new ProcessNodeRenderer050());
+        s050.put("EncapsulatedNode", new EncapsulatedNodeRenderer050());
         s050.put("FlowLine", new FlowlineRenderer050());
         s050.put("Interaction", new InteractionRenderer050());
         s050.put("RNA", new RNARenderer050());
@@ -131,6 +133,7 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s100.put("Entity", new OtherEntityRenderer100());
         s100.put("EntitySet", new SetRenderer100());
         s100.put("ProcessNode", new ProcessNodeRenderer100());
+        s100.put("EncapsulatedNode", new EncapsulatedNodeRenderer100());
         s100.put("FlowLine", new FlowlineRenderer100());
         s100.put("Interaction", new InteractionRenderer100());
         s100.put("RNA", new RNARenderer100());
@@ -150,6 +153,7 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s300.put("Entity", new OtherEntityRenderer300());
         s300.put("EntitySet", new SetRenderer300());
         s300.put("ProcessNode", new ProcessNodeRenderer300());
+        s300.put("EncapsulatedNode", new EncapsulatedNodeRenderer300());
         s300.put("FlowLine", new FlowlineRenderer300());
         s300.put("Interaction", new InteractionRenderer300());
         s300.put("RNA", new RNARenderer300());
@@ -170,6 +174,7 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s800.put("Entity", new OtherEntityRenderer800());
         s800.put("EntitySet", new SetRenderer800());
         s800.put("ProcessNode", new ProcessNodeRenderer800());
+        s800.put("EncapsulatedNode", new EncapsulatedNodeRenderer800());
         s800.put("FlowLine", new FlowlineRenderer800());
         s800.put("Interaction", new InteractionRenderer800());
         s800.put("RNA", new RNARenderer800());

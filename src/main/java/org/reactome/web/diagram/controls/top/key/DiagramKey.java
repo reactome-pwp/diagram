@@ -36,7 +36,6 @@ import org.reactome.web.diagram.util.Console;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -147,8 +146,6 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
         String renderableClass = diagramObject.getRenderableClass();
         for (Node node : diagram.getNodes()) {
             if (node.getRenderableClass().equals(renderableClass)) {
-                Node aux = (Node) diagramObject;
-                if(!Objects.equals(node.getEncapsulated(), aux.getEncapsulated())) continue;
                 Renderer renderer = RendererManager.get().getDiagramKeyRenderer(node);
                 if (renderer != null) {
                     renderer.highlight(ctx, node, FACTOR, OFFSET);
