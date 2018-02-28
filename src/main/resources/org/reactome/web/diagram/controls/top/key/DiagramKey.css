@@ -1,9 +1,30 @@
 .diagramCanvases {
     outline: none;
-    width: 200px;
-    height: 380px;
+    width: 195px;
+    height: 285px;
 }
 
 .diagramCanvases canvas {
     outline: none;
 }
+
+.moreInfoLabel {
+    display: block;
+    font-size: small;
+    text-align: center;
+
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: small !important;
+    line-height: 1.1em;
+
+    color: #005a75;
+}
+
+.reactionsImage {
+    margin-top: 5px;
+    width: 195px;
+    height: auto;
+
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+}
+

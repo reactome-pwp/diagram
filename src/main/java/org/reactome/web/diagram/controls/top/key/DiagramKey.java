@@ -10,7 +10,9 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.controls.navigation.ControlAction;
 import org.reactome.web.diagram.controls.top.common.AbstractMenuDialog;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
@@ -45,6 +47,10 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
 
     private static final Double FACTOR = 0.82;
     private static final Coordinate OFFSET = CoordinateFactory.get(0, 0);
+    private static final int WIDTH = 195;
+    private static final int HEIGHT = 285;
+
+    private static final String USER_GUIDE_URL = DiagramFactory.SERVER + "/user/guide/pathway-browser";
 
     private EventBus eventBus;
     private Diagram diagram;
@@ -63,12 +69,23 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
 
         AbsolutePanel canvases = new AbsolutePanel();
         canvases.setStyleName(RESOURCES.getCSS().diagramCanvases());
-        this.hover = this.createCanvas(canvases, 200, 365);
-        this.items = this.createCanvas(canvases, 200, 365);
-        this.selection = this.createCanvas(canvases, 200, 365);
+        this.hover = this.createCanvas(canvases, WIDTH, HEIGHT);
+        this.items = this.createCanvas(canvases, WIDTH, HEIGHT);
+        this.selection = this.createCanvas(canvases, WIDTH, HEIGHT);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("For more information please<br> refer to our <a href=\"")
+                .append(USER_GUIDE_URL)
+                .append("\" target=\"_black\">user guide</a>");
+        HTMLPanel htmlPanel = new HTMLPanel(builder.toString());
+        htmlPanel.setStyleName(RESOURCES.getCSS().moreInfoLabel());
+
+        Image reactionTypes = new Image(RESOURCES.diagramKey());
+        reactionTypes.setStyleName(RESOURCES.getCSS().reactionsImage());
 
         add(canvases);
-        add(new Image(RESOURCES.diagramKey()));
+        add(htmlPanel);
+        add(reactionTypes);
 
         try {
             diagram = DiagramObjectsFactory.getModelObject(Diagram.class, RESOURCES.diagramkeyJson().getText());
@@ -91,7 +108,7 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
                 renderer.setColourProperties(items, ColourProfileType.NORMAL);
                 renderer.draw(items, node, FACTOR, OFFSET);
                 renderer.setTextProperties(items, ColourProfileType.NORMAL);
-                items.setFont(RendererProperties.getFont(8));
+                items.setFont(RendererProperties.getFont(8.5));
                 renderer.drawText(items, node, FACTOR, OFFSET);
             } else {
                 Console.error(node.getRenderableClass());
@@ -206,12 +223,7 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
 
     @Override
     public void onDiagramProfileChanged(DiagramProfileChangedEvent event) {
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                draw();
-            }
-        });
+        Scheduler.get().scheduleDeferred(() -> draw());
     }
 
     @Override
@@ -267,5 +279,10 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
         String CSS = "org/reactome/web/diagram/controls/top/key/DiagramKey.css";
 
         String diagramCanvases();
+
+        String moreInfoLabel();
+
+        String reactionsImage();
+
     }
 }
