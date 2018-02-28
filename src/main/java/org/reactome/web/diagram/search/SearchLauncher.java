@@ -22,6 +22,7 @@ import org.reactome.web.diagram.search.handlers.*;
 import org.reactome.web.diagram.search.provider.SuggestionsProvider;
 import org.reactome.web.diagram.search.provider.SuggestionsProviderImpl;
 import org.reactome.web.diagram.search.searchbox.*;
+import org.reactome.web.diagram.util.Console;
 
 import java.util.List;
 
@@ -125,6 +126,10 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         return addHandler(handler, OptionsExpandedEvent.TYPE);
     }
 
+    public HandlerRegistration addAutoCompleteRequestedHandler(AutoCompleteRequestedHandler handler){
+        return addHandler(handler, AutoCompleteRequestedEvent.TYPE);
+    }
+
     public HandlerRegistration addSearchPerformedHandler(SearchPerformedHandler handler){
         return addHandler(handler, SearchPerformedEvent.TYPE);
     }
@@ -157,6 +162,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
                 collapsePanelVertically();
             }
         } else if (event.getSource().equals(this.executeBtn)) {
+            Console.info("Searching for " + input.getText());
             performSearch();
         }
     }
@@ -176,9 +182,9 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     }
 
     @Override
-    public void onSearchBoxUpdated(SearchBoxUpdatedEvent evzent) {
+    public void onSearchBoxUpdated(SearchBoxUpdatedEvent event) {
         //TODO call for autocomplete suggestions
-        performSearch();
+        getAutoCompleteSuggestions();
     }
 
     @Override
@@ -266,8 +272,11 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         eventBus.addHandler(SearchKeyPressedEvent.TYPE, this);
     }
 
-    private void getAutoCompleteSuggestions(String tag) {
+    private void getAutoCompleteSuggestions() {
+        String term = input.getText().trim();
+        fireEvent(new AutoCompleteRequestedEvent(term));
 
+        showHideClearBtn();
     }
 
     private void performSearch() {

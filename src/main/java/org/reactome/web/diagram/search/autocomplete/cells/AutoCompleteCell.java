@@ -35,7 +35,6 @@ public class AutoCompleteCell extends AbstractCell<AutoCompleteResult> {
 
     private static Templates templates = GWT.create(Templates.class);
 
-
     @Override
     public void render(Context context, AutoCompleteResult value, SafeHtmlBuilder sb) {
         /*

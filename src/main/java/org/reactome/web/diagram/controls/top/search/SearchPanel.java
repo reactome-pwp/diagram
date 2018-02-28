@@ -7,6 +7,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.search.SearchLauncher;
 import org.reactome.web.diagram.search.autocomplete.AutoCompletePanel;
+import org.reactome.web.diagram.search.suggester.SuggestionPanel;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -22,21 +23,22 @@ public class SearchPanel extends FlowPanel {
 
         AutoCompletePanel autoCompletePanel = new AutoCompletePanel();
         launcher.addSearchPerformedHandler(autoCompletePanel);
+        launcher.addAutoCompleteRequestedHandler(autoCompletePanel);
         launcher.addPanelCollapsedHandler(autoCompletePanel);
         launcher.addPanelExpandedHandler(autoCompletePanel);
         launcher.addOptionsCollapsedHandler(autoCompletePanel);
         launcher.addOptionsExpandedHandler(autoCompletePanel);
         this.add(autoCompletePanel);
 
-//        SuggestionPanel suggestions = new SuggestionPanel(eventBus);
+        SuggestionPanel suggestions = new SuggestionPanel(eventBus);
         // Listen to click events on suggestions and return focus on SearchBox
-//        suggestions.addClickHandler(event -> launcher.setFocus(true));
-//        launcher.addSearchPerformedHandler(suggestions);
-//        launcher.addPanelCollapsedHandler(suggestions);
-//        launcher.addPanelExpandedHandler(suggestions);
-//        launcher.addSearchBoxArrowKeysHandler(suggestions);
-//        launcher.addSuggestionResetHandler(suggestions);
-//        this.add(suggestions);
+        suggestions.addClickHandler(event -> launcher.setFocus(true));
+        launcher.addSearchPerformedHandler(suggestions);
+        launcher.addPanelCollapsedHandler(suggestions);
+        launcher.addPanelExpandedHandler(suggestions);
+        launcher.addSearchBoxArrowKeysHandler(suggestions);
+        launcher.addSuggestionResetHandler(suggestions);
+        this.add(suggestions);
 
 //        SelectionInfoPanel infoPanel = new SelectionInfoPanel(eventBus);
 //        suggestions.addSuggestionSelectedHandler(infoPanel);

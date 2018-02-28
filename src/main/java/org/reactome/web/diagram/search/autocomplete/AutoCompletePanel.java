@@ -6,11 +6,13 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.cellview.client.CellList;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.SingleSelectionModel;
+import org.reactome.web.diagram.search.AutoCompleteRequestedEvent;
+import org.reactome.web.diagram.search.AutoCompleteRequestedHandler;
 import org.reactome.web.diagram.search.SearchPerformedEvent;
 import org.reactome.web.diagram.search.SearchPerformedHandler;
 import org.reactome.web.diagram.search.autocomplete.cells.AutoCompleteCell;
@@ -28,7 +30,8 @@ import java.util.List;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class AutoCompletePanel extends AbstractAccordionPanel implements SearchPerformedHandler,
-        OptionsExpandedHandler, OptionsCollapsedHandler, AutoCompleteResultsFactory.AutoCompleteResultsHandler {
+        OptionsExpandedHandler, OptionsCollapsedHandler,
+        AutoCompleteRequestedHandler, AutoCompleteResultsFactory.AutoCompleteResultsHandler {
 
     private final static int AUTOCOMPLETE_SIZE = 9;
     private final static int RECENT_SIZE = 9;
@@ -48,13 +51,12 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
         AutoCompleteCell autoCompleteCell = new AutoCompleteCell();
         autoCompleteList = new CellList<>(autoCompleteCell);
         autoCompleteList.setStyleName(RESOURCES.getCSS().autoCompleteList());
+        autoCompleteList.setKeyboardSelectionPolicy(HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.DISABLED);
         final SingleSelectionModel<AutoCompleteResult> selectionModel = new SingleSelectionModel<>();
         autoCompleteList.setSelectionModel(selectionModel);
         selectionModel.addSelectionChangeHandler(event -> {
             AutoCompleteResult selected = selectionModel.getSelectedObject();
-            if (selected != null) {
-                Window.alert("You selected: " + selected.getResult());
-            }
+            Console.info("new Selection: " + selected.getResult());
         });
 
         // Set the total row count. This isn't strictly necessary, but it affects
@@ -69,9 +71,14 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
 
 
     @Override
-    public void onSearchPerformed(SearchPerformedEvent event) {
-//        RecentSearchesManager.get().insert(event.getTerm());
+    public void onAutoCompleteRequested(AutoCompleteRequestedEvent event) {
         requestAutoCompleteResults(event.getTerm());
+    }
+
+    @Override
+    public void onSearchPerformed(SearchPerformedEvent event) {
+        getElement().getStyle().setDisplay(Style.Display.NONE);
+        RecentSearchesManager.get().insert(event.getTerm());
     }
 
     public void requestAutoCompleteResults(String tag) {
@@ -94,6 +101,7 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
 
     @Override
     public void onAutoCompleteSearchResult(List<AutoCompleteResult> results) {
+        getElement().getStyle().setDisplay(Style.Display.INLINE);
         autoCompleteList.setRowData(results);
         List<String> items = RecentSearchesManager.get().getRecentItems();
         if (!items.isEmpty()) {
@@ -110,12 +118,15 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
 
     private Widget getRecentSearchesPanel() {
         Label title = new Label("Recent searches");
+        title.setStyleName(RESOURCES.getCSS().dividerTitle());
+
         FlowPanel divider = new FlowPanel();
         divider.setStyleName(RESOURCES.getCSS().divider());
         divider.add(title);
 
         RecentSearchCell recentSearchCell = new RecentSearchCell();
         recentItemsList = new CellList<>(recentSearchCell);
+        recentItemsList.setKeyboardSelectionPolicy(HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.DISABLED);
         recentItemsList.setStyleName(RESOURCES.getCSS().recentSearchesList());
         recentItemsList.setRowCount(RECENT_SIZE, true);
 
@@ -178,6 +189,8 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
         String autoCompleteList();
 
         String divider();
+
+        String dividerTitle();
 
         String recentSearchesList();
 
