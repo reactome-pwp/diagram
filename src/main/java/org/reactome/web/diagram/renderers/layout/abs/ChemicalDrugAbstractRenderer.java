@@ -37,7 +37,7 @@ public abstract class ChemicalDrugAbstractRenderer extends NodeAbstractRenderer 
         ctx.stroke();
         ctx.fill();
         drawCross(ctx, node, prop);
-        rxText(ctx, prop, factor);
+//        rxText(ctx, prop, factor);
     }
 
     @Override
@@ -57,6 +57,8 @@ public abstract class ChemicalDrugAbstractRenderer extends NodeAbstractRenderer 
         }else{
             textRenderer.drawTextMultiLine(ctx, item.getDisplayName(), prop);
         }
+        //Render the Rx inside the bottom right box
+        rxText(ctx, prop, factor);
     }
 
     @Override
@@ -106,10 +108,6 @@ public abstract class ChemicalDrugAbstractRenderer extends NodeAbstractRenderer 
         TextRenderer textRenderer = new TextRenderer(CHEMICAL_DRUG_RX_FONT * factor, 0);
         Coordinate c = CoordinateFactory.get(rxX + cdrb, rxY + cdrb / 2.0);
         ctx.save();
-        ctx.setFillStyle("#A00000");
-        ctx.setTextAlign(Context2d.TextAlign.CENTER);
-        ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
-
         ctx.setFont(RendererProperties.getFont(CHEMICAL_DRUG_RX_FONT * factor));
         textRenderer.drawTextSingleLine(ctx, "Rx", c);
         ctx.restore();
@@ -117,7 +115,7 @@ public abstract class ChemicalDrugAbstractRenderer extends NodeAbstractRenderer 
 
     @Override
     public void setColourProperties(AdvancedContext2d ctx, ColourProfileType type) {
-        type.setColourProfile(ctx, DiagramColours.get().PROFILE.getChemical());
+        type.setColourProfile(ctx, DiagramColours.get().PROFILE.getChemicaldrug());
     }
 
     @Override
@@ -125,6 +123,6 @@ public abstract class ChemicalDrugAbstractRenderer extends NodeAbstractRenderer 
         ctx.setTextAlign(Context2d.TextAlign.CENTER);
         ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
         ctx.setFont(RendererProperties.getFont(RendererProperties.WIDGET_FONT_SIZE));
-        type.setTextProfile(ctx, DiagramColours.get().PROFILE.getChemical());
+        type.setTextProfile(ctx, DiagramColours.get().PROFILE.getChemicaldrug());
     }
 }
