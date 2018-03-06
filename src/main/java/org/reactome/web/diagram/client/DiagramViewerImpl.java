@@ -37,6 +37,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         GraphObjectHoveredHandler, GraphObjectSelectedHandler,
         DiagramObjectsFlagRequestHandler, DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler,
         IllustrationSelectedHandler,
+        DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         FireworksOpenedHandler, FlaggedElementsLoader.Handler {
 
     private Context context;
@@ -94,6 +95,9 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
 
         eventBus.addHandler(FireworksOpenedEvent.TYPE, this);
+
+        eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
+        eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
     }
 
     @Override
@@ -463,5 +467,15 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
                 eventBus.fireEventFromSource(new SearchKeyPressedEvent(), this);
             }
         }
+    }
+
+    @Override
+    public void onDiagramProfileChanged(DiagramProfileChangedEvent event) {
+        fireEvent(event);
+    }
+
+    @Override
+    public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
+        fireEvent(event);
     }
 }

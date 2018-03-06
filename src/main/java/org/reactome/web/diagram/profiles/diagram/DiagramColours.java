@@ -36,7 +36,11 @@ public class DiagramColours implements DiagramProfileChangedHandler {
 
         String profileName = Cookies.getCookie(PROFILE_COOKIE);
         ProfileType type = ProfileType.getByName(profileName);
-        setProfile(type.getDiagramProfile());
+
+        // NOTE: We fire the event instead of setting it directly so that
+        // other modules are notified of the profile used at the very beginning.
+        DiagramProfile profile = type.getDiagramProfile();
+        eventBus.fireEventFromSource(new DiagramProfileChangedEvent(profile), this);
     }
 
     public static void initialise(EventBus eventBus) {

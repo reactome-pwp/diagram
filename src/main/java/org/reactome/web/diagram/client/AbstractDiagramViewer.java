@@ -74,6 +74,16 @@ public abstract class AbstractDiagramViewer extends ResizeComposite implements D
         return this.addHandler(handler, FireworksOpenedEvent.TYPE);
     }
 
+    @Override
+    public HandlerRegistration addDiagramProfileChangedHandler(DiagramProfileChangedHandler handler) {
+        return this.addHandler(handler, DiagramProfileChangedEvent.TYPE);
+    }
+
+    @Override
+    public HandlerRegistration addAnalysisProfileChangedHandler(AnalysisProfileChangedHandler handler) {
+        return this.addHandler(handler, AnalysisProfileChangedEvent.TYPE);
+    }
+
     public int getViewportWidth() {
         return viewportWidth;
     }

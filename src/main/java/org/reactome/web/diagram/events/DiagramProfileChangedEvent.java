@@ -32,7 +32,7 @@ public class DiagramProfileChangedEvent extends GwtEvent<DiagramProfileChangedHa
 
     @Override
     public String toString() {
-        return "ProfileChangedEvent{" +
+        return "DiagramProfileChangedEvent{" +
                 "profile=" + profile.getName() +
                 '}';
     }
