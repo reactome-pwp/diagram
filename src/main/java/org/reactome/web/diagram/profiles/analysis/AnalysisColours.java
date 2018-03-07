@@ -41,11 +41,7 @@ public class AnalysisColours implements AnalysisProfileChangedHandler {
 
         String profileName = Cookies.getCookie(PROFILE_COOKIE);
         AnalysisColours.ProfileType type = AnalysisColours.ProfileType.getByName(profileName);
-//        setProfile(type.getAnalysisProfile());
-        // NOTE: We fire the event instead of setting it directly so that
-        // other modules are notified of the profile used at the very beginning.
-        AnalysisProfile profile = type.getAnalysisProfile();
-        eventBus.fireEventFromSource(new AnalysisProfileChangedEvent(profile), this);
+        setProfile(type.getAnalysisProfile());
     }
 
     public static void initialise(EventBus eventBus) {
