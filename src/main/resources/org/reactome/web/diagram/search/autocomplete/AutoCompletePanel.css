@@ -8,7 +8,7 @@
 
     float: left;
     max-width: 245px; /* grows and shrinks with the parent */
-    max-height: 230px;
+    max-height: 245px;
     overflow: auto !important;
     outline: none;
     font-family: Arial Unicode MS, Arial, sans-serif !important;
@@ -45,13 +45,25 @@
 }
 
 .dividerTitle {
-    float:left;
+    float: left;
     color: white;
     font-size: smaller;
     font-weight: bold;
     margin: 0 0 2px 5px;
 }
 
+.dividerClearAll {
+    float: right;
+    color: white;
+    font-size: smaller;
+    font-weight: bold;
+    margin: 0 3px 2px 0;
+    cursor: pointer;
+}
+
+.dividerClearAll:hover{
+    color: yellow;
+}
 
 .recentSearchesList {
     margin-bottom: 2px;

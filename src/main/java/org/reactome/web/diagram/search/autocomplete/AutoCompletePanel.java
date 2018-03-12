@@ -2,6 +2,7 @@ package org.reactome.web.diagram.search.autocomplete;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
@@ -17,8 +18,10 @@ import org.reactome.web.diagram.search.SearchPerformedEvent;
 import org.reactome.web.diagram.search.SearchPerformedHandler;
 import org.reactome.web.diagram.search.autocomplete.cells.AutoCompleteCell;
 import org.reactome.web.diagram.search.autocomplete.cells.RecentSearchCell;
+import org.reactome.web.diagram.search.events.AutoCompleteSelectedEvent;
 import org.reactome.web.diagram.search.events.OptionsCollapsedEvent;
 import org.reactome.web.diagram.search.events.OptionsExpandedEvent;
+import org.reactome.web.diagram.search.handlers.AutoCompleteSelectedHandler;
 import org.reactome.web.diagram.search.handlers.OptionsCollapsedHandler;
 import org.reactome.web.diagram.search.handlers.OptionsExpandedHandler;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
@@ -33,11 +36,14 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
         OptionsExpandedHandler, OptionsCollapsedHandler,
         AutoCompleteRequestedHandler, AutoCompleteResultsFactory.AutoCompleteResultsHandler {
 
-    private final static int AUTOCOMPLETE_SIZE = 9;
+    private final static int AUTOCOMPLETE_SIZE = 10;
     private final static int RECENT_SIZE = 9;
 
     private CellList<AutoCompleteResult> autoCompleteList;
+    private SingleSelectionModel<AutoCompleteResult> autoCompleteSelectionModel;
+
     private CellList<String> recentItemsList;
+    private SingleSelectionModel<String> recentSelectionModel;
 
     private Widget recentSearchesPanel;
 
@@ -49,14 +55,17 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
 
         // Create a cell to render each value.
         AutoCompleteCell autoCompleteCell = new AutoCompleteCell();
-        autoCompleteList = new CellList<>(autoCompleteCell);
+        autoCompleteList = new CellList<>(autoCompleteCell, CUSTOM_STYLE);
         autoCompleteList.setStyleName(RESOURCES.getCSS().autoCompleteList());
         autoCompleteList.setKeyboardSelectionPolicy(HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.DISABLED);
-        final SingleSelectionModel<AutoCompleteResult> selectionModel = new SingleSelectionModel<>();
-        autoCompleteList.setSelectionModel(selectionModel);
-        selectionModel.addSelectionChangeHandler(event -> {
-            AutoCompleteResult selected = selectionModel.getSelectedObject();
-            Console.info("new Selection: " + selected.getResult());
+        autoCompleteSelectionModel = new SingleSelectionModel<>();
+        autoCompleteList.setSelectionModel(autoCompleteSelectionModel);
+        autoCompleteSelectionModel.addSelectionChangeHandler(event -> {
+            AutoCompleteResult selected = autoCompleteSelectionModel.getSelectedObject();
+            if (selected != null) {
+                fireEvent(new AutoCompleteSelectedEvent(selected.getResult()));
+                makeVisible(false);
+            }
         });
 
         // Set the total row count. This isn't strictly necessary, but it affects
@@ -70,6 +79,10 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
     }
 
 
+    public HandlerRegistration addAutoCompleteSelectedHandler(AutoCompleteSelectedHandler handler) {
+        return addHandler(handler, AutoCompleteSelectedEvent.TYPE);
+    }
+
     @Override
     public void onAutoCompleteRequested(AutoCompleteRequestedEvent event) {
         requestAutoCompleteResults(event.getTerm());
@@ -77,7 +90,7 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
 
     @Override
     public void onSearchPerformed(SearchPerformedEvent event) {
-        getElement().getStyle().setDisplay(Style.Display.NONE);
+        makeVisible(false);
         RecentSearchesManager.get().insert(event.getTerm());
     }
 
@@ -85,28 +98,27 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
         if (tag != null && !tag.isEmpty()) {
             AutoCompleteResultsFactory.searchForTag(tag, this);
         } else {
+            makeVisible(false);
             clearAutoCompleteList();
         }
     }
 
     @Override
     public void onOptionsCollapsed(OptionsCollapsedEvent event) {
-        getElement().getStyle().setDisplay(Style.Display.INLINE);
+        makeVisible(true);
     }
 
     @Override
     public void onOptionsExpanded(OptionsExpandedEvent event) {
-        getElement().getStyle().setDisplay(Style.Display.NONE);
+        makeVisible(false);
     }
 
     @Override
     public void onAutoCompleteSearchResult(List<AutoCompleteResult> results) {
-        getElement().getStyle().setDisplay(Style.Display.INLINE);
-        autoCompleteList.setRowData(results);
-        List<String> items = RecentSearchesManager.get().getRecentItems();
-        if (!items.isEmpty()) {
-            recentItemsList.setRowData(items);
-            showRecentSearches(true);
+        if (!results.isEmpty()) {
+            makeVisible(true);
+            autoCompleteList.setRowData(results);
+            updateRecentItemsList();
         }
     }
 
@@ -120,15 +132,33 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
         Label title = new Label("Recent searches");
         title.setStyleName(RESOURCES.getCSS().dividerTitle());
 
+        Label cleanAllRecent = new Label("Clear history");
+        cleanAllRecent.setStyleName(RESOURCES.getCSS().dividerClearAll());
+        cleanAllRecent.addClickHandler( event -> {
+            RecentSearchesManager.get().clear();
+            updateRecentItemsList();
+        });
+
         FlowPanel divider = new FlowPanel();
         divider.setStyleName(RESOURCES.getCSS().divider());
         divider.add(title);
+        divider.add(cleanAllRecent);
 
         RecentSearchCell recentSearchCell = new RecentSearchCell();
-        recentItemsList = new CellList<>(recentSearchCell);
+        recentItemsList = new CellList<>(recentSearchCell, CUSTOM_STYLE);
         recentItemsList.setKeyboardSelectionPolicy(HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.DISABLED);
         recentItemsList.setStyleName(RESOURCES.getCSS().recentSearchesList());
         recentItemsList.setRowCount(RECENT_SIZE, true);
+
+        recentSelectionModel = new SingleSelectionModel<>();
+        recentItemsList.setSelectionModel(recentSelectionModel);
+        recentSelectionModel.addSelectionChangeHandler(event -> {
+            String selected = recentSelectionModel.getSelectedObject();
+            if (selected != null) {
+                fireEvent(new AutoCompleteSelectedEvent(selected));
+                makeVisible(false);
+            }
+        });
 
         FlowPanel panel = new FlowPanel();
         panel.add(divider);
@@ -148,6 +178,21 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
         }
     }
 
+    private void makeVisible(boolean visible) {
+        if (visible) {
+            getElement().getStyle().setDisplay(Style.Display.INLINE);
+        } else {
+            getElement().getStyle().setDisplay(Style.Display.NONE);
+        }
+    }
+
+    private void updateRecentItemsList(){
+        List<String> items = RecentSearchesManager.get().getRecentItems();
+        if (!items.isEmpty()) {
+            recentItemsList.setRowData(items);
+        }
+        showRecentSearches(!items.isEmpty());
+    }
 
     public static Resources RESOURCES;
     static {
@@ -170,6 +215,7 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
 
         @Source("../images/search_recent.png")
         ImageResource searchRecent();
+
     }
 
     /**
@@ -192,7 +238,29 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
 
         String dividerTitle();
 
-        String recentSearchesList();
+        String dividerClearAll();
 
+        String recentSearchesList();
+    }
+
+    static CellListResource CUSTOM_STYLE;
+    static {
+        CUSTOM_STYLE = GWT.create(CellListResource.class);
+        CUSTOM_STYLE.cellListStyle().ensureInjected();
+    }
+
+    public interface CellListResource extends CellList.Resources {
+
+        @CssResource.ImportedWithPrefix("diagram-CellListResource")
+        interface CustomCellList extends CellList.Style {
+            String CSS = "org/reactome/web/diagram/search/autocomplete/CustomCellList.css";
+        }
+
+        /**
+         * The styles used in this widget.
+         */
+        @Override
+        @Source(CustomCellList.CSS)
+        CustomCellList cellListStyle();
     }
 }

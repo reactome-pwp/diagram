@@ -22,6 +22,7 @@ public class SearchPanel extends FlowPanel {
         this.add(launcher);
 
         AutoCompletePanel autoCompletePanel = new AutoCompletePanel();
+        autoCompletePanel.addAutoCompleteSelectedHandler(launcher);
         launcher.addSearchPerformedHandler(autoCompletePanel);
         launcher.addAutoCompleteRequestedHandler(autoCompletePanel);
         launcher.addPanelCollapsedHandler(autoCompletePanel);

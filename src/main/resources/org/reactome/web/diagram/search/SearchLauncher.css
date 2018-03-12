@@ -17,7 +17,7 @@
 
 
 .launchPanelExpanded{
-    width: 315px;
+    width: 345px;
 }
 
 .launchPanelExpandedVertically {
@@ -127,7 +127,7 @@
     border: none;
     border-radius: 5px;
     color: white;
-    margin-left: 3px;
+    margin-left: 5px;
     margin-top: 5px;
     padding: 1px 1px 0 1px;
     outline: none;
@@ -173,7 +173,7 @@
     border: none;
     border-radius: 5px;
     color: white;
-    margin-left: 3px;
+    margin-left: 32px;
     margin-top: 5px;
     padding: 1px 1px 0 1px;
     outline: none;

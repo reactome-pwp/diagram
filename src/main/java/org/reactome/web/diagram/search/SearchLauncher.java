@@ -32,7 +32,7 @@ import java.util.List;
 public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         ContentLoadedHandler, ContentRequestedHandler, LayoutLoadedHandler, SearchBoxUpdatedHandler,
         InteractorsResourceChangedHandler, InteractorsLoadedHandler,
-        SearchBoxArrowKeysHandler, SearchKeyPressedHandler {
+        SearchBoxArrowKeysHandler, SearchKeyPressedHandler, AutoCompleteSelectedHandler{
 
     @SuppressWarnings("FieldCanBeLocal")
     private static String OPENING_TEXT = "Search for any diagram term ...";
@@ -44,7 +44,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     private SearchBox input = null;
     private PwpButton searchBtn = null;
     private IconButton clearBtn;
-    private IconToggleButton executeBtn;
+    private IconButton executeBtn;
     private IconToggleButton optionsBtn;
 
     private FlowPanel filtersPanel;
@@ -75,7 +75,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         clearBtn.addClickHandler(event -> clearSearch());
         this.add(clearBtn);
 
-        executeBtn = new IconToggleButton("", RESOURCES.clear(), RESOURCES.optionsClose());
+        executeBtn = new IconButton("", RESOURCES.clear());
         executeBtn.setStyleName(RESOURCES.getCSS().executeBtn());
         executeBtn.setVisible(true);
         executeBtn.setTitle("Search");
@@ -89,7 +89,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         optionsBtn.setTitle("Filter your results");
         optionsBtn.addClickHandler(this);
 //        optionsBtn.setEnabled(false);
-//        this.add(optionsBtn);
+        this.add(optionsBtn);
 
         filtersPanel = new FlowPanel();
         filtersPanel.setHeight(100 + "px");
@@ -136,6 +136,12 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     public HandlerRegistration addSuggestionResetHandler(SuggestionResetHandler handler){
         return addHandler(handler, SuggestionResetEvent.TYPE);
+    }
+
+    @Override
+    public void onAutoCompleteSelected(AutoCompleteSelectedEvent event) {
+       input.setValue(event.getTerm());
+       performSearch();
     }
 
     @Override
@@ -280,6 +286,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     }
 
     private void performSearch() {
+        Console.info("Performing search for [" + input.getText() + "]....");
         if(suggestionsProvider!=null) {
             String term = input.getText().trim();
             List<SearchResultObject> suggestions = suggestionsProvider.getSuggestions(term);
