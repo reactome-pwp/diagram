@@ -231,6 +231,9 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                 }
                 rtn = true;
             }
+        } else {
+            //In case the entity is not in the graph, any previous selection has to be reset.
+            resetSelection(true);
         }
         return rtn;
     }

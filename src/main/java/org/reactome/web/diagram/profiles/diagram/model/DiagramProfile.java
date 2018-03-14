@@ -39,6 +39,8 @@ public interface DiagramProfile extends Serializable {
 
     DiagramProfileNode getProcessnode();
 
+    DiagramProfileNode getEncapsulatednode();
+
     DiagramProfileNode getProtein();
 
     DiagramProfileNode getReaction();

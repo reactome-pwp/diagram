@@ -12,6 +12,7 @@ import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.GraphObjectFactory;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.loader.AnalysisDataLoader;
 import org.reactome.web.diagram.data.loader.AnalysisTokenValidator;
@@ -20,7 +21,6 @@ import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.Console;
-import org.reactome.web.pwp.model.client.classes.DatabaseObject;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -37,6 +37,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         GraphObjectHoveredHandler, GraphObjectSelectedHandler,
         DiagramObjectsFlagRequestHandler, DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler,
         IllustrationSelectedHandler,
+        DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         FireworksOpenedHandler, FlaggedElementsLoader.Handler {
 
     private Context context;
@@ -94,6 +95,9 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
 
         eventBus.addHandler(FireworksOpenedEvent.TYPE, this);
+
+        eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
+        eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
     }
 
     @Override
@@ -203,11 +207,20 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     }
 
     @Override
-    public void flaggedElementsLoaded(String term, Collection<DatabaseObject> toFlag, boolean notify) {
+    public void flaggedElementsLoaded(String term, Collection<String> toFlag, boolean notify) {
         Set<DiagramObject> flagged = new HashSet<>();
-        for (DatabaseObject object : toFlag) {
-            GraphObject graphObject = context.getContent().getDatabaseObject(object.getDbId());
-            flagged.addAll(graphObject.getDiagramObjects());
+        for (String stId : toFlag) {
+            GraphObject graphObject = context.getContent().getDatabaseObject(stId);
+            if (graphObject != null) {
+                flagged.addAll(graphObject.getDiagramObjects());
+                //Next step gets all glyph in the diagram containing the target object
+                if (graphObject instanceof GraphPhysicalEntity) {
+                    GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+                    for (GraphPhysicalEntity parentLocation : pe.getParentLocations()) {
+                        flagged.addAll(parentLocation.getDiagramObjects());
+                    }
+                }
+            }
         }
         context.setFlagged(term, flagged);
         eventBus.fireEventFromSource(new DiagramObjectsFlaggedEvent(term, flagged, notify), this);
@@ -463,5 +476,15 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
                 eventBus.fireEventFromSource(new SearchKeyPressedEvent(), this);
             }
         }
+    }
+
+    @Override
+    public void onDiagramProfileChanged(DiagramProfileChangedEvent event) {
+        fireEvent(event);
+    }
+
+    @Override
+    public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
+        fireEvent(event);
     }
 }

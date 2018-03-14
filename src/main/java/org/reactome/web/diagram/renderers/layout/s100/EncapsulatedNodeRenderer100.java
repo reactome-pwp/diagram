@@ -10,13 +10,13 @@ import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
 import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
-import org.reactome.web.diagram.renderers.layout.abs.ProcessNodeAbstractRenderer;
+import org.reactome.web.diagram.renderers.layout.abs.EncapsulatedNodeAbstractRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class ProcessNodeRenderer100 extends ProcessNodeAbstractRenderer {
+public class EncapsulatedNodeRenderer100 extends EncapsulatedNodeAbstractRenderer {
     @Override
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         if(!isVisible(item)) return;
@@ -38,21 +38,23 @@ public class ProcessNodeRenderer100 extends ProcessNodeAbstractRenderer {
     @Override
     public void shape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed) {
         ctx.beginPath();
-        ctx.rect(
+        ctx.hexagonNode(
                 prop.getX(),
                 prop.getY(),
                 prop.getWidth(),
-                prop.getHeight()
+                prop.getHeight(),
+                RendererProperties.PROCESS_NODE_INSET_WIDTH
         );
     }
 
     protected void innerShape(AdvancedContext2d ctx, NodeProperties prop) {
         ctx.beginPath();
-        ctx.rect(
+        ctx.hexagonNode(
                 prop.getX() + RendererProperties.PROCESS_NODE_INSET_WIDTH,
                 prop.getY() + RendererProperties.PROCESS_NODE_INSET_WIDTH,
                 prop.getWidth() - RendererProperties.PROCESS_NODE_INSET_WIDTH * 2,
-                prop.getHeight() - RendererProperties.PROCESS_NODE_INSET_WIDTH * 2
+                prop.getHeight() - RendererProperties.PROCESS_NODE_INSET_WIDTH * 2,
+                RendererProperties.PROCESS_NODE_INSET_WIDTH * .75
         );
     }
 

@@ -160,6 +160,17 @@
     "fadeOutText": "#2020FF",
     "lighterText": "#1010FF"
   },
+  "encapsulatednode": {
+    "fill": "#A5D791",
+    "fadeOutFill": "#D2CC97",
+    "lighterFill": "#DEE7C8",
+    "stroke": "#85AF75",
+    "fadeOutStroke": "#BFC78F",
+    "lighterStroke": "#9DBF91",
+    "text": "#0000FF",
+    "fadeOutText": "#2020FF",
+    "lighterText": "#1010FF"
+  },
   "protein": {
     "fill": "#8DC7BB",
     "fadeOutFill": "#C8C6A8",

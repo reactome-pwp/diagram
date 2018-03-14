@@ -6,14 +6,14 @@ import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.data.layout.category.ShapeCategory;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
-import org.reactome.web.diagram.renderers.layout.abs.ChemicalAbstractRenderer;
+import org.reactome.web.diagram.renderers.layout.abs.ChemicalDrugAbstractRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class ChemicalDrugRenderer100 extends ChemicalAbstractRenderer {
+public class ChemicalDrugRenderer100 extends ChemicalDrugAbstractRenderer {
     @Override
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         super.draw(ctx, item, factor, offset);
