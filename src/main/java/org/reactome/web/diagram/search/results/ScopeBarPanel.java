@@ -20,8 +20,8 @@ import java.util.List;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class ScopeBarPanel extends FlowPanel implements ClickHandler {
-    private List<Button> btns = new LinkedList<>();
-    private Button activeButton;
+    private List<ScopeButton> btns = new LinkedList<>();
+    private ScopeButton activeButton;
     private Handler handler;
 
     public interface Handler {
@@ -34,15 +34,7 @@ public class ScopeBarPanel extends FlowPanel implements ClickHandler {
     }
 
     public void addButton(String text, ImageResource imageResource) {
-        Image buttonImg = new Image(imageResource);
-        Label buttonLbl = new Label(text);
-
-        FlowPanel fp = new FlowPanel();
-        fp.add(buttonImg);
-        fp.add(buttonLbl);
-
-        SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(fp.toString());
-        Button btn = new Button(safeHtml, this);
+        ScopeButton btn = new ScopeButton(text, imageResource, this);
         btns.add(btn);
         if (btns.size() == 1) {
             setActiveButton(btn);
@@ -52,17 +44,56 @@ public class ScopeBarPanel extends FlowPanel implements ClickHandler {
 
     @Override
     public void onClick(ClickEvent event) {
-        Button button = (Button) event.getSource();
+        ScopeButton button = (ScopeButton) event.getSource();
         if (button.equals(activeButton)) return;
         setActiveButton(button);
 
         handler.onScopeChanged(btns.indexOf(button));
     }
 
-    public void setActiveButton(Button button) {
+    public void setFound(int buttonIndex, int number) {
+        ScopeButton btn = btns.get(buttonIndex);
+        if (btn != null) {
+            btn.setNumber(number);
+        }
+    }
+
+    private void setActiveButton(ScopeButton button) {
         if (activeButton!=null) activeButton.removeStyleName(RESOURCES.getCSS().buttonSelected());
         button.addStyleName(RESOURCES.getCSS().buttonSelected());
         activeButton = button;
+    }
+
+    private class ScopeButton extends Button {
+        private FlowPanel fp;
+        private Image buttonImg;
+        private Label buttonLbl;
+
+        private String text;
+        private int number;
+
+        public ScopeButton(String text, ImageResource imageResource, ClickHandler handler) {
+            this.text = text;
+            buttonImg = new Image(imageResource);
+            buttonLbl = new Label(text);
+
+            fp = new FlowPanel();
+            fp.add(buttonImg);
+            fp.add(buttonLbl);
+            addClickHandler(handler);
+            update();
+        }
+
+        public void setNumber(int number) {
+            this.number = number;
+            buttonLbl.setText(text + " (" + number + ")");
+            update();
+        }
+
+        private void update() {
+            SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(fp.toString());
+            setHTML(safeHtml);
+        }
     }
 
     public static Resources RESOURCES;
