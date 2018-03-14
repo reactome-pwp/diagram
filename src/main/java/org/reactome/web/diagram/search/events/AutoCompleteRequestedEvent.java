@@ -1,6 +1,7 @@
-package org.reactome.web.diagram.search;
+package org.reactome.web.diagram.search.events;
 
 import com.google.gwt.event.shared.GwtEvent;
+import org.reactome.web.diagram.search.handlers.AutoCompleteRequestedHandler;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>

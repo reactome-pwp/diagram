@@ -12,15 +12,15 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.SingleSelectionModel;
-import org.reactome.web.diagram.search.AutoCompleteRequestedEvent;
-import org.reactome.web.diagram.search.AutoCompleteRequestedHandler;
 import org.reactome.web.diagram.search.SearchPerformedEvent;
 import org.reactome.web.diagram.search.SearchPerformedHandler;
 import org.reactome.web.diagram.search.autocomplete.cells.AutoCompleteCell;
 import org.reactome.web.diagram.search.autocomplete.cells.RecentSearchCell;
+import org.reactome.web.diagram.search.events.AutoCompleteRequestedEvent;
 import org.reactome.web.diagram.search.events.AutoCompleteSelectedEvent;
 import org.reactome.web.diagram.search.events.OptionsCollapsedEvent;
 import org.reactome.web.diagram.search.events.OptionsExpandedEvent;
+import org.reactome.web.diagram.search.handlers.AutoCompleteRequestedHandler;
 import org.reactome.web.diagram.search.handlers.AutoCompleteSelectedHandler;
 import org.reactome.web.diagram.search.handlers.OptionsCollapsedHandler;
 import org.reactome.web.diagram.search.handlers.OptionsExpandedHandler;
@@ -105,7 +105,7 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
 
     @Override
     public void onOptionsCollapsed(OptionsCollapsedEvent event) {
-        makeVisible(true);
+//        makeVisible(true);
     }
 
     @Override
@@ -168,6 +168,10 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
 
     private void clearAutoCompleteList() {
         autoCompleteList.setRowCount(0);
+    }
+
+    private void clearRecentSearchesList() {
+        recentItemsList.setRowCount(0);
     }
 
     private void showRecentSearches(boolean visible) {

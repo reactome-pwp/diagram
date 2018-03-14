@@ -11,11 +11,11 @@ public class SearchPerformedEvent extends GwtEvent<SearchPerformedHandler> {
     public static Type<SearchPerformedHandler> TYPE = new Type<>();
 
     private String term;
-    private List<SearchResultObject> suggestions;
+    private List<SearchResultObject> suggestions; //TODO remove this in the clean up
 
-    public SearchPerformedEvent(String term, List<SearchResultObject> suggestions) {
+    public SearchPerformedEvent(String term) {
         this.term = term;
-        this.suggestions = suggestions;
+//        this.suggestions = suggestions; //TODO remove this in the clean up
     }
 
     @Override
@@ -32,6 +32,7 @@ public class SearchPerformedEvent extends GwtEvent<SearchPerformedHandler> {
         return term;
     }
 
+    //TODO remove this in the clean up
     public List<SearchResultObject> getSuggestions() {
         return suggestions;
     }

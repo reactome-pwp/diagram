@@ -24,8 +24,6 @@ import org.reactome.web.diagram.search.provider.SuggestionsProviderImpl;
 import org.reactome.web.diagram.search.searchbox.*;
 import org.reactome.web.diagram.util.Console;
 
-import java.util.List;
-
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
@@ -286,11 +284,10 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     }
 
     private void performSearch() {
-        Console.info("Performing search for [" + input.getText() + "]....");
         if(suggestionsProvider!=null) {
             String term = input.getText().trim();
-            List<SearchResultObject> suggestions = suggestionsProvider.getSuggestions(term);
-            fireEvent(new SearchPerformedEvent(term, suggestions));
+//            List<SearchResultObject> suggestions = suggestionsProvider.getSuggestions(term);
+            fireEvent(new SearchPerformedEvent(term));
         }
         showHideClearBtn();
     }
