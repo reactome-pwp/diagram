@@ -211,12 +211,14 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         Set<DiagramObject> flagged = new HashSet<>();
         for (String stId : toFlag) {
             GraphObject graphObject = context.getContent().getDatabaseObject(stId);
-            flagged.addAll(graphObject.getDiagramObjects());
-            //Next step gets all glyph in the diagram containing the target object
-            if(graphObject instanceof GraphPhysicalEntity) {
-                GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
-                for (GraphPhysicalEntity parentLocation : pe.getParentLocations()) {
-                    flagged.addAll(parentLocation.getDiagramObjects());
+            if (graphObject != null) {
+                flagged.addAll(graphObject.getDiagramObjects());
+                //Next step gets all glyph in the diagram containing the target object
+                if (graphObject instanceof GraphPhysicalEntity) {
+                    GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+                    for (GraphPhysicalEntity parentLocation : pe.getParentLocations()) {
+                        flagged.addAll(parentLocation.getDiagramObjects());
+                    }
                 }
             }
         }
