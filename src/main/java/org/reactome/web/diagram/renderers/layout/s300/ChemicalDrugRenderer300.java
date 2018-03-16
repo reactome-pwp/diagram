@@ -3,10 +3,7 @@ package org.reactome.web.diagram.renderers.layout.s300;
 import org.reactome.web.diagram.data.graph.model.GraphChemicalDrug;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.common.DiagramBox;
-import org.reactome.web.diagram.data.layout.Coordinate;
-import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.data.layout.Node;
-import org.reactome.web.diagram.data.layout.SummaryItem;
+import org.reactome.web.diagram.data.layout.*;
 import org.reactome.web.diagram.data.layout.category.ShapeCategory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
@@ -66,7 +63,8 @@ public class ChemicalDrugRenderer300 extends ChemicalDrugAbstractRenderer {
         ctx.save();
         GraphObject graphObject = node.getGraphObject();
         if(graphObject instanceof GraphChemicalDrug) {
-            DiagramBox box = new DiagramBox(node.getProp()).transform(factor, offset);
+            NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+            DiagramBox box = new DiagramBox(prop);
 
             double splitBasis =  box.getHeight() < box.getWidth()/2 ? box.getHeight() : box.getWidth()/2;
             GraphChemicalDrug cd = (GraphChemicalDrug) graphObject;
@@ -81,6 +79,8 @@ public class ChemicalDrugRenderer300 extends ChemicalDrugAbstractRenderer {
             DiagramBox textBox = box.splitHorizontally(splitBasis).get(1); //box is now the remaining of item box removing the image
             TextRenderer textRenderer = new TextRenderer(fontSize, RendererProperties.NODE_TEXT_PADDING);
             textRenderer.drawTextMultiLine(ctx, displayName, NodePropertiesFactory.get(textBox));
+
+            rxText(ctx, prop, factor);
         }
         ctx.restore();
     }
