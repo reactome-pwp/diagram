@@ -35,6 +35,18 @@
     "fadeOutText": "#000000",
     "lighterText": "#000000"
   },
+  "chemicaldrug": {
+    "fill": "#ABACD0",
+    "fadeOutFill": "#CCDECC",
+    "lighterFill": "#E2FFE2",
+    "stroke": "#000000",
+    "fadeOutStroke": "#6C6C6C",
+    "lighterStroke": "#000000",
+    "lineWidth": "0.5",
+    "text": "#A00000",
+    "fadeOutText": "#000000",
+    "lighterText": "#000000"
+  },
   "compartment": {
     "fill": "rgba(248, 244, 244, 0.5)",
     "fadeOutFill": "rgba(248, 244, 244, 0.5)",
