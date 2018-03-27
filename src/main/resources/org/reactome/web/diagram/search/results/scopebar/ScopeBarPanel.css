@@ -1,9 +1,9 @@
 .container {
     background-color: rgba(88, 195, 229, 0.9);
-    padding: 5px;
-    width: 335px;
+    padding: 4px 5px 5px 4px;
+    width: 333px;
 
-    border-radius: 7px 7px 0 0;
+    border-radius: 6px 6px 0 0;
 
     display: flex;
     flex-direction: row;

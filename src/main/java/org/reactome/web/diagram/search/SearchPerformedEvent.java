@@ -10,11 +10,11 @@ import java.util.List;
 public class SearchPerformedEvent extends GwtEvent<SearchPerformedHandler> {
     public static Type<SearchPerformedHandler> TYPE = new Type<>();
 
-    private String term;
+    private SearchArguments searchArguments;
     private List<SearchResultObject> suggestions; //TODO remove this in the clean up
 
-    public SearchPerformedEvent(String term) {
-        this.term = term;
+    public SearchPerformedEvent(SearchArguments args) {
+        this.searchArguments = args;
 //        this.suggestions = suggestions; //TODO remove this in the clean up
     }
 
@@ -28,8 +28,8 @@ public class SearchPerformedEvent extends GwtEvent<SearchPerformedHandler> {
         handler.onSearchPerformed(this);
     }
 
-    public String getTerm() {
-        return term;
+    public SearchArguments getSearchArguments() {
+        return searchArguments;
     }
 
     //TODO remove this in the clean up

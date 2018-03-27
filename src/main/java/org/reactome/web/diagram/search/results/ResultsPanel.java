@@ -2,51 +2,62 @@ package org.reactome.web.diagram.search.results;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.view.client.ListDataProvider;
-import org.reactome.web.diagram.search.SearchLauncher;
+import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchPerformedEvent;
 import org.reactome.web.diagram.search.SearchPerformedHandler;
-import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.events.AutoCompleteRequestedEvent;
+import org.reactome.web.diagram.search.events.PanelCollapsedEvent;
+import org.reactome.web.diagram.search.events.PanelExpandedEvent;
 import org.reactome.web.diagram.search.handlers.AutoCompleteRequestedHandler;
+import org.reactome.web.diagram.search.handlers.ResultSelectedHandler;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
+import org.reactome.web.diagram.search.results.scopebar.ScopeBarPanel;
 import org.reactome.web.diagram.util.Console;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPanel.Handler,
-        SearchPerformedHandler, AutoCompleteRequestedHandler{
+        SearchPerformedHandler, AutoCompleteRequestedHandler {
     private EventBus eventBus;
-//    private final SingleSelectionModel<SearchResultObject> selectionModel;
-    private CellList<SearchResultObject> suggestions;
-    private ListDataProvider<SearchResultObject> dataProvider;
 
     private DeckLayoutPanel content;
+    private ScopeBarPanel scopeBar;
+    private List<ResultsWidget> resultsWidgets = new ArrayList<>();
+    private ResultsWidget activeResultWidget;
+
+    private SearchArguments searchArguments;
 
     public ResultsPanel(EventBus eventBus) {
         this.eventBus = eventBus;
         this.sinkEvents(Event.ONCLICK);
 
-        ScopeBarPanel scopeBar = new ScopeBarPanel(this);
-        scopeBar.addButton("This diagram", SearchLauncher.RESOURCES.options());
-        scopeBar.addButton("Other diagrams", SearchLauncher.RESOURCES.options());
-        scopeBar.addButton("In selection", SearchLauncher.RESOURCES.options());
+        resultsWidgets.add(new InDiagramSearchPanel(eventBus));
+        resultsWidgets.add(new OtherDiagramSearchPanel());
+        resultsWidgets.add(new InSelectionSearchPanel());
+
+        scopeBar = new ScopeBarPanel(this);
+        scopeBar.addButton("This diagram", ScopeBarPanel.RESOURCES.scopeLocal());
+        scopeBar.addButton("Other diagrams", ScopeBarPanel.RESOURCES.scopeGlobal());
+        scopeBar.addButton("In selection", ScopeBarPanel.RESOURCES.scopeTarget());
 
         content = new DeckLayoutPanel();
         content.setStyleName(RESOURCES.getCSS().content());
-        content.add(new Label("First tab"));
-        content.add(new Label("Second tab"));
-        content.add(new Label("Third tab"));
-        content.showWidget(0);
+        resultsWidgets.forEach(w -> content.add(w.asWidget()));
+        setActiveResultsWidget(0);
         content.setAnimationVertical(false);
         content.setAnimationDuration(500);
 
@@ -54,11 +65,18 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         main.setStyleName(RESOURCES.getCSS().main());
         main.add(scopeBar);
         main.add(content);
-        show(false);
-
         add(main);
+
+        show(false);
     }
 
+    public HandlerRegistration addClickHandler(ClickHandler handler){
+        return this.addHandler(handler, ClickEvent.getType());
+    }
+
+    public void addResultSelectedHandler(ResultSelectedHandler handler) {
+        resultsWidgets.forEach(resultsWidget -> resultsWidget.addResultSelectedHandler(handler));
+    }
 
     @Override
     public void onAutoCompleteRequested(AutoCompleteRequestedEvent event) {
@@ -67,26 +85,47 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
     @Override
     public void onSearchPerformed(SearchPerformedEvent event) {
-        String term = event.getTerm();
-        if (term == null || term.isEmpty()) return;
-//        show(true);
+        searchArguments = event.getSearchArguments();
+        boolean isValid = searchArguments.hasValidTerm();
+        show(isValid);
+        if(isValid) {
+
+            scopeBar.setResultsNumber(0, 99);
+            scopeBar.setResultsNumber(1, 99);
+            scopeBar.setResultsNumber(2, 0);
+
+            updateResult();
+        }
     }
 
     @Override
     public void onScopeChanged(int selected) {
         Console.info("   >>>> Scope changed to " + selected);
-        content.showWidget(selected);
+        setActiveResultsWidget(selected);
+        updateResult();
     }
 
-//    private Widget getScopeBar() {
-//        FlowPanel scopeBarPanel = new FlowPanel();
-//        scopeBarPanel.setStyleName(RESOURCES.getCSS().scopeBarPanel());
-//        scopeBarPanel.add(this.molecules = getButton("Molecules", RESOURCES.molecules()));
-//        scopeBarPanel.add(this.pathways = getButton("Pathways", RESOURCES.pathways()));
-//        scopeBarPanel.add(this.interactors = getButton("Interactors", RESOURCES.interactors()));
-//
-//        return scopeBarPanel;
-//    }
+    @Override
+    public void onPanelCollapsed(PanelCollapsedEvent event) {
+        super.onPanelCollapsed(event);
+    }
+
+    @Override
+    public void onPanelExpanded(PanelExpandedEvent event) {
+        show(searchArguments.hasValidTerm());
+    }
+
+    private void updateResult() {
+//        Console.info(" >>> Updating for " + searchArguments.getTerm());
+        activeResultWidget.updateResults(searchArguments);
+    }
+
+    private void setActiveResultsWidget(int index) {
+        activeResultWidget = resultsWidgets.get(index);
+        if (activeResultWidget != null) {
+            content.showWidget(index);
+        }
+    }
 
     private void show(boolean visible) {
         if (visible) {
@@ -127,5 +166,26 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
         String content();
 
+    }
+
+    static CellListResource CUSTOM_LIST_STYLE;
+    static {
+        CUSTOM_LIST_STYLE = GWT.create(CellListResource.class);
+        CUSTOM_LIST_STYLE.cellListStyle().ensureInjected();
+    }
+
+    public interface CellListResource extends CellList.Resources {
+
+        @CssResource.ImportedWithPrefix("diagram-CellListResource")
+        interface CustomCellList extends CellList.Style {
+            String CSS = "org/reactome/web/diagram/search/results/ResultsList.css";
+        }
+
+        /**
+         * The styles used in this widget.
+         */
+        @Override
+        @Source(CustomCellList.CSS)
+        CustomCellList cellListStyle();
     }
 }

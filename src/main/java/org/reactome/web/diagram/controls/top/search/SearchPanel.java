@@ -7,6 +7,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.search.SearchLauncher;
 import org.reactome.web.diagram.search.autocomplete.AutoCompletePanel;
+import org.reactome.web.diagram.search.detailspanel.DetailsInfoPanel;
 import org.reactome.web.diagram.search.results.ResultsPanel;
 
 /**
@@ -42,6 +43,7 @@ public class SearchPanel extends FlowPanel {
 //        this.add(suggestions);
 
         ResultsPanel results = new ResultsPanel(eventBus);
+        results.addClickHandler(event -> launcher.setFocus(true));
         launcher.addSearchPerformedHandler(results);
         launcher.addAutoCompleteRequestedHandler(results);
         launcher.addPanelCollapsedHandler(results);
@@ -53,6 +55,14 @@ public class SearchPanel extends FlowPanel {
 //        launcher.addPanelCollapsedHandler(infoPanel);
 //        launcher.addPanelExpandedHandler(infoPanel);
 //        this.add(infoPanel);
+
+        DetailsInfoPanel details = new DetailsInfoPanel(eventBus);
+        results.addResultSelectedHandler(details);
+        launcher.addSearchPerformedHandler(details);
+        launcher.addAutoCompleteRequestedHandler(details);
+        launcher.addPanelCollapsedHandler(details);
+        launcher.addPanelExpandedHandler(details);
+        this.add(details);
     }
 
 

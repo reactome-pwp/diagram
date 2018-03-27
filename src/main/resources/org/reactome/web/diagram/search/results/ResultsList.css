@@ -1,0 +1,16 @@
+.cellListEvenItem {
+    cursor: pointer;
+}
+.cellListKeyboardSelectedItem {}
+.cellListOddItem {
+    cursor: pointer;
+}
+.cellListSelectedItem {
+    background-color: #066b9e !important;
+}
+
+.cellListSelectedItem div {
+    color: white !important; /* Override any child colors upon selection */
+}
+
+.cellListWidget {}

@@ -34,6 +34,7 @@ public class SearchBox extends TextBox implements KeyUpHandler, KeyDownHandler {
             }
         };
         this.value = "";
+
         addKeyUpHandler(this);
         addKeyDownHandler(this);
     }
@@ -53,6 +54,8 @@ public class SearchBox extends TextBox implements KeyUpHandler, KeyDownHandler {
             case KeyCodes.KEY_UP:
             case KeyCodes.KEY_DOWN:
             case KeyCodes.KEY_ESCAPE:
+            case KeyCodes.KEY_ENTER:
+            case KeyCodes.KEY_MAC_ENTER:
                 event.stopPropagation(); event.preventDefault();
                 fireEvent(new SearchBoxArrowKeysEvent(keyCode));
         }
@@ -68,7 +71,10 @@ public class SearchBox extends TextBox implements KeyUpHandler, KeyDownHandler {
             case KeyCodes.KEY_UP:
             case KeyCodes.KEY_DOWN:
             case KeyCodes.KEY_ESCAPE:
+            case KeyCodes.KEY_ENTER:
+            case KeyCodes.KEY_MAC_ENTER:
                 event.stopPropagation(); event.preventDefault();
+                timer.cancel();
         }
     }
 

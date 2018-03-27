@@ -15,17 +15,17 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class AutoCompleteResultsFactory {
+public abstract class AutoCompleteResultsFactory {
 
     private static final String SEARCH = "/content/getTags?tagName=##tag##";
     private static Request request;
 
-    public interface AutoCompleteResultsHandler {
+    public interface Handler {
         void onAutoCompleteSearchResult(List<AutoCompleteResult> results);
         void onAutoCompleteError();
     }
 
-    public static void searchForTag(String tag, AutoCompleteResultsHandler handler) {
+    public static void searchForTag(String tag, Handler handler) {
 
         String url = SEARCH.replace("##tag##", UriUtils.encode(tag));
 
@@ -53,6 +53,12 @@ public class AutoCompleteResultsFactory {
             });
         }catch (RequestException ex) {
             handler.onAutoCompleteError();
+        }
+    }
+
+    public static void cancel() {
+        if (request != null) {
+            request.cancel();
         }
     }
 

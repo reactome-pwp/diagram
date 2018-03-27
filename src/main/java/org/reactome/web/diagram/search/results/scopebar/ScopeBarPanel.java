@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.search.results;
+package org.reactome.web.diagram.search.results.scopebar;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -6,12 +6,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -51,7 +46,7 @@ public class ScopeBarPanel extends FlowPanel implements ClickHandler {
         handler.onScopeChanged(btns.indexOf(button));
     }
 
-    public void setFound(int buttonIndex, int number) {
+    public void setResultsNumber(int buttonIndex, int number) {
         ScopeButton btn = btns.get(buttonIndex);
         if (btn != null) {
             btn.setNumber(number);
@@ -62,38 +57,6 @@ public class ScopeBarPanel extends FlowPanel implements ClickHandler {
         if (activeButton!=null) activeButton.removeStyleName(RESOURCES.getCSS().buttonSelected());
         button.addStyleName(RESOURCES.getCSS().buttonSelected());
         activeButton = button;
-    }
-
-    private class ScopeButton extends Button {
-        private FlowPanel fp;
-        private Image buttonImg;
-        private Label buttonLbl;
-
-        private String text;
-        private int number;
-
-        public ScopeButton(String text, ImageResource imageResource, ClickHandler handler) {
-            this.text = text;
-            buttonImg = new Image(imageResource);
-            buttonLbl = new Label(text);
-
-            fp = new FlowPanel();
-            fp.add(buttonImg);
-            fp.add(buttonLbl);
-            addClickHandler(handler);
-            update();
-        }
-
-        public void setNumber(int number) {
-            this.number = number;
-            buttonLbl.setText(text + " (" + number + ")");
-            update();
-        }
-
-        private void update() {
-            SafeHtml safeHtml = SafeHtmlUtils.fromSafeConstant(fp.toString());
-            setHTML(safeHtml);
-        }
     }
 
     public static Resources RESOURCES;
@@ -111,6 +74,15 @@ public class ScopeBarPanel extends FlowPanel implements ClickHandler {
          */
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
+
+        @Source("../../images/scope_global.png")
+        ImageResource scopeGlobal();
+
+        @Source("../../images/scope_local.png")
+        ImageResource scopeLocal();
+
+        @Source("../../images/scope_target.png")
+        ImageResource scopeTarget();
     }
 
     /**
@@ -121,7 +93,7 @@ public class ScopeBarPanel extends FlowPanel implements ClickHandler {
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String CSS = "org/reactome/web/diagram/search/results/ScopeBarPanel.css";
+        String CSS = "org/reactome/web/diagram/search/results/scopebar/ScopeBarPanel.css";
 
         String container();
 

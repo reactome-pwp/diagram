@@ -15,12 +15,11 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.common.IconToggleButton;
 import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.search.events.*;
 import org.reactome.web.diagram.search.handlers.*;
-import org.reactome.web.diagram.search.provider.SuggestionsProvider;
-import org.reactome.web.diagram.search.provider.SuggestionsProviderImpl;
 import org.reactome.web.diagram.search.searchbox.*;
 import org.reactome.web.diagram.util.Console;
 
@@ -37,7 +36,8 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     private static int FOCUS_IN_TEXTBOX_DELAY = 300;
 
     private EventBus eventBus;
-    private SuggestionsProvider<SearchResultObject> suggestionsProvider;
+    private Context context;
+//    private SuggestionsProvider<SearchResultObject> suggestionsProvider;
 
     private SearchBox input = null;
     private PwpButton searchBtn = null;
@@ -64,6 +64,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         this.input = new SearchBox();
         this.input.setStyleName(RESOURCES.getCSS().input());
         this.input.getElement().setPropertyString("placeholder", OPENING_TEXT);
+        this.input.getElement().setPropertyBoolean("spellcheck", false);
         this.add(input);
 
         clearBtn = new IconButton("", RESOURCES.clear());
@@ -144,10 +145,13 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     @Override
     public void onArrowKeysPressed(SearchBoxArrowKeysEvent event) {
-        if(event.getValue() == KeyCodes.KEY_ESCAPE) {
+        Integer keyPressed = event.getValue();
+        if(keyPressed == KeyCodes.KEY_ESCAPE) {
             setFocus(false);
             this.collapsePanel();
             clearSearch();
+        } else if (keyPressed == KeyCodes.KEY_ENTER || keyPressed == KeyCodes.KEY_MAC_ENTER) {
+            performSearch();
         }
     }
 
@@ -175,13 +179,15 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     public void onContentRequested(ContentRequestedEvent event) {
         this.input.setValue(""); // Clear searchbox value and fire the proper event
         this.collapsePanel();
-        this.suggestionsProvider = null;
+//        this.suggestionsProvider = null;
+        this.context = null;
     }
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
         this.searchBtn.setEnabled(true);
-        this.suggestionsProvider = new SuggestionsProviderImpl(event.getContext());
+//        this.suggestionsProvider = new SuggestionsProviderImpl(event.getContext());
+        this.context = event.getContext();
         fireEvent(new SuggestionResetEvent());
     }
 
@@ -284,14 +290,12 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     }
 
     private void performSearch() {
-        if(suggestionsProvider!=null) {
-            String term = input.getText().trim();
-//            List<SearchResultObject> suggestions = suggestionsProvider.getSuggestions(term);
-            fireEvent(new SearchPerformedEvent(term));
-        }
+        String term = input.getText().trim();
+        SearchArguments searchArgs = new SearchArguments(term, context.getContent().getStableId());
+        Console.info(" >>> <<<< Performing search for term " + searchArgs.toString());
+        fireEvent(new SearchPerformedEvent(searchArgs));
         showHideClearBtn();
     }
-
 
     private void showHideClearBtn() {
         clearBtn.setVisible(!input.getText().isEmpty());

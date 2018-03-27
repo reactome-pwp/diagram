@@ -46,6 +46,7 @@
         <reactome.web.analysis-client>1.4.0</reactome.web.analysis-client>
         <reactome.web.model>2.0.0</reactome.web.model>
         <reactome.web.carrousel>1.0.2</reactome.web.carrousel>
+        <reactome.web.scroller>1.0.2</reactome.web.scroller>
         <reactome.web.quadtree>1.2.0</reactome.web.quadtree>
 
         <reactome.utils.version>1.0.3</reactome.utils.version>
@@ -108,6 +109,12 @@
             <groupId>org.reactome.web</groupId>
             <artifactId>carrousel</artifactId>
             <version>${reactome.web.carrousel}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.reactome.web</groupId>
+            <artifactId>scroller</artifactId>
+            <version>${reactome.web.scroller}</version>
         </dependency>
 
         <!-- QuadTree implementation for GWT -->

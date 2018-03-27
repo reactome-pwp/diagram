@@ -16,10 +16,7 @@ import org.reactome.web.diagram.search.SearchPerformedEvent;
 import org.reactome.web.diagram.search.SearchPerformedHandler;
 import org.reactome.web.diagram.search.autocomplete.cells.AutoCompleteCell;
 import org.reactome.web.diagram.search.autocomplete.cells.RecentSearchCell;
-import org.reactome.web.diagram.search.events.AutoCompleteRequestedEvent;
-import org.reactome.web.diagram.search.events.AutoCompleteSelectedEvent;
-import org.reactome.web.diagram.search.events.OptionsCollapsedEvent;
-import org.reactome.web.diagram.search.events.OptionsExpandedEvent;
+import org.reactome.web.diagram.search.events.*;
 import org.reactome.web.diagram.search.handlers.AutoCompleteRequestedHandler;
 import org.reactome.web.diagram.search.handlers.AutoCompleteSelectedHandler;
 import org.reactome.web.diagram.search.handlers.OptionsCollapsedHandler;
@@ -34,7 +31,7 @@ import java.util.List;
  */
 public class AutoCompletePanel extends AbstractAccordionPanel implements SearchPerformedHandler,
         OptionsExpandedHandler, OptionsCollapsedHandler,
-        AutoCompleteRequestedHandler, AutoCompleteResultsFactory.AutoCompleteResultsHandler {
+        AutoCompleteRequestedHandler, AutoCompleteResultsFactory.Handler {
 
     private final static int AUTOCOMPLETE_SIZE = 10;
     private final static int RECENT_SIZE = 9;
@@ -90,8 +87,9 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
 
     @Override
     public void onSearchPerformed(SearchPerformedEvent event) {
+        AutoCompleteResultsFactory.cancel();
         makeVisible(false);
-        RecentSearchesManager.get().insert(event.getTerm());
+        RecentSearchesManager.get().insert(event.getSearchArguments().getTerm());
     }
 
     public void requestAutoCompleteResults(String tag) {
@@ -127,6 +125,10 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
         Console.error("Error retrieving autocomplete suggestions"); //TODO treat this
     }
 
+    @Override
+    public void onPanelExpanded(PanelExpandedEvent event) {
+        // Do nothing here
+    }
 
     private Widget getRecentSearchesPanel() {
         Label title = new Label("Recent searches");

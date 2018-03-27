@@ -14,6 +14,10 @@ public interface SearchResultObject {
 
     String getSecondarySearchDisplay();
 
+    default String getTertiarySearchDisplay() {
+        return null;
+    }
+
     void setSearchDisplay(String[] searchTerms);
 
     SchemaClass getSchemaClass();
