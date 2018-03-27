@@ -11,7 +11,6 @@ import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.events.ResultSelectedEvent;
 import org.reactome.web.diagram.search.handlers.ResultSelectedHandler;
 import org.reactome.web.diagram.search.results.cells.ResultItemCell;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.scroller.client.InfiniteScrollList;
 
 import static org.reactome.web.scroller.client.util.Placeholder.ROWS;
@@ -22,8 +21,7 @@ import static org.reactome.web.scroller.client.util.Placeholder.START;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 @SuppressWarnings("all")
-public class InDiagramSearchPanel extends Composite implements ResultsWidget, SelectionChangeEvent.Handler,
-        ResultItemCell.Handler {
+public class InDiagramSearchPanel extends Composite implements ResultsWidget, SelectionChangeEvent.Handler {
 
     public final static String PREFIX = DiagramFactory.SERVER + "/ContentService/search/diagram/";
 
@@ -41,7 +39,7 @@ public class InDiagramSearchPanel extends Composite implements ResultsWidget, Se
         this.eventBus = eventBus;
         main = new FlowPanel();
 
-        ResultItemCell cell = new ResultItemCell(this);
+        ResultItemCell cell = new ResultItemCell();
         dataProvider = new InDiagramProvider();
         resultsList = new InfiniteScrollList(cell, ResultItem.KEY_PROVIDER, dataProvider, ResultsPanel.CUSTOM_LIST_STYLE);
         resultsList.setSelectionModel(selectionModel);
@@ -83,11 +81,6 @@ public class InDiagramSearchPanel extends Composite implements ResultsWidget, Se
         selectedItem = selectionModel.getSelectedObject();
 //        Console.info("Selection changed to: " + selectedItem.getPrimarySearchDisplay());
         fireEvent(new ResultSelectedEvent(selectedItem));
-    }
-
-    @Override
-    public void onFlagChanged(String flag) {
-        Console.info("Flagging item : " + flag);
     }
 
 }
