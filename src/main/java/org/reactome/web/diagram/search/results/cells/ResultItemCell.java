@@ -50,15 +50,12 @@ public class ResultItemCell extends AbstractCell<ResultItem> {
                         "<div title=\"{2}\" style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:small;\">" +
                             "{2}" +
                         "</div>" +
-                        "<div style=\"float:left; width:275px;\">" +
-                            "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; margin-top:-2px; font-size:x-small; color:#89c053;\">" +
-                                "{3}" +
-                            "</div>" +
-                            "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; margin-top:-2px; font-size:x-small; color:#f5b945;\">" +
-                                "{4}" +
-                            "</div>" +
+                        "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; margin-top:-2px; font-size:x-small; color:#89c053;\">" +
+                            "{3}" +
                         "</div>" +
-                        "<div style=\"float:left; margin-left: 7px; width:16px;\">{5}</div>" +
+                        "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; margin-top:-2px; font-size:x-small; color:#f5b945;\">" +
+                            "{4}" +
+                        "</div>" +
                     "</div>" +
                 "</div>")
         SafeHtml cell(SafeHtml image, String imgTooltip, String primary, SafeHtml secondary, SafeHtml tertiary);
