@@ -86,6 +86,7 @@ public abstract class ContentFactory {
 
     private static void fillGraphContent(EHLDContent content, Graph graph) {
         GraphObjectFactory.content = content;
+        content.setSpeciesName(graph.getSpeciesName());
 
         // !Important: In a normal diagram layout the DBID is
         // included in the layout JSON file. However, in an EHLD we have
@@ -112,6 +113,7 @@ public abstract class ContentFactory {
 
     private static void fillGraphContent(DiagramContent content, Graph graph) {
         GraphObjectFactory.content = content;
+        content.setSpeciesName(graph.getSpeciesName());
 
         for (EntityNode node : graph.getNodes()) {
             GraphObjectFactory.getOrCreateDatabaseObject(node);
