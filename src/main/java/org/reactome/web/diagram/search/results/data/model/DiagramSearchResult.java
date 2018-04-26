@@ -5,9 +5,11 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public interface InDiagramSearchResult {
+public interface DiagramSearchResult {
 
     List<Entry> getEntries();
 
-    String getFound();
+    Integer getFound();
+
+    List<FacetContainer> getFacets();
 }

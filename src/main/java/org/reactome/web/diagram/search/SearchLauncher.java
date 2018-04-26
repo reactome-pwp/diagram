@@ -19,9 +19,12 @@ import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.search.events.*;
+import org.reactome.web.diagram.search.facets.FacetsPanel;
 import org.reactome.web.diagram.search.handlers.*;
 import org.reactome.web.diagram.search.searchbox.*;
 import org.reactome.web.diagram.util.Console;
+
+import java.util.stream.Collectors;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -29,7 +32,9 @@ import org.reactome.web.diagram.util.Console;
 public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         ContentLoadedHandler, ContentRequestedHandler, LayoutLoadedHandler, SearchBoxUpdatedHandler,
         InteractorsResourceChangedHandler, InteractorsLoadedHandler,
-        SearchBoxArrowKeysHandler, SearchKeyPressedHandler, AutoCompleteSelectedHandler{
+        SearchBoxArrowKeysHandler, SearchKeyPressedHandler,
+        FacetsLoadedHandler, FacetsChangedHandler,
+        AutoCompleteSelectedHandler {
 
     @SuppressWarnings("FieldCanBeLocal")
     private static String OPENING_TEXT = "Search for any diagram term ...";
@@ -46,6 +51,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     private IconToggleButton optionsBtn;
 
     private FlowPanel filtersPanel;
+    private FacetsPanel facetsPanel;
 
     private Boolean isExpanded = false;
     private Boolean isExpandedVertically = false;
@@ -74,7 +80,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         clearBtn.addClickHandler(event -> clearSearch());
         this.add(clearBtn);
 
-        executeBtn = new IconButton("", RESOURCES.clear());
+        executeBtn = new IconButton("", RESOURCES.searchGo());
         executeBtn.setStyleName(RESOURCES.getCSS().executeBtn());
         executeBtn.setVisible(true);
         executeBtn.setTitle("Search");
@@ -90,8 +96,9 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 //        optionsBtn.setEnabled(false);
         this.add(optionsBtn);
 
+        facetsPanel = new FacetsPanel();
         filtersPanel = new FlowPanel();
-        filtersPanel.setHeight(100 + "px");
+        filtersPanel.add(facetsPanel);
         this.add(filtersPanel);
 
         focusTimer = new Timer() {
@@ -170,7 +177,6 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
                 collapsePanelVertically();
             }
         } else if (event.getSource().equals(this.executeBtn)) {
-            Console.info("Searching for " + input.getText());
             performSearch();
         }
     }
@@ -191,6 +197,20 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         fireEvent(new SuggestionResetEvent());
     }
 
+
+    @Override
+    public void onFacetsLoaded(FacetsLoadedEvent event) {
+        Console.info("SearchLauncher.onFacetsLoaded: setting facets: " + event.toString());
+        facetsPanel.setFacets(event.getFacets(), event.getSelectedFacets());
+    }
+
+
+    @Override
+    public void onSelectedFacetsChanged(FacetsChangedEvent event) {
+        Console.info("onFacetsChanged: " + facetsPanel.getSelectedFacets().stream().collect(Collectors.joining(", ")));
+        performSearch();
+    }
+
     @Override
     public void onSearchBoxUpdated(SearchBoxUpdatedEvent event) {
         //TODO call for autocomplete suggestions
@@ -204,12 +224,12 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        performSearch();
+//        performSearch();
     }
 
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
-        performSearch();
+//        performSearch();
     }
 
     @Override
@@ -274,6 +294,8 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         this.input.addSearchBoxUpdatedHandler(this);
         this.input.addSearchBoxArrowKeysHandler(this);
 
+        this.facetsPanel.addFacetsChangedHandler(this);
+
         eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(ContentLoadedEvent.TYPE, this);
         eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
@@ -290,11 +312,19 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     }
 
     private void performSearch() {
-        String term = input.getText().trim();
-        SearchArguments searchArgs = new SearchArguments(term, context.getContent().getStableId());
-        Console.info(" >>> <<<< Performing search for term " + searchArgs.toString());
-        fireEvent(new SearchPerformedEvent(searchArgs));
-        showHideClearBtn();
+        String query = input.getText().trim();
+        SearchArguments searchArgs = new SearchArguments(
+                query,
+                context.getContent().getStableId(),
+                context.getContent().getSpeciesName(),
+                facetsPanel.getSelectedFacets()
+        );
+
+        if(searchArgs.hasValidQuery()) {
+            Console.info(" >>> Performing search for term >>> " + searchArgs.toString());
+            fireEvent(new SearchPerformedEvent(searchArgs));
+            showHideClearBtn();
+        }
     }
 
     private void showHideClearBtn() {
@@ -328,6 +358,9 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
         @Source("images/search_normal.png")
         ImageResource launchNormal();
+
+        @Source("images/search_go.png")
+        ImageResource searchGo();
 
         @Source("images/cancel.png")
         ImageResource clear();

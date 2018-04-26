@@ -1,10 +1,10 @@
-package org.reactome.web.diagram.search.results;
+package org.reactome.web.diagram.search.results.local;
 
 import com.google.gwt.http.client.*;
 import com.google.gwt.safehtml.shared.UriUtils;
 import org.reactome.web.diagram.client.DiagramFactory;
-import org.reactome.web.diagram.search.results.data.InDiagramSearchException;
-import org.reactome.web.diagram.search.results.data.InDiagramSearchResultFactory;
+import org.reactome.web.diagram.search.results.data.DiagramSearchException;
+import org.reactome.web.diagram.search.results.data.DiagramSearchResultFactory;
 import org.reactome.web.diagram.search.results.data.model.Occurrences;
 import org.reactome.web.diagram.util.Console;
 
@@ -29,9 +29,7 @@ public abstract class InDiagramOccurrencesFactory {
         String url = URL.replace("##DIAGRAM##", UriUtils.encode(diagram))
                         .replace("##INSTANCE##", UriUtils.encode(instance));
 
-        if (request != null && request.isPending()) request.cancel();
-
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, DiagramFactory.SERVER + url);
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         requestBuilder.setHeader("Accept", "application/json");
         try {
             request = requestBuilder.sendRequest(null, new RequestCallback() {
@@ -59,8 +57,8 @@ public abstract class InDiagramOccurrencesFactory {
     private static Occurrences getOccurrences(final String json, final Handler handler) {
         Occurrences rtn = null;
         try {
-            rtn = InDiagramSearchResultFactory.getSearchObject(Occurrences.class, json);
-        } catch (InDiagramSearchException ex) {
+            rtn = DiagramSearchResultFactory.getSearchObject(Occurrences.class, json);
+        } catch (DiagramSearchException ex) {
             handler.onOccurrencesError(ex.getMessage());
         }
         return rtn;

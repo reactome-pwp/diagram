@@ -1,8 +1,8 @@
 package org.reactome.web.diagram.search.events;
 
 import com.google.gwt.event.shared.GwtEvent;
+import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.handlers.ResultSelectedHandler;
-import org.reactome.web.diagram.search.results.ResultItem;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -10,9 +10,9 @@ import org.reactome.web.diagram.search.results.ResultItem;
 public class ResultSelectedEvent extends GwtEvent<ResultSelectedHandler> {
     public static Type<ResultSelectedHandler> TYPE = new Type<>();
 
-    private ResultItem selectedResultItem;
+    private SearchResultObject selectedResultItem;
 
-    public ResultSelectedEvent(ResultItem selectedResultItem) {
+    public ResultSelectedEvent(SearchResultObject selectedResultItem) {
         this.selectedResultItem = selectedResultItem;
     }
 
@@ -26,14 +26,14 @@ public class ResultSelectedEvent extends GwtEvent<ResultSelectedHandler> {
         handler.onResultSelected(this);
     }
 
-    public ResultItem getSelectedResultItem() {
+    public SearchResultObject getSelectedResultItem() {
         return selectedResultItem;
     }
 
     @Override
     public String toString() {
         return "ResultSelectedEvent{" +
-                ", selected=" + selectedResultItem.getStId() +
+                ", selected=" + selectedResultItem.getPrimarySearchDisplay() +
                 '}';
     }
 }

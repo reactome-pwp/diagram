@@ -43,7 +43,9 @@ public class SearchPanel extends FlowPanel {
 //        this.add(suggestions);
 
         ResultsPanel results = new ResultsPanel(eventBus);
+        // Listen to click events on results and return focus on SearchLauncher
         results.addClickHandler(event -> launcher.setFocus(true));
+        results.addFacetsLoadedHandler(launcher);
         launcher.addSearchPerformedHandler(results);
         launcher.addAutoCompleteRequestedHandler(results);
         launcher.addPanelCollapsedHandler(results);

@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.search;
 
+import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.resources.client.ImageResource;
 import org.reactome.web.pwp.model.client.factory.SchemaClass;
 
@@ -12,13 +13,18 @@ public interface SearchResultObject {
 
     String getPrimarySearchDisplay();
 
+    String getPrimaryTooltip();
+
     String getSecondarySearchDisplay();
 
     default String getTertiarySearchDisplay() {
-        return null;
+        return "-";
     }
 
-    void setSearchDisplay(String[] searchTerms);
+//    @Deprecated
+//    void setSearchDisplay(String[] searchTerms);
+
+    void setSearchDisplay(RegExp regExp);
 
     SchemaClass getSchemaClass();
 }

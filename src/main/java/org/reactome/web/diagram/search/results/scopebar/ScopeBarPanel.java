@@ -28,8 +28,8 @@ public class ScopeBarPanel extends FlowPanel implements ClickHandler {
         setStyleName(RESOURCES.getCSS().container());
     }
 
-    public void addButton(String text, ImageResource imageResource) {
-        ScopeButton btn = new ScopeButton(text, imageResource, this);
+    public void addButton(String text, String tooltip, ImageResource imageResource) {
+        ScopeButton btn = new ScopeButton(text, tooltip, imageResource, this);
         btns.add(btn);
         if (btns.size() == 1) {
             setActiveButton(btn);
@@ -80,9 +80,6 @@ public class ScopeBarPanel extends FlowPanel implements ClickHandler {
 
         @Source("../../images/scope_local.png")
         ImageResource scopeLocal();
-
-        @Source("../../images/scope_target.png")
-        ImageResource scopeTarget();
     }
 
     /**

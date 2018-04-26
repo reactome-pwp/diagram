@@ -1,7 +1,7 @@
 package org.reactome.web.diagram.search.results;
 
+import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.view.client.ProvidesKey;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.results.data.model.Entry;
 import org.reactome.web.diagram.util.SearchResultImageMapper;
@@ -16,25 +16,20 @@ import java.util.stream.Collectors;
  */
 public class ResultItem implements SearchResultObject, Entry {
 
-    /**
-     * The key provider that provides the unique ID of a contact.
-     */
-    public static final ProvidesKey<ResultItem> KEY_PROVIDER = new ProvidesKey<ResultItem>() {
-        @Override
-        public Object getKey(ResultItem item) {
-            return item == null ? null : item.getId();
-        }
-    };
-
     private String stId;
     private String dbId;
     private String name;
     private String exactType;
     private List<String> compartmentNames;
-    private String compartments = "-";
+    private String compartments = "";
+
+    private String primary;
+    private String primaryTooltip;
+    private String secondary;
+    private String tertiary;
+
 
     private SearchResultImageMapper.ImageContainer imageContainer;
-    private boolean isFlagged;
 
     public ResultItem(Entry entry) {
         stId = entry.getStId();
@@ -42,6 +37,7 @@ public class ResultItem implements SearchResultObject, Entry {
         name = entry.getName();
         exactType = entry.getExactType();
         compartmentNames = entry.getCompartmentNames();
+
         setCompartments(compartmentNames);
 
         imageContainer = SearchResultImageMapper.getImage(exactType);
@@ -72,6 +68,10 @@ public class ResultItem implements SearchResultObject, Entry {
         return compartmentNames;
     }
 
+    public String getCompartments() {
+        return compartments;
+    }
+
     @Override
     public ImageResource getImageResource() {
         return imageContainer.getImageResource();
@@ -79,31 +79,44 @@ public class ResultItem implements SearchResultObject, Entry {
 
     @Override
     public String getPrimarySearchDisplay() {
-        return name;
+        return primary;
+    }
+
+    @Override
+    public String getPrimaryTooltip() {
+        return primaryTooltip;
     }
 
     @Override
     public String getSecondarySearchDisplay() {
-        return stId;
+        return secondary;
     }
 
     @Override
     public String getTertiarySearchDisplay() {
-        return compartments;
+        return tertiary;
     }
+
+//    @Override
+//    public void setSearchDisplay(String[] searchTerms) {
+//        primary = name;
+//        primaryTooltip = name;
+//        secondary = stId;
+//        tertiary = compartments;
+//    }
 
     @Override
-    public void setSearchDisplay(String[] searchTerms) {
+    public void setSearchDisplay(RegExp regExp) {
+        primary = name;
+        primaryTooltip = name;
+        secondary = stId;
+        tertiary = compartments;
 
+        if (regExp != null) {
+            primary = regExp.replace(primary, "<u><strong>$1</strong></u>");
+            secondary = regExp.replace(secondary, "<u><strong>$1</strong></u>");
+        }
     }
-
-//    public boolean isFlagged() {
-//        return isFlagged;
-//    }
-//
-//    public void setFlagged(boolean flagged) {
-//        isFlagged = flagged;
-//    }
 
     @Override
     public SchemaClass getSchemaClass() {

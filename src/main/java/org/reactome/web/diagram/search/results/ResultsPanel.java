@@ -12,15 +12,25 @@ import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.view.client.ProvidesKey;
+import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
 import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchPerformedEvent;
 import org.reactome.web.diagram.search.SearchPerformedHandler;
+import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.events.AutoCompleteRequestedEvent;
 import org.reactome.web.diagram.search.events.PanelCollapsedEvent;
 import org.reactome.web.diagram.search.events.PanelExpandedEvent;
+import org.reactome.web.diagram.search.facets.SearchSummaryFactory;
 import org.reactome.web.diagram.search.handlers.AutoCompleteRequestedHandler;
+import org.reactome.web.diagram.search.handlers.FacetsLoadedHandler;
 import org.reactome.web.diagram.search.handlers.ResultSelectedHandler;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
+import org.reactome.web.diagram.search.results.data.model.DiagramSearchResult;
+import org.reactome.web.diagram.search.results.data.model.FacetContainer;
+import org.reactome.web.diagram.search.results.data.model.SearchSummary;
+import org.reactome.web.diagram.search.results.global.OtherDiagramSearchPanel;
+import org.reactome.web.diagram.search.results.local.InDiagramSearchPanel;
 import org.reactome.web.diagram.search.results.scopebar.ScopeBarPanel;
 import org.reactome.web.diagram.util.Console;
 
@@ -31,8 +41,10 @@ import java.util.List;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPanel.Handler,
-        SearchPerformedHandler, AutoCompleteRequestedHandler {
-    private EventBus eventBus;
+        SearchSummaryFactory.Handler, SearchPerformedHandler, AutoCompleteRequestedHandler  {
+
+    private final static int LOCAL_SEARCH = 0;
+    private final static int GLOBAL_SEARCH = 1;
 
     private DeckLayoutPanel content;
     private ScopeBarPanel scopeBar;
@@ -41,23 +53,36 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
     private SearchArguments searchArguments;
 
+    /**
+     * The key provider that provides the unique ID of a SearchResult.
+     */
+    public static final ProvidesKey<SearchResultObject> KEY_PROVIDER = item -> {
+        if(item == null) {
+            return null;
+        } else if (item instanceof ResultItem) {
+            ResultItem resultItem = (ResultItem) item;
+            return resultItem.getId();
+        } else if (item instanceof InteractorSearchResult) {
+            InteractorSearchResult interactorSearchResult = (InteractorSearchResult) item;
+            return interactorSearchResult.getAccession();
+        }
+        return null;
+    };
+
     public ResultsPanel(EventBus eventBus) {
-        this.eventBus = eventBus;
         this.sinkEvents(Event.ONCLICK);
+
+        scopeBar = new ScopeBarPanel(this);
+        scopeBar.addButton("This diagram", "Search only in the displayed diagram",ScopeBarPanel.RESOURCES.scopeLocal());
+        scopeBar.addButton("Other diagrams", "Expand your search in all our content", ScopeBarPanel.RESOURCES.scopeGlobal());
 
         resultsWidgets.add(new InDiagramSearchPanel(eventBus));
         resultsWidgets.add(new OtherDiagramSearchPanel());
-        resultsWidgets.add(new InSelectionSearchPanel());
-
-        scopeBar = new ScopeBarPanel(this);
-        scopeBar.addButton("This diagram", ScopeBarPanel.RESOURCES.scopeLocal());
-        scopeBar.addButton("Other diagrams", ScopeBarPanel.RESOURCES.scopeGlobal());
-        scopeBar.addButton("In selection", ScopeBarPanel.RESOURCES.scopeTarget());
 
         content = new DeckLayoutPanel();
         content.setStyleName(RESOURCES.getCSS().content());
         resultsWidgets.forEach(w -> content.add(w.asWidget()));
-        setActiveResultsWidget(0);
+        setActiveResultsWidget(LOCAL_SEARCH);
         content.setAnimationVertical(false);
         content.setAnimationDuration(500);
 
@@ -78,31 +103,46 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         resultsWidgets.forEach(resultsWidget -> resultsWidget.addResultSelectedHandler(handler));
     }
 
+    public void addFacetsLoadedHandler(FacetsLoadedHandler handler) {
+        resultsWidgets.forEach(resultsWidget -> resultsWidget.addFacetsLoadedHandler(handler));
+    }
+
     @Override
     public void onAutoCompleteRequested(AutoCompleteRequestedEvent event) {
+        searchArguments = null;
         show(false);
+    }
+
+
+    @Override
+    public void onSearchSummaryReceived(SearchSummary summary) {
+        updateScopeNumbers(summary);
+        updateFacets(summary);
+    }
+
+    @Override
+    public void onSearchSummaryError(String msg) {
+        Console.warn("Error retrieving search summary");
+        updateScopeNumbers(null);
+        updateFacets(null);
     }
 
     @Override
     public void onSearchPerformed(SearchPerformedEvent event) {
         searchArguments = event.getSearchArguments();
-        boolean isValid = searchArguments.hasValidTerm();
+        boolean isValid = searchArguments.hasValidQuery();
         show(isValid);
         if(isValid) {
-
-            scopeBar.setResultsNumber(0, 99);
-            scopeBar.setResultsNumber(1, 99);
-            scopeBar.setResultsNumber(2, 0);
-
-            updateResult();
+            // Get facets and numbers from content service before performing the search query
+            SearchSummaryFactory.queryForSummary(searchArguments, this);
+            updateResult(true);
         }
     }
 
     @Override
     public void onScopeChanged(int selected) {
-        Console.info("   >>>> Scope changed to " + selected);
         setActiveResultsWidget(selected);
-        updateResult();
+        updateResult(false);
     }
 
     @Override
@@ -112,19 +152,59 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
     @Override
     public void onPanelExpanded(PanelExpandedEvent event) {
-        show(searchArguments.hasValidTerm());
+//        show(searchArguments != null && searchArguments.hasValidQuery());
+        show(searchArguments != null);
     }
 
-    private void updateResult() {
-//        Console.info(" >>> Updating for " + searchArguments.getTerm());
-        activeResultWidget.updateResults(searchArguments);
+    private void updateResult(boolean clearSelection) {
+        activeResultWidget.updateResults(searchArguments, clearSelection);
     }
 
     private void setActiveResultsWidget(int index) {
+        // Suspend the selection before changing scope
+        if(activeResultWidget != null) {
+            activeResultWidget.suspendSelection();
+        }
+
         activeResultWidget = resultsWidgets.get(index);
+
         if (activeResultWidget != null) {
             content.showWidget(index);
         }
+    }
+
+    private void updateFacets(SearchSummary summary) {
+        List<FacetContainer> localFacets = null;
+        List<FacetContainer> globalFacets = null;
+        if(summary!=null) {
+            DiagramSearchResult localResults = summary.getDiagramResult();
+            if (localResults!=null) {
+                localFacets = localResults.getFacets()!=null ? localResults.getFacets() : new ArrayList<>();
+            }
+
+            DiagramSearchResult globalResults = summary.getFireworksResult();
+            if (globalResults!=null) {
+                globalFacets = globalResults.getFacets()!=null ? globalResults.getFacets() : new ArrayList<>();
+            }
+        }
+        resultsWidgets.get(LOCAL_SEARCH).setFacets(localFacets);
+        resultsWidgets.get(GLOBAL_SEARCH).setFacets(globalFacets);
+    }
+
+    private void updateScopeNumbers(SearchSummary summary) {
+        int localResultsFound = 0, globalResultsFound = 0;
+        if (summary!=null) {
+            DiagramSearchResult localResults = summary.getDiagramResult();
+            if (localResults!=null && localResults.getFound()!=null) {
+                localResultsFound = localResults.getFound();
+            }
+            DiagramSearchResult globalResults = summary.getFireworksResult();
+            if (globalResults!=null && globalResults.getFound()!=null) {
+                globalResultsFound = globalResults.getFound();
+            }
+        }
+        scopeBar.setResultsNumber(LOCAL_SEARCH, localResultsFound);
+        scopeBar.setResultsNumber(GLOBAL_SEARCH, globalResultsFound);
     }
 
     private void show(boolean visible) {
@@ -168,7 +248,7 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
     }
 
-    static CellListResource CUSTOM_LIST_STYLE;
+    public static CellListResource CUSTOM_LIST_STYLE;
     static {
         CUSTOM_LIST_STYLE = GWT.create(CellListResource.class);
         CUSTOM_LIST_STYLE.cellListStyle().ensureInjected();

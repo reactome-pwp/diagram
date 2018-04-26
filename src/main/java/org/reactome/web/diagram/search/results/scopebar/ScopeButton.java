@@ -19,10 +19,11 @@ public class ScopeButton extends Button {
 
     private String text;
 
-    public ScopeButton(String text, ImageResource imageResource, ClickHandler handler) {
+    public ScopeButton(String text, String tooltip, ImageResource imageResource, ClickHandler handler) {
         this.text = text;
         buttonImg = new Image(imageResource);
         buttonLbl = new Label(text);
+        buttonLbl.setTitle(tooltip);
 
         fp = new FlowPanel();
         fp.add(buttonImg);
