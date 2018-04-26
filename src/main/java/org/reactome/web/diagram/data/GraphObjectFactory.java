@@ -51,7 +51,6 @@ public abstract class GraphObjectFactory {
             case REACTION:                          dbObject = new GraphReaction((EventNode) node);                         break;
             case GO_CELLULAR_COMPONENT:             dbObject = new GraphGO_CellularComponent((EntityNode) node);            break;
             case COMPARTMENT:                       dbObject = new GraphCompartment((EntityNode) node);                     break;
-            case ENTITY_COMPARTMENT:                dbObject = new GraphEntityCompartment((EntityNode) node);               break;
             default:
                 String msg = "It is not possible to create a DatabaseObject. " + node;
                 GWT.log(msg);
