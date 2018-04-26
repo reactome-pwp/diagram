@@ -1,0 +1,57 @@
+.container {
+    background-color: white;
+}
+
+.name {
+    color: #4a88da;
+    font-size: medium;
+    margin-bottom: 3px;
+
+    line-height: 1.2em;
+    max-height: 2.5em;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.line {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    font-size: 0.9em;
+}
+
+.line div {
+    border-radius: 10px;
+    padding: 0 6px 0 6px;
+    margin-bottom: 3px;
+}
+
+.id {
+    background-color: #89c053;
+    color: white;
+}
+
+.compartments {
+    background-color: #f5b945;
+    color: white;
+}
+
+.type {
+    background-color: rgb(145, 122, 212);
+    color: white;
+}
+
+.genes {
+    background-color: rgb(113, 187, 212);
+    color: white;
+}
+
+.accession {
+    background-color: rgb(199, 106, 178);
+    color: white;
+}
+
+
+
+

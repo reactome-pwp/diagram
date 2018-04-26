@@ -1,0 +1,29 @@
+.container {
+    /*overflow: scroll;*/
+    /*max-height: 380px;*/
+    margin-top: 5px;
+
+    background-color: rgba(255, 255, 255, 0.9);
+    border: rgba(88, 195, 229, 0.8) solid 2px;
+    border-radius: 8px 8px 0 0;
+
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+}
+
+.header {
+    background-color: rgba(88, 195, 229, 0.9);
+    border-radius: 5px 5px 0 0;
+
+    color: white;
+    font-size: x-small;
+
+    line-height: 1.3em;
+    padding-left: 5px;
+}
+
+.mainPanel {
+    padding: 0 5px 5px 5px;
+    /*background-color: pink;*/
+    overflow: scroll;
+    max-height: 400px;
+}
