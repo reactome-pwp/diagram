@@ -31,7 +31,7 @@ public class AutoCompleteResult {
 
         if (searchTerms == null || searchTerms.length == 0) return;
 
-        StringBuilder sb = new StringBuilder("(");
+        StringBuilder sb = new StringBuilder("(");      //TODO update this to make it more efficient
         for (String term : searchTerms) {
             sb.append(term).append("|");
         }

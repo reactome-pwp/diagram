@@ -89,7 +89,7 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
     public void onSearchPerformed(SearchPerformedEvent event) {
         AutoCompleteResultsFactory.cancel();
         makeVisible(false);
-        RecentSearchesManager.get().insert(event.getSearchArguments().getTerm());
+        RecentSearchesManager.get().insert(event.getSearchArguments().getQuery());
     }
 
     public void requestAutoCompleteResults(String tag) {
