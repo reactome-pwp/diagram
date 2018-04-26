@@ -28,7 +28,6 @@ public class ResultItem implements SearchResultObject, Entry {
     private String secondary;
     private String tertiary;
 
-
     private SearchResultImageMapper.ImageContainer imageContainer;
 
     public ResultItem(Entry entry) {
@@ -96,14 +95,6 @@ public class ResultItem implements SearchResultObject, Entry {
     public String getTertiarySearchDisplay() {
         return tertiary;
     }
-
-//    @Override
-//    public void setSearchDisplay(String[] searchTerms) {
-//        primary = name;
-//        primaryTooltip = name;
-//        secondary = stId;
-//        tertiary = compartments;
-//    }
 
     @Override
     public void setSearchDisplay(RegExp regExp) {

@@ -21,9 +21,6 @@ public interface SearchResultObject {
         return "-";
     }
 
-//    @Deprecated
-//    void setSearchDisplay(String[] searchTerms);
-
     void setSearchDisplay(RegExp regExp);
 
     SchemaClass getSchemaClass();

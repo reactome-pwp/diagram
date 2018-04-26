@@ -120,43 +120,6 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
         return SchemaClass.getSchemaClass("Interactor");
     }
 
-//    @Override
-//    public void setSearchDisplay(String[] searchTerms) {
-//        if (alias != null) {
-//            primary = alias;
-//            primaryTooltip = alias;
-//            secondary = accession;
-//        } else {
-//            primary = accession;
-//            primaryTooltip = accession;
-//        }
-//        // Adding the number of evidences in the second line of the suggestion
-//        String evidenceStr = evidences == 0 ? "" : evidences == 1 ? evidences + " evidence" : evidences + " pieces of evidence";
-//        secondary += ", " + evidenceStr;
-//
-//        tertiary = resource.getName();
-//
-//        if (searchTerms == null || searchTerms.length == 0) return;
-//
-//        StringBuilder sb = new StringBuilder("(");
-//        for (String term : searchTerms) {
-//            sb.append(term).append("|");
-//        }
-//        sb.delete(sb.length() - 1, sb.length()).append(")");
-//        String term = sb.toString();
-//        /*
-//         * (term1|term2)    : term is between "(" and ")" because we are creating a group, so this group can
-//         *                    be referred later.
-//         * gi               : global search and case insensitive
-//         * <b><u>$1</u></b> : instead of replacing by input, that would change the case, we replace it by $1,
-//         *                    that is the reference to the first matched group. This means that we want to
-//         *                    replace it using the exact word that was found.
-//         */
-//        RegExp regExp = RegExp.compile(term, "gi");
-//        primary = regExp.replace(primary, "<u><strong>$1</strong></u>");
-//        secondary = regExp.replace(secondary, "<u><strong>$1</strong></u>");
-//    }
-
     @Override
     public void setSearchDisplay(RegExp regExp) {
         if (alias != null) {
