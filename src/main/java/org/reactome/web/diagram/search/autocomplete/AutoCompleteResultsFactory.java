@@ -17,7 +17,7 @@ import java.util.List;
  */
 public abstract class AutoCompleteResultsFactory {
 
-    private static final String SEARCH = "/content/getTags?tagName=##tag##";
+    private static final String SEARCH = "/ContentService/search/suggest?query=##QUERY##";
     private static Request request;
 
     public interface Handler {
@@ -25,9 +25,9 @@ public abstract class AutoCompleteResultsFactory {
         void onAutoCompleteError();
     }
 
-    public static void searchForTag(String tag, Handler handler) {
+    public static void searchForTag(String query, Handler handler) {
 
-        String url = SEARCH.replace("##tag##", UriUtils.encode(tag));
+        String url = SEARCH.replace("##QUERY##", UriUtils.encode(query));
 
         if (request != null && request.isPending()) request.cancel();
 
@@ -39,7 +39,7 @@ public abstract class AutoCompleteResultsFactory {
                 public void onResponseReceived(Request request, Response response) {
                     switch (response.getStatusCode()){
                         case Response.SC_OK:
-                            handler.onAutoCompleteSearchResult(getResults(tag, toList(response.getText())));
+                            handler.onAutoCompleteSearchResult(getResults(query, toList(response.getText())));
                             break;
                         default:
                             handler.onAutoCompleteError();
