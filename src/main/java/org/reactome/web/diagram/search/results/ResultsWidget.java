@@ -18,10 +18,27 @@ public interface ResultsWidget extends IsWidget {
 
     HandlerRegistration addFacetsLoadedHandler(FacetsLoadedHandler handler);
 
-    void updateResults(SearchArguments args, boolean clearSelection);
+    /**
+     * Clears any selected list item
+     */
+    void clearSelection();
 
+    /**
+     * Updates the view with results based on the SearchArguments
+     */
+    void updateResults(SearchArguments searchArguments);
+
+    /**
+     * Sets the available facets
+     *
+     * @param facets the list of facets
+     */
     void setFacets(List<FacetContainer> facets);
 
+    /**
+     * Temporarily suspends highlighting of the selection
+     * without clearing the selected item
+     */
     void suspendSelection();
 
 }

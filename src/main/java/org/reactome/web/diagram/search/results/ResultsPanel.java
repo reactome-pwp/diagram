@@ -135,14 +135,15 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         if(isValid) {
             // Get facets and numbers from content service before performing the search query
             SearchSummaryFactory.queryForSummary(searchArguments, this);
-            updateResult(true);
+            clearSelection();
+            updateResult();
         }
     }
 
     @Override
     public void onScopeChanged(int selected) {
         setActiveResultsWidget(selected);
-        updateResult(false);
+        updateResult();
     }
 
     @Override
@@ -156,8 +157,12 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         show(searchArguments != null);
     }
 
-    private void updateResult(boolean clearSelection) {
-        activeResultWidget.updateResults(searchArguments, clearSelection);
+    private void updateResult() {
+        activeResultWidget.updateResults(searchArguments);
+    }
+
+    private void clearSelection() {
+        resultsWidgets.forEach(ResultsWidget::clearSelection);
     }
 
     private void setActiveResultsWidget(int index) {

@@ -104,12 +104,13 @@ public class InDiagramSearchPanel extends Composite implements ResultsWidget, Se
     }
 
     @Override
-    public void updateResults(SearchArguments args, boolean clearSelection) {
-        if (clearSelection) {
-            selectionModel.clear();
-            selectedItem = null;
-        }
+    public void clearSelection() {
+        selectionModel.clear();
+        selectedItem = null;
+    }
 
+    @Override
+    public void updateResults(SearchArguments args) {
         if(arguments == null || !arguments.equals(args)) {
             arguments = args;
 
