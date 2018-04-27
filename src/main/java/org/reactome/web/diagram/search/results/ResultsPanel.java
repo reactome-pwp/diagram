@@ -74,7 +74,7 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
         scopeBar = new ScopeBarPanel(this);
         scopeBar.addButton("This diagram", "Search only in the displayed diagram",ScopeBarPanel.RESOURCES.scopeLocal());
-        scopeBar.addButton("Other diagrams", "Expand your search in all our content", ScopeBarPanel.RESOURCES.scopeGlobal());
+        scopeBar.addButton("All diagrams", "Expand your search in all our diagrams", ScopeBarPanel.RESOURCES.scopeGlobal());
 
         resultsWidgets.add(new InDiagramSearchPanel(eventBus));
         resultsWidgets.add(new OtherDiagramSearchPanel());
