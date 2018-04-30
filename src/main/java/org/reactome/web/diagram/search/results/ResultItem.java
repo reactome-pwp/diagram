@@ -100,7 +100,7 @@ public class ResultItem implements SearchResultObject, Entry {
     public void setSearchDisplay(RegExp regExp) {
         primary = name;
         primaryTooltip = name;
-        secondary = stId;
+        secondary = stId != null ? stId : dbId;
         tertiary = compartments;
 
         if (regExp != null) {
