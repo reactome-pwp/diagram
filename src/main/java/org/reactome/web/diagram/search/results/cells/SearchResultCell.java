@@ -15,7 +15,7 @@ import org.reactome.web.diagram.search.SearchResultObject;
  *
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class ResultItemCell extends AbstractCell<SearchResultObject> {
+public class SearchResultCell extends AbstractCell<SearchResultObject> {
 
     interface Templates extends SafeHtmlTemplates {
         @SafeHtmlTemplates.Template("" +
