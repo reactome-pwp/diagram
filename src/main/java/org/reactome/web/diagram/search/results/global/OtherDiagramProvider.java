@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.search.results.global;
 
+import com.google.gwt.http.client.URL;
 import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.results.ResultItem;
@@ -11,6 +12,7 @@ import org.reactome.web.scroller.client.provider.AbstractListAsyncDataProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -61,9 +63,9 @@ public class OtherDiagramProvider extends AbstractListAsyncDataProvider<SearchRe
         return rtn;
     }
 
-    public void setSearchArguments(SearchArguments args, String baseUrl) {
+    public void setSearchArguments(SearchArguments args, Set<String> selectedFacets, String baseUrl) {
         this.args = args;
-        String types = args.getFacets().stream()
+        String types = selectedFacets.stream()
                 .map(facet -> facet = "&types=" + facet)
                 .collect(Collectors.joining());
 
@@ -72,7 +74,7 @@ public class OtherDiagramProvider extends AbstractListAsyncDataProvider<SearchRe
                 stringBuilder
                 .append(baseUrl)
                 .append("?query=")
-                .append(args.getQuery())
+                .append(URL.encode(args.getQuery()))
                 .append(types)
                 .append("&species=")
                 .append(args.getSpecies())
@@ -82,6 +84,6 @@ public class OtherDiagramProvider extends AbstractListAsyncDataProvider<SearchRe
                 .append(ROWS.getUrlValue())
                 .toString()
         );
-        Console.info(URL);
+        Console.info(url);
     }
 }

@@ -11,9 +11,16 @@ public class ResultSelectedEvent extends GwtEvent<ResultSelectedHandler> {
     public static Type<ResultSelectedHandler> TYPE = new Type<>();
 
     private SearchResultObject selectedResultItem;
+    private ResultType resultType;
 
-    public ResultSelectedEvent(SearchResultObject selectedResultItem) {
+    public enum ResultType {
+        LOCAL,
+        GLOBAL
+    }
+
+    public ResultSelectedEvent(SearchResultObject selectedResultItem, ResultType resultType) {
         this.selectedResultItem = selectedResultItem;
+        this.resultType = resultType;
     }
 
     @Override
@@ -30,10 +37,15 @@ public class ResultSelectedEvent extends GwtEvent<ResultSelectedHandler> {
         return selectedResultItem;
     }
 
+    public ResultType getResultType() {
+        return resultType;
+    }
+
     @Override
     public String toString() {
         return "ResultSelectedEvent{" +
-                ", selected=" + selectedResultItem.getPrimarySearchDisplay() +
+                "selectedResultItem=" + selectedResultItem.getPrimarySearchDisplay() +
+                ", resultType=" + resultType +
                 '}';
     }
 }

@@ -22,6 +22,9 @@ public class ResultItem implements SearchResultObject, Entry {
     private String exactType;
     private List<String> compartmentNames;
     private String compartments = "";
+    private String referenceIdentifier;
+    private String databaseName;
+    private String referenceURL;
 
     private String primary;
     private String primaryTooltip;
@@ -36,6 +39,9 @@ public class ResultItem implements SearchResultObject, Entry {
         name = entry.getName();
         exactType = entry.getExactType();
         compartmentNames = entry.getCompartmentNames();
+        referenceIdentifier = entry.getReferenceIdentifier();
+        databaseName = entry.getDatabaseName();
+        referenceURL = entry.getReferenceURL();
 
         setCompartments(compartmentNames);
 
@@ -74,6 +80,21 @@ public class ResultItem implements SearchResultObject, Entry {
     @Override
     public ImageResource getImageResource() {
         return imageContainer.getImageResource();
+    }
+
+    @Override
+    public String getReferenceIdentifier() {
+        return referenceIdentifier;
+    }
+
+    @Override
+    public String getDatabaseName() {
+        return databaseName;
+    }
+
+    @Override
+    public String getReferenceURL() {
+        return referenceURL;
     }
 
     @Override

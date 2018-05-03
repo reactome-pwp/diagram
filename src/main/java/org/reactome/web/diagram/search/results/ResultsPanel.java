@@ -76,8 +76,8 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         scopeBar.addButton("This diagram", "Search only in the displayed diagram",ScopeBarPanel.RESOURCES.scopeLocal());
         scopeBar.addButton("All diagrams", "Expand your search in all our diagrams", ScopeBarPanel.RESOURCES.scopeGlobal());
 
-        resultsWidgets.add(new InDiagramSearchPanel(eventBus));
-        resultsWidgets.add(new OtherDiagramSearchPanel());
+        resultsWidgets.add(new InDiagramSearchPanel(LOCAL_SEARCH, eventBus));
+        resultsWidgets.add(new OtherDiagramSearchPanel(GLOBAL_SEARCH));
 
         content = new DeckLayoutPanel();
         content.setStyleName(RESOURCES.getCSS().content());
@@ -109,7 +109,7 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
     @Override
     public void onAutoCompleteRequested(AutoCompleteRequestedEvent event) {
-        searchArguments = null;
+        searchArguments = null; //TODO this is causing an exception in the ResultWidgets
         show(false);
     }
 
@@ -118,6 +118,7 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
     public void onSearchSummaryReceived(SearchSummary summary) {
         updateScopeNumbers(summary);
         updateFacets(summary);
+        updateResult();
     }
 
     @Override
@@ -125,18 +126,16 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         Console.warn("Error retrieving search summary");
         updateScopeNumbers(null);
         updateFacets(null);
+        updateResult();
     }
 
     @Override
     public void onSearchPerformed(SearchPerformedEvent event) {
         searchArguments = event.getSearchArguments();
-        boolean isValid = searchArguments.hasValidQuery();
-        show(isValid);
-        if(isValid) {
+        if(searchArguments.hasValidQuery()) {
             // Get facets and numbers from content service before performing the search query
             SearchSummaryFactory.queryForSummary(searchArguments, this);
             clearSelection();
-            updateResult();
         }
     }
 
@@ -158,6 +157,7 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
     }
 
     private void updateResult() {
+        show(searchArguments != null && searchArguments.hasValidQuery());
         activeResultWidget.updateResults(searchArguments);
     }
 

@@ -1,11 +1,65 @@
 .title {
+    display: inline-block;
+    line-height: 1em;
+
     color: rgb(30, 148, 208);
     margin-left: 5px;
-    margin-top: 5px;
+    /*margin-top: 5px;*/
 
     font-family: Arial Unicode MS, Arial, sans-serif !important;
     font-size: 1.10em;
     font-weight: bold;
+}
+
+.titleContainer {
+    margin-top: 7px;
+}
+
+.selectAllBtn {
+    position: absolute;
+    right: 8px;
+    background-color: #1e94d0;
+    border: none;
+    border-radius: 9px;
+    color: white;
+    /*margin-left: 5px;*/
+    /*margin-top: 5px;*/
+    padding: 1px 1px 0 1px;
+    outline: none;
+    opacity: 0.8;
+    width: 16px;
+    height: 16px;
+}
+
+.selectAllBtn span {
+    vertical-align: middle !important;
+    display: inline-block;
+}
+
+.selectAllBtn img {
+    height: 12px;
+    width: auto;
+
+    user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.selectAllBtn:hover {
+    cursor: pointer !important;
+    opacity: 0.9;
+}
+
+.selectAllBtn:active:hover {
+    cursor: pointer !important;
+    opacity: 1;
+}
+
+.selectAllBtn:disabled {
+    background-color: darkgray;
 }
 
 .tagContainer {

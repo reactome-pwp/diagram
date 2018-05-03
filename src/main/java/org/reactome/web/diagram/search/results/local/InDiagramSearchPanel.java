@@ -22,13 +22,17 @@ import org.reactome.web.diagram.search.handlers.FacetsLoadedHandler;
 import org.reactome.web.diagram.search.handlers.ResultSelectedHandler;
 import org.reactome.web.diagram.search.results.ResultsPanel;
 import org.reactome.web.diagram.search.results.ResultsWidget;
-import org.reactome.web.diagram.search.results.cells.ResultItemCell;
+import org.reactome.web.diagram.search.results.cells.SearchResultCell;
 import org.reactome.web.diagram.search.results.data.model.FacetContainer;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.scroller.client.InfiniteScrollList;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.reactome.web.diagram.search.events.ResultSelectedEvent.ResultType.LOCAL;
 
 
 /**
@@ -42,6 +46,7 @@ public class InDiagramSearchPanel extends Composite implements ResultsWidget, Se
 
     private EventBus eventBus;
     private Context context;
+    private int scope = -1;
 
     private SearchArguments arguments;
     private SearchResultObject selectedItem;
@@ -50,14 +55,16 @@ public class InDiagramSearchPanel extends Composite implements ResultsWidget, Se
     private InfiniteScrollList<SearchResultObject> resultsList;
     private InDiagramProvider dataProvider;
 
-    private List<FacetContainer> facets;
+    private List<FacetContainer> facets = new ArrayList<>();
+    private Set<String> selectedFacets = new HashSet<>();
 
     private FlowPanel main;
 
-    public InDiagramSearchPanel(EventBus eventBus) {
+    public InDiagramSearchPanel(int scope, EventBus eventBus) {
         this.eventBus = eventBus;
+        this.scope = scope;
 
-        ResultItemCell cell = new ResultItemCell();
+        SearchResultCell cell = new SearchResultCell();
         dataProvider = new InDiagramProvider();
         resultsList = new InfiniteScrollList(cell, ResultsPanel.KEY_PROVIDER, dataProvider, ResultsPanel.CUSTOM_LIST_STYLE);
         resultsList.setSelectionModel(selectionModel);
@@ -111,30 +118,50 @@ public class InDiagramSearchPanel extends Composite implements ResultsWidget, Se
 
     @Override
     public void updateResults(SearchArguments args) {
+        if(args!=null && scope == args.getFacetsScope()) {
+            selectedFacets = args.getFacets();
+        }
+
         if(arguments == null || !arguments.equals(args)) {
             arguments = args;
 
-            dataProvider.setSearchArguments(args, PREFIX);
+            dataProvider.setSearchArguments(args, selectedFacets, PREFIX);
 
             //Include the results of the search in the interactors (by searching inside the graph)
-            dataProvider.setExtraItemsToShow(findInDiagramInteractors(args));
-
+            List<SearchResultObject> interactors = findInDiagramInteractors(args);
+            dataProvider.setExtraItemsToShow(interactors);
+            if(interactors!=null) {
+                //Include the Interactor facet in the facets received by the server
+                includeInteractorFacet(interactors.size());
+            }
             resultsList.setPageSize(30);
             resultsList.loadFirstPage();
         }
         restoreSelection();
-        fireEvent(new FacetsLoadedEvent(facets, args.getFacets()));
+        fireEvent(new FacetsLoadedEvent(facets, selectedFacets, scope));
     }
 
     @Override
     public void setFacets(List<FacetContainer> facets) {
-        this.facets = facets;
+        if (facets!=null) {
+            this.facets = new ArrayList<>(facets);
+        }
+
+        if(selectedFacets.isEmpty()) { return; }
+
+        List<String> allFacets = facets.stream()
+                                       .map(facetContainer -> facetContainer.getName())
+                                       .collect(Collectors.toList());
+
+        selectedFacets = selectedFacets.stream()
+                                       .filter(aFacet -> allFacets.contains(aFacet))
+                                       .collect(Collectors.toSet());
     }
 
     @Override
     public void onSelectionChange(SelectionChangeEvent event) {
         selectedItem = selectionModel.getSelectedObject();
-        fireEvent(new ResultSelectedEvent(selectedItem));
+        fireEvent(new ResultSelectedEvent(selectedItem, LOCAL));
     }
 
     private List<SearchResultObject> findInDiagramInteractors(SearchArguments args) {
@@ -147,20 +174,33 @@ public class InDiagramSearchPanel extends Composite implements ResultsWidget, Se
                 }
             }
         }
-        Console.info(">>>>> Interactors found: " + rtn.size());
         return rtn.isEmpty() ? null : rtn;
+    }
+
+    private void includeInteractorFacet(int count) {
+        facets.add(new FacetContainer() {
+            @Override
+            public String getName() {
+                return "Interactor";
+            }
+
+            @Override
+            public Integer getCount() {
+                return count;
+            }
+        });
     }
 
     @Override
     public void suspendSelection() {
         if (selectedItem != null) {
-            fireEvent(new ResultSelectedEvent(null));
+            fireEvent(new ResultSelectedEvent(null, LOCAL));
         }
     }
 
     private void restoreSelection() {
         if (selectedItem != null) {
-            fireEvent(new ResultSelectedEvent(selectedItem));
+            fireEvent(new ResultSelectedEvent(selectedItem, LOCAL));
         }
     }
 

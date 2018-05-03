@@ -1,12 +1,18 @@
 package org.reactome.web.diagram.search.detailspanel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import org.reactome.web.diagram.common.IconToggleButton;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
+import org.reactome.web.diagram.events.DiagramObjectsFlagRequestedEvent;
+import org.reactome.web.diagram.search.SearchLauncher;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.results.ResultItem;
 
@@ -20,15 +26,20 @@ import org.reactome.web.diagram.search.results.ResultItem;
  *
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class TitlePanel extends FlowPanel {
+public class TitlePanel extends FlowPanel implements ClickHandler {
+    private EventBus eventBus;
+    private SearchResultObject selectedItem;
 
     private Label name;
+    private IconToggleButton flagBtn;
 //    private Label type;
 
     private FlowPanel firstLine;
-    private FlowPanel secondLine;
 
-    public TitlePanel(SearchResultObject selectedItem) {
+    public TitlePanel(EventBus eventBus, SearchResultObject selectedItem) {
+        this.eventBus = eventBus;
+        this.selectedItem = selectedItem;
+
         initialise();
 
         if (selectedItem instanceof ResultItem) {
@@ -38,21 +49,34 @@ public class TitlePanel extends FlowPanel {
         }
     }
 
+    @Override
+    public void onClick(ClickEvent event) {
+        if (selectedItem instanceof ResultItem) {
+            eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(((ResultItem) selectedItem).getStId()), this);
+        } else if (selectedItem instanceof InteractorSearchResult) {
+            eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(((InteractorSearchResult) selectedItem).getAccession()), this);
+        }
+
+    }
+
     private void initialise() {
         setStyleName(RESOURCES.getCSS().container());
 
         name = new Label();
         name.setStyleName(RESOURCES.getCSS().name());
 
+        flagBtn = new IconToggleButton("", SearchLauncher.RESOURCES.clear(), SearchLauncher.RESOURCES.clear());
+        flagBtn.setStyleName(RESOURCES.getCSS().flagBtn());
+        flagBtn.setVisible(true);
+        flagBtn.setTitle("Show where this is in the diagram");
+        flagBtn.addClickHandler(this);
+
         firstLine = new FlowPanel();
         firstLine.setStyleName(RESOURCES.getCSS().line());
 
-        secondLine = new FlowPanel();
-        secondLine.setStyleName(RESOURCES.getCSS().line());
-
+        add(flagBtn);
         add(name);
         add(firstLine);
-        add(secondLine);
     }
 
     private void populate(ResultItem item) {
@@ -61,7 +85,7 @@ public class TitlePanel extends FlowPanel {
 
         createAndAddLabel(item.getSchemaClass().name, "Type", RESOURCES.getCSS().type(), firstLine);
         createAndAddLabel(item.getStId(), "Id", RESOURCES.getCSS().id(), firstLine);
-        createAndAddLabel("Accession", "Accession", RESOURCES.getCSS().accession(), firstLine);
+        createAndAddLabel(item.getReferenceIdentifier(), item.getDatabaseName() + ":" + item.getReferenceIdentifier(), RESOURCES.getCSS().accession(), firstLine);
         createAndAddLabel(item.getCompartments(), "Compartments", RESOURCES.getCSS().compartments(), firstLine);
         createAndAddLabel("Gene names", "Gene names", RESOURCES.getCSS().genes(), firstLine);
     }
@@ -99,6 +123,7 @@ public class TitlePanel extends FlowPanel {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
     }
+
     public interface Resources extends ClientBundle {
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
@@ -124,5 +149,7 @@ public class TitlePanel extends FlowPanel {
         String genes();
 
         String accession();
+
+        String flagBtn();
     }
 }

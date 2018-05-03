@@ -14,11 +14,18 @@ import org.reactome.web.diagram.search.handlers.FacetsLoadedHandler;
 import org.reactome.web.diagram.search.handlers.ResultSelectedHandler;
 import org.reactome.web.diagram.search.results.ResultsPanel;
 import org.reactome.web.diagram.search.results.ResultsWidget;
-import org.reactome.web.diagram.search.results.cells.ResultItemCell;
+import org.reactome.web.diagram.search.results.cells.SearchResultCell;
 import org.reactome.web.diagram.search.results.data.model.FacetContainer;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.scroller.client.InfiniteScrollList;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.reactome.web.diagram.search.events.ResultSelectedEvent.ResultType.GLOBAL;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -27,6 +34,7 @@ public class OtherDiagramSearchPanel extends Composite implements ResultsWidget,
 
     public final static String PREFIX = DiagramFactory.SERVER + "/ContentService/search/fireworks/";
 
+    private int scope = -1;
 
     private SearchArguments arguments;
     private SearchResultObject selectedItem;
@@ -35,13 +43,15 @@ public class OtherDiagramSearchPanel extends Composite implements ResultsWidget,
     private InfiniteScrollList<SearchResultObject> resultsList;
     private OtherDiagramProvider dataProvider;
 
-    private List<FacetContainer> facets;
+    private List<FacetContainer> facets = new ArrayList<>();
+    private Set<String> selectedFacets = new HashSet<>();
 
     private FlowPanel main;
 
-    public OtherDiagramSearchPanel() {
+    public OtherDiagramSearchPanel(int scope) {
+        this.scope = scope;
 
-        ResultItemCell cell = new ResultItemCell();
+        SearchResultCell cell = new SearchResultCell();
         dataProvider = new OtherDiagramProvider();
         resultsList = new InfiniteScrollList(cell, ResultsPanel.KEY_PROVIDER, dataProvider, ResultsPanel.CUSTOM_LIST_STYLE);
         resultsList.setSelectionModel(selectionModel);
@@ -71,39 +81,56 @@ public class OtherDiagramSearchPanel extends Composite implements ResultsWidget,
 
     @Override
     public void updateResults(SearchArguments args) {
+        if(args!=null && scope == args.getFacetsScope()) {
+            selectedFacets = args.getFacets();
+            Console.info("_____ updateResults: " + selectedFacets );
+        }
+
         if(arguments == null || !arguments.equals(args)) {
             arguments = args;
 
-            dataProvider.setSearchArguments(args, PREFIX);
+            dataProvider.setSearchArguments(args, selectedFacets, PREFIX);
 
             resultsList.setPageSize(30);
             resultsList.loadFirstPage();
         }
         restoreSelection();
-        fireEvent(new FacetsLoadedEvent(facets, args.getFacets()));
+
+        fireEvent(new FacetsLoadedEvent(facets, selectedFacets, scope));
     }
 
     @Override
     public void setFacets(List<FacetContainer> facets) {
-        this.facets = facets;
+        if (facets!=null) {
+            this.facets = new ArrayList<>(facets);
+        }
+
+        if(selectedFacets.isEmpty()) { return; }
+
+        List<String> allFacets = facets.stream()
+                                       .map(facetContainer -> facetContainer.getName())
+                                       .collect(Collectors.toList());
+        selectedFacets = selectedFacets.stream()
+                                       .filter(aFacet -> allFacets.contains(aFacet))
+                                       .collect(Collectors.toSet());
     }
 
     @Override
     public void onSelectionChange(SelectionChangeEvent event) {
         selectedItem = selectionModel.getSelectedObject();
-        fireEvent(new ResultSelectedEvent(selectedItem));
+        fireEvent(new ResultSelectedEvent(selectedItem, GLOBAL));
     }
 
     @Override
     public void suspendSelection() {
         if (selectedItem != null) {
-            fireEvent(new ResultSelectedEvent(null));
+            fireEvent(new ResultSelectedEvent(null, GLOBAL));
         }
     }
 
     private void restoreSelection() {
         if (selectedItem != null) {
-            fireEvent(new ResultSelectedEvent(selectedItem));
+            fireEvent(new ResultSelectedEvent(selectedItem, GLOBAL));
         }
     }
 

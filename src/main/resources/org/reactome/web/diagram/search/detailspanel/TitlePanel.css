@@ -1,5 +1,6 @@
 .container {
-    background-color: white;
+    background-color: transparent;
+    margin-top: 2px;
 }
 
 .name {
@@ -11,6 +12,8 @@
     max-height: 2.5em;
     overflow:hidden;
     text-overflow:ellipsis;
+
+    display: inline
 }
 
 .line {
@@ -19,6 +22,7 @@
     flex-wrap: wrap;
     justify-content: space-between;
     font-size: 0.9em;
+    margin-top: 4px;
 }
 
 .line div {
@@ -51,6 +55,59 @@
     background-color: rgb(199, 106, 178);
     color: white;
 }
+
+
+.flagBtn {
+    background-color: #1e94d0;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    margin-top: 1px;
+    padding: 1px 1px 0 1px;
+    outline: none;
+    opacity: 0.8;
+    width: 20px;
+    height: 20px;
+    float: right;
+
+    -webkit-box-shadow: 1px 1px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    1px 1px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         1px 1px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+
+}
+
+.flagBtn span {
+    vertical-align: middle !important;
+    display: inline-block;
+}
+
+.flagBtn img {
+    height: 12px;
+    width: auto;
+
+    user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.flagBtn:hover {
+    cursor: pointer !important;
+    opacity: 0.9;
+}
+
+.flagBtn:active:hover {
+    cursor: pointer !important;
+    opacity: 1;
+}
+
+.flagBtn:disabled {
+    background-color: darkgray;
+}
+
+
 
 
 

@@ -15,10 +15,12 @@ public class FacetsLoadedEvent extends GwtEvent<FacetsLoadedHandler> {
 
     private List<FacetContainer> facets;
     private Set<String> selectedFacets;
+    private int scope = -1;
 
-    public FacetsLoadedEvent(List<FacetContainer> facets, Set<String> selectedFacets) {
+    public FacetsLoadedEvent(List<FacetContainer> facets, Set<String> selectedFacets, int scope) {
         this.facets = facets;
         this.selectedFacets = selectedFacets;
+        this.scope = scope;
     }
 
     @Override
@@ -39,11 +41,16 @@ public class FacetsLoadedEvent extends GwtEvent<FacetsLoadedHandler> {
         return selectedFacets;
     }
 
+    public int getScope() {
+        return scope;
+    }
+
     @Override
     public String toString() {
         return "FacetsLoadedEvent{" +
                 "facets=" + facets +
                 ", selectedFacets=" + selectedFacets +
+                ", scope=" + scope +
                 '}';
     }
 }

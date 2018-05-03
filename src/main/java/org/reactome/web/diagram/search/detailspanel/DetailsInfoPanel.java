@@ -3,6 +3,7 @@ package org.reactome.web.diagram.search.detailspanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
@@ -28,16 +29,25 @@ import org.reactome.web.diagram.search.events.ResultSelectedEvent;
 import org.reactome.web.diagram.search.handlers.AutoCompleteRequestedHandler;
 import org.reactome.web.diagram.search.handlers.ResultSelectedHandler;
 import org.reactome.web.diagram.search.infopanel.DatabaseObjectListPanel;
+import org.reactome.web.diagram.search.infopanel.EventListPanel;
 import org.reactome.web.diagram.search.infopanel.InteractorsListPanel;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
 import org.reactome.web.diagram.search.results.ResultItem;
 import org.reactome.web.diagram.search.results.data.model.Occurrences;
+import org.reactome.web.diagram.search.results.data.model.SearchError;
 import org.reactome.web.diagram.search.results.local.InDiagramOccurrencesFactory;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
+import org.reactome.web.pwp.model.client.classes.Pathway;
+import org.reactome.web.pwp.model.client.common.ContentClientHandler;
+import org.reactome.web.pwp.model.client.content.ContentClient;
+import org.reactome.web.pwp.model.client.content.ContentClientError;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.reactome.web.diagram.search.events.ResultSelectedEvent.ResultType.GLOBAL;
+import static org.reactome.web.diagram.search.events.ResultSelectedEvent.ResultType.LOCAL;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -45,7 +55,7 @@ import java.util.stream.Collectors;
 public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSelectedHandler,
         ContentRequestedHandler, ContentLoadedHandler,
         SearchPerformedHandler, AutoCompleteRequestedHandler,
-        InDiagramOccurrencesFactory.Handler {
+        InDiagramOccurrencesFactory.Handler, ContentClientHandler.ObjectListLoaded<Pathway> {
 
     private EventBus eventBus;
     private Context context;
@@ -102,7 +112,26 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     }
 
     @Override
-    public void onOccurrencesError(String msg) {
+    public void onOccurrencesError(SearchError error) {
+        switch(error.getCode()) {
+            case Response.SC_NOT_FOUND:
+                // In case of a 404 there are simply no occurences and
+                // we suppress the error.
+                break;
+            default:
+                Console.error(new StringBuilder()
+                        .append(error.getReason())
+                        .append(" (")
+                        .append(error.getCode())
+                        .append(") ")
+                        .append(error.getMessages())
+                        .toString()
+                );
+        }
+    }
+
+    @Override
+    public void onOccurrencesException(String msg) {
         Console.error(msg);
     }
 
@@ -111,17 +140,20 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         selectedResultItem = event.getSelectedResultItem();
 
         clearMainPanel();
-        includeWidget(new TitlePanel(selectedResultItem));
+        includeWidget(new TitlePanel(eventBus, selectedResultItem));
 
-        if(selectedResultItem instanceof ResultItem) {
-            InDiagramOccurrencesFactory.searchForInstanceInDiagram(((ResultItem) selectedResultItem).getStId(), args.getDiagramStId(), this);
-            Console.info("Details Panel: onResultSelected:" + ((ResultItem) selectedResultItem).getStId());
-        } else if (selectedResultItem instanceof InteractorSearchResult) {
-            populateWithInteractor();
-            show(true);
-        } else {
-            //Among others this covers the case of a null selected item
+        if(selectedResultItem == null) {
             show(false);
+        } else if (LOCAL == event.getResultType()) {
+            if (selectedResultItem instanceof ResultItem) {
+                InDiagramOccurrencesFactory.searchForInstanceInDiagram(((ResultItem) selectedResultItem).getStId(), args.getDiagramStId(), this);
+                Console.info("Details Panel: onResultSelected:" + ((ResultItem) selectedResultItem).getStId());
+            } else if (selectedResultItem instanceof InteractorSearchResult) {
+                populateWithInteractor();
+                show(true);
+            }
+        } else if (GLOBAL == event.getResultType()) {
+            ContentClient.getPathwaysWithDiagramForEntity(((ResultItem) selectedResultItem).getStId(), false, context.getContent().getSpeciesName(), this);
         }
     }
 
@@ -140,6 +172,27 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         args = event.getSearchArguments();
         selectedResultItem = null;
         show(false);
+    }
+
+    @Override
+    public void onObjectListLoaded(List<Pathway> list) {
+        if(!list.isEmpty()) {
+            int size = list.size();
+            includeWidget(new EventListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), list, eventBus));
+            show(true);
+        }
+    }
+
+    @Override
+    public void onContentClientException(Type type, String message) {
+        show(false);
+        includeWidget(new Label("An error has occurred. ERROR: " + message));
+    }
+
+    @Override
+    public void onContentClientError(ContentClientError error) {
+        show(false);
+        includeWidget(new Label("An error has occurred. ERROR: " + error.getReason()));
     }
 
     private void populateWithOccurences(Occurrences occurrences) {
@@ -272,6 +325,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
     }
+
     public interface Resources extends ClientBundle {
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();

@@ -24,8 +24,6 @@ import org.reactome.web.diagram.search.handlers.*;
 import org.reactome.web.diagram.search.searchbox.*;
 import org.reactome.web.diagram.util.Console;
 
-import java.util.stream.Collectors;
-
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
@@ -194,20 +192,20 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         this.searchBtn.setEnabled(true);
 //        this.suggestionsProvider = new SuggestionsProviderImpl(event.getContext());
         this.context = event.getContext();
-        fireEvent(new SuggestionResetEvent());
+//        fireEvent(new SuggestionResetEvent());
     }
 
 
     @Override
     public void onFacetsLoaded(FacetsLoadedEvent event) {
-        Console.info("SearchLauncher.onFacetsLoaded: setting facets: " + event.toString());
-        facetsPanel.setFacets(event.getFacets(), event.getSelectedFacets());
+//        Console.info("SearchLauncher.onFacetsLoaded: setting facets: " + event.toString());
+        facetsPanel.setFacets(event.getFacets(), event.getSelectedFacets(), event.getScope());
     }
 
 
     @Override
     public void onSelectedFacetsChanged(FacetsChangedEvent event) {
-        Console.info("onFacetsChanged: " + facetsPanel.getSelectedFacets().stream().collect(Collectors.joining(", ")));
+//        Console.info("onFacetsChanged: " + facetsPanel.getScope() + " - " + facetsPanel.getSelectedFacets().stream().collect(Collectors.joining(", ")));
         performSearch();
     }
 
@@ -305,6 +303,11 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     }
 
     private void getAutoCompleteSuggestions() {
+        facetsPanel.clearView();
+        collapsePanelVertically();
+        optionsBtn.setActive(false);
+
+
         String term = input.getText().trim();
         fireEvent(new AutoCompleteRequestedEvent(term));
 
@@ -317,7 +320,8 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
                 query,
                 context.getContent().getStableId(),
                 context.getContent().getSpeciesName(),
-                facetsPanel.getSelectedFacets()
+                facetsPanel.getSelectedFacets(),
+                facetsPanel.getScope()
         );
 
         if(searchArgs.hasValidQuery()) {

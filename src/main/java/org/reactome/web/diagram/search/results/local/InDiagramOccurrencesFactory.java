@@ -6,7 +6,7 @@ import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.search.results.data.DiagramSearchException;
 import org.reactome.web.diagram.search.results.data.DiagramSearchResultFactory;
 import org.reactome.web.diagram.search.results.data.model.Occurrences;
-import org.reactome.web.diagram.util.Console;
+import org.reactome.web.diagram.search.results.data.model.SearchError;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -18,7 +18,8 @@ public abstract class InDiagramOccurrencesFactory {
 
     public interface Handler {
         void onOccurrencesSuccess(Occurrences occurrences);
-        void onOccurrencesError(String msg);
+        void onOccurrencesError(SearchError error);
+        void onOccurrencesException(String msg);
     }
 
     public static void searchForInstanceInDiagram(final String instance, final String diagram, final Handler handler) {
@@ -40,17 +41,16 @@ public abstract class InDiagramOccurrencesFactory {
                             handler.onOccurrencesSuccess(getOccurrences(response.getText(), handler));
                             break;
                         default:
-                            handler.onOccurrencesError(response.getStatusText());
+                            handler.onOccurrencesError(getError(response.getText(), handler));
                     }
                 }
                 @Override
                 public void onError(Request request, Throwable exception) {
-                    Console.error(exception.getCause());
-                    handler.onOccurrencesError(exception.getMessage());
+                    handler.onOccurrencesException(exception.getMessage());
                 }
             });
         } catch (RequestException ex) {
-            handler.onOccurrencesError(ex.getMessage());
+            handler.onOccurrencesException(ex.getMessage());
         }
     }
 
@@ -59,7 +59,17 @@ public abstract class InDiagramOccurrencesFactory {
         try {
             rtn = DiagramSearchResultFactory.getSearchObject(Occurrences.class, json);
         } catch (DiagramSearchException ex) {
-            handler.onOccurrencesError(ex.getMessage());
+            handler.onOccurrencesException(ex.getMessage());
+        }
+        return rtn;
+    }
+
+    private static SearchError getError(final String json, final Handler handler) {
+        SearchError rtn = null;
+        try {
+            rtn = DiagramSearchResultFactory.getSearchObject(SearchError.class, json);
+        } catch (DiagramSearchException ex) {
+            handler.onOccurrencesException(ex.getMessage());
         }
         return rtn;
     }
