@@ -5,7 +5,6 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.safehtml.shared.UriUtils;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.util.Console;
 
@@ -13,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Performs a request to the Content Service and retrieves the
+ * autocomplete suggestions.
+ *
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public abstract class AutoCompleteResultsFactory {
@@ -27,7 +29,7 @@ public abstract class AutoCompleteResultsFactory {
 
     public static void searchForTag(String query, Handler handler) {
 
-        String url = SEARCH.replace("##QUERY##", UriUtils.encode(query));
+        String url = SEARCH.replace("##QUERY##", URL.encode(query));
 
         if (request != null && request.isPending()) request.cancel();
 
@@ -66,7 +68,7 @@ public abstract class AutoCompleteResultsFactory {
         List<AutoCompleteResult> rtn = new ArrayList<>();
 
         for (String result: stringList) {
-            rtn.add(new AutoCompleteResult(tag, result));
+            rtn.add(new AutoCompleteResult(result));
         }
 
         return rtn;
@@ -81,15 +83,12 @@ public abstract class AutoCompleteResultsFactory {
 
         if (jsonArray == null) return rtn;
 
-
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONValue jsonValue = jsonArray.get(i);
             JSONString jsonString = jsonValue.isString();
             String stringValue = (jsonString == null) ? jsonValue.toString() : jsonString.stringValue();
             rtn.add(stringValue);
         }
-
         return rtn;
     }
-
 }

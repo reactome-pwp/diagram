@@ -16,6 +16,7 @@ import org.reactome.web.diagram.search.SearchPerformedEvent;
 import org.reactome.web.diagram.search.SearchPerformedHandler;
 import org.reactome.web.diagram.search.autocomplete.cells.AutoCompleteCell;
 import org.reactome.web.diagram.search.autocomplete.cells.RecentSearchCell;
+import org.reactome.web.diagram.search.common.RegExpUtil;
 import org.reactome.web.diagram.search.events.*;
 import org.reactome.web.diagram.search.handlers.AutoCompleteRequestedHandler;
 import org.reactome.web.diagram.search.handlers.AutoCompleteSelectedHandler;
@@ -24,6 +25,7 @@ import org.reactome.web.diagram.search.handlers.OptionsExpandedHandler;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
 import org.reactome.web.diagram.util.Console;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,6 +37,8 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
 
     private final static int AUTOCOMPLETE_SIZE = 10;
     private final static int RECENT_SIZE = 9;
+
+    private List<String> terms;
 
     private CellList<AutoCompleteResult> autoCompleteList;
     private SingleSelectionModel<AutoCompleteResult> autoCompleteSelectionModel;
@@ -94,6 +98,8 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
 
     public void requestAutoCompleteResults(String tag) {
         if (tag != null && !tag.isEmpty()) {
+            String[] allTerms = tag.toLowerCase().split("  *");
+            terms = Arrays.asList(allTerms);
             AutoCompleteResultsFactory.searchForTag(tag, this);
         } else {
             makeVisible(false);
@@ -114,6 +120,9 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
     @Override
     public void onAutoCompleteSearchResult(List<AutoCompleteResult> results) {
         if (!results.isEmpty()) {
+            // Used for highlighting the result
+            results.forEach(item -> item.setResultDisplay(RegExpUtil.getHighlightingExpression(terms)));
+
             makeVisible(true);
             autoCompleteList.setRowData(results);
             updateRecentItemsList();
@@ -122,7 +131,8 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
 
     @Override
     public void onAutoCompleteError() {
-        Console.error("Error retrieving autocomplete suggestions"); //TODO treat this
+        Console.warn("Error retrieving autocomplete suggestions");
+//        makeVisible(false);
     }
 
     @Override
