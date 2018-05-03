@@ -12,13 +12,13 @@ import org.reactome.web.diagram.search.results.data.model.*;
 public class DiagramSearchResultFactory {
 
     @SuppressWarnings("UnusedDeclaration")
-//    @Category(EntryCategory.class)
     interface ModelAutoBeanFactory extends AutoBeanFactory {
         AutoBean<Entry> entry();
         AutoBean<DiagramSearchResult> diagramSearchResult();
         AutoBean<FacetContainer> facets();
         AutoBean<Occurrences> occurrences();
         AutoBean<SearchSummary> summary();
+        AutoBean<SearchError> searchError();
     }
 
     @SuppressWarnings("Duplicates")

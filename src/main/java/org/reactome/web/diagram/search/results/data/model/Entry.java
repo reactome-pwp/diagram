@@ -17,4 +17,9 @@ public interface Entry {
 
     List<String> getCompartmentNames();
 
+    String getReferenceIdentifier();
+
+    String getDatabaseName();
+
+    String getReferenceURL();
 }
