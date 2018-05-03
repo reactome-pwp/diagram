@@ -1,9 +1,9 @@
 package org.reactome.web.diagram.search;
 
 import com.google.gwt.regexp.shared.RegExp;
+import org.reactome.web.diagram.search.common.RegExpUtil;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Immutable class that holds the arguments of the specific search.
@@ -35,7 +35,10 @@ public class SearchArguments {
 
         if (hasValidQuery()) {
             String[] allTerms = query.toLowerCase().split("  *");
-            highlightingRegExp = compileHighlightingExpression(allTerms);
+            if (allTerms.length != 0) {
+                terms = Arrays.asList(allTerms);
+                highlightingRegExp = RegExpUtil.getHighlightingExpression(terms);
+            }
         }
     }
 
@@ -80,7 +83,8 @@ public class SearchArguments {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SearchArguments that = (SearchArguments) o;
-        return Objects.equals(query, that.query) &&
+        return facetsScope == that.facetsScope &&
+                Objects.equals(query, that.query) &&
                 Objects.equals(diagramStId, that.diagramStId) &&
                 Objects.equals(species, that.species) &&
                 Objects.equals(facets, that.facets);
@@ -88,8 +92,7 @@ public class SearchArguments {
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(query, diagramStId, species, facets);
+        return Objects.hash(query, diagramStId, species, facets, facetsScope);
     }
 
     @Override
@@ -101,31 +104,5 @@ public class SearchArguments {
                 ", species='" + species + '\'' +
                 ", facets='" + facets + '\'' +
                 '}';
-    }
-
-    private RegExp compileHighlightingExpression(String[] allTerms) {
-        RegExp highlightingRegExp = null;
-        if (allTerms.length != 0) {
-            terms = Arrays.asList(allTerms);
-
-            /*
-             * (term1|term2)    : term is between "(" and ")" because we are creating a group, so this group can
-             *                    be referred later.
-             * gi               : global search and case insensitive
-             * <b><u>$1</u></b> : instead of replacing by input, that would change the case, we replace it by $1,
-             *                    that is the reference to the first matched group. This means that we want to
-             *                    replace it using the exact word that was found.
-             */
-            String aux = terms.stream()
-                              .map(term -> RegExp.quote(term))
-                              .collect(Collectors.joining("|", "(", ")"));
-            try {
-                highlightingRegExp = RegExp.compile(aux, "gi");
-            } catch (RuntimeException e) {
-                //In case something goes wrong do not highlight anything
-                highlightingRegExp = RegExp.compile("/.^/");
-            }
-        }
-        return highlightingRegExp;
     }
 }
