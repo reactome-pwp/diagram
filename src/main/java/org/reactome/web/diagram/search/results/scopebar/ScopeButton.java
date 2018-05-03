@@ -33,7 +33,7 @@ public class ScopeButton extends Button {
     }
 
     public void setNumber(int number) {
-        String msg = text + (number == 0 ? "" : "(" + number + ")");
+        String msg = text + (number == 0 ? "" : " (" + number + ")");
         buttonLbl.setText(msg);
         update();
     }
