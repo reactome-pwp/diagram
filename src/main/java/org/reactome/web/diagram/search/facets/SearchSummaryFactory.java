@@ -13,7 +13,7 @@ import org.reactome.web.diagram.util.Console;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public abstract class SearchSummaryFactory {
-    private static final String URL = DiagramFactory.SERVER + "/ContentService/search/diagram/summary?##QUERY##&species=##SPECIES##&diagram=##DIAGRAM##";
+    private static final String BASE_URL = DiagramFactory.SERVER + "/ContentService/search/diagram/summary?query=##QUERY##&species=##SPECIES##&diagram=##DIAGRAM##";
     private static Request request;
 
     public interface Handler {
@@ -22,14 +22,13 @@ public abstract class SearchSummaryFactory {
     }
 
     public static void queryForSummary(final SearchArguments arguments, final Handler handler){
-//        handler.onSearchSummaryReceived(getMockFacets());
         if (request != null && request.isPending()) {
             request.cancel();
         }
 
-        String url = URL.replace("##QUERY##", arguments.getQuery())
-                        .replace("##SPECIES##", arguments.getSpecies())
-                        .replace("##DIAGRAM##", arguments.getDiagramStId());
+        String url = BASE_URL.replace("##QUERY##", URL.encode(arguments.getQuery()))
+                             .replace("##SPECIES##", arguments.getSpecies())
+                             .replace("##DIAGRAM##", arguments.getDiagramStId());
 
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
         requestBuilder.setHeader("Accept", "application/json");
@@ -66,9 +65,4 @@ public abstract class SearchSummaryFactory {
         }
         return rtn;
     }
-
-//    private static List<String> getMockFacets() {
-//        Console.info("FacetsFactory: Updating with fake facets ");
-//        return Arrays.asList("Protein", "Complex", "Set", "genes and transcripts", "Chemical", "Drug", "Blah");
-//    }
 }
