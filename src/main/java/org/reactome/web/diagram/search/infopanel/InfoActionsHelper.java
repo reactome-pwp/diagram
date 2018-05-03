@@ -5,9 +5,11 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.events.ContentRequestedEvent;
 import org.reactome.web.diagram.events.GraphObjectHoveredEvent;
 import org.reactome.web.diagram.events.GraphObjectSelectedEvent;
 import org.reactome.web.diagram.events.InteractorSelectedEvent;
+import org.reactome.web.pwp.model.client.classes.Event;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -43,4 +45,13 @@ abstract class InfoActionsHelper {
             eventBus.fireEventFromSource(new InteractorSelectedEvent(url), source);
         };
     }
+
+    /////////////////
+    //   Pathways  //
+    /////////////////
+
+    static ClickHandler getPathwayLinkClickHandler(final Event clicked, final EventBus eventBus, final Object source){
+        return event -> eventBus.fireEventFromSource(new ContentRequestedEvent(clicked.getStId()), source);
+    }
+
 }

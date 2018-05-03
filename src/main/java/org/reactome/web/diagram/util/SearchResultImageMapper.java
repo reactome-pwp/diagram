@@ -15,7 +15,7 @@ public abstract class SearchResultImageMapper {
     private final static ImageContainer protein = new ImageContainer(INSTANCE.entityWithAccessionedSequence(), "Protein");
     private final static ImageContainer complex = new ImageContainer(INSTANCE.complex(), "Complex");
     private final static ImageContainer set = new ImageContainer(INSTANCE.entitySet(), "Set");
-    private final static ImageContainer interactor = new ImageContainer(INSTANCE.exclamation(), "Interactor"); //TODO check this
+    private final static ImageContainer interactor = new ImageContainer(INSTANCE.exclamation(), "Interactor"); //TODO check the icon for interactors in the model
     private final static ImageContainer pathway = new ImageContainer(INSTANCE.pathway(), "Pathway");
     private final static ImageContainer dnaSequence = new ImageContainer(INSTANCE.referenceDNASequence(), "DNA sequence");
     private final static ImageContainer polymer = new ImageContainer(INSTANCE.polymer(), "Polymer");
