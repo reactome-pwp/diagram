@@ -12,7 +12,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import org.reactome.web.diagram.common.IconToggleButton;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
-import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.DiagramObjectsFlagRequestedEvent;
 import org.reactome.web.diagram.events.DiagramObjectsFlagResetEvent;
 import org.reactome.web.diagram.events.DiagramObjectsFlaggedEvent;
@@ -20,8 +19,6 @@ import org.reactome.web.diagram.handlers.DiagramObjectsFlagResetHandler;
 import org.reactome.web.diagram.handlers.DiagramObjectsFlaggedHandler;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.results.ResultItem;
-
-import java.util.Set;
 
 /**
  * Creates a title in the DetailsPanel containing various
@@ -44,8 +41,6 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
 
     private String termToFlagBy;
     private String flaggedTerm;
-    private Set<DiagramObject> flaggedItems;
-
 
     public TitlePanel(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -98,7 +93,6 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
     @Override
     public void onDiagramObjectsFlagged(DiagramObjectsFlaggedEvent event) {
         this.flaggedTerm = event.getTerm();
-        this.flaggedItems = event.getFlaggedItems();
 
         if(!event.getSource().equals(this)) {
             if(flaggedTerm!=null && flaggedTerm.equals(termToFlagBy)) {
