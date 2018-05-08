@@ -116,10 +116,10 @@ public class FacetsPanel extends FlowPanel implements ClickHandler {
         titleLabel = new Label("Filter your results by specific type(s):");
         titleLabel.setStyleName(RESOURCES.getCSS().title());
 
-        selectAllBtn = new IconButton("", RESOURCES.selectAll());
+        selectAllBtn = new IconButton("Remove filters", null);
         selectAllBtn.setStyleName(RESOURCES.getCSS().selectAllBtn());
         selectAllBtn.setVisible(true);
-        selectAllBtn.setTitle("Clear all selected filters");
+        selectAllBtn.setTitle("Remove all selected filters");
         selectAllBtn.setEnabled(false);
         selectAllBtn.addClickHandler(e -> {
             selectAll(true); //By selecting all facets we remove any filtering

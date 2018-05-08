@@ -63,6 +63,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     private SearchResultObject selectedResultItem;
 
     private FlowPanel mainPanel;
+    private TitlePanel titlePanel;
 
     public DetailsInfoPanel(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -80,6 +81,8 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         main.add(header);
         main.add(mainPanel);
         add(main);
+
+        titlePanel = new TitlePanel(eventBus);
 
         eventBus.addHandler(ContentLoadedEvent.TYPE, this);
         eventBus.addHandler(ContentRequestedEvent.TYPE, this);
@@ -140,7 +143,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         selectedResultItem = event.getSelectedResultItem();
 
         clearMainPanel();
-        includeWidget(new TitlePanel(eventBus, selectedResultItem));
+        includeWidget(titlePanel.setSelectedItem(selectedResultItem));
 
         if(selectedResultItem == null) {
             show(false);

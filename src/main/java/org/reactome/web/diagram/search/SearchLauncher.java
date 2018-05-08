@@ -86,11 +86,10 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 //        executeBtn.setEnabled(false);
         this.add(executeBtn);
 
-        optionsBtn = new IconToggleButton("", RESOURCES.options(), RESOURCES.optionsClose());
+        optionsBtn = new IconToggleButton("", RESOURCES.options(), RESOURCES.optionsClose(),this);
         optionsBtn.setStyleName(RESOURCES.getCSS().optionsBtn());
         optionsBtn.setVisible(true);
         optionsBtn.setTitle("Filter your results");
-        optionsBtn.addClickHandler(this);
 //        optionsBtn.setEnabled(false);
         this.add(optionsBtn);
 

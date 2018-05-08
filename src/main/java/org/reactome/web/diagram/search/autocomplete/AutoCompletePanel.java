@@ -126,6 +126,8 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
             makeVisible(true);
             autoCompleteList.setRowData(results);
             updateRecentItemsList();
+        } else {
+            makeVisible(false);
         }
     }
 

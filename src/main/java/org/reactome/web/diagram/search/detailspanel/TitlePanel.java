@@ -6,15 +6,22 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import org.reactome.web.diagram.common.IconToggleButton;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
+import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.DiagramObjectsFlagRequestedEvent;
-import org.reactome.web.diagram.search.SearchLauncher;
+import org.reactome.web.diagram.events.DiagramObjectsFlagResetEvent;
+import org.reactome.web.diagram.events.DiagramObjectsFlaggedEvent;
+import org.reactome.web.diagram.handlers.DiagramObjectsFlagResetHandler;
+import org.reactome.web.diagram.handlers.DiagramObjectsFlaggedHandler;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.results.ResultItem;
+
+import java.util.Set;
 
 /**
  * Creates a title in the DetailsPanel containing various
@@ -26,37 +33,78 @@ import org.reactome.web.diagram.search.results.ResultItem;
  *
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class TitlePanel extends FlowPanel implements ClickHandler {
+public class TitlePanel extends FlowPanel implements ClickHandler,
+        DiagramObjectsFlagResetHandler, DiagramObjectsFlaggedHandler {
     private EventBus eventBus;
     private SearchResultObject selectedItem;
 
     private Label name;
     private IconToggleButton flagBtn;
-//    private Label type;
-
     private FlowPanel firstLine;
 
-    public TitlePanel(EventBus eventBus, SearchResultObject selectedItem) {
+    private String termToFlagBy;
+    private String flaggedTerm;
+    private Set<DiagramObject> flaggedItems;
+
+
+    public TitlePanel(EventBus eventBus) {
         this.eventBus = eventBus;
-        this.selectedItem = selectedItem;
 
         initialise();
 
+        this.eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
+        this.eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
+    }
+
+    public TitlePanel setSelectedItem(SearchResultObject selectedItem) {
+        this.selectedItem = selectedItem;
+        this.firstLine.clear();
+
         if (selectedItem instanceof ResultItem) {
-            populate((ResultItem) selectedItem);
+            ResultItem item = (ResultItem) selectedItem;
+            termToFlagBy = item.getStId();
+            populate(item);
         } else if (selectedItem instanceof InteractorSearchResult) {
-            populate((InteractorSearchResult) selectedItem);
+            InteractorSearchResult item = (InteractorSearchResult) selectedItem;
+            termToFlagBy = item.getAccession();
+            populate(item);
+        } else {
+            termToFlagBy = null;
         }
+
+        return this;
     }
 
     @Override
     public void onClick(ClickEvent event) {
-        if (selectedItem instanceof ResultItem) {
-            eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(((ResultItem) selectedItem).getStId()), this);
-        } else if (selectedItem instanceof InteractorSearchResult) {
-            eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(((InteractorSearchResult) selectedItem).getAccession()), this);
+        if(flagBtn.isActive()) {
+            eventBus.fireEventFromSource(new DiagramObjectsFlagResetEvent(), this);
+        } else {
+            if (selectedItem instanceof ResultItem) {
+                eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(((ResultItem) selectedItem).getStId()), this);
+            } else if (selectedItem instanceof InteractorSearchResult) {
+                eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(((InteractorSearchResult) selectedItem).getAccession()), this);
+            }
         }
+    }
 
+    @Override
+    public void onDiagramObjectsFlagReset(DiagramObjectsFlagResetEvent event) {
+        if(!event.getSource().equals(this)) {
+            flagBtn.setActive(false);
+        }
+    }
+
+    @Override
+    public void onDiagramObjectsFlagged(DiagramObjectsFlaggedEvent event) {
+        this.flaggedTerm = event.getTerm();
+        this.flaggedItems = event.getFlaggedItems();
+
+        if(!event.getSource().equals(this)) {
+            if(flaggedTerm!=null && flaggedTerm.equals(termToFlagBy)) {
+                flagBtn.setActive(true);
+            }
+        }
     }
 
     private void initialise() {
@@ -65,11 +113,10 @@ public class TitlePanel extends FlowPanel implements ClickHandler {
         name = new Label();
         name.setStyleName(RESOURCES.getCSS().name());
 
-        flagBtn = new IconToggleButton("", SearchLauncher.RESOURCES.clear(), SearchLauncher.RESOURCES.clear());
+        flagBtn = new IconToggleButton("", RESOURCES.flag(), RESOURCES.flagClear(), this);
         flagBtn.setStyleName(RESOURCES.getCSS().flagBtn());
         flagBtn.setVisible(true);
         flagBtn.setTitle("Show where this is in the diagram");
-        flagBtn.addClickHandler(this);
 
         firstLine = new FlowPanel();
         firstLine.setStyleName(RESOURCES.getCSS().line());
@@ -85,7 +132,8 @@ public class TitlePanel extends FlowPanel implements ClickHandler {
 
         createAndAddLabel(item.getSchemaClass().name, "Type", RESOURCES.getCSS().type(), firstLine);
         createAndAddLabel(item.getStId(), "Id", RESOURCES.getCSS().id(), firstLine);
-        createAndAddLabel(item.getReferenceIdentifier(), item.getDatabaseName() + ":" + item.getReferenceIdentifier(), RESOURCES.getCSS().accession(), firstLine);
+        String accession = item.getDatabaseName() + ":" + item.getReferenceIdentifier();
+        createAndAddLabel(accession, accession, RESOURCES.getCSS().accession(), firstLine);
         createAndAddLabel(item.getCompartments(), "Compartments", RESOURCES.getCSS().compartments(), firstLine);
         createAndAddLabel("Gene names", "Gene names", RESOURCES.getCSS().genes(), firstLine);
     }
@@ -118,6 +166,7 @@ public class TitlePanel extends FlowPanel implements ClickHandler {
         }
     }
 
+
     public static Resources RESOURCES;
     static {
         RESOURCES = GWT.create(Resources.class);
@@ -127,6 +176,12 @@ public class TitlePanel extends FlowPanel implements ClickHandler {
     public interface Resources extends ClientBundle {
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
+
+        @Source("../images/flag.png")
+        ImageResource flag();
+
+        @Source("../images/flag_clear.png")
+        ImageResource flagClear();
     }
 
     @CssResource.ImportedWithPrefix("diagram-TitlePanel")
