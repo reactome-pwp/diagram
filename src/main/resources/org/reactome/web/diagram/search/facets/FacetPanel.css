@@ -18,22 +18,22 @@
 .selectAllBtn {
     position: absolute;
     right: 8px;
-    background-color: #1e94d0;
+    margin-top: 3px;
+    background-color: #c04c37;
     border: none;
     border-radius: 9px;
     color: white;
-    /*margin-left: 5px;*/
-    /*margin-top: 5px;*/
-    padding: 1px 1px 0 1px;
+    padding: 0 5px 0 5px;
     outline: none;
     opacity: 0.8;
-    width: 16px;
-    height: 16px;
+    /*width: 16px;*/
+    height: 13px;
 }
 
 .selectAllBtn span {
     vertical-align: middle !important;
-    display: inline-block;
+    display: block;
+    font-size: 0.8em;
 }
 
 .selectAllBtn img {
@@ -49,17 +49,18 @@
 }
 
 .selectAllBtn:hover {
-    cursor: pointer !important;
+    cursor: pointer;
     opacity: 0.9;
 }
 
 .selectAllBtn:active:hover {
-    cursor: pointer !important;
     opacity: 1;
 }
 
 .selectAllBtn:disabled {
     background-color: darkgray;
+    cursor: default !important;
+    display: none;
 }
 
 .tagContainer {
