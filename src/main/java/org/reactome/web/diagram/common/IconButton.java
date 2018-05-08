@@ -18,10 +18,13 @@ public class IconButton extends Button {
     private InlineLabel label;
 
     public IconButton(String text, ImageResource imageResource) {
-        image = new Image(imageResource);
-
         fp = new FlowPanel();
-        fp.add(image);
+
+        if(imageResource!= null) {
+            image = new Image(imageResource);
+            fp.add(image);
+        }
+
         if(!text.isEmpty()) {
             label = new InlineLabel(text);
             fp.add(label);
