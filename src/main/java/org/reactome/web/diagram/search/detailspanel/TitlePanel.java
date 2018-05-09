@@ -126,8 +126,11 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
 
         createAndAddLabel(item.getSchemaClass().name, "Type", RESOURCES.getCSS().type(), firstLine);
         createAndAddLabel(item.getStId(), "Id", RESOURCES.getCSS().id(), firstLine);
-        String accession = item.getDatabaseName() + ":" + item.getReferenceIdentifier();
-        createAndAddLabel(accession, accession, RESOURCES.getCSS().accession(), firstLine);
+
+        if (item.getDatabaseName()!=null && item.getReferenceIdentifier()!=null) {
+            String accession = item.getDatabaseName() + ":" + item.getReferenceIdentifier();
+            createAndAddLabel(accession, accession, RESOURCES.getCSS().accession(), firstLine);
+        }
         createAndAddLabel(item.getCompartments(), "Compartments", RESOURCES.getCSS().compartments(), firstLine);
         createAndAddLabel("Gene names", "Gene names", RESOURCES.getCSS().genes(), firstLine);
     }
