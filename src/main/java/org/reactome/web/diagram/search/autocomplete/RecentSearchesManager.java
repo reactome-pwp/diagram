@@ -26,7 +26,7 @@ public class RecentSearchesManager {
 
     private static RecentSearchesManager instance;
 
-    private static final String RECENT_SEARCHES_KEY = "Reactome.Diagram.RecentSearches";
+    private static final String RECENT_SEARCHES_KEY = "pwp-search-recent-searches";
 
     /**
      * Number of recent search items stored locally
@@ -72,7 +72,7 @@ public class RecentSearchesManager {
      * Load all locally stored searches (if any)
      */
     private LinkedList<String> loadItems(String key) {
-        LinkedList<String> rtn = new LinkedList();
+        LinkedList<String> rtn = new LinkedList<>();
         if (storageSolution != null) {
             String json = storageSolution.read(key);
             if (json != null) {
