@@ -32,16 +32,6 @@ public class SearchPanel extends FlowPanel {
         launcher.addOptionsExpandedHandler(autoCompletePanel);
         this.add(autoCompletePanel);
 
-//        SuggestionPanel suggestions = new SuggestionPanel(eventBus);
-//        // Listen to click events on suggestions and return focus on SearchBox
-//        suggestions.addClickHandler(event -> launcher.setFocus(true));
-//        launcher.addSearchPerformedHandler(suggestions);
-//        launcher.addPanelCollapsedHandler(suggestions);
-//        launcher.addPanelExpandedHandler(suggestions);
-//        launcher.addSearchBoxArrowKeysHandler(suggestions);
-//        launcher.addSuggestionResetHandler(suggestions);
-//        this.add(suggestions);
-
         ResultsPanel results = new ResultsPanel(eventBus);
         // Listen to click events on results and return focus on SearchLauncher
         results.addClickHandler(event -> launcher.setFocus(true));
@@ -51,12 +41,6 @@ public class SearchPanel extends FlowPanel {
         launcher.addPanelCollapsedHandler(results);
         launcher.addPanelExpandedHandler(results);
         this.add(results);
-
-//        SelectionInfoPanel infoPanel = new SelectionInfoPanel(eventBus);
-//        suggestions.addSuggestionSelectedHandler(infoPanel);
-//        launcher.addPanelCollapsedHandler(infoPanel);
-//        launcher.addPanelExpandedHandler(infoPanel);
-//        this.add(infoPanel);
 
         DetailsInfoPanel details = new DetailsInfoPanel(eventBus);
         results.addResultSelectedHandler(details);
