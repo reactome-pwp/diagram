@@ -31,7 +31,7 @@ public class RecentSearchesManager {
     /**
      * Number of recent search items stored locally
      */
-    private static int CAPACITY = 5;
+    private int CAPACITY = 5;
 
     private StorageSolution storageSolution;
 
