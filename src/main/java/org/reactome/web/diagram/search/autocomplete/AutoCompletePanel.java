@@ -261,7 +261,7 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
         String recentSearchesList();
     }
 
-    static CellListResource CUSTOM_STYLE;
+    private static CellListResource CUSTOM_STYLE;
     static {
         CUSTOM_STYLE = GWT.create(CellListResource.class);
         CUSTOM_STYLE.cellListStyle().ensureInjected();

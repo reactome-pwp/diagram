@@ -9,7 +9,6 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
 import org.reactome.web.diagram.common.IconToggleButton;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
 import org.reactome.web.diagram.events.DiagramObjectsFlagRequestedEvent;
@@ -124,15 +123,17 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
         name.setText(item.getName());
         name.setTitle(item.getName());
 
-        createAndAddLabel(item.getSchemaClass().name, "Type", RESOURCES.getCSS().type(), firstLine);
-        createAndAddLabel(item.getStId(), "Id", RESOURCES.getCSS().id(), firstLine);
+        createAndAddLabel(item.getSchemaClass().name, "Type", RESOURCES.getCSS().type());
+        createAndAddLabel(item.getStId(), "Id", RESOURCES.getCSS().id());
 
         if (item.getDatabaseName()!=null && item.getReferenceIdentifier()!=null) {
             String accession = item.getDatabaseName() + ":" + item.getReferenceIdentifier();
-            createAndAddLabel(accession, accession, RESOURCES.getCSS().accession(), firstLine);
+            createAndAddLabel(accession, accession, RESOURCES.getCSS().accession());
         }
-        createAndAddLabel(item.getCompartments(), "Compartments", RESOURCES.getCSS().compartments(), firstLine);
-//        createAndAddLabel("Gene names", "Gene names", RESOURCES.getCSS().genes(), firstLine);
+        createAndAddLabel(item.getCompartments(), "Compartments", RESOURCES.getCSS().compartments());
+        if(item.isDisplayed()) {
+            createAndAddLabel("This is the displayed pathway diagram", "", RESOURCES.getCSS().general());
+        }
     }
 
     private void populate(InteractorSearchResult item) {
@@ -141,25 +142,25 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
             name.setText(alias);
             name.setTitle(alias);
 
-            createAndAddLabel(item.getAccession(), "Accession", RESOURCES.getCSS().accession(), firstLine);
+            createAndAddLabel(item.getAccession(), "Accession", RESOURCES.getCSS().accession());
         } else {
             name.setText(item.getAccession());
             name.setTitle(item.getAccession());
         }
 
         //TODO check why the following is not working
-//        addLabelFor(item.getSchemaClass().name, "Type", RESOURCES.getCSS().type(), firstLine);
-        createAndAddLabel("Interactor", "Type", RESOURCES.getCSS().type(), firstLine);
-        createAndAddLabel(item.getResource().getName(), "Resource", RESOURCES.getCSS().id(), firstLine);
+//        createAndAddLabel(item.getSchemaClass().name, "Type", RESOURCES.getCSS().type());
+        createAndAddLabel("Interactor", "Type", RESOURCES.getCSS().type());
+        createAndAddLabel(item.getResource().getName(), "Resource", RESOURCES.getCSS().id());
     }
 
-    private void createAndAddLabel(String text, String tooltip, String style, Panel container) {
+    private void createAndAddLabel(String text, String tooltip, String style) {
         if(text != null && !text.isEmpty()) {
             Label label = new Label();
             label.setStyleName(style);
             label.setText(text);
             label.setTitle(tooltip);
-            container.add(label);
+            firstLine.add(label);
         }
     }
 
@@ -201,6 +202,8 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
         String genes();
 
         String accession();
+
+        String general();
 
         String flagBtn();
     }
