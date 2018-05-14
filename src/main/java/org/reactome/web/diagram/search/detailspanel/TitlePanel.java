@@ -132,7 +132,7 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
             createAndAddLabel(accession, accession, RESOURCES.getCSS().accession(), firstLine);
         }
         createAndAddLabel(item.getCompartments(), "Compartments", RESOURCES.getCSS().compartments(), firstLine);
-        createAndAddLabel("Gene names", "Gene names", RESOURCES.getCSS().genes(), firstLine);
+//        createAndAddLabel("Gene names", "Gene names", RESOURCES.getCSS().genes(), firstLine);
     }
 
     private void populate(InteractorSearchResult item) {
