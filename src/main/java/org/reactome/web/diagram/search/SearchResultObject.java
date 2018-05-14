@@ -1,6 +1,5 @@
 package org.reactome.web.diagram.search;
 
-import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.resources.client.ImageResource;
 import org.reactome.web.pwp.model.client.factory.SchemaClass;
 
@@ -21,7 +20,11 @@ public interface SearchResultObject {
         return "-";
     }
 
-    void setSearchDisplay(RegExp regExp);
+    void setSearchDisplay(SearchArguments arguments);
 
     SchemaClass getSchemaClass();
+
+    default boolean isDisplayed() {
+        return false;
+    }
 }

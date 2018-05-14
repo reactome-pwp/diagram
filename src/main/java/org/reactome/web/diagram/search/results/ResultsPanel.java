@@ -120,7 +120,7 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
     @Override
     public void onAutoCompleteRequested(AutoCompleteRequestedEvent event) {
-        searchArguments = null; //TODO this is causing an exception in the ResultWidgets
+        searchArguments = null;
         show(false);
     }
 

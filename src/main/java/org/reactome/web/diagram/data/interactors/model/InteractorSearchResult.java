@@ -6,6 +6,7 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.images.InteractorImages;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
+import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.pwp.model.client.factory.SchemaClass;
@@ -121,7 +122,7 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     }
 
     @Override
-    public void setSearchDisplay(RegExp regExp) {
+    public void setSearchDisplay(SearchArguments arguments) {
         if (alias != null) {
             primary = alias;
             primaryTooltip = alias;
@@ -135,7 +136,7 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
         secondary += ", " + evidenceStr;
 
         tertiary = resource.getName();
-
+        RegExp regExp = arguments.getHighlightingExpression();
         if (regExp != null) {
             primary = regExp.replace(primary, "<u><strong>$1</strong></u>");
             secondary = regExp.replace(secondary, "<u><strong>$1</strong></u>");

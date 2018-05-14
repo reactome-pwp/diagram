@@ -7,6 +7,7 @@ import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
 import org.reactome.web.diagram.data.layout.Connector;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.pwp.model.client.factory.SchemaClass;
 
@@ -86,11 +87,12 @@ public abstract class GraphObject implements Comparable<GraphObject>, SearchResu
     }
 
     @Override
-    public void setSearchDisplay(RegExp regExp) {
+    public void setSearchDisplay(SearchArguments arguments) {
         this.primarySearchDisplay = this.displayName;
         this.primaryTooltip = this.displayName;
         this.secondarySearchDisplay = getSecondaryDisplayName();
 
+        RegExp regExp = arguments.getHighlightingExpression();
         if (regExp != null) {
             this.primarySearchDisplay = regExp.replace(this.primarySearchDisplay, "<u><strong>$1</strong></u>");
             this.secondarySearchDisplay = regExp.replace(this.secondarySearchDisplay, "<u><strong>$1</strong></u>");

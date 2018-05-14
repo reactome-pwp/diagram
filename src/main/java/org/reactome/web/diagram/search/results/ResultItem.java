@@ -2,6 +2,7 @@ package org.reactome.web.diagram.search.results;
 
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.resources.client.ImageResource;
+import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.results.data.model.Entry;
 import org.reactome.web.diagram.util.SearchResultImageMapper;
@@ -30,6 +31,7 @@ public class ResultItem implements SearchResultObject, Entry {
     private String primaryTooltip;
     private String secondary;
     private String tertiary;
+    private boolean isDisplayed;
 
     private SearchResultImageMapper.ImageContainer imageContainer;
 
@@ -118,12 +120,15 @@ public class ResultItem implements SearchResultObject, Entry {
     }
 
     @Override
-    public void setSearchDisplay(RegExp regExp) {
+    public void setSearchDisplay(SearchArguments arguments) {
         primary = name;
         primaryTooltip = name;
         secondary = stId != null ? stId : dbId;
         tertiary = compartments;
 
+        isDisplayed = (arguments.getDiagramStId().equalsIgnoreCase(stId));
+
+        RegExp regExp = arguments.getHighlightingExpression();
         if (regExp != null) {
             primary = regExp.replace(primary, "<u><strong>$1</strong></u>");
             secondary = regExp.replace(secondary, "<u><strong>$1</strong></u>");
@@ -133,6 +138,11 @@ public class ResultItem implements SearchResultObject, Entry {
     @Override
     public SchemaClass getSchemaClass() {
         return SchemaClass.getSchemaClass(exactType);
+    }
+
+    @Override
+    public boolean isDisplayed() {
+        return isDisplayed;
     }
 
     private void setCompartments(List<String> compartmentNames) {

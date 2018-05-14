@@ -224,6 +224,9 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     @Override
     public void onSearchBoxUpdated(SearchBoxUpdatedEvent event) {
         getAutoCompleteSuggestions();
+        if(input.getText().isEmpty()) {
+            optionsBtn.setEnabled(false);
+        }
     }
 
     @Override
@@ -406,6 +409,9 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
         @Source("images/search_options_close.png")
         ImageResource optionsClose();
+
+        @Source("images/you_are_here.png")
+        ImageResource youAreHere();
     }
 
     /**

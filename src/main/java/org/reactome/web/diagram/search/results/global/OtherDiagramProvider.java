@@ -49,7 +49,7 @@ public class OtherDiagramProvider extends AbstractListAsyncDataProvider<SearchRe
             DiagramSearchResult result = DiagramSearchResultFactory.getSearchObject(DiagramSearchResult.class, body);
             rtn = result.getEntries().stream()
                     .map(ResultItem::new)
-                    .peek(e -> e.setSearchDisplay(args.getHighlightingExpression()))
+                    .peek(e -> e.setSearchDisplay(args))
                     .collect(Collectors.toList());
 
             if(resultConsumer != null) {

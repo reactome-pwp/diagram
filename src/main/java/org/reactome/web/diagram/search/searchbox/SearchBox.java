@@ -22,7 +22,7 @@ public class SearchBox extends TextBox implements KeyUpHandler, KeyDownHandler {
     private String value;
 
     public SearchBox() {
-        this(250);
+        this(300);
     }
 
     public SearchBox(int searchDelay) {

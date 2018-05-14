@@ -174,7 +174,7 @@ public class InDiagramSearchPanel extends Composite implements ResultsWidget, Se
         if(context != null && args.getOverlayResource() != null) {
             rtn = context.getInteractors().queryForInteractors(args.getOverlayResource(), context.getContent(), args.getQuery());
             if(rtn != null) {
-                rtn.forEach(item -> item.setSearchDisplay(args.getHighlightingExpression()));
+                rtn.forEach(item -> item.setSearchDisplay(args));
             }
         }
         return rtn;
