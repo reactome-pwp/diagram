@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.search;
 
 import com.google.gwt.regexp.shared.RegExp;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.search.common.RegExpUtil;
 
 import java.util.*;
@@ -23,15 +24,17 @@ public class SearchArguments {
     private Set<String> facets;
     private int facetsScope;
 
-    private List<String> terms = new ArrayList();
+    private List<String> terms = new ArrayList<>();
     private RegExp highlightingRegExp = null;
+    private OverlayResource overlayResource;
 
-    public SearchArguments(String query, String diagramStId, String species, Set<String> facets, int facetsScope) {
+    public SearchArguments(String query, String diagramStId, String species, Set<String> facets, int facetsScope, OverlayResource overlayResource) {
         this.query = query.toLowerCase();
         this.diagramStId = diagramStId;
         this.species = species;
         this.facets = facets;
         this.facetsScope = facetsScope;
+        this.overlayResource = overlayResource;
 
         if (hasValidQuery()) {
             String[] allTerms = query.toLowerCase().split("  *");
@@ -74,6 +77,10 @@ public class SearchArguments {
         return facetsScope;
     }
 
+    public OverlayResource getOverlayResource() {
+        return overlayResource;
+    }
+
     public RegExp getHighlightingExpression() {
         return highlightingRegExp;
     }
@@ -87,12 +94,13 @@ public class SearchArguments {
                 Objects.equals(query, that.query) &&
                 Objects.equals(diagramStId, that.diagramStId) &&
                 Objects.equals(species, that.species) &&
-                Objects.equals(facets, that.facets);
+                Objects.equals(facets, that.facets) &&
+                Objects.equals(overlayResource, that.overlayResource);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(query, diagramStId, species, facets, facetsScope);
+        return Objects.hash(query, diagramStId, species, facets, facetsScope, overlayResource);
     }
 
     @Override
@@ -103,6 +111,7 @@ public class SearchArguments {
                 ", diagramStId='" + diagramStId + '\'' +
                 ", species='" + species + '\'' +
                 ", facets='" + facets + '\'' +
+                ", overlayResource'" + overlayResource + '\'' +
                 '}';
     }
 }

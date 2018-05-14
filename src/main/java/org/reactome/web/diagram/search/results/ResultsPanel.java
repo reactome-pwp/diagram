@@ -13,7 +13,12 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.view.client.ProvidesKey;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
+import org.reactome.web.diagram.events.ContentLoadedEvent;
+import org.reactome.web.diagram.events.ContentRequestedEvent;
+import org.reactome.web.diagram.handlers.ContentLoadedHandler;
+import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchPerformedEvent;
 import org.reactome.web.diagram.search.SearchPerformedHandler;
@@ -41,10 +46,13 @@ import java.util.List;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPanel.Handler,
-        SearchSummaryFactory.Handler, SearchPerformedHandler, AutoCompleteRequestedHandler  {
+        SearchSummaryFactory.Handler, SearchPerformedHandler, AutoCompleteRequestedHandler,
+        ContentLoadedHandler, ContentRequestedHandler {
 
     private final static int LOCAL_SEARCH = 0;
     private final static int GLOBAL_SEARCH = 1;
+
+    private Context context;
 
     private DeckLayoutPanel content;
     private ScopeBarPanel scopeBar;
@@ -93,6 +101,9 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         add(main);
 
         show(false);
+
+        eventBus.addHandler(ContentRequestedEvent.TYPE, this);
+        eventBus.addHandler(ContentLoadedEvent.TYPE, this);
     }
 
     public HandlerRegistration addClickHandler(ClickHandler handler){
@@ -111,6 +122,16 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
     public void onAutoCompleteRequested(AutoCompleteRequestedEvent event) {
         searchArguments = null; //TODO this is causing an exception in the ResultWidgets
         show(false);
+    }
+
+    @Override
+    public void onContentLoaded(ContentLoadedEvent event) {
+        context = event.getContext();
+    }
+
+    @Override
+    public void onContentRequested(ContentRequestedEvent event) {
+        context = null;
     }
 
 
@@ -201,7 +222,7 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         if (summary!=null) {
             DiagramSearchResult localResults = summary.getDiagramResult();
             if (localResults!=null && localResults.getFound()!=null) {
-                localResultsFound = localResults.getFound();
+                localResultsFound = localResults.getFound() + getNumberOfInteractors();
             }
             DiagramSearchResult globalResults = summary.getFireworksResult();
             if (globalResults!=null && globalResults.getFound()!=null) {
@@ -218,6 +239,18 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         } else {
             getElement().getStyle().setDisplay(Style.Display.NONE);
         }
+    }
+
+    private int getNumberOfInteractors() {
+        int rtn = 0;
+        if(context!=null && searchArguments!=null && searchArguments.getOverlayResource() != null) {
+            List<SearchResultObject> interactors = context.getInteractors()
+                    .queryForInteractors(searchArguments.getOverlayResource(), context.getContent(), searchArguments.getQuery());
+            if(interactors!=null) {
+                rtn = interactors.size();
+            }
+        }
+        return rtn;
     }
 
     public static Resources RESOURCES;

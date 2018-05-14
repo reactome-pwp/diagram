@@ -42,6 +42,8 @@ import org.reactome.web.pwp.model.client.classes.Pathway;
 import org.reactome.web.pwp.model.client.common.ContentClientHandler;
 import org.reactome.web.pwp.model.client.content.ContentClient;
 import org.reactome.web.pwp.model.client.content.ContentClientError;
+import org.reactome.web.pwp.model.client.util.Ancestors;
+import org.reactome.web.pwp.model.client.util.Path;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -55,7 +57,8 @@ import static org.reactome.web.diagram.search.events.ResultSelectedEvent.ResultT
 public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSelectedHandler,
         ContentRequestedHandler, ContentLoadedHandler,
         SearchPerformedHandler, AutoCompleteRequestedHandler,
-        InDiagramOccurrencesFactory.Handler, ContentClientHandler.ObjectListLoaded<Pathway> {
+        InDiagramOccurrencesFactory.Handler,
+        ContentClientHandler.ObjectListLoaded<Pathway> {
 
     private EventBus eventBus;
     private Context context;
@@ -102,7 +105,6 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     @Override
     public void onContentRequested(ContentRequestedEvent event) {
         context = null;
-        Console.info("Set selected to null ");
         selectedResultItem = null;
     }
 
@@ -150,13 +152,41 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         } else if (LOCAL == event.getResultType()) {
             if (selectedResultItem instanceof ResultItem) {
                 InDiagramOccurrencesFactory.searchForInstanceInDiagram(((ResultItem) selectedResultItem).getStId(), args.getDiagramStId(), this);
-                Console.info("Details Panel: onResultSelected:" + ((ResultItem) selectedResultItem).getStId());
             } else if (selectedResultItem instanceof InteractorSearchResult) {
                 populateWithInteractor();
                 show(true);
             }
         } else if (GLOBAL == event.getResultType()) {
-            ContentClient.getPathwaysWithDiagramForEntity(((ResultItem) selectedResultItem).getStId(), false, context.getContent().getSpeciesName(), this);
+            ContentClient.getAncestors(((ResultItem) selectedResultItem).getStId(), new AncestorsLoaded() {
+                @Override
+                public void onAncestorsLoaded(Ancestors ancestors) {
+                    Set<Pathway> pathways = new HashSet<>();
+                    for (Path ancestor : ancestors) {
+                        pathways.add(ancestor.getLastPathwayWithDiagram()); //We do not include subpathways in the list
+                    }
+
+                    if (!pathways.isEmpty()) {
+                        int size = pathways.size();
+                        includeWidget(new EventListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus));
+                        show(true);
+                    }
+                }
+
+                @Override
+                public void onContentClientException(Type type, String message) {
+                    getPathways();
+                }
+
+                @Override
+                public void onContentClientError(ContentClientError error) {
+                    getPathways();
+                }
+
+                private void getPathways() {
+                    ContentClient.getPathwaysWithDiagramForEntity(((ResultItem) selectedResultItem).getStId(), false, context.getContent().getSpeciesName(), DetailsInfoPanel.this);
+                }
+            });
+
         }
     }
 
@@ -203,9 +233,10 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         if (occurrences.getInDiagram()) {
             //Selected entity is inside the diagram
             GraphObject graphObject = context.getContent().getDatabaseObject(selection.getStId());
-        if(graphObject == null) { //TODO check this
-            Console.info(">>>> graphObject null" );
-        }
+            if(graphObject == null ) { //TODO check this
+                Console.info(">>>> graphObject null: " + ((ResultItem) selectedResultItem).getStId()  );
+                return;
+            }
             includeWidget(new DatabaseObjectListPanel("Directly in the diagram:", Collections.singletonList(graphObject), eventBus));
 
             Collection<GraphReactionLikeEvent> participatesIn = new HashSet<>();

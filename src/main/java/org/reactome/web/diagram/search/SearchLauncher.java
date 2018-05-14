@@ -9,6 +9,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -16,6 +17,8 @@ import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.common.IconToggleButton;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.Context;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
+import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.search.events.*;
@@ -23,6 +26,8 @@ import org.reactome.web.diagram.search.facets.FacetsPanel;
 import org.reactome.web.diagram.search.handlers.*;
 import org.reactome.web.diagram.search.searchbox.*;
 import org.reactome.web.diagram.util.Console;
+
+import java.util.Date;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -35,11 +40,13 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         AutoCompleteSelectedHandler {
 
     @SuppressWarnings("FieldCanBeLocal")
-    private static String OPENING_TEXT = "Search for any diagram term ...";
+    private static String OPENING_TEXT = "Search for a term, e.g. pten ...";
     private static int FOCUS_IN_TEXTBOX_DELAY = 300;
+    private static String SEARCH_EXPANDED_COOKIE = "pwp-search-expanded-by-default";
 
     private EventBus eventBus;
     private Context context;
+    private OverlayResource overlayResource;
 //    private SuggestionsProvider<SearchResultObject> suggestionsProvider;
 
     private SearchBox input = null;
@@ -90,7 +97,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         optionsBtn.setStyleName(RESOURCES.getCSS().optionsBtn());
         optionsBtn.setVisible(true);
         optionsBtn.setTitle("Filter your results");
-//        optionsBtn.setEnabled(false);
+        optionsBtn.setEnabled(false);
         this.add(optionsBtn);
 
         facetsPanel = new FacetsPanel();
@@ -166,6 +173,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
                 expandPanel();
             } else {
                 collapsePanel();
+                stopExpandingByDefault();
             }
         } else if (event.getSource().equals(this.optionsBtn)) {
             if (!isExpandedVertically) {
@@ -181,36 +189,40 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     @Override
     public void onContentRequested(ContentRequestedEvent event) {
         this.input.setValue(""); // Clear searchbox value and fire the proper event
+        optionsBtn.setEnabled(false);
         this.collapsePanel();
-//        this.suggestionsProvider = null;
         this.context = null;
     }
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
         this.searchBtn.setEnabled(true);
-//        this.suggestionsProvider = new SuggestionsProviderImpl(event.getContext());
         this.context = event.getContext();
-//        fireEvent(new SuggestionResetEvent());
+
+        // Expand the panel by default unless the cookie is present
+        String expandSearch = Cookies.getCookie(SEARCH_EXPANDED_COOKIE);
+        if (expandSearch == null || expandSearch.isEmpty()) {
+            if(!isExpanded) {
+                this.expandPanel();
+            }
+        }
     }
 
 
     @Override
     public void onFacetsLoaded(FacetsLoadedEvent event) {
-//        Console.info("SearchLauncher.onFacetsLoaded: setting facets: " + event.toString());
         facetsPanel.setFacets(event.getFacets(), event.getSelectedFacets(), event.getScope());
+        optionsBtn.setEnabled(true);
     }
 
 
     @Override
     public void onSelectedFacetsChanged(FacetsChangedEvent event) {
-//        Console.info("onFacetsChanged: " + facetsPanel.getScope() + " - " + facetsPanel.getSelectedFacets().stream().collect(Collectors.joining(", ")));
         performSearch();
     }
 
     @Override
     public void onSearchBoxUpdated(SearchBoxUpdatedEvent event) {
-        //TODO call for autocomplete suggestions
         getAutoCompleteSuggestions();
     }
 
@@ -221,22 +233,32 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-//        performSearch();
+        if(context != null && context.getInteractors() != null) {
+            if(context.getInteractors().isResourceLoaded(event.getResource().getIdentifier())) {
+                overlayResource = event.getResource();
+                performSearch();
+            }
+        }
     }
 
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
-//        performSearch();
+        overlayResource = LoaderManager.INTERACTORS_RESOURCE;
+        if(context != null && context.getInteractors() != null) {
+            performSearch();
+        }
     }
 
     @Override
     public void onSearchKeyPressed(SearchKeyPressedEvent event) {
-        //Expand only if search is enabled
+        // This is to handle the shortcut [ctrl] + [F]
+        // Expand only if search is enabled
         if(searchBtn.isEnabled()) {
             if (!isExpanded) {
                 expandPanel();
             } else {
                 collapsePanel();
+                stopExpandingByDefault();
             }
         }
     }
@@ -249,8 +271,9 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         if (!input.getValue().isEmpty()) {
             input.setValue("");
             setFocus(true);
+            optionsBtn.setEnabled(false);
         }
-        fireEvent(new SuggestionResetEvent());
+//        fireEvent(new SuggestionResetEvent());
         eventBus.fireEventFromSource(new GraphObjectSelectedEvent(null, false), this);
     }
 
@@ -320,7 +343,8 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
                 context.getContent().getStableId(),
                 context.getContent().getSpeciesName(),
                 facetsPanel.getSelectedFacets(),
-                facetsPanel.getScope()
+                facetsPanel.getScope(),
+                overlayResource
         );
 
         if(searchArgs.hasValidQuery()) {
@@ -332,6 +356,15 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     private void showHideClearBtn() {
         clearBtn.setVisible(!input.getText().isEmpty());
+    }
+
+
+    private void stopExpandingByDefault() {
+        Date expires = new Date();
+        Long nowLong = expires.getTime();
+        nowLong = nowLong + (1000 * 60 * 60 * 24 * 365L); //One year time
+        expires.setTime(nowLong);
+        Cookies.setCookie(SEARCH_EXPANDED_COOKIE, "false", expires);
     }
 
     public static SearchLauncherResources RESOURCES;

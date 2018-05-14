@@ -16,7 +16,6 @@ import org.reactome.web.diagram.search.results.ResultsPanel;
 import org.reactome.web.diagram.search.results.ResultsWidget;
 import org.reactome.web.diagram.search.results.cells.SearchResultCell;
 import org.reactome.web.diagram.search.results.data.model.FacetContainer;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.scroller.client.InfiniteScrollList;
 
 import java.util.ArrayList;
@@ -81,9 +80,10 @@ public class OtherDiagramSearchPanel extends Composite implements ResultsWidget,
 
     @Override
     public void updateResults(SearchArguments args) {
-        if(args!=null && scope == args.getFacetsScope()) {
+        if(args == null) return;
+
+        if(scope == args.getFacetsScope()) {
             selectedFacets = args.getFacets();
-            Console.info("_____ updateResults: " + selectedFacets );
         }
 
         if(arguments == null || !arguments.equals(args)) {

@@ -8,8 +8,6 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.Context;
-import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
-import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.ContentLoadedEvent;
 import org.reactome.web.diagram.events.ContentRequestedEvent;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
@@ -118,7 +116,9 @@ public class InDiagramSearchPanel extends Composite implements ResultsWidget, Se
 
     @Override
     public void updateResults(SearchArguments args) {
-        if(args!=null && scope == args.getFacetsScope()) {
+        if(args == null) return;
+
+        if(scope == args.getFacetsScope()) {
             selectedFacets = args.getFacets();
         }
 
@@ -126,14 +126,19 @@ public class InDiagramSearchPanel extends Composite implements ResultsWidget, Se
             arguments = args;
 
             dataProvider.setSearchArguments(args, selectedFacets, PREFIX);
+            dataProvider.setExtraItemsToShow(null);
 
             //Include the results of the search in the interactors (by searching inside the graph)
             List<SearchResultObject> interactors = findInDiagramInteractors(args);
-            dataProvider.setExtraItemsToShow(interactors);
+            if(selectedFacets.isEmpty() || selectedFacets.contains("Interactor")) {
+                dataProvider.setExtraItemsToShow(interactors);
+            }
+
             if(interactors!=null) {
                 //Include the Interactor facet in the facets received by the server
                 includeInteractorFacet(interactors.size());
             }
+
             resultsList.setPageSize(30);
             resultsList.loadFirstPage();
         }
@@ -165,16 +170,14 @@ public class InDiagramSearchPanel extends Composite implements ResultsWidget, Se
     }
 
     private List<SearchResultObject> findInDiagramInteractors(SearchArguments args) {
-        List<SearchResultObject> rtn = new ArrayList<>();
-        if(context != null) {
-            for (InteractorSearchResult obj : context.getInteractors().getInteractorSearchResult(LoaderManager.INTERACTORS_RESOURCE, context.getContent())) {
-                if (obj.containsTerm(args.getQuery())) {
-                    obj.setSearchDisplay(args.getHighlightingExpression());
-                    rtn.add(obj);
-                }
+        List<SearchResultObject> rtn = null;
+        if(context != null && args.getOverlayResource() != null) {
+            rtn = context.getInteractors().queryForInteractors(args.getOverlayResource(), context.getContent(), args.getQuery());
+            if(rtn != null) {
+                rtn.forEach(item -> item.setSearchDisplay(args.getHighlightingExpression()));
             }
         }
-        return rtn.isEmpty() ? null : rtn;
+        return rtn;
     }
 
     private void includeInteractorFacet(int count) {
