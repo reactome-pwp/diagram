@@ -21,4 +21,9 @@ public interface SearchError {
      * A list of detailed errors
      */
     List<String> getMessages();
+
+    /**
+     * A list of terms that may be targets for annotation
+     */
+    List<TargetTerm> getTargets();
 }

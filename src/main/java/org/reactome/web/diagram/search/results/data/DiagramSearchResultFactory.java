@@ -14,6 +14,7 @@ public class DiagramSearchResultFactory {
     @SuppressWarnings("UnusedDeclaration")
     interface ModelAutoBeanFactory extends AutoBeanFactory {
         AutoBean<Entry> entry();
+        AutoBean<TargetTerm> targetTerm();
         AutoBean<DiagramSearchResult> diagramSearchResult();
         AutoBean<FacetContainer> facets();
         AutoBean<Occurrences> occurrences();

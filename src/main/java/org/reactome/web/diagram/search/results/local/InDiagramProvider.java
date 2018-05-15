@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
 import static org.reactome.web.scroller.client.util.Placeholder.ROWS;
 import static org.reactome.web.scroller.client.util.Placeholder.START;
 
@@ -68,10 +69,15 @@ public class InDiagramProvider extends AbstractListAsyncDataProvider<SearchResul
 
     @Override
     protected String processError(Response response) {
-        String rtn = response.getStatusText();
+        String rtn = "An error occurred while searching for " + args.getQuery() + ". ";
         try {
             SearchError error = DiagramSearchResultFactory.getSearchObject(SearchError.class, response.getText());
-            rtn = error.getReason();
+            if (error != null) {
+                if(error.getMessages() != null) {
+                    rtn = error.getMessages().stream()
+                                             .collect(joining(". "));
+                }
+            }
         } catch (DiagramSearchException e) {
             e.printStackTrace();
         }

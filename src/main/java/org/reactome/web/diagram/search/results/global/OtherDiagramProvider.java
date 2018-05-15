@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.search.results.global;
 
+import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchResultObject;
@@ -7,6 +8,8 @@ import org.reactome.web.diagram.search.results.ResultItem;
 import org.reactome.web.diagram.search.results.data.DiagramSearchException;
 import org.reactome.web.diagram.search.results.data.DiagramSearchResultFactory;
 import org.reactome.web.diagram.search.results.data.model.DiagramSearchResult;
+import org.reactome.web.diagram.search.results.data.model.SearchError;
+import org.reactome.web.diagram.search.results.data.model.TargetTerm;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.scroller.client.provider.AbstractListAsyncDataProvider;
 
@@ -16,6 +19,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import static org.reactome.web.scroller.client.util.Placeholder.ROWS;
 import static org.reactome.web.scroller.client.util.Placeholder.START;
 
@@ -63,11 +68,43 @@ public class OtherDiagramProvider extends AbstractListAsyncDataProvider<SearchRe
         return rtn;
     }
 
+    @Override
+    protected String processError(Response response) {
+        String rtn = "An error occurred while searching for " + args.getQuery() + ". ";
+        try {
+            SearchError error = DiagramSearchResultFactory.getSearchObject(SearchError.class, response.getText());
+            if (error != null) {
+                if(error.getMessages() != null) {
+                    rtn = error.getMessages().stream()
+                                             .collect(joining(". "));
+                }
+
+                List<TargetTerm> targets = error.getTargets();
+                if(targets != null) {
+                    targets = targets.stream()
+                                     .filter(TargetTerm::getTarget)
+                                     .collect(toList());
+
+                    if(!targets.isEmpty()) {
+                        int size = targets.size();
+                        String terms = targets.stream()
+                                              .map(TargetTerm::getTerm)
+                                              .collect(joining(", "));
+                        rtn += " <br><span>However, " + terms + (size == 1 ? " is" : " are") + " within our identified curation targets.</span>";
+                    }
+                }
+            }
+        } catch (DiagramSearchException e) {
+            e.printStackTrace();
+        }
+        return rtn;
+    }
+
     public void setSearchArguments(SearchArguments args, Set<String> selectedFacets, String baseUrl) {
         this.args = args;
         String types = selectedFacets.stream()
                 .map(facet -> facet = "&types=" + facet)
-                .collect(Collectors.joining());
+                .collect(joining());
 
         stringBuilder.setLength(0);
         super.setURL(

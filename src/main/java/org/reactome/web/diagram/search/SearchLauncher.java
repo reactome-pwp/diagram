@@ -212,7 +212,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     @Override
     public void onFacetsLoaded(FacetsLoadedEvent event) {
         facetsPanel.setFacets(event.getFacets(), event.getSelectedFacets(), event.getScope());
-        optionsBtn.setEnabled(true);
+        optionsBtn.setEnabled(!event.getFacets().isEmpty());
     }
 
 

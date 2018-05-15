@@ -5,5 +5,7 @@
 .cellListOddItem {
     cursor: pointer;
 }
-.cellListSelectedItem {}
+.cellListSelectedItem {
+    background-color: #91c0ef;
+}
 .cellListWidget {}

@@ -2,6 +2,7 @@ package org.reactome.web.diagram.search.autocomplete;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
@@ -23,6 +24,8 @@ import org.reactome.web.diagram.search.handlers.AutoCompleteSelectedHandler;
 import org.reactome.web.diagram.search.handlers.OptionsCollapsedHandler;
 import org.reactome.web.diagram.search.handlers.OptionsExpandedHandler;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
+import org.reactome.web.diagram.search.searchbox.SearchBoxArrowKeysEvent;
+import org.reactome.web.diagram.search.searchbox.SearchBoxArrowKeysHandler;
 import org.reactome.web.diagram.util.Console;
 
 import java.util.Arrays;
@@ -32,7 +35,7 @@ import java.util.List;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class AutoCompletePanel extends AbstractAccordionPanel implements SearchPerformedHandler,
-        OptionsExpandedHandler, OptionsCollapsedHandler,
+        OptionsExpandedHandler, OptionsCollapsedHandler, SearchBoxArrowKeysHandler,
         AutoCompleteRequestedHandler, AutoCompleteResultsFactory.Handler {
 
     private final static int AUTOCOMPLETE_SIZE = 10;
@@ -115,6 +118,31 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
     @Override
     public void onOptionsExpanded(OptionsExpandedEvent event) {
         makeVisible(false);
+    }
+
+    @Override
+    public void onArrowKeysPressed(SearchBoxArrowKeysEvent event) {
+        if(isVisible()) {
+            if(autoCompleteList.getRowCount() > 0){
+                AutoCompleteResult current = autoCompleteSelectionModel.getSelectedObject();
+                int currentIndex = current==null ? -1 : autoCompleteList.getVisibleItems().indexOf(current);
+                int toIndex = currentIndex;
+                if (event.getValue() == KeyCodes.KEY_DOWN) {
+                    toIndex = (currentIndex + 1 < autoCompleteList.getVisibleItems().size()) ? currentIndex + 1 : autoCompleteList.getVisibleItems().size() - 1;
+                    Console.info(" >> Down" + " [" + autoCompleteList.getVisibleItems().size() + "] - " + toIndex);
+                } else if (event.getValue() == KeyCodes.KEY_UP) {
+                    toIndex = (currentIndex - 1 > 0 ? currentIndex - 1 : 0);
+                    Console.info(" >> Up" + " [" + autoCompleteList.getVisibleItems().size() + "] - " + toIndex);
+                }
+                if(toIndex!=-1 && toIndex!=currentIndex) {
+                    autoCompleteSelectionModel.setSelected(autoCompleteList.getVisibleItems().get(toIndex), true);
+//                    Console.info(" >> " + " [" + toIndex + "]" + autoCompleteList.getVisibleItem(toIndex).getResult());
+//                    SearchResultObject newSelection = dataProvider.getList().get(toIndex);
+//                    suggestions.getRowElement(toIndex).scrollIntoView();
+//                    selectionModel.setSelected(newSelection, true);
+                }
+            }
+        }
     }
 
     @Override
