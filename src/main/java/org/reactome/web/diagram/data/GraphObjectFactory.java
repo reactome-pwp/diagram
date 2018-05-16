@@ -42,6 +42,7 @@ public abstract class GraphObjectFactory {
             case OPEN_SET:                          dbObject = new GraphOpenSet((EntityNode) node);                         break;
             case OTHER_ENTITY:                      dbObject = new GraphOtherEntity((EntityNode) node);                     break;
             case PATHWAY:                           dbObject = new GraphPathway((EntityNode) node);                         break;
+            case TOP_LEVEL_PATHWAY:                 dbObject = new GraphPathway((EntityNode) node);                         break;
             case POLYMER:                           dbObject = new GraphPolymer((EntityNode) node);                         break;
             case SIMPLE_ENTITY:                     dbObject = new GraphSimpleEntity((EntityNode) node);                    break;
             case BLACK_BOX_EVENT:                   dbObject = new GraphBlackBoxEvent((EventNode) node);                    break;
@@ -51,9 +52,8 @@ public abstract class GraphObjectFactory {
             case REACTION:                          dbObject = new GraphReaction((EventNode) node);                         break;
             case GO_CELLULAR_COMPONENT:             dbObject = new GraphGO_CellularComponent((EntityNode) node);            break;
             case COMPARTMENT:                       dbObject = new GraphCompartment((EntityNode) node);                     break;
-            case ENTITY_COMPARTMENT:                dbObject = new GraphEntityCompartment((EntityNode) node);               break;
             default:
-                String msg = "It is not possible to create a DatabaseObject. " + node;
+                String msg = "It is not possible to create a DatabaseObject. [dbId:" + node.getDbId() + ", schemaClass:" + node.getSchemaClass() + "]";
                 GWT.log(msg);
                 throw new ModelFactoryException(msg);
         }
