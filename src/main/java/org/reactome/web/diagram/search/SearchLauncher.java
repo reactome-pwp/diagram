@@ -25,7 +25,6 @@ import org.reactome.web.diagram.search.events.*;
 import org.reactome.web.diagram.search.facets.FacetsPanel;
 import org.reactome.web.diagram.search.handlers.*;
 import org.reactome.web.diagram.search.searchbox.*;
-import org.reactome.web.diagram.util.Console;
 
 import java.util.Date;
 
@@ -43,6 +42,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     private static String OPENING_TEXT = "Search for a term, e.g. pten ...";
     private static int FOCUS_IN_TEXTBOX_DELAY = 300;
     private static String SEARCH_EXPANDED_COOKIE = "pwp-search-expanded-by-default";
+    private static int SEARCH_QUERY_MINIMUM_LENGTH = 2;
 
     private EventBus eventBus;
     private Context context;
@@ -341,6 +341,9 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     private void performSearch() {
         String query = input.getText().trim();
+
+        if (query.length() < SEARCH_QUERY_MINIMUM_LENGTH) return;
+
         SearchArguments searchArgs = new SearchArguments(
                 query,
                 context.getContent().getStableId(),
@@ -351,7 +354,6 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         );
 
         if(searchArgs.hasValidQuery()) {
-            Console.info(" >>> Performing search for term >>> " + searchArgs.toString());
             fireEvent(new SearchPerformedEvent(searchArgs));
             showHideClearBtn();
         }
