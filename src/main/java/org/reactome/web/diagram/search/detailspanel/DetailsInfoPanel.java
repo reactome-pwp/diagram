@@ -29,7 +29,7 @@ import org.reactome.web.diagram.search.events.ResultSelectedEvent;
 import org.reactome.web.diagram.search.handlers.AutoCompleteRequestedHandler;
 import org.reactome.web.diagram.search.handlers.ResultSelectedHandler;
 import org.reactome.web.diagram.search.infopanel.DatabaseObjectListPanel;
-import org.reactome.web.diagram.search.infopanel.EventListPanel;
+import org.reactome.web.diagram.search.infopanel.EnhancedListPanel;
 import org.reactome.web.diagram.search.infopanel.InteractorsListPanel;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
 import org.reactome.web.diagram.search.results.ResultItem;
@@ -154,10 +154,10 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
                 InDiagramOccurrencesFactory.searchForInstanceInDiagram(((ResultItem) selectedResultItem).getStId(), args.getDiagramStId(), this);
             } else if (selectedResultItem instanceof InteractorSearchResult) {
                 populateWithInteractor();
-                show(true);
             }
         } else if (GLOBAL == event.getResultType()) {
-            ContentClient.getAncestors(((ResultItem) selectedResultItem).getStId(), new AncestorsLoaded() {
+            ResultItem item = (ResultItem) selectedResultItem;
+            ContentClient.getAncestors(item.getStId(), new AncestorsLoaded() {
                 @Override
                 public void onAncestorsLoaded(Ancestors ancestors) {
                     Set<Pathway> pathways = new HashSet<>();
@@ -165,10 +165,10 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
                         pathways.add(ancestor.getLastPathwayWithDiagram()); //We do not include subpathways in the list
                     }
 
-                    if (!pathways.isEmpty()) {
+                    if (!pathways.isEmpty() && !item.isDisplayed()) {
                         int size = pathways.size();
-                        includeWidget(new EventListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus));
-                        show(true);
+//                        includeWidget(new EventListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus));
+                        includeWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus, context.getContent()));
                     }
                 }
 
@@ -187,6 +187,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
                 }
             });
 
+            show(true);
         }
     }
 
@@ -211,7 +212,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     public void onObjectListLoaded(List<Pathway> list) {
         if(!list.isEmpty()) {
             int size = list.size();
-            includeWidget(new EventListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), list, eventBus));
+            includeWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), list, eventBus, context.getContent()));
             show(true);
         }
     }
@@ -234,7 +235,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
             //Selected entity is inside the diagram
             GraphObject graphObject = context.getContent().getDatabaseObject(selection.getStId());
             if(graphObject == null ) { //TODO check this
-                Console.info(">>>> graphObject null: " + ((ResultItem) selectedResultItem).getStId()  );
+//                Console.info(">>>> graphObject null: " + ((ResultItem) selectedResultItem).getStId()  );
                 return;
             }
             includeWidget(new DatabaseObjectListPanel("Directly in the diagram:", Collections.singletonList(graphObject), eventBus));

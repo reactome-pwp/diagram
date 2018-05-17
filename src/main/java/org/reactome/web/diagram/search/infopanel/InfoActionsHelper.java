@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.search.infopanel;
 
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -18,6 +19,10 @@ abstract class InfoActionsHelper {
 
     static ClickHandler getLinkClickHandler(final GraphObject reaction, final EventBus eventBus, final Object source){
         return event -> eventBus.fireEventFromSource(new GraphObjectSelectedEvent(reaction, true), source);
+    }
+
+    static DoubleClickHandler getLinkDoubleClickHandler(final GraphObject reaction, final EventBus eventBus, final Object source){
+        return event -> eventBus.fireEventFromSource(new ContentRequestedEvent(reaction.getStId()), source);
     }
 
     static MouseOutHandler getLinkMouseOut(final EventBus eventBus, final Object source){
@@ -51,6 +56,10 @@ abstract class InfoActionsHelper {
     /////////////////
 
     static ClickHandler getPathwayLinkClickHandler(final Event clicked, final EventBus eventBus, final Object source){
+        return event -> eventBus.fireEventFromSource(new ContentRequestedEvent(clicked.getStId()), source);
+    }
+
+    static DoubleClickHandler getPathwayLinkDoubleClickHandler(final Event clicked, final EventBus eventBus, final Object source){
         return event -> eventBus.fireEventFromSource(new ContentRequestedEvent(clicked.getStId()), source);
     }
 
