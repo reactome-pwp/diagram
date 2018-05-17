@@ -68,6 +68,8 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     private FlowPanel mainPanel;
     private TitlePanel titlePanel;
 
+    private List<Widget> resultWidgets = new ArrayList<>();
+
     public DetailsInfoPanel(EventBus eventBus) {
         this.eventBus = eventBus;
         show(false);
@@ -145,7 +147,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         selectedResultItem = event.getSelectedResultItem();
 
         clearMainPanel();
-        includeWidget(titlePanel.setSelectedItem(selectedResultItem));
+        mainPanel.add(titlePanel.setSelectedItem(selectedResultItem));
 
         if(selectedResultItem == null) {
             show(false);
@@ -167,8 +169,8 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
 
                     if (!pathways.isEmpty() && !item.isDisplayed()) {
                         int size = pathways.size();
-//                        includeWidget(new EventListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus));
-                        includeWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus, context.getContent()));
+//                        includeResultWidget(new EventListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus));
+                        includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus, context.getContent()));
                     }
                 }
 
@@ -211,8 +213,9 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     @Override
     public void onObjectListLoaded(List<Pathway> list) {
         if(!list.isEmpty()) {
+            clearResults();
             int size = list.size();
-            includeWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), list, eventBus, context.getContent()));
+            includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), list, eventBus, context.getContent()));
             show(true);
         }
     }
@@ -220,13 +223,13 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     @Override
     public void onContentClientException(Type type, String message) {
         show(false);
-        includeWidget(new Label("An error has occurred. ERROR: " + message));
+        includeResultWidget(new Label("An error has occurred. ERROR: " + message));
     }
 
     @Override
     public void onContentClientError(ContentClientError error) {
         show(false);
-        includeWidget(new Label("An error has occurred. ERROR: " + error.getReason()));
+        includeResultWidget(new Label("An error has occurred. ERROR: " + error.getReason()));
     }
 
     private void populateWithOccurences(Occurrences occurrences) {
@@ -238,7 +241,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
 //                Console.info(">>>> graphObject null: " + ((ResultItem) selectedResultItem).getStId()  );
                 return;
             }
-            includeWidget(new DatabaseObjectListPanel("Directly in the diagram:", Collections.singletonList(graphObject), eventBus));
+            includeResultWidget(new DatabaseObjectListPanel("Directly in the diagram:", Collections.singletonList(graphObject), eventBus));
 
             Collection<GraphReactionLikeEvent> participatesIn = new HashSet<>();
             if(graphObject!=null && !graphObject.getDiagramObjects().isEmpty()){
@@ -258,7 +261,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
                     if (!rleParticipants.isEmpty()) {
                         int size = rleParticipants.size();
                         String title = "Participant" + (size>1?"s(":"(") + size + "):";
-                        mainPanel.add(new DatabaseObjectListPanel(title, rleParticipants, eventBus));
+                        includeResultWidget(new DatabaseObjectListPanel(title, rleParticipants, eventBus));
                     }
                 }
 
@@ -279,13 +282,13 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
                     if (!complexes.isEmpty()) {
                         int size = complexes.size();
                         String title = "Part of " + size + " complex" + (size > 1 ? "es:" : ":");
-                        mainPanel.add(new DatabaseObjectListPanel(title, complexes, eventBus));
+                        includeResultWidget(new DatabaseObjectListPanel(title, complexes, eventBus));
                     }
 
                     if (!sets.isEmpty()) {
                         int size = sets.size();
                         String title = "Part of " + size + " set" + (size > 1 ? "s:" : ":");
-                        mainPanel.add(new DatabaseObjectListPanel(title, sets, eventBus));
+                        includeResultWidget(new DatabaseObjectListPanel(title, sets, eventBus));
                     }
                 }
             }
@@ -293,13 +296,13 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
             if(!participatesIn.isEmpty()){
                 int size = participatesIn.size();
                 String title = "Participates in " + size + " reaction" + (size>1?"s:":":");
-                mainPanel.add(new DatabaseObjectListPanel(title, participatesIn, eventBus));
+                includeResultWidget(new DatabaseObjectListPanel(title, participatesIn, eventBus));
             }
 
             // Include information about the interactors of this entity
             if(context!=null && (graphObject instanceof GraphEntityWithAccessionedSequence || graphObject instanceof GraphSimpleEntity) ){
                 String resource = LoaderManager.INTERACTORS_RESOURCE.getName();
-                mainPanel.add(new InteractorsListPanel("According to " + resource + ", it interacts with:", context, (GraphPhysicalEntity) graphObject, eventBus));
+                includeResultWidget(new InteractorsListPanel("According to " + resource + ", it interacts with:", context, (GraphPhysicalEntity) graphObject, eventBus));
             }
         }
 
@@ -310,7 +313,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
             Collection<GraphObject> list = occList.stream()
                     .map(occ -> context.getContent().getDatabaseObject(occ))
                     .collect(Collectors.toList());
-            mainPanel.add(new DatabaseObjectListPanel("Inside interacting pathway" + (list.size()>1 ? "s:" : ":"), list, eventBus));
+            includeResultWidget(new DatabaseObjectListPanel("Inside interacting pathway" + (list.size()>1 ? "s:" : ":"), list, eventBus));
         }
     }
 
@@ -334,17 +337,23 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
                 Double score = selection.getInteractionScore(interactionId);
                 String title = "Interacts with ";
                 title = title + "score: " + (score!=null ? NumberFormat.getFormat("0.000").format(score): "-") + " " + evidences;
-                mainPanel.add(new DatabaseObjectListPanel(title, interactors, eventBus));
+                includeResultWidget(new DatabaseObjectListPanel(title, interactors, eventBus));
             }
         }
     }
 
-    private void includeWidget(Widget widget) {
+    private void includeResultWidget(Widget widget) {
         mainPanel.add(widget);
+        resultWidgets.add(widget);
     }
 
     private void clearMainPanel() {
         mainPanel.clear();
+    }
+
+    private void clearResults() {
+        resultWidgets.stream().forEach(w -> mainPanel.remove(w));
+        resultWidgets.clear();
     }
 
     private void show(boolean visible) {
