@@ -80,6 +80,8 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
         recentSearchesPanel = getRecentSearchesPanel();
         showRecentSearches(false);
         main.add(recentSearchesPanel);
+
+        makeVisible(false);
     }
 
 

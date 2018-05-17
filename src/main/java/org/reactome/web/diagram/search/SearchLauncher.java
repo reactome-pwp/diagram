@@ -144,9 +144,9 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         return addHandler(handler, SearchPerformedEvent.TYPE);
     }
 
-    public HandlerRegistration addSuggestionResetHandler(SuggestionResetHandler handler){
-        return addHandler(handler, SuggestionResetEvent.TYPE);
-    }
+//    public HandlerRegistration addSuggestionResetHandler(SuggestionResetHandler handler){
+//        return addHandler(handler, SuggestionResetEvent.TYPE);
+//    }
 
     @Override
     public void onAutoCompleteSelected(AutoCompleteSelectedEvent event) {
@@ -188,9 +188,9 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     @Override
     public void onContentRequested(ContentRequestedEvent event) {
-        this.input.setValue(""); // Clear searchbox value and fire the proper event
-        optionsBtn.setEnabled(false);
-        this.collapsePanel();
+//        this.input.setValue(""); // Clear searchbox value and fire the proper event
+//        optionsBtn.setEnabled(false);
+//        this.collapsePanel();
         this.context = null;
     }
 
@@ -205,6 +205,10 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
             if(!isExpanded) {
                 this.expandPanel();
             }
+        }
+
+        if(!this.input.getText().isEmpty() && isExpanded) {
+            performSearch();
         }
     }
 

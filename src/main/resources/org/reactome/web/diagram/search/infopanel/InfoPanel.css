@@ -56,5 +56,6 @@
 }
 
 .listItemLink {
+    display: inline;
     margin-left: 3px;
 }
