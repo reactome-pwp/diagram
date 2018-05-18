@@ -66,6 +66,8 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
             termToFlagBy = null;
         }
 
+        flagBtn.setActive(flaggedTerm!=null && flaggedTerm.equals(termToFlagBy));
+
         return this;
     }
 
@@ -86,6 +88,7 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
     public void onDiagramObjectsFlagReset(DiagramObjectsFlagResetEvent event) {
         if(!event.getSource().equals(this)) {
             flagBtn.setActive(false);
+            flaggedTerm = "";
         }
     }
 
