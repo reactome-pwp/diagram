@@ -199,9 +199,11 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
                 Element el = Element.as(event.getNativeEvent().getEventTarget());
                 String className = el.getParentElement().getClassName();
                 if(className!=null && className.equalsIgnoreCase("deleteIcon")) {
+                    // Handle the delete icon being clicked
                     RecentSearchesManager.get().removeItemByIndex(event.getIndex());
                     updateRecentItemsList();
                 } else {
+                    // Select the clicked item
                     String selected = recentItemsList.getVisibleItem(event.getIndex());
                     fireEvent(new AutoCompleteSelectedEvent(selected));
                     makeVisible(false);
