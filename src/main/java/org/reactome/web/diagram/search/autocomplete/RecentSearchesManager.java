@@ -68,6 +68,11 @@ public class RecentSearchesManager {
         storageSolution.delete(RECENT_SEARCHES_KEY);
     }
 
+    public void removeItemByIndex(int index) {
+        recentItems.remove(index);
+        saveItems(RECENT_SEARCHES_KEY, recentItems);
+    }
+
     /***
      * Load all locally stored searches (if any)
      */

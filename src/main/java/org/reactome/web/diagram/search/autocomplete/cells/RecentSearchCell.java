@@ -18,22 +18,38 @@ public class RecentSearchCell extends AbstractCell<String> {
 
     private final static String TOOLTIP = "Click this to search for ";
 
+    private static SafeHtml icon;
+    private static SafeHtml deleteIcon;
+
     interface Templates extends SafeHtmlTemplates {
 
         @Template("" +
                 "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis;\">" +
                     "<div title=\"{1}\" style=\"float:left; margin-left: 5px\">{0}</div>" +
                     "<div style=\"float:left; margin-left:10px; width:200px\">" +
-                        "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:small; margin-top: 1px; line-height: 1em\">" +
+                        "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:small; margin-top: 1px; line-height: 1em; width:180px; float:left;\">" +
                             "{2}" +
                         "</div>" +
+                        "<a><div class=\"deleteIcon\" title=\"Remove this item\">{3}</div></a>" +
                     "</div>" +
                 "</div>")
-        SafeHtml minCell(SafeHtml image, String imgTooltip, SafeHtml primary);
+        SafeHtml minCell(SafeHtml image, String imgTooltip, SafeHtml primary, SafeHtml deleteImage);
+    }
+
+    public RecentSearchCell() {
+        super();
+
+        Image img = new Image(AutoCompletePanel.RESOURCES.searchRecent());
+        img.setStyleName(AutoCompletePanel.RESOURCES.getCSS().icon());
+        RecentSearchCell.icon = SafeHtmlUtils.fromTrustedString(img.toString());
+
+        Image delImg = new Image(AutoCompletePanel.RESOURCES.deleteItem());
+        delImg.setStyleName(AutoCompletePanel.RESOURCES.getCSS().deleteItem());
+        RecentSearchCell.deleteIcon = SafeHtmlUtils.fromTrustedString(delImg.toString());
+
     }
 
     private static Templates templates = GWT.create(Templates.class);
-
 
     @Override
     public void render(Context context, String value, SafeHtmlBuilder sb) {
@@ -46,12 +62,10 @@ public class RecentSearchCell extends AbstractCell<String> {
             return;
         }
 
-        Image img = new Image(AutoCompletePanel.RESOURCES.searchRecent());
-        img.setStyleName(AutoCompletePanel.RESOURCES.getCSS().icon());
-        SafeHtml image = SafeHtmlUtils.fromTrustedString(img.toString());
-
         String imgTooltip = TOOLTIP + value;
         SafeHtml primary = SafeHtmlUtils.fromTrustedString(value);
-        sb.append(templates.minCell(image, imgTooltip, primary));
+
+        sb.append(templates.minCell(RecentSearchCell.icon, imgTooltip, primary, RecentSearchCell.deleteIcon));
     }
 }
+

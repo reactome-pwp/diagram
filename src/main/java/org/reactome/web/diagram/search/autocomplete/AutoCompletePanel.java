@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.search.autocomplete;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -47,7 +48,6 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
     private SingleSelectionModel<AutoCompleteResult> autoCompleteSelectionModel;
 
     private CellList<String> recentItemsList;
-    private SingleSelectionModel<String> recentSelectionModel;
 
     private Widget recentSearchesPanel;
 
@@ -194,15 +194,21 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
         recentItemsList.setStyleName(RESOURCES.getCSS().recentSearchesList());
         recentItemsList.setRowCount(RECENT_SIZE, true);
 
-        recentSelectionModel = new SingleSelectionModel<>();
-        recentItemsList.setSelectionModel(recentSelectionModel);
-        recentSelectionModel.addSelectionChangeHandler(event -> {
-            String selected = recentSelectionModel.getSelectedObject();
-            if (selected != null) {
-                fireEvent(new AutoCompleteSelectedEvent(selected));
-                makeVisible(false);
+        recentItemsList.addCellPreviewHandler(event -> {
+            if(event.getNativeEvent().getType().equals("click")) {
+                Element el = Element.as(event.getNativeEvent().getEventTarget());
+                String className = el.getParentElement().getClassName();
+                if(className!=null && className.equalsIgnoreCase("deleteIcon")) {
+                    RecentSearchesManager.get().removeItemByIndex(event.getIndex());
+                    updateRecentItemsList();
+                } else {
+                    String selected = recentItemsList.getVisibleItem(event.getIndex());
+                    fireEvent(new AutoCompleteSelectedEvent(selected));
+                    makeVisible(false);
+                }
             }
         });
+
 
         FlowPanel panel = new FlowPanel();
         panel.add(divider);
@@ -264,6 +270,8 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
         @Source("../images/search_recent.png")
         ImageResource searchRecent();
 
+        @Source("../images/deleteItem.png")
+        ImageResource deleteItem();
     }
 
     /**
@@ -289,6 +297,8 @@ public class AutoCompletePanel extends AbstractAccordionPanel implements SearchP
         String dividerClearAll();
 
         String recentSearchesList();
+
+        String deleteItem();
     }
 
     private static CellListResource CUSTOM_STYLE;

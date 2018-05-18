@@ -37,7 +37,6 @@
 
     margin: 1px 0 0 0;
 
-    /*float: left;*/
     width: 100%; /* grows and shrinks with the parent */
     height: 14px;
     overflow: auto !important;
@@ -67,4 +66,10 @@
 
 .recentSearchesList {
     margin-bottom: 2px;
+}
+
+.deleteItem {
+    margin-left: 5px;
+    height: 12px;
+    width: auto;
 }
