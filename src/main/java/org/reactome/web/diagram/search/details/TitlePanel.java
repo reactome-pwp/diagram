@@ -86,21 +86,14 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
 
     @Override
     public void onDiagramObjectsFlagReset(DiagramObjectsFlagResetEvent event) {
-        if(!event.getSource().equals(this)) {
-            flagBtn.setActive(false);
-            flaggedTerm = "";
-        }
+        flaggedTerm = null;
+        flagBtn.setActive(false);
     }
 
     @Override
     public void onDiagramObjectsFlagged(DiagramObjectsFlaggedEvent event) {
         this.flaggedTerm = event.getTerm();
-
-        if(!event.getSource().equals(this)) {
-            if(flaggedTerm!=null && flaggedTerm.equals(termToFlagBy)) {
-                flagBtn.setActive(true);
-            }
-        }
+        flagBtn.setActive(flaggedTerm!=null && flaggedTerm.equals(termToFlagBy));
     }
 
     private void initialise() {

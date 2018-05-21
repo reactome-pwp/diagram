@@ -102,7 +102,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
 
     @Override
     public void flagItems(String identifier) {
-        if (context != null && identifier != null) {
+        if (context != null && identifier != null && !identifier.equals(viewerContainer.getFlagTerm())) {
             Set<DiagramObject> flagged = context.getFlagged(identifier);
             if (flagged == null) {
                 eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(identifier), this);

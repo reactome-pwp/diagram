@@ -167,6 +167,10 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         context = null;
     }
 
+    public String getFlagTerm() {
+        return flagTerm;
+    }
+
     public void expressionColumnChanged() {
         activeVisualiser.expressionColumnChanged();
     }
