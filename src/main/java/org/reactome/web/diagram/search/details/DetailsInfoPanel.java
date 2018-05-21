@@ -9,6 +9,7 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.*;
@@ -68,6 +69,8 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     private FlowPanel mainPanel;
     private TitlePanel titlePanel;
 
+    private FlowPanel spinner;
+
     private List<Widget> resultWidgets = new ArrayList<>();
 
     public DetailsInfoPanel(EventBus eventBus) {
@@ -88,6 +91,8 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         add(main);
 
         titlePanel = new TitlePanel(eventBus);
+
+        spinner = getSpinner();
 
         eventBus.addHandler(ContentLoadedEvent.TYPE, this);
         eventBus.addHandler(ContentRequestedEvent.TYPE, this);
@@ -148,6 +153,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
 
         clearMainPanel();
         mainPanel.add(titlePanel.setSelectedItem(selectedResultItem));
+        showSpinner();
 
         if(selectedResultItem == null) {
             show(false);
@@ -343,6 +349,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     }
 
     private void includeResultWidget(Widget widget) {
+        hideSpinner();
         mainPanel.add(widget);
         resultWidgets.add(widget);
     }
@@ -354,6 +361,29 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     private void clearResults() {
         resultWidgets.stream().forEach(w -> mainPanel.remove(w));
         resultWidgets.clear();
+    }
+
+    private FlowPanel getSpinner() {
+        SimplePanel spinner = new SimplePanel();
+        spinner.setStyleName(RESOURCES.getCSS().loader());
+        SimplePanel spinnerContainer = new SimplePanel();
+        spinnerContainer.setStyleName(RESOURCES.getCSS().loaderContainer());
+        spinnerContainer.add(spinner);
+
+        Label msgLabel = new Label("Loading...");
+        FlowPanel rtn = new FlowPanel();
+        rtn.setStyleName(RESOURCES.getCSS().loaderPanel());
+        rtn.add(spinnerContainer);
+        rtn.add(msgLabel);
+        return rtn;
+    }
+
+    private void showSpinner() {
+        mainPanel.add(spinner);
+    }
+
+    private void hideSpinner() {
+        spinner.removeFromParent();
     }
 
     private void show(boolean visible) {
@@ -385,5 +415,11 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         String header();
 
         String mainPanel();
+
+        String loaderPanel();
+
+        String loaderContainer();
+
+        String loader();
     }
 }
