@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.search.results.local;
+package org.reactome.web.diagram.search.results.global;
 
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
@@ -9,6 +9,7 @@ import org.reactome.web.diagram.search.results.data.DiagramSearchException;
 import org.reactome.web.diagram.search.results.data.DiagramSearchResultFactory;
 import org.reactome.web.diagram.search.results.data.model.DiagramSearchResult;
 import org.reactome.web.diagram.search.results.data.model.SearchError;
+import org.reactome.web.diagram.search.results.data.model.TargetTerm;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.scroller.client.provider.AbstractListAsyncDataProvider;
 
@@ -19,21 +20,21 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import static org.reactome.web.scroller.client.util.Placeholder.ROWS;
 import static org.reactome.web.scroller.client.util.Placeholder.START;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-@SuppressWarnings("All")
-public class InDiagramProvider extends AbstractListAsyncDataProvider<SearchResultObject> {
+public class GlobalSearchProvider extends AbstractListAsyncDataProvider<SearchResultObject> {
 
     private SearchArguments args;
     private StringBuilder stringBuilder;
 
     private Consumer<DiagramSearchResult> resultConsumer;
 
-    public InDiagramProvider() {
+    public GlobalSearchProvider() {
         stringBuilder = new StringBuilder();
     }
 
@@ -41,7 +42,7 @@ public class InDiagramProvider extends AbstractListAsyncDataProvider<SearchResul
      * Use this constructor in case you need to consume
      * the result in another corner
      */
-    public InDiagramProvider(Consumer<DiagramSearchResult> resultConsumer) {
+    public GlobalSearchProvider(Consumer<DiagramSearchResult> resultConsumer) {
         stringBuilder = new StringBuilder();
         this.resultConsumer = resultConsumer;
     }
@@ -77,6 +78,21 @@ public class InDiagramProvider extends AbstractListAsyncDataProvider<SearchResul
                     rtn = error.getMessages().stream()
                                              .collect(joining(". "));
                 }
+
+                List<TargetTerm> targets = error.getTargets();
+                if(targets != null) {
+                    targets = targets.stream()
+                                     .filter(TargetTerm::getTarget)
+                                     .collect(toList());
+
+                    if(!targets.isEmpty()) {
+                        int size = targets.size();
+                        String terms = targets.stream()
+                                              .map(TargetTerm::getTerm)
+                                              .collect(joining(", "));
+                        rtn += " <br><span>However, " + terms + (size == 1 ? " is" : " are") + " within our identified curation targets.</span>";
+                    }
+                }
             }
         } catch (DiagramSearchException e) {
             e.printStackTrace();
@@ -88,21 +104,23 @@ public class InDiagramProvider extends AbstractListAsyncDataProvider<SearchResul
         this.args = args;
         String types = selectedFacets.stream()
                 .map(facet -> facet = "&types=" + facet)
-                .collect(Collectors.joining());
+                .collect(joining());
 
         stringBuilder.setLength(0);
         super.setURL(
                 stringBuilder
                 .append(baseUrl)
-                .append(args.getDiagramStId())
                 .append("?query=")
                 .append(URL.encode(args.getQuery()))
                 .append(types)
+                .append("&species=")
+                .append(args.getSpecies())
                 .append("&")
                 .append(START.getUrlValue())
                 .append("&")
                 .append(ROWS.getUrlValue())
                 .toString()
         );
+        Console.info(url);
     }
 }

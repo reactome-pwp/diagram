@@ -37,7 +37,7 @@ import static org.reactome.web.diagram.search.events.ResultSelectedEvent.ResultT
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 @SuppressWarnings("all")
-public class InDiagramSearchPanel extends Composite implements ResultsWidget, SelectionChangeEvent.Handler,
+public class LocalSearchResultsWidget extends Composite implements ResultsWidget, SelectionChangeEvent.Handler,
         ContentLoadedHandler, ContentRequestedHandler {
 
     public final static String PREFIX = DiagramFactory.SERVER + "/ContentService/search/diagram/";
@@ -51,19 +51,19 @@ public class InDiagramSearchPanel extends Composite implements ResultsWidget, Se
 
     private SingleSelectionModel<SearchResultObject> selectionModel = new SingleSelectionModel<>(ResultsPanel.KEY_PROVIDER);
     private InfiniteScrollList<SearchResultObject> resultsList;
-    private InDiagramProvider dataProvider;
+    private LocalSearchProvider dataProvider;
 
     private List<FacetContainer> facets = new ArrayList<>();
     private Set<String> selectedFacets = new HashSet<>();
 
     private FlowPanel main;
 
-    public InDiagramSearchPanel(int scope, EventBus eventBus) {
+    public LocalSearchResultsWidget(int scope, EventBus eventBus) {
         this.eventBus = eventBus;
         this.scope = scope;
 
         SearchResultCell cell = new SearchResultCell();
-        dataProvider = new InDiagramProvider();
+        dataProvider = new LocalSearchProvider();
         resultsList = new InfiniteScrollList(cell, ResultsPanel.KEY_PROVIDER, dataProvider, ResultsPanel.CUSTOM_LIST_STYLE);
         resultsList.setSelectionModel(selectionModel);
 

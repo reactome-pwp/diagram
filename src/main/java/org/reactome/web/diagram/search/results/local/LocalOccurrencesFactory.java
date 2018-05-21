@@ -11,7 +11,7 @@ import org.reactome.web.diagram.search.results.data.model.SearchError;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public abstract class InDiagramOccurrencesFactory {
+public abstract class LocalOccurrencesFactory {
 
     private static final String URL = DiagramFactory.SERVER + "/ContentService/search/diagram/##DIAGRAM##/occurrences/##INSTANCE##";
     private static Request request;

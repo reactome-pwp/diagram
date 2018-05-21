@@ -7,7 +7,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.search.SearchLauncher;
 import org.reactome.web.diagram.search.autocomplete.AutoCompletePanel;
-import org.reactome.web.diagram.search.detailspanel.DetailsInfoPanel;
+import org.reactome.web.diagram.search.details.DetailsInfoPanel;
 import org.reactome.web.diagram.search.results.ResultsPanel;
 
 /**

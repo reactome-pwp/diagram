@@ -29,7 +29,7 @@ import static org.reactome.web.diagram.search.events.ResultSelectedEvent.ResultT
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class OtherDiagramSearchPanel extends Composite implements ResultsWidget, SelectionChangeEvent.Handler {
+public class GlobalSearchResultsWidget extends Composite implements ResultsWidget, SelectionChangeEvent.Handler {
 
     public final static String PREFIX = DiagramFactory.SERVER + "/ContentService/search/fireworks/";
 
@@ -40,18 +40,18 @@ public class OtherDiagramSearchPanel extends Composite implements ResultsWidget,
 
     private SingleSelectionModel<SearchResultObject> selectionModel = new SingleSelectionModel<>(ResultsPanel.KEY_PROVIDER);
     private InfiniteScrollList<SearchResultObject> resultsList;
-    private OtherDiagramProvider dataProvider;
+    private GlobalSearchProvider dataProvider;
 
     private List<FacetContainer> facets = new ArrayList<>();
     private Set<String> selectedFacets = new HashSet<>();
 
     private FlowPanel main;
 
-    public OtherDiagramSearchPanel(int scope) {
+    public GlobalSearchResultsWidget(int scope) {
         this.scope = scope;
 
         SearchResultCell cell = new SearchResultCell();
-        dataProvider = new OtherDiagramProvider();
+        dataProvider = new GlobalSearchProvider();
         resultsList = new InfiniteScrollList(cell, ResultsPanel.KEY_PROVIDER, dataProvider, ResultsPanel.CUSTOM_LIST_STYLE);
         resultsList.setSelectionModel(selectionModel);
 

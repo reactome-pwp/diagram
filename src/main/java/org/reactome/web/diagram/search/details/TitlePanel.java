@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.search.detailspanel;
+package org.reactome.web.diagram.search.details;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -188,7 +188,7 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
     @CssResource.ImportedWithPrefix("diagram-TitlePanel")
     public interface ResourceCSS extends CssResource {
 
-        String CSS = "org/reactome/web/diagram/search/detailspanel/TitlePanel.css";
+        String CSS = "org/reactome/web/diagram/search/details/TitlePanel.css";
 
         String container();
 

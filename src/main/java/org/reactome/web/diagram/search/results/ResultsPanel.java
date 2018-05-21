@@ -34,8 +34,8 @@ import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
 import org.reactome.web.diagram.search.results.data.model.DiagramSearchResult;
 import org.reactome.web.diagram.search.results.data.model.FacetContainer;
 import org.reactome.web.diagram.search.results.data.model.SearchSummary;
-import org.reactome.web.diagram.search.results.global.OtherDiagramSearchPanel;
-import org.reactome.web.diagram.search.results.local.InDiagramSearchPanel;
+import org.reactome.web.diagram.search.results.global.GlobalSearchResultsWidget;
+import org.reactome.web.diagram.search.results.local.LocalSearchResultsWidget;
 import org.reactome.web.diagram.search.results.scopebar.ScopeBarPanel;
 import org.reactome.web.diagram.util.Console;
 
@@ -84,8 +84,8 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         scopeBar.addButton("This diagram", "Search only in the displayed diagram",ScopeBarPanel.RESOURCES.scopeLocal());
         scopeBar.addButton("All diagrams", "Expand your search in all our diagrams", ScopeBarPanel.RESOURCES.scopeGlobal());
 
-        resultsWidgets.add(new InDiagramSearchPanel(LOCAL_SEARCH, eventBus));
-        resultsWidgets.add(new OtherDiagramSearchPanel(GLOBAL_SEARCH));
+        resultsWidgets.add(new LocalSearchResultsWidget(LOCAL_SEARCH, eventBus));
+        resultsWidgets.add(new GlobalSearchResultsWidget(GLOBAL_SEARCH));
 
         content = new DeckLayoutPanel();
         content.setStyleName(RESOURCES.getCSS().content());

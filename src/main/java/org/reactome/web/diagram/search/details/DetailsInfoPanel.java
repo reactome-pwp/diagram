@@ -1,4 +1,4 @@
-package org.reactome.web.diagram.search.detailspanel;
+package org.reactome.web.diagram.search.details;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
@@ -35,7 +35,7 @@ import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
 import org.reactome.web.diagram.search.results.ResultItem;
 import org.reactome.web.diagram.search.results.data.model.Occurrences;
 import org.reactome.web.diagram.search.results.data.model.SearchError;
-import org.reactome.web.diagram.search.results.local.InDiagramOccurrencesFactory;
+import org.reactome.web.diagram.search.results.local.LocalOccurrencesFactory;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.pwp.model.client.classes.Pathway;
@@ -57,7 +57,7 @@ import static org.reactome.web.diagram.search.events.ResultSelectedEvent.ResultT
 public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSelectedHandler,
         ContentRequestedHandler, ContentLoadedHandler,
         SearchPerformedHandler, AutoCompleteRequestedHandler,
-        InDiagramOccurrencesFactory.Handler,
+        LocalOccurrencesFactory.Handler,
         ContentClientHandler.ObjectListLoaded<Pathway> {
 
     private EventBus eventBus;
@@ -153,7 +153,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
             show(false);
         } else if (LOCAL == event.getResultType()) {
             if (selectedResultItem instanceof ResultItem) {
-                InDiagramOccurrencesFactory.searchForInstanceInDiagram(((ResultItem) selectedResultItem).getStId(), args.getDiagramStId(), this);
+                LocalOccurrencesFactory.searchForInstanceInDiagram(((ResultItem) selectedResultItem).getStId(), args.getDiagramStId(), this);
             } else if (selectedResultItem instanceof InteractorSearchResult) {
                 populateWithInteractor();
             }
@@ -378,7 +378,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     @CssResource.ImportedWithPrefix("diagram-DetailsInfoPanel")
     public interface ResourceCSS extends CssResource {
 
-        String CSS = "org/reactome/web/diagram/search/detailspanel/DetailsInfoPanel.css";
+        String CSS = "org/reactome/web/diagram/search/details/DetailsInfoPanel.css";
 
         String container();
 
