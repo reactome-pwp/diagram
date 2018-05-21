@@ -168,6 +168,8 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
             ContentClient.getAncestors(item.getStId(), new AncestorsLoaded() {
                 @Override
                 public void onAncestorsLoaded(Ancestors ancestors) {
+                    if(context == null) return;
+
                     Set<Pathway> pathways = new HashSet<>();
                     for (Path ancestor : ancestors) {
                         pathways.add(ancestor.getLastPathwayWithDiagram()); //We do not include subpathways in the list
@@ -191,6 +193,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
                 }
 
                 private void getPathways() {
+                    if(context == null) return;
                     ContentClient.getPathwaysWithDiagramForEntity(((ResultItem) selectedResultItem).getStId(), false, context.getContent().getSpeciesName(), DetailsInfoPanel.this);
                 }
             });
@@ -218,7 +221,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
 
     @Override
     public void onObjectListLoaded(List<Pathway> list) {
-        if(!list.isEmpty()) {
+        if(list != null && !list.isEmpty()) {
             clearResults();
             int size = list.size();
             includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), list, eventBus, context.getContent()));
