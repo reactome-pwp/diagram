@@ -120,6 +120,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         if (context == null)    return;
 
         populateWithOccurences(occurrences);
+        hideSpinner();
         show(true);
     }
 
