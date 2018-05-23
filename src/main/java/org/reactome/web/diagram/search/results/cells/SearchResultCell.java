@@ -18,6 +18,8 @@ import org.reactome.web.diagram.search.SearchResultObject;
  */
 public class SearchResultCell extends AbstractCell<SearchResultObject> {
 
+    private static SafeHtml urHereIcon;
+
     interface Templates extends SafeHtmlTemplates {
         @SafeHtmlTemplates.Template("" +
                 "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; height:44px; border-bottom:#efefef solid 1px \">" +
@@ -34,7 +36,7 @@ public class SearchResultCell extends AbstractCell<SearchResultObject> {
                                 "{5}" +
                             "</div>" +
                         "</div>" +
-                        "<div style=\"float:left; margin-left: 1px; width:20px;\">{6}</div>" +
+                        "<div style=\"float:left; margin-left: 1px;\">{6}</div>" +
                     "</div>" +
                 "</div>")
         SafeHtml cell(SafeHtml image, String imgTooltip, SafeHtml primary, String primaryTooltip, SafeHtml secondary, SafeHtml tertiary, SafeHtml uRHereImage);
@@ -58,6 +60,15 @@ public class SearchResultCell extends AbstractCell<SearchResultObject> {
     }
 
     private static Templates templates = GWT.create(Templates.class);
+
+    public SearchResultCell() {
+        super();
+
+        Image urHere = new Image(SearchLauncher.RESOURCES.youAreHere());
+        urHere.setStyleName(SearchLauncher.RESOURCES.getCSS().youAreHereIcon());
+        urHere.setTitle("You are here. This is the displayed pathway.");
+        SearchResultCell.urHereIcon = SafeHtmlUtils.fromTrustedString(urHere.toString());
+    }
 
     @Override
     public void render(Context context, SearchResultObject value, SafeHtmlBuilder sb) {
@@ -84,10 +95,7 @@ public class SearchResultCell extends AbstractCell<SearchResultObject> {
         SafeHtml secondary = SafeHtmlUtils.fromTrustedString(value.getSecondarySearchDisplay());
         SafeHtml tertiary = SafeHtmlUtils.fromTrustedString(value.getTertiarySearchDisplay());
         if(value.isDisplayed()) {
-            Image urHere = new Image(SearchLauncher.RESOURCES.youAreHere());
-            urHere.setTitle("You are here. This is the displayed pathway.");
-            SafeHtml flagImage = SafeHtmlUtils.fromTrustedString(urHere.toString());
-            sb.append(templates.cell(image, imgTooltip, primary, primaryTooltip, secondary, tertiary, flagImage));
+            sb.append(templates.cell(image, imgTooltip, primary, primaryTooltip, secondary, tertiary, SearchResultCell.urHereIcon));
         } else {
             sb.append(templates.minCell(image, imgTooltip, primary, primaryTooltip, secondary, tertiary));
         }

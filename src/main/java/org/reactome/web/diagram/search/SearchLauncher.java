@@ -447,6 +447,9 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         String executeBtn();
 
         String optionsBtn();
+
+        String youAreHereIcon();
+
     }
 
 }

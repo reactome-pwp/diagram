@@ -212,3 +212,8 @@
 .optionsBtn:disabled {
     background-color: darkgray;
 }
+
+.youAreHereIcon {
+    height: 23px;
+    width: auto;
+}
