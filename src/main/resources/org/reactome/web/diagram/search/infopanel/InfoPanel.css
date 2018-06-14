@@ -58,4 +58,7 @@
 .listItemLink {
     display: inline;
     margin-left: 3px;
+
+    color: #0000AA;
+    text-decoration: underline;
 }

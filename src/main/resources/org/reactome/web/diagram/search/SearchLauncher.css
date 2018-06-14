@@ -52,29 +52,32 @@
 }
 
 .input {
-    border-radius: 5px;
-    position: relative;
-    margin: 5px 0 0 4px;
-    height: 20px;
-    width: 220px;
-    border: none;
-    background-color: #23688b;
-    font-size: 14px;
-    opacity: 0.2;
-    color: #23688b;
-    padding-left: 5px;
-    padding-right: 22px;
-    outline: none;
+    border-radius: 5px !important;
+    position: relative !important;
+    margin: 5px 0 0 4px !important;
+    height: 20px !important;
+    width: 220px !important;
+    border: none !important;
+    background-color: #23688b !important;
+    font-size: 14px !important;
+    opacity: 0.2 !important;
+    color: #23688b !important;
+    padding: 1px 22px 1px 5px !important;
+    outline: none !important;
 
-    transition: opacity .3s ease-in-out;
-    -moz-transition: opacity .3s ease-in-out;
-    -webkit-transition: opacity .3s ease-in-out;
+    transition: opacity 0.3s ease-in-out !important;
+    -moz-transition: opacity 0.3s ease-in-out !important;
+    -webkit-transition: opacity 0.3s ease-in-out !important;
+
+    box-sizing: content-box !important;
+    vertical-align: baseline !important;
+    line-height: normal !important;
 }
 
 .inputActive {
-    opacity: 0.8;
-    margin: 5px 0 0 4px;
-    color: #FFFFFF;
+    opacity: 0.8 !important;
+    margin: 5px 0 0 4px !important;
+    color: #FFF !important;
 }
 
 .inputActive::-webkit-input-placeholder {
@@ -102,6 +105,8 @@
 .clearBtn img {
     height: 12px;
     width: auto;
+
+    vertical-align: top !important;
 
     user-drag: none;
     user-select: none;
@@ -144,6 +149,7 @@
 .executeBtn img {
     height: 12px;
     width: auto;
+    vertical-align: baseline !important;
 
     user-drag: none;
     user-select: none;
@@ -190,6 +196,7 @@
 .optionsBtn img {
     height: 12px;
     width: auto;
+    vertical-align: baseline !important;
 
     user-drag: none;
     user-select: none;

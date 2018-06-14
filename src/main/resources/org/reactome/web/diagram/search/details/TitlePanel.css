@@ -23,6 +23,8 @@
     justify-content: space-between;
     font-size: 0.9em;
     margin-top: 4px;
+
+    line-height: normal !important;
 }
 
 .line div {
@@ -94,6 +96,7 @@
 .flagBtn img {
     height: 12px;
     width: auto;
+    vertical-align: baseline !important;
 
     user-drag: none;
     user-select: none;

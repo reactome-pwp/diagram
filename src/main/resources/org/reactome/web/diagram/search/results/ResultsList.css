@@ -14,7 +14,7 @@
 }
 
 .cellListSelectedItem > div > div > img { /* Target only the schemaClass Icon */
-    background-color: rgba(255, 255, 255, 0.8); /* Put a white background behind the icon of the selected item */
+    background-color: rgba(255, 255, 255, 0.8) !important; /* Put a white background behind the icon of the selected item */
     border-radius: 8px;
     padding: 1px;
     margin-left: -1px;
