@@ -28,7 +28,7 @@ public class SearchResultCell extends AbstractCell<SearchResultObject> {
                         "<div title=\"{3}\" style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:small;\">" +
                             "{2}" +
                         "</div>" +
-                        "<div style=\"float:left; width:275px;\">" +
+                        "<div style=\"float:left; width:270px;\">" +
                             "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; margin-top:-2px; font-size:x-small; color:#89c053;\">" +
                                 "{4}" +
                             "</div>" +
