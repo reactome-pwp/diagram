@@ -55,11 +55,15 @@
     text-overflow:ellipsis;
 }
 
+.listItem img {
+    vertical-align: text-bottom !important;
+}
+
 .listItemLink {
     display: inline;
     margin-left: 3px;
 }
 
-.listItemLink a{
+.listItemLink a {
     text-decoration: underline !important;
 }
