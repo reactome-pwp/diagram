@@ -163,6 +163,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
                 LocalOccurrencesFactory.searchForInstanceInDiagram(((ResultItem) selectedResultItem).getStId(), args.getDiagramStId(), this);
             } else if (selectedResultItem instanceof InteractorSearchResult) {
                 populateWithInteractor();
+                show(true);
             }
         } else if (GLOBAL == event.getResultType()) {
             ResultItem item = (ResultItem) selectedResultItem;
