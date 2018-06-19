@@ -8,6 +8,7 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.Context;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.events.ContentLoadedEvent;
 import org.reactome.web.diagram.events.ContentRequestedEvent;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
@@ -44,6 +45,7 @@ public class LocalSearchResultsWidget extends Composite implements ResultsWidget
 
     private EventBus eventBus;
     private Context context;
+    private OverlayResource overlayResource;
     private int scope = -1;
 
     private SearchArguments arguments;
@@ -73,16 +75,6 @@ public class LocalSearchResultsWidget extends Composite implements ResultsWidget
         selectionModel.addSelectionChangeHandler(this);
 
         initWidget(main);
-        /*
-        SuggestionCell suggestionCell = new SuggestionCell();
-
-        suggestions = new CellList<>(suggestionCell, KEY_PROVIDER);
-        suggestions.sinkEvents(Event.FOCUSEVENTS);
-        suggestions.setSelectionModel(selectionModel);
-
-        suggestions.setKeyboardPagingPolicy(HasKeyboardPagingPolicy.KeyboardPagingPolicy.INCREASE_RANGE);
-        suggestions.setKeyboardSelectionPolicy(HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.DISABLED);
-        */
 
         eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(ContentLoadedEvent.TYPE, this);
@@ -100,7 +92,7 @@ public class LocalSearchResultsWidget extends Composite implements ResultsWidget
     @Override
     public void onContentRequested(ContentRequestedEvent event) {
         this.context = null;
-        this.selectedItem = null;
+//        this.selectedItem = null;
     }
 
     @Override
@@ -115,21 +107,21 @@ public class LocalSearchResultsWidget extends Composite implements ResultsWidget
     }
 
     @Override
-    public void updateResults(SearchArguments args) {
+    public void updateResults(SearchArguments args, OverlayResource overlayResource, List<SearchResultObject> interactors) {
         if(args == null) return;
 
         if(scope == args.getFacetsScope()) {
             selectedFacets = args.getFacets();
         }
 
-        if(arguments == null || !arguments.equals(args)) {
+        if(arguments == null || !(arguments.equals(args) && overlayResource.equals(this.overlayResource))) {
             arguments = args;
+            this.overlayResource = overlayResource;
 
             dataProvider.setSearchArguments(args, selectedFacets, PREFIX);
             dataProvider.setExtraItemsToShow(null);
 
             //Include the results of the search in the interactors (by searching inside the graph)
-            List<SearchResultObject> interactors = findInDiagramInteractors(args);
             if(selectedFacets.isEmpty() || selectedFacets.contains("Interactor")) {
                 dataProvider.setExtraItemsToShow(interactors);
             }
@@ -169,17 +161,6 @@ public class LocalSearchResultsWidget extends Composite implements ResultsWidget
         fireEvent(new ResultSelectedEvent(selectedItem, LOCAL));
     }
 
-    private List<SearchResultObject> findInDiagramInteractors(SearchArguments args) {
-        List<SearchResultObject> rtn = null;
-        if(context != null && args.getOverlayResource() != null) {
-            rtn = context.getInteractors().queryForInteractors(args.getOverlayResource(), context.getContent(), args.getQuery());
-            if(rtn != null) {
-                rtn.forEach(item -> item.setSearchDisplay(args));
-            }
-        }
-        return rtn;
-    }
-
     private void includeInteractorFacet(int count) {
         facets.add(new FacetContainer() {
             @Override
@@ -206,5 +187,4 @@ public class LocalSearchResultsWidget extends Composite implements ResultsWidget
             fireEvent(new ResultSelectedEvent(selectedItem, LOCAL));
         }
     }
-
 }

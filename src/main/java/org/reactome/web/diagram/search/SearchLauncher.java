@@ -17,10 +17,11 @@ import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.common.IconToggleButton;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.Context;
-import org.reactome.web.diagram.data.interactors.common.OverlayResource;
-import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
-import org.reactome.web.diagram.handlers.*;
+import org.reactome.web.diagram.handlers.ContentLoadedHandler;
+import org.reactome.web.diagram.handlers.ContentRequestedHandler;
+import org.reactome.web.diagram.handlers.LayoutLoadedHandler;
+import org.reactome.web.diagram.handlers.SearchKeyPressedHandler;
 import org.reactome.web.diagram.search.events.*;
 import org.reactome.web.diagram.search.facets.FacetsPanel;
 import org.reactome.web.diagram.search.handlers.*;
@@ -33,7 +34,6 @@ import java.util.Date;
  */
 public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         ContentLoadedHandler, ContentRequestedHandler, LayoutLoadedHandler, SearchBoxUpdatedHandler,
-        InteractorsResourceChangedHandler, InteractorsLoadedHandler,
         SearchBoxArrowKeysHandler, SearchKeyPressedHandler,
         FacetsLoadedHandler, FacetsChangedHandler,
         AutoCompleteSelectedHandler {
@@ -46,8 +46,6 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     private EventBus eventBus;
     private Context context;
-    private OverlayResource overlayResource;
-//    private SuggestionsProvider<SearchResultObject> suggestionsProvider;
 
     private SearchBox input = null;
     private PwpButton searchBtn = null;
@@ -144,10 +142,6 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         return addHandler(handler, SearchPerformedEvent.TYPE);
     }
 
-//    public HandlerRegistration addSuggestionResetHandler(SuggestionResetHandler handler){
-//        return addHandler(handler, SuggestionResetEvent.TYPE);
-//    }
-
     @Override
     public void onAutoCompleteSelected(AutoCompleteSelectedEvent event) {
        input.setValue(event.getTerm());
@@ -239,24 +233,6 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     }
 
     @Override
-    public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
-        if(context != null && context.getInteractors() != null) {
-            if(context.getInteractors().isResourceLoaded(event.getResource().getIdentifier())) {
-                overlayResource = event.getResource();
-                performSearch();
-            }
-        }
-    }
-
-    @Override
-    public void onInteractorsLoaded(InteractorsLoadedEvent event) {
-        overlayResource = LoaderManager.INTERACTORS_RESOURCE;
-        if(context != null && context.getInteractors() != null) {
-            performSearch();
-        }
-    }
-
-    @Override
     public void onSearchKeyPressed(SearchKeyPressedEvent event) {
         // This is to handle the shortcut [ctrl] + [F]
         // Expand only if search is enabled
@@ -280,7 +256,6 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
             setFocus(true);
             optionsBtn.setEnabled(false);
         }
-//        fireEvent(new SuggestionResetEvent());
         eventBus.fireEventFromSource(new GraphObjectSelectedEvent(null, false), this);
     }
 
@@ -326,8 +301,6 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(ContentLoadedEvent.TYPE, this);
         eventBus.addHandler(LayoutLoadedEvent.TYPE, this);
-        eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
-        eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
         eventBus.addHandler(SearchKeyPressedEvent.TYPE, this);
     }
 
@@ -353,8 +326,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
                 context.getContent().getStableId(),
                 context.getContent().getSpeciesName(),
                 facetsPanel.getSelectedFacets(),
-                facetsPanel.getScope(),
-                overlayResource
+                facetsPanel.getScope()
         );
 
         if(searchArgs.hasValidQuery()) {

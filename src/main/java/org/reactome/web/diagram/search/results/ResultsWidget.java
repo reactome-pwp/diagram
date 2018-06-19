@@ -2,7 +2,9 @@ package org.reactome.web.diagram.search.results;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.IsWidget;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.search.SearchArguments;
+import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.handlers.FacetsLoadedHandler;
 import org.reactome.web.diagram.search.handlers.ResultSelectedHandler;
 import org.reactome.web.diagram.search.results.data.model.FacetContainer;
@@ -24,9 +26,9 @@ public interface ResultsWidget extends IsWidget {
     void clearSelection();
 
     /**
-     * Updates the view with results based on the SearchArguments
+     * Updates the view with results based on the SearchArguments and the extra interactors to be added
      */
-    void updateResults(SearchArguments searchArguments);
+    void updateResults(SearchArguments searchArguments, OverlayResource overlayResource, List<SearchResultObject> interactors);
 
     /**
      * Sets the available facets

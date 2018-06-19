@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 import org.reactome.web.diagram.client.DiagramFactory;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.events.FacetsLoadedEvent;
@@ -79,7 +80,7 @@ public class GlobalSearchResultsWidget extends Composite implements ResultsWidge
     }
 
     @Override
-    public void updateResults(SearchArguments args) {
+    public void updateResults(SearchArguments args, OverlayResource overlayResource, List<SearchResultObject> interactors) {
         if(args == null) return;
 
         if(scope == args.getFacetsScope()) {

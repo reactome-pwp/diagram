@@ -14,11 +14,17 @@ import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.view.client.ProvidesKey;
 import org.reactome.web.diagram.data.Context;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
+import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.ContentLoadedEvent;
 import org.reactome.web.diagram.events.ContentRequestedEvent;
+import org.reactome.web.diagram.events.InteractorsLoadedEvent;
+import org.reactome.web.diagram.events.InteractorsResourceChangedEvent;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
 import org.reactome.web.diagram.handlers.ContentRequestedHandler;
+import org.reactome.web.diagram.handlers.InteractorsLoadedHandler;
+import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchPerformedEvent;
 import org.reactome.web.diagram.search.SearchPerformedHandler;
@@ -42,11 +48,13 @@ import org.reactome.web.diagram.util.Console;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPanel.Handler,
         SearchSummaryFactory.Handler, SearchPerformedHandler, AutoCompleteRequestedHandler,
+        InteractorsResourceChangedHandler, InteractorsLoadedHandler,
         ContentLoadedHandler, ContentRequestedHandler {
 
     private final static int LOCAL_SEARCH = 0;
@@ -59,7 +67,12 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
     private List<ResultsWidget> resultsWidgets = new ArrayList<>();
     private ResultsWidget activeResultWidget;
 
+    private SearchSummary summary;
     private SearchArguments searchArguments;
+    private SearchArguments previousSearchArguments;
+
+    private OverlayResource overlayResource;
+
 
     /**
      * The key provider that provides the unique ID of a SearchResult.
@@ -79,6 +92,8 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
     public ResultsPanel(EventBus eventBus) {
         this.sinkEvents(Event.ONCLICK);
+
+        overlayResource = LoaderManager.INTERACTORS_RESOURCE;
 
         scopeBar = new ScopeBarPanel(this);
         scopeBar.addButton("This diagram", "Search only in the displayed diagram",ScopeBarPanel.RESOURCES.scopeLocal());
@@ -104,6 +119,8 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
         eventBus.addHandler(ContentRequestedEvent.TYPE, this);
         eventBus.addHandler(ContentLoadedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
+        eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
     }
 
     public HandlerRegistration addClickHandler(ClickHandler handler){
@@ -134,9 +151,31 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         context = null;
     }
 
+    @Override
+    public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
+        if(context != null && context.getInteractors() != null) {
+            if(context.getInteractors().isResourceLoaded(event.getResource().getIdentifier())) {
+                overlayResource = event.getResource();
+                updateScopeNumbers(summary);
+                updateFacets(summary);
+                updateResult();
+            }
+        }
+    }
+
+    @Override
+    public void onInteractorsLoaded(InteractorsLoadedEvent event) {
+        overlayResource = LoaderManager.INTERACTORS_RESOURCE;
+        if(context != null && context.getInteractors() != null) {
+            updateScopeNumbers(summary);
+            updateFacets(summary);
+            updateResult();
+        }
+    }
 
     @Override
     public void onSearchSummaryReceived(SearchSummary summary) {
+        this.summary = summary;
         updateScopeNumbers(summary);
         updateFacets(summary);
         updateResult();
@@ -145,6 +184,7 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
     @Override
     public void onSearchSummaryError(String msg) {
         Console.warn("Error retrieving search summary");
+        summary = null;
         updateScopeNumbers(null);
         updateFacets(null);
         updateResult();
@@ -152,12 +192,18 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
     @Override
     public void onSearchPerformed(SearchPerformedEvent event) {
+        boolean clearSelection = previousSearchArguments!=null && !previousSearchArguments.getQuery().equals(event.getSearchArguments().getQuery());
+
         searchArguments = event.getSearchArguments();
         if(searchArguments.hasValidQuery()) {
             // Get facets and numbers from content service before performing the search query
             SearchSummaryFactory.queryForSummary(searchArguments, this);
-            clearSelection();
+            if(clearSelection) {
+                clearSelection();
+            }
         }
+
+        previousSearchArguments = searchArguments;
     }
 
     @Override
@@ -173,13 +219,12 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
     @Override
     public void onPanelExpanded(PanelExpandedEvent event) {
-//        show(searchArguments != null && searchArguments.hasValidQuery());
         show(searchArguments != null);
     }
 
     private void updateResult() {
         show(searchArguments != null && searchArguments.hasValidQuery());
-        activeResultWidget.updateResults(searchArguments);
+        activeResultWidget.updateResults(searchArguments, overlayResource, findInDiagramInteractors(searchArguments, overlayResource));
     }
 
     private void clearSelection() {
@@ -222,7 +267,8 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         if (summary!=null) {
             DiagramSearchResult localResults = summary.getDiagramResult();
             if (localResults!=null && localResults.getFound()!=null) {
-                localResultsFound = localResults.getFound() + getNumberOfInteractors();
+                List<SearchResultObject> interactors = findInDiagramInteractors(searchArguments, overlayResource);
+                localResultsFound = localResults.getFound() + (interactors !=null ? interactors.size() : 0);
             }
             DiagramSearchResult globalResults = summary.getFireworksResult();
             if (globalResults!=null && globalResults.getFound()!=null) {
@@ -241,13 +287,12 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         }
     }
 
-    private int getNumberOfInteractors() {
-        int rtn = 0;
-        if(context!=null && searchArguments!=null && searchArguments.getOverlayResource() != null) {
-            List<SearchResultObject> interactors = context.getInteractors()
-                    .queryForInteractors(searchArguments.getOverlayResource(), context.getContent(), searchArguments.getQuery());
-            if(interactors!=null) {
-                rtn = interactors.size();
+    private List<SearchResultObject> findInDiagramInteractors(SearchArguments args, OverlayResource overlayResource) {
+        List<SearchResultObject> rtn = null;
+        if(args!=null && context != null && overlayResource != null) {
+            rtn = context.getInteractors().queryForInteractors(overlayResource, context.getContent(), args.getQuery());
+            if(rtn != null) {
+                rtn.forEach(item -> item.setSearchDisplay(args));
             }
         }
         return rtn;
