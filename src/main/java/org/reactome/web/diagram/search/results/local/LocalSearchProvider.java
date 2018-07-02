@@ -5,10 +5,10 @@ import com.google.gwt.http.client.URL;
 import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.results.ResultItem;
-import org.reactome.web.diagram.search.results.data.DiagramSearchException;
-import org.reactome.web.diagram.search.results.data.DiagramSearchResultFactory;
-import org.reactome.web.diagram.search.results.data.model.DiagramSearchResult;
+import org.reactome.web.diagram.search.results.data.SearchException;
+import org.reactome.web.diagram.search.results.data.SearchResultFactory;
 import org.reactome.web.diagram.search.results.data.model.SearchError;
+import org.reactome.web.diagram.search.results.data.model.SearchResult;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.scroller.client.provider.AbstractListAsyncDataProvider;
 
@@ -31,7 +31,7 @@ public class LocalSearchProvider extends AbstractListAsyncDataProvider<SearchRes
     private SearchArguments args;
     private StringBuilder stringBuilder;
 
-    private Consumer<DiagramSearchResult> resultConsumer;
+    private Consumer<SearchResult> resultConsumer;
 
     public LocalSearchProvider() {
         stringBuilder = new StringBuilder();
@@ -41,7 +41,7 @@ public class LocalSearchProvider extends AbstractListAsyncDataProvider<SearchRes
      * Use this constructor in case you need to consume
      * the result in another corner
      */
-    public LocalSearchProvider(Consumer<DiagramSearchResult> resultConsumer) {
+    public LocalSearchProvider(Consumer<SearchResult> resultConsumer) {
         stringBuilder = new StringBuilder();
         this.resultConsumer = resultConsumer;
     }
@@ -50,7 +50,7 @@ public class LocalSearchProvider extends AbstractListAsyncDataProvider<SearchRes
     protected List<SearchResultObject> processResult(String body) {
         List<SearchResultObject> rtn = new ArrayList<>();
         try {
-            DiagramSearchResult result = DiagramSearchResultFactory.getSearchObject(DiagramSearchResult.class, body);
+            SearchResult result = SearchResultFactory.getSearchObject(SearchResult.class, body);
             rtn = result.getEntries().stream()
                     .map(ResultItem::new)
                     .peek(e -> e.setSearchDisplay(args))
@@ -60,7 +60,7 @@ public class LocalSearchProvider extends AbstractListAsyncDataProvider<SearchRes
                 resultConsumer.accept(result);
             }
 
-        } catch (DiagramSearchException e) {
+        } catch (SearchException e) {
             //TODO deal with this error
             Console.error(e.getMessage());
         }
@@ -71,14 +71,14 @@ public class LocalSearchProvider extends AbstractListAsyncDataProvider<SearchRes
     protected String processError(Response response) {
         String rtn = "An error occurred while searching for " + args.getQuery() + ". ";
         try {
-            SearchError error = DiagramSearchResultFactory.getSearchObject(SearchError.class, response.getText());
+            SearchError error = SearchResultFactory.getSearchObject(SearchError.class, response.getText());
             if (error != null) {
                 if(error.getMessages() != null) {
                     rtn = error.getMessages().stream()
                                              .collect(joining(". "));
                 }
             }
-        } catch (DiagramSearchException e) {
+        } catch (SearchException e) {
             e.printStackTrace();
         }
         return rtn;

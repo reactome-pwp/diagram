@@ -5,7 +5,7 @@ package org.reactome.web.diagram.search.results.data.model;
  */
 public interface SearchSummary {
 
-    DiagramSearchResult getDiagramResult();
+    SearchResult getDiagramResult();
 
-    DiagramSearchResult getFireworksResult();
+    SearchResult getFireworksResult();
 }

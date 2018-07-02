@@ -1,8 +1,8 @@
-package org.reactome.web.diagram.search;
+package org.reactome.web.diagram.search.events;
 
 import com.google.gwt.event.shared.GwtEvent;
-
-import java.util.List;
+import org.reactome.web.diagram.search.SearchArguments;
+import org.reactome.web.diagram.search.handlers.SearchPerformedHandler;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -11,11 +11,9 @@ public class SearchPerformedEvent extends GwtEvent<SearchPerformedHandler> {
     public static Type<SearchPerformedHandler> TYPE = new Type<>();
 
     private SearchArguments searchArguments;
-    private List<SearchResultObject> suggestions; //TODO remove this in the clean up
 
     public SearchPerformedEvent(SearchArguments args) {
         this.searchArguments = args;
-//        this.suggestions = suggestions; //TODO remove this in the clean up
     }
 
     @Override
@@ -32,8 +30,4 @@ public class SearchPerformedEvent extends GwtEvent<SearchPerformedHandler> {
         return searchArguments;
     }
 
-    //TODO remove this in the clean up
-    public List<SearchResultObject> getSuggestions() {
-        return suggestions;
-    }
 }

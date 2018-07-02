@@ -3,8 +3,8 @@ package org.reactome.web.diagram.search.results.local;
 import com.google.gwt.http.client.*;
 import com.google.gwt.safehtml.shared.UriUtils;
 import org.reactome.web.diagram.client.DiagramFactory;
-import org.reactome.web.diagram.search.results.data.DiagramSearchException;
-import org.reactome.web.diagram.search.results.data.DiagramSearchResultFactory;
+import org.reactome.web.diagram.search.results.data.SearchException;
+import org.reactome.web.diagram.search.results.data.SearchResultFactory;
 import org.reactome.web.diagram.search.results.data.model.Occurrences;
 import org.reactome.web.diagram.search.results.data.model.SearchError;
 
@@ -57,8 +57,8 @@ public abstract class LocalOccurrencesFactory {
     private static Occurrences getOccurrences(final String json, final Handler handler) {
         Occurrences rtn = null;
         try {
-            rtn = DiagramSearchResultFactory.getSearchObject(Occurrences.class, json);
-        } catch (DiagramSearchException ex) {
+            rtn = SearchResultFactory.getSearchObject(Occurrences.class, json);
+        } catch (SearchException ex) {
             handler.onOccurrencesException(ex.getMessage());
         }
         return rtn;
@@ -67,8 +67,8 @@ public abstract class LocalOccurrencesFactory {
     private static SearchError getError(final String json, final Handler handler) {
         SearchError rtn = null;
         try {
-            rtn = DiagramSearchResultFactory.getSearchObject(SearchError.class, json);
-        } catch (DiagramSearchException ex) {
+            rtn = SearchResultFactory.getSearchObject(SearchError.class, json);
+        } catch (SearchException ex) {
             handler.onOccurrencesException(ex.getMessage());
         }
         return rtn;

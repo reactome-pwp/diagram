@@ -3,8 +3,8 @@ package org.reactome.web.diagram.search.facets;
 import com.google.gwt.http.client.*;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.search.SearchArguments;
-import org.reactome.web.diagram.search.results.data.DiagramSearchException;
-import org.reactome.web.diagram.search.results.data.DiagramSearchResultFactory;
+import org.reactome.web.diagram.search.results.data.SearchException;
+import org.reactome.web.diagram.search.results.data.SearchResultFactory;
 import org.reactome.web.diagram.search.results.data.model.SearchSummary;
 import org.reactome.web.diagram.util.Console;
 
@@ -59,8 +59,8 @@ public abstract class SearchSummaryFactory {
     private static SearchSummary getSummary(final String json, final Handler handler) {
         SearchSummary rtn = null;
         try {
-            rtn = DiagramSearchResultFactory.getSearchObject(SearchSummary.class, json);
-        } catch (DiagramSearchException ex) {
+            rtn = SearchResultFactory.getSearchObject(SearchSummary.class, json);
+        } catch (SearchException ex) {
             handler.onSearchSummaryError(ex.getMessage());
         }
         return rtn;

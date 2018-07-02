@@ -9,13 +9,13 @@ import org.reactome.web.diagram.search.results.data.model.*;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class DiagramSearchResultFactory {
+public class SearchResultFactory {
 
     @SuppressWarnings("UnusedDeclaration")
     interface ModelAutoBeanFactory extends AutoBeanFactory {
         AutoBean<Entry> entry();
         AutoBean<TargetTerm> targetTerm();
-        AutoBean<DiagramSearchResult> diagramSearchResult();
+        AutoBean<SearchResult> diagramSearchResult();
         AutoBean<FacetContainer> facets();
         AutoBean<Occurrences> occurrences();
         AutoBean<SearchSummary> summary();
@@ -23,13 +23,13 @@ public class DiagramSearchResultFactory {
     }
 
     @SuppressWarnings("Duplicates")
-    public static <T> T getSearchObject(Class<T> cls, String json) throws DiagramSearchException {
+    public static <T> T getSearchObject(Class<T> cls, String json) throws SearchException {
         try{
             AutoBeanFactory factory = GWT.create(ModelAutoBeanFactory.class);
             AutoBean<T> bean = AutoBeanCodex.decode(factory, cls, json);
             return bean.as();
         }catch (Throwable e){
-            throw new DiagramSearchException("Error mapping json string for [" + cls + "]: " + json, e);
+            throw new SearchException("Error mapping json string for [" + cls + "]: " + json, e);
         }
     }
 }

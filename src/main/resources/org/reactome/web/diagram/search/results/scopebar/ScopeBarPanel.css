@@ -67,4 +67,5 @@
 
 .buttonSelected {
     background: none rgb(6, 107, 158) !important;
+    cursor: default;
 }

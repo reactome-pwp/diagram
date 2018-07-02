@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public interface DiagramSearchResult {
+public interface SearchResult {
 
     List<Entry> getEntries();
 

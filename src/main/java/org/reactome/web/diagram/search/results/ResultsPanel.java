@@ -26,19 +26,19 @@ import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.handlers.InteractorsLoadedHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 import org.reactome.web.diagram.search.SearchArguments;
-import org.reactome.web.diagram.search.SearchPerformedEvent;
-import org.reactome.web.diagram.search.SearchPerformedHandler;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.events.AutoCompleteRequestedEvent;
 import org.reactome.web.diagram.search.events.PanelCollapsedEvent;
 import org.reactome.web.diagram.search.events.PanelExpandedEvent;
+import org.reactome.web.diagram.search.events.SearchPerformedEvent;
 import org.reactome.web.diagram.search.facets.SearchSummaryFactory;
 import org.reactome.web.diagram.search.handlers.AutoCompleteRequestedHandler;
 import org.reactome.web.diagram.search.handlers.FacetsLoadedHandler;
 import org.reactome.web.diagram.search.handlers.ResultSelectedHandler;
+import org.reactome.web.diagram.search.handlers.SearchPerformedHandler;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
-import org.reactome.web.diagram.search.results.data.model.DiagramSearchResult;
 import org.reactome.web.diagram.search.results.data.model.FacetContainer;
+import org.reactome.web.diagram.search.results.data.model.SearchResult;
 import org.reactome.web.diagram.search.results.data.model.SearchSummary;
 import org.reactome.web.diagram.search.results.global.GlobalSearchResultsWidget;
 import org.reactome.web.diagram.search.results.local.LocalSearchResultsWidget;
@@ -248,12 +248,12 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         List<FacetContainer> localFacets = null;
         List<FacetContainer> globalFacets = null;
         if(summary!=null) {
-            DiagramSearchResult localResults = summary.getDiagramResult();
+            SearchResult localResults = summary.getDiagramResult();
             if (localResults!=null) {
                 localFacets = localResults.getFacets()!=null ? localResults.getFacets() : new ArrayList<>();
             }
 
-            DiagramSearchResult globalResults = summary.getFireworksResult();
+            SearchResult globalResults = summary.getFireworksResult();
             if (globalResults!=null) {
                 globalFacets = globalResults.getFacets()!=null ? globalResults.getFacets() : new ArrayList<>();
             }
@@ -265,12 +265,12 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
     private void updateScopeNumbers(SearchSummary summary) {
         int localResultsFound = 0, globalResultsFound = 0;
         if (summary!=null) {
-            DiagramSearchResult localResults = summary.getDiagramResult();
+            SearchResult localResults = summary.getDiagramResult();
             if (localResults!=null && localResults.getFound()!=null) {
                 List<SearchResultObject> interactors = findInDiagramInteractors(searchArguments, overlayResource);
                 localResultsFound = localResults.getFound() + (interactors !=null ? interactors.size() : 0);
             }
-            DiagramSearchResult globalResults = summary.getFireworksResult();
+            SearchResult globalResults = summary.getFireworksResult();
             if (globalResults!=null && globalResults.getFound()!=null) {
                 globalResultsFound = globalResults.getFound();
             }
