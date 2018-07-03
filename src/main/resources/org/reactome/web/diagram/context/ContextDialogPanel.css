@@ -15,6 +15,7 @@
 
     font-family: Arial Unicode MS, Arial, sans-serif !important;
     font-size: small !important;
+    line-height: initial;
 }
 
 .popup table, .popup tbody, .popup th, .popup tr, .popup td {
