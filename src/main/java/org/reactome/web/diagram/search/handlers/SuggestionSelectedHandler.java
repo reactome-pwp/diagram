@@ -6,6 +6,7 @@ import org.reactome.web.diagram.search.events.SuggestionSelectedEvent;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@Deprecated
 public interface SuggestionSelectedHandler extends EventHandler {
     void onSuggestionSelected(SuggestionSelectedEvent event);
 }

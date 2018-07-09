@@ -1,0 +1,131 @@
+.container {
+    background-color: transparent;
+    margin-top: 2px;
+}
+
+.name {
+    color: #4a88da;
+    font-size: medium;
+    margin-bottom: 3px;
+
+    line-height: 1.2em;
+    max-height: 2.5em;
+    overflow:hidden;
+    text-overflow:ellipsis;
+
+    display: inline
+}
+
+.line {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    font-size: 0.9em;
+    margin-top: 4px;
+
+    line-height: normal !important;
+}
+
+.line div {
+    border-radius: 10px;
+    padding: 0 6px 0 6px;
+    margin-bottom: 3px;
+}
+
+.id {
+    background-color: #89c053;
+    color: white;
+}
+
+.compartments {
+    background-color: #f5b945;
+    color: white;
+}
+
+.type {
+    background-color: rgb(145, 122, 212);
+    color: white;
+}
+
+.genes {
+    background-color: rgb(113, 187, 212);
+    color: white;
+}
+
+.accession {
+    background-color: rgb(199, 106, 178);
+    color: white;
+}
+
+.general {
+    font-size: 1.2em;
+    font-style: italic;
+    font-weight: bold;
+    color: #4a88da;
+}
+
+
+.flagBtn {
+    background-color: #1e94d0;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    margin-top: 1px;
+    padding: 1px 1px 0 1px;
+    outline: none;
+    opacity: 0.8;
+    width: 20px;
+    height: 20px;
+    float: right;
+
+    -webkit-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.10); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    0 1px 2px 0 rgba(0, 0, 0, 0.10); /* Firefox 3.5 - 3.6 */
+    box-shadow:         0 1px 2px 0 rgba(0, 0, 0, 0.10); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
+.flagBtn span {
+    vertical-align: middle !important;
+    display: inline-block;
+}
+
+.flagBtn img {
+    height: 12px;
+    width: auto;
+    vertical-align: baseline !important;
+
+    user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.flagBtn:hover {
+    cursor: pointer !important;
+    opacity: 0.9;
+
+    -webkit-box-shadow: 0 5px 15px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    0 5px 15px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         0 5px 15px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+}
+
+.flagBtn:active:hover {
+    cursor: pointer !important;
+    opacity: 1;
+}
+
+.flagBtn:disabled {
+    background-color: darkgray;
+}
+
+
+
+
+
+

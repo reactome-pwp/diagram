@@ -39,6 +39,8 @@ public interface Content {
 
     String getDisplayName();
 
+    String getSpeciesName();
+
     Set<GraphPathway> getEncapsulatedPathways();
 
     Boolean getIsDisease();
@@ -80,6 +82,8 @@ public interface Content {
     void setStableId(String stableId);
 
     void setDisplayName(String displayName);
+
+    void setSpeciesName(String speciesName);
 
     void setIsDisease(Boolean isDisease);
 

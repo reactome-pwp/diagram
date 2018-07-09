@@ -186,6 +186,8 @@
     margin: 6px 0 0 20px;
     float: left;
     font-size: 12px;
+
+    line-height: normal !important;
 }
 
 .expressionLegend {
@@ -234,6 +236,8 @@
     display: inline-block;
     white-space: nowrap;
     max-width: 225px;
+
+    line-height: normal !important;
 }
 
 .slide {
@@ -258,6 +262,8 @@
     margin: 6px 0 0 20px;
     float: left;
     font-size: 12px;
+
+    line-height: normal !important;
 }
 
 .flaggedItemsLabel {

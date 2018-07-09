@@ -1,0 +1,16 @@
+.main {
+    /*background-color: rgba(88, 195, 229, 0.8);*/
+    background-color: rgba(255, 255, 255, 0.8);
+    border: rgba(88, 195, 229, 0.8) solid 2px;
+    color: #4a88da;
+    border-radius: 8px 8px 0 0;
+    margin-top: 5px;
+}
+
+.content {
+    overflow: hidden;
+    height: 150px;
+
+    box-sizing: content-box !important;
+    line-height: normal !important;
+}

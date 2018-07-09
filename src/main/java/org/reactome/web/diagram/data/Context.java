@@ -32,6 +32,7 @@ public class Context {
     private DiagramStatus diagramStatus;
     private AnalysisStatus analysisStatus;
     private FlagStatus flagStatus;
+    private String flagTerm;
     private SVGStatus svgStatus;
 
     private Content content;
@@ -107,6 +108,14 @@ public class Context {
                 }
             }
         }
+    }
+
+    public String getFlagTerm() {
+        return flagTerm;
+    }
+
+    public void setFlagTerm(String flagTerm) {
+        this.flagTerm = flagTerm;
     }
 
     public AnalysisStatus getAnalysisStatus() {

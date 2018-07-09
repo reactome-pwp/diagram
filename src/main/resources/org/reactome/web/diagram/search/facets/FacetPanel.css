@@ -1,0 +1,79 @@
+.title {
+    display: inline-block;
+    line-height: 1em;
+
+    color: rgb(30, 148, 208);
+    margin-left: 5px;
+    /*margin-top: 5px;*/
+
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: 1.10em;
+    font-weight: bold;
+}
+
+.titleContainer {
+    margin-top: 7px;
+}
+
+.selectAllBtn {
+    position: absolute;
+    right: 8px;
+    margin-top: 3px;
+    background-color: #c04c37;
+    border: none;
+    border-radius: 9px;
+    color: white;
+    padding: 0 5px 0 5px;
+    outline: none;
+    opacity: 0.8;
+    /*width: 16px;*/
+    height: 13px;
+    line-height: normal !important;
+}
+
+.selectAllBtn span {
+    vertical-align: middle !important;
+    display: block;
+    font-size: 0.8em;
+}
+
+.selectAllBtn img {
+    height: 12px;
+    width: auto;
+
+    user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.selectAllBtn:hover {
+    cursor: pointer;
+    opacity: 0.9;
+}
+
+.selectAllBtn:active:hover {
+    opacity: 1;
+}
+
+.selectAllBtn:disabled {
+    background-color: darkgray;
+    cursor: default !important;
+    display: none;
+}
+
+.tagContainer {
+    width: 100%;
+    max-height: 50px;
+    margin-bottom: 3px;
+    overflow-x: hidden;
+    overflow-y: visible;
+    line-height: 0;
+}
+
+.outerContainer {
+    overflow-x: hidden;
+    overflow-y: auto;
+}

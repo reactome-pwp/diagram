@@ -17,6 +17,7 @@ import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.SummaryItem;
+import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.pwp.model.client.util.LruCache;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
@@ -296,6 +297,16 @@ public class InteractorsContent {
         Set<GraphObject> aux = content.getIdentifierMap().getElements(diagramAcc);
         if (aux != null) return aux;
         return new HashSet<>();
+    }
+
+    public List<SearchResultObject> queryForInteractors(OverlayResource resource, Content content, String query) {
+        List<SearchResultObject> rtn = new ArrayList<>();
+        for (InteractorSearchResult obj : getInteractorSearchResult(resource, content)) {
+            if (obj.containsTerm(query)) {
+                rtn.add(obj);
+            }
+        }
+        return rtn.isEmpty() ? null : rtn;
     }
 
     public List<RawInteractor> getRawInteractors(String resource, String acc) {
