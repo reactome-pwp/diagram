@@ -15,11 +15,20 @@
 
     font-family: Arial Unicode MS, Arial, sans-serif !important;
     font-size: small !important;
+    line-height: initial;
 }
 
 .popup table, .popup tbody, .popup th, .popup tr, .popup td {
     margin: 0 !important;
     padding: 0 !important;
+}
+
+.popup table, .popup thead {
+    background-color: initial;              /* To address styling issues appearing when the widget is embedded in 3rd party applications */
+}
+
+.popup table tbody tr:nth-child\(even\) {
+    background-color: initial;              /* To address styling issues appearing when the widget is embedded in 3rd party applications */
 }
 
 .popupSelected {

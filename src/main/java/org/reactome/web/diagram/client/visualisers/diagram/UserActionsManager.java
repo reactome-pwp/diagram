@@ -117,18 +117,20 @@ class UserActionsManager implements MouseActionsHandlers {
     public void onMouseMove(MouseMoveEvent event) {
         setMousePosition(event);
         if (mouseDown != null) {
-            canvas.setCursor(Style.Cursor.MOVE);
             Coordinate mouse = CoordinateFactory.get(MousePosition.getX(event), MousePosition.getY(event));
             Coordinate delta = mouse.minus(mouseDown);
-            if(hoveredInteractor == null) {
-                diagramMoved = true;
-                handler.padding(delta);
+            if (isDeltaValid(delta,2)) {
+                canvas.setCursor(Style.Cursor.MOVE);
+                if (hoveredInteractor == null) {
+                    diagramMoved = true;
+                    handler.padding(delta);
 
-            } else {
-                interactorDragged = true;
-                handler.dragInteractor(hoveredInteractor, delta);
+                } else {
+                    interactorDragged = true;
+                    handler.dragInteractor(hoveredInteractor, delta);
+                }
+                setMouseDownPosition(event);
             }
-            setMouseDownPosition(event);
         }
     }
 
@@ -218,7 +220,7 @@ class UserActionsManager implements MouseActionsHandlers {
             } else {
                 Coordinate delta = mouseCurrent.minus(this.mouseDown);
                 // On mouse move is sometimes called for delta 0 (we cannot control that, but only consider it)
-                if (isDeltaValid(delta)) {
+                if (isDeltaValid(delta, 4)) {
                     handler.padding(delta);
                     this.mouseDown = mouseCurrent;
                     this.diagramMoved = true;                               //Selection is denied in case of panning
@@ -312,7 +314,7 @@ class UserActionsManager implements MouseActionsHandlers {
         return CoordinateFactory.get(x, y);
     }
 
-    private boolean isDeltaValid(Coordinate delta) {
-        return delta.getX() >= 4  || delta.getX() <= -4 || delta.getY() >= 4 || delta.getY() <= -4;
+    private boolean isDeltaValid(Coordinate delta, int threshold) {
+        return delta.getX() >= threshold  || delta.getX() <= -threshold || delta.getY() >= threshold || delta.getY() <= -threshold;
     }
 }
