@@ -192,14 +192,15 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
     @Override
     public void onSearchPerformed(SearchPerformedEvent event) {
-        boolean clearSelection = previousSearchArguments!=null && !previousSearchArguments.getQuery().equals(event.getSearchArguments().getQuery());
-
         searchArguments = event.getSearchArguments();
+        boolean clearSelection = previousSearchArguments!=null &&
+                (!previousSearchArguments.getQuery().equals(searchArguments.getQuery()) || previousSearchArguments.getFacets().size() != searchArguments.getFacets().size());
+
         if(searchArguments.hasValidQuery()) {
             // Get facets and numbers from content service before performing the search query
             SearchSummaryFactory.queryForSummary(searchArguments, this);
             if(clearSelection) {
-                clearSelection();
+                clearSelectionByScope(searchArguments.getFacetsScope());
             }
         }
 
@@ -229,6 +230,10 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
     private void clearSelection() {
         resultsWidgets.forEach(ResultsWidget::clearSelection);
+    }
+
+    private void clearSelectionByScope(int scope) {
+        resultsWidgets.get(scope).clearSelection();
     }
 
     private void setActiveResultsWidget(int index) {

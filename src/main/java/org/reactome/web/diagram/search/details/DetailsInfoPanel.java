@@ -30,6 +30,7 @@ import org.reactome.web.diagram.search.infopanel.EnhancedListPanel;
 import org.reactome.web.diagram.search.infopanel.InteractorsListPanel;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
 import org.reactome.web.diagram.search.results.ResultItem;
+import org.reactome.web.diagram.search.results.data.InteractorOccurencesFactory;
 import org.reactome.web.diagram.search.results.data.model.Occurrences;
 import org.reactome.web.diagram.search.results.data.model.SearchError;
 import org.reactome.web.diagram.search.results.local.LocalOccurrencesFactory;
@@ -163,40 +164,60 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
             }
         } else if (GLOBAL == event.getResultType()) {
             ResultItem item = (ResultItem) selectedResultItem;
-            ContentClient.getAncestors(item.getStId(), new AncestorsLoaded() {
-                @Override
-                public void onAncestorsLoaded(Ancestors ancestors) {
-                    if(context == null) return;
-
-                    Set<Pathway> pathways = new HashSet<>();
-                    for (Path ancestor : ancestors) {
-                        pathways.add(ancestor.getLastPathwayWithDiagram()); //We do not include subpathways in the list
+            if(item.getExactType().equalsIgnoreCase("interactor")) {
+                InteractorOccurencesFactory.query(((ResultItem) selectedResultItem).getId(), args.getSpecies(), new InteractorOccurencesFactory.Handler() {
+                    @Override
+                    public void onInteractorOccurencesReceived(List<Pathway> pathways) {
+                        clearResults();
+                        if(pathways != null && !pathways.isEmpty()) {
+                            int size = pathways.size();
+                            includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus, context.getContent()));
+                            show(true);
+                        }
                     }
 
-                    if (!pathways.isEmpty() && !item.isDisplayed()) {
-                        int size = pathways.size();
+                    @Override
+                    public void onInteractorOccurencesError(String msg) {
+                        show(false);
+                        includeResultWidget(new Label("An error has occurred. ERROR: " + msg));
+                    }
+                });
+            } else {
+                ContentClient.getAncestors(item.getStId(), new AncestorsLoaded() {
+                    @Override
+                    public void onAncestorsLoaded(Ancestors ancestors) {
+                        if (context == null) return;
+
+                        Set<Pathway> pathways = new HashSet<>();
+                        for (Path ancestor : ancestors) {
+                            pathways.add(ancestor.getLastPathwayWithDiagram()); //We do not include subpathways in the list
+                        }
+
+                        if (!pathways.isEmpty() && !item.isDisplayed()) {
+                            int size = pathways.size();
 //                        includeResultWidget(new EventListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus));
-                        includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus, context.getContent()));
+                            includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus, context.getContent()));
+                        }
                     }
-                }
 
-                @Override
-                public void onContentClientException(Type type, String message) {
-                    getPathways();
-                }
+                    @Override
+                    public void onContentClientException(Type type, String message) {
+                        getPathways();
+                    }
 
-                @Override
-                public void onContentClientError(ContentClientError error) {
-                    getPathways();
-                }
+                    @Override
+                    public void onContentClientError(ContentClientError error) {
+                        getPathways();
+                    }
 
-                private void getPathways() {
-                    if(context == null) return;
-                    ContentClient.getPathwaysWithDiagramForEntity(((ResultItem) selectedResultItem).getStId(), false, context.getContent().getSpeciesName(), DetailsInfoPanel.this);
-                }
-            });
+                    private void getPathways() {
+                        if (context == null) return;
+                        ContentClient.getPathwaysWithDiagramForEntity(((ResultItem) selectedResultItem).getStId(), false, context.getContent().getSpeciesName(), DetailsInfoPanel.this);
+                    }
+                });
 
-            show(true);
+                show(true);
+            }
         }
     }
 
