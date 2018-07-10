@@ -200,7 +200,7 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
             // Get facets and numbers from content service before performing the search query
             SearchSummaryFactory.queryForSummary(searchArguments, this);
             if(clearSelection) {
-                clearSelectionByScope(searchArguments.getFacetsScope());
+                clearSelection();
             }
         }
 
