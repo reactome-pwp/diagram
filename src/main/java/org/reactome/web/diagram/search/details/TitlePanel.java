@@ -119,7 +119,8 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
         name.setText(item.getName());
         name.setTitle(item.getName());
 
-        createAndAddLabel(item.getSchemaClass().name, "Type", RESOURCES.getCSS().type());
+        String type = item.getSchemaClass().name.equalsIgnoreCase("Database Object") ? item.getExactType() : item.getSchemaClass().name;
+        createAndAddLabel(type, "Type", RESOURCES.getCSS().type());
         createAndAddLabel(item.getStId(), "Id", RESOURCES.getCSS().id());
 
         if (item.getDatabaseName()!=null && item.getReferenceIdentifier()!=null) {
