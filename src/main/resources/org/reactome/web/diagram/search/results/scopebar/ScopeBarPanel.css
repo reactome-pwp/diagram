@@ -53,6 +53,7 @@
     font-size: x-small;
     font-weight: bold;
     line-height: 1.1em;
+    width: 150px;           /* This prevents the buttons to readjust their width according to flex toolkit */
 
     text-align: center !important;
     vertical-align: center !important;

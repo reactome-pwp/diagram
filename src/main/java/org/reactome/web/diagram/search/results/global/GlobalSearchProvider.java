@@ -121,6 +121,5 @@ public class GlobalSearchProvider extends AbstractListAsyncDataProvider<SearchRe
                 .append(ROWS.getUrlValue())
                 .toString()
         );
-        Console.info(url);
     }
 }
