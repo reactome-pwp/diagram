@@ -52,10 +52,18 @@ public class ScopeBarPanel extends FlowPanel implements ClickHandler {
         handler.onScopeChanged(btns.indexOf(button));
     }
 
-    public void setResultsNumber(int buttonIndex, int number) {
+
+    public void setTotalResultsNumber(int buttonIndex, int number) {
         ScopeButton btn = btns.get(buttonIndex);
         if (btn != null) {
-            btn.setNumber(number);
+            btn.setTotal(number);
+        }
+    }
+
+    public void setCurrentResultsNumber(int buttonIndex, int number) {
+        ScopeButton btn = btns.get(buttonIndex);
+        if (btn != null) {
+            btn.setCurrent(number);
         }
     }
 

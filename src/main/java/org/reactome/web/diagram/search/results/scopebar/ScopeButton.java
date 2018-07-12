@@ -18,6 +18,8 @@ public class ScopeButton extends Button {
     private Label buttonLbl;
 
     private String text;
+    private int total;
+    private int current;
 
     public ScopeButton(String text, String tooltip, ImageResource imageResource, ClickHandler handler) {
         this.text = text;
@@ -32,8 +34,21 @@ public class ScopeButton extends Button {
         update();
     }
 
-    public void setNumber(int number) {
-        String msg = text + (number == 0 ? "" : " (" + number + ")");
+    public void setTotal(int total) {
+        this.total = total;
+        updatetNumbers();
+    }
+
+    public void setCurrent(int current) {
+        this.current = current;
+        updatetNumbers();
+    }
+
+    public void updatetNumbers() {
+        String msg = text;
+        if (total != 0) {
+            msg += " (" + (current != total && current != 0 ? current + " of ": "") + total + ")";
+        }
         buttonLbl.setText(msg);
         update();
     }

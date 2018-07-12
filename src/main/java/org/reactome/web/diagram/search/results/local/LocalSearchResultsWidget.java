@@ -126,11 +126,6 @@ public class LocalSearchResultsWidget extends Composite implements ResultsWidget
                 dataProvider.setExtraItemsToShow(interactors);
             }
 
-            if(interactors!=null) {
-                //Include the Interactor facet in the facets received by the server
-                includeInteractorFacet(interactors.size());
-            }
-
             resultsList.setPageSize(30);
             resultsList.loadFirstPage();
         }
@@ -159,20 +154,6 @@ public class LocalSearchResultsWidget extends Composite implements ResultsWidget
     public void onSelectionChange(SelectionChangeEvent event) {
         selectedItem = selectionModel.getSelectedObject();
         fireEvent(new ResultSelectedEvent(selectedItem, LOCAL));
-    }
-
-    private void includeInteractorFacet(int count) {
-        facets.add(new FacetContainer() {
-            @Override
-            public String getName() {
-                return "Interactor";
-            }
-
-            @Override
-            public Integer getCount() {
-                return count;
-            }
-        });
     }
 
     @Override

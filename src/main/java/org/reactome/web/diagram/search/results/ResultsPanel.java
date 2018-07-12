@@ -45,8 +45,7 @@ import org.reactome.web.diagram.search.results.local.LocalSearchResultsWidget;
 import org.reactome.web.diagram.search.results.scopebar.ScopeBarPanel;
 import org.reactome.web.diagram.util.Console;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -73,6 +72,7 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
     private OverlayResource overlayResource;
 
+    private Map<Integer, Set<String>> selectedFacetsMap = new HashMap<>();
 
     /**
      * The key provider that provides the unique ID of a SearchResult.
@@ -156,8 +156,9 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         if(context != null && context.getInteractors() != null) {
             if(context.getInteractors().isResourceLoaded(event.getResource().getIdentifier())) {
                 overlayResource = event.getResource();
-                updateScopeNumbers(summary);
-                updateFacets(summary);
+                List<SearchResultObject> interactors = findInDiagramInteractors(searchArguments, overlayResource);
+                updateScopeNumbers(summary, interactors);
+                updateFacets(summary, interactors);
                 updateResult();
             }
         }
@@ -167,8 +168,9 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
         overlayResource = LoaderManager.INTERACTORS_RESOURCE;
         if(context != null && context.getInteractors() != null) {
-            updateScopeNumbers(summary);
-            updateFacets(summary);
+            List<SearchResultObject> interactors = findInDiagramInteractors(searchArguments, overlayResource);
+            updateScopeNumbers(summary, interactors);
+            updateFacets(summary, interactors);
             updateResult();
         }
     }
@@ -176,8 +178,9 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
     @Override
     public void onSearchSummaryReceived(SearchSummary summary) {
         this.summary = summary;
-        updateScopeNumbers(summary);
-        updateFacets(summary);
+        List<SearchResultObject> interactors = findInDiagramInteractors(searchArguments, overlayResource);
+        updateScopeNumbers(summary, interactors);
+        updateFacets(summary, interactors);
         updateResult();
     }
 
@@ -185,14 +188,18 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
     public void onSearchSummaryError(String msg) {
         Console.warn("Error retrieving search summary");
         summary = null;
-        updateScopeNumbers(null);
-        updateFacets(null);
+        updateScopeNumbers(null, null);
+        updateFacets(null, null);
         updateResult();
     }
 
     @Override
     public void onSearchPerformed(SearchPerformedEvent event) {
         searchArguments = event.getSearchArguments();
+
+        //Store the selected facets
+        selectedFacetsMap.put(searchArguments.getFacetsScope(), searchArguments.getFacets());
+
         boolean clearSelection = previousSearchArguments!=null &&
                 (!previousSearchArguments.getQuery().equals(searchArguments.getQuery()) || previousSearchArguments.getFacets().size() != searchArguments.getFacets().size());
 
@@ -232,10 +239,6 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         resultsWidgets.forEach(ResultsWidget::clearSelection);
     }
 
-    private void clearSelectionByScope(int scope) {
-        resultsWidgets.get(scope).clearSelection();
-    }
-
     private void setActiveResultsWidget(int index) {
         // Suspend the selection before changing scope
         if(activeResultWidget != null) {
@@ -249,13 +252,18 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         }
     }
 
-    private void updateFacets(SearchSummary summary) {
+    private void updateFacets(SearchSummary summary, List<SearchResultObject> interactors) {
         List<FacetContainer> localFacets = null;
         List<FacetContainer> globalFacets = null;
         if(summary!=null) {
             SearchResult localResults = summary.getDiagramResult();
             if (localResults!=null) {
                 localFacets = localResults.getFacets()!=null ? localResults.getFacets() : new ArrayList<>();
+
+                if(interactors!=null) {
+                    //Include the Interactor facet in the facets received by the server
+                    localFacets = includeInteractorFacet(localFacets, interactors.size());
+                }
             }
 
             SearchResult globalResults = summary.getFireworksResult();
@@ -265,14 +273,28 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         }
         resultsWidgets.get(LOCAL_SEARCH).setFacets(localFacets);
         resultsWidgets.get(GLOBAL_SEARCH).setFacets(globalFacets);
+
+        updateCurrentScopeNumbers(LOCAL_SEARCH, localFacets);
+        updateCurrentScopeNumbers(GLOBAL_SEARCH, globalFacets);
     }
 
-    private void updateScopeNumbers(SearchSummary summary) {
+    private void updateCurrentScopeNumbers(int buttonIndex, List<FacetContainer> facets) {
+        int current = 0;
+        if (facets!=null) {
+            Set<String> selectedFacets = selectedFacetsMap.getOrDefault(buttonIndex, new HashSet<>());
+            current = facets.stream()
+                    .filter(facetContainer -> selectedFacets.contains(facetContainer.getName()))
+                    .mapToInt(FacetContainer::getCount)
+                    .sum();
+        }
+        scopeBar.setCurrentResultsNumber(buttonIndex, current);
+    }
+
+    private void updateScopeNumbers(SearchSummary summary, List<SearchResultObject> interactors) {
         int localResultsFound = 0, globalResultsFound = 0;
         if (summary!=null) {
             SearchResult localResults = summary.getDiagramResult();
             if (localResults!=null && localResults.getFound()!=null) {
-                List<SearchResultObject> interactors = findInDiagramInteractors(searchArguments, overlayResource);
                 localResultsFound = localResults.getFound() + (interactors !=null ? interactors.size() : 0);
             }
             SearchResult globalResults = summary.getFireworksResult();
@@ -280,8 +302,24 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
                 globalResultsFound = globalResults.getFound();
             }
         }
-        scopeBar.setResultsNumber(LOCAL_SEARCH, localResultsFound);
-        scopeBar.setResultsNumber(GLOBAL_SEARCH, globalResultsFound);
+        scopeBar.setTotalResultsNumber(LOCAL_SEARCH, localResultsFound);
+        scopeBar.setTotalResultsNumber(GLOBAL_SEARCH, globalResultsFound);
+    }
+
+    private List<FacetContainer> includeInteractorFacet(List<FacetContainer> facets, final int count) {
+        List<FacetContainer> rtn = new ArrayList<>(facets);
+        rtn.add(new FacetContainer() {
+            @Override
+            public String getName() {
+                return "Interactor";
+            }
+
+            @Override
+            public Integer getCount() {
+                return count;
+            }
+        });
+        return rtn;
     }
 
     private void show(boolean visible) {
