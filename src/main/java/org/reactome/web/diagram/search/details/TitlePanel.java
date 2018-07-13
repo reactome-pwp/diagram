@@ -77,7 +77,7 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
             eventBus.fireEventFromSource(new DiagramObjectsFlagResetEvent(), this);
         } else {
             if (selectedItem instanceof ResultItem) {
-                eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(((ResultItem) selectedItem).getStId()), this);
+                eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(((ResultItem) selectedItem).getIdentifier()), this);
             } else if (selectedItem instanceof InteractorSearchResult) {
                 eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(((InteractorSearchResult) selectedItem).getAccession()), this);
             }

@@ -22,4 +22,8 @@ public interface Entry {
     String getDatabaseName();
 
     String getReferenceURL();
+
+    default String getIdentifier() {
+        return getStId()!=null ? getStId() : getId();
+    }
 }
