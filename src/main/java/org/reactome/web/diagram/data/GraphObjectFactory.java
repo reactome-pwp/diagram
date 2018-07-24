@@ -49,6 +49,7 @@ public abstract class GraphObjectFactory {
             case DEPOLYMERISATION:                  dbObject = new GraphDepolymerisation((EventNode) node);                 break;
             case FAILED_REACTION:                   dbObject = new GraphFailedReaction((EventNode) node);                   break;
             case POLYMERISATION:                    dbObject = new GraphPolymerisation((EventNode) node);                   break;
+            case PROTEIN_DRUG:                      dbObject = new GraphProteinDrug((EntityNode) node);                     break;
             case REACTION:                          dbObject = new GraphReaction((EventNode) node);                         break;
             case GO_CELLULAR_COMPONENT:             dbObject = new GraphGO_CellularComponent((EntityNode) node);            break;
             case COMPARTMENT:                       dbObject = new GraphCompartment((EntityNode) node);                     break;

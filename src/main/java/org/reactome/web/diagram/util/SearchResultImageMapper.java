@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.util;
 
 import com.google.gwt.resources.client.ImageResource;
+import org.reactome.web.diagram.data.graph.model.images.GraphObjectImages;
 import org.reactome.web.diagram.data.interactors.model.images.InteractorImages;
 import org.reactome.web.pwp.model.client.factory.DatabaseObjectImages;
 
@@ -14,6 +15,7 @@ public abstract class SearchResultImageMapper {
     private final static ImageContainer reaction = new ImageContainer(INSTANCE.reaction(), "Reaction");
     private final static ImageContainer genomeEncodeEntity = new ImageContainer(INSTANCE.genomeEncodeEntity(), "Genome Encoded Entity");
     private final static ImageContainer protein = new ImageContainer(INSTANCE.entityWithAccessionedSequence(), "Protein");
+    private final static ImageContainer proteinDrug = new ImageContainer(GraphObjectImages.INSTANCE.proteinDrug(), "Protein drug"); //TODO check the icon for protein drugs in the model
     private final static ImageContainer complex = new ImageContainer(INSTANCE.complex(), "Complex");
     private final static ImageContainer set = new ImageContainer(INSTANCE.entitySet(), "Set");
     private final static ImageContainer interactor = new ImageContainer(InteractorImages.INSTANCE.interactor(), "Interactor"); //TODO check the icon for interactors in the model
@@ -23,7 +25,7 @@ public abstract class SearchResultImageMapper {
     private final static ImageContainer rnaSequence = new ImageContainer(INSTANCE.referenceRNASequence(), "RNA sequence");
     private final static ImageContainer regulation = new ImageContainer(INSTANCE.regulator(), "Regulation");
     private final static ImageContainer simpleEntity = new ImageContainer(INSTANCE.simpleEntity(), "Chemical compound");
-    private final static ImageContainer chemicalDrug = new ImageContainer(INSTANCE.chemicalDrug(), "Chemical drug");
+    private final static ImageContainer chemicalDrug = new ImageContainer(GraphObjectImages.INSTANCE.chemicalDrug(), "Chemical drug"); //TODO check the icon for chemical drugs in the model
     private final static ImageContainer otherEntity = new ImageContainer(INSTANCE.otherEntity(), "Other Entity");
     private final static ImageContainer exclamation = new ImageContainer(INSTANCE.exclamation(), "");
 
@@ -59,6 +61,8 @@ public abstract class SearchResultImageMapper {
                 case "protein":
                 case "referencegeneproduct":
                     return protein;
+                case "proteindrug":
+                    return proteinDrug;
                 case "complex":
                     return complex;
                 case "set":
