@@ -16,7 +16,6 @@ import org.reactome.web.diagram.search.autocomplete.AutoCompleteResult;
  *
  */
 public class AutoCompleteCell extends AbstractCell<AutoCompleteResult> {
-
     private final static String TOOLTIP = "Click this to search for ";
 
     interface Templates extends SafeHtmlTemplates {
