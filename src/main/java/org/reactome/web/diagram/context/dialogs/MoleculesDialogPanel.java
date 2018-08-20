@@ -41,17 +41,17 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
     private Double max;
     private int selectedExpCol = 0;
 
-    private List<GraphEntityWithAccessionedSequence> proteins = new LinkedList<>();
-    private List<GraphSimpleEntity> chemicals = new LinkedList<>();
-    private List<GraphGenomeEncodedEntity> dnas = new LinkedList<>();
-    private List<GraphPolymer> polymers = new LinkedList<>();
-    private List<GraphOtherEntity> others = new LinkedList<>();
+    private List<GraphPhysicalEntity> proteins = new LinkedList<>();
+    private List<GraphPhysicalEntity> chemicals = new LinkedList<>();
+    private List<GraphPhysicalEntity> dnas = new LinkedList<>();
+    private List<GraphPhysicalEntity> polymers = new LinkedList<>();
+    private List<GraphPhysicalEntity> others = new LinkedList<>();
 
-    private MoleculesTable<GraphEntityWithAccessionedSequence> proteinsTable;
-    private MoleculesTable<GraphSimpleEntity> chemicalsTable;
-    private MoleculesTable<GraphGenomeEncodedEntity> dnasTable;
-    private MoleculesTable<GraphPolymer> polymersTable;
-    private MoleculesTable<GraphOtherEntity> othersTable;
+    private MoleculesTable<GraphPhysicalEntity> proteinsTable;
+    private MoleculesTable<GraphPhysicalEntity> chemicalsTable;
+    private MoleculesTable<GraphPhysicalEntity> dnasTable;
+    private MoleculesTable<GraphPhysicalEntity> polymersTable;
+    private MoleculesTable<GraphPhysicalEntity> othersTable;
 
     public MoleculesDialogPanel(EventBus eventBus, DiagramObject diagramObject, AnalysisStatus analysisStatus) {
         this.eventBus = eventBus;
@@ -189,16 +189,16 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         others = new LinkedList<>();
 
         for (GraphPhysicalEntity participant : participants) {
-            if (participant instanceof GraphSimpleEntity) {
-                chemicals.add((GraphSimpleEntity) participant);
-            } else if (participant instanceof GraphEntityWithAccessionedSequence) {
-                proteins.add((GraphEntityWithAccessionedSequence) participant);
+            if (participant instanceof GraphSimpleEntity || participant instanceof GraphChemicalDrug) {
+                chemicals.add(participant);
+            } else if (participant instanceof GraphEntityWithAccessionedSequence || participant instanceof GraphProteinDrug) {
+                proteins.add(participant);
             } else if (participant instanceof GraphGenomeEncodedEntity) {
-                dnas.add((GraphGenomeEncodedEntity) participant);
+                dnas.add(participant);
             } else if (participant instanceof GraphPolymer){
-                polymers.add((GraphPolymer) participant);
+                polymers.add(participant);
             } else {
-                others.add((GraphOtherEntity) participant);
+                others.add(participant);
             }
         }
     }
