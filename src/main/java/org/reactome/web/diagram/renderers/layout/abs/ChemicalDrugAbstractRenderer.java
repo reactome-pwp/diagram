@@ -95,9 +95,9 @@ public abstract class ChemicalDrugAbstractRenderer extends NodeAbstractRenderer 
     }
 
     public void rx(AdvancedContext2d ctx, NodeProperties prop) {
-        double rxX = prop.getX() + prop.getWidth() - RendererProperties.CHEMICAL_DRUG_RX_BOX * 2;
-        double rxY = prop.getY() + prop.getHeight() - RendererProperties.CHEMICAL_DRUG_RX_BOX;
-        ctx.rect(rxX, rxY, RendererProperties.CHEMICAL_DRUG_RX_BOX * 2, RendererProperties.CHEMICAL_DRUG_RX_BOX);
+        double rxX = prop.getX() + prop.getWidth() - RendererProperties.DRUG_RX_BOX * 2;
+        double rxY = prop.getY() + prop.getHeight() - RendererProperties.DRUG_RX_BOX;
+        ctx.rect(rxX, rxY, RendererProperties.DRUG_RX_BOX * 2, RendererProperties.DRUG_RX_BOX);
     }
 
     public void rxText(AdvancedContext2d ctx, NodeProperties prop, double factor) {

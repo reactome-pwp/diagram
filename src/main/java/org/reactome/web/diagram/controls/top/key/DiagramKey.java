@@ -42,7 +42,7 @@ public class DiagramKey extends AbstractMenuDialog implements GraphObjectHovered
     private static final Double FACTOR = 0.82;
     private static final Coordinate OFFSET = CoordinateFactory.get(0, 0);
     private static final int WIDTH = 195;
-    private static final int HEIGHT = 285;
+    private static final int HEIGHT = 365;
 
     private static final String USER_GUIDE_URL = DiagramFactory.SERVER + "/user/guide/pathway-browser";
 

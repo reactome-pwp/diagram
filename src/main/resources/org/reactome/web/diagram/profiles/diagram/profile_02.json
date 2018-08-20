@@ -92,6 +92,17 @@
     "fadeOutText": "#2020FF",
     "lighterText": "#1010FF"
   },
+  "entitysetdrug": {
+    "fill": "#DBB2B2",
+    "fadeOutFill": "#D2CC97",
+    "lighterFill": "#DEE7C8",
+    "stroke": "#FF0A0A",
+    "fadeOutStroke": "#BFC78F",
+    "lighterStroke": "#9DBF91",
+    "text": "#A00000",
+    "fadeOutText": "#2020FF",
+    "lighterText": "#1010FF"
+  },
   "flowline": {
     "fill": "#000000",
     "fadeOutFill": "#6C6C6C",
@@ -194,6 +205,17 @@
     "fadeOutText": "#2020FF",
     "lighterText": "#1010FF"
   },
+  "proteindrug": {
+    "fill": "#EDACAC",
+    "fadeOutFill": "#D2CC97",
+    "lighterFill": "#DEE7C8",
+    "stroke": "#FF0A0A",
+    "fadeOutStroke": "#BFC78F",
+    "lighterStroke": "#9DBF91",
+    "text": "#A00000",
+    "fadeOutText": "#2020FF",
+    "lighterText": "#1010FF"
+  },
   "reaction": {
     "fill": "#FFFFFF",
     "fadeOutFill": "#6E6E6E",
@@ -214,6 +236,17 @@
     "fadeOutStroke": "#BFC78F",
     "lighterStroke": "#9DBF91",
     "text": "#0000FF",
+    "fadeOutText": "#2020FF",
+    "lighterText": "#1010FF"
+  },
+  "rnadrug": {
+    "fill": "#B89AE6",
+    "fadeOutFill": "#D2CC97",
+    "lighterFill": "#DEE7C8",
+    "stroke": "#9E74DE",
+    "fadeOutStroke": "#BFC78F",
+    "lighterStroke": "#9DBF91",
+    "text": "#A00000",
     "fadeOutText": "#2020FF",
     "lighterText": "#1010FF"
   },

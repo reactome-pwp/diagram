@@ -44,6 +44,8 @@ public class ProteinDrugRenderer300 extends ProteinDrugAbstractRenderer {
         double h = node.getProp().getHeight();
         if (h >= 35 && w >= h * 1.5) {
             drawProteinDetails(ctx, node, factor, offset, 6.33 * factor);
+            NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+            rxText(ctx, prop, factor);
         } else {
             super.drawText(ctx, item, factor, offset);
         }

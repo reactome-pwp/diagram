@@ -717,10 +717,13 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
             case "Protein":             rtn = this.entities;            break;
             case "Chemical":            rtn = this.entities;            break;
             case "ChemicalDrug":        rtn = this.entities;            break;
+            case "ProteinDrug":         rtn = this.entities;            break;
+            case "RNADrug":             rtn = this.entities;            break;
             case "Reaction":            rtn = this.reactions;           break;
             case "Complex":             rtn = this.entities;            break;
             case "Entity":              rtn = this.entities;            break;
             case "EntitySet":           rtn = this.entities;            break;
+            case "EntitySetDrug":       rtn = this.entities;            break;
             case "ProcessNode":         rtn = this.entities;            break;
             case "EncapsulatedNode":    rtn = this.entities;            break;
             case "FlowLine":            rtn = this.entities;            break;
