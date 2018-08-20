@@ -27,6 +27,8 @@ public interface DiagramProfile extends Serializable {
 
     DiagramProfileNode getEntityset();
 
+    DiagramProfileNode getEntitysetdrug();
+
     DiagramProfileNode getFlowline();
 
     DiagramProfileNode getGene();
@@ -45,9 +47,13 @@ public interface DiagramProfile extends Serializable {
 
     DiagramProfileNode getProtein();
 
+    DiagramProfileNode getProteindrug();
+
     DiagramProfileNode getReaction();
 
     DiagramProfileNode getRna();
+
+    DiagramProfileNode getRnadrug();
 
     DiagramProfileNode getStoichiometry();
 
