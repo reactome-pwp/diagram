@@ -95,6 +95,7 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s000.put("Complex", new ComplexRenderer000());
         s000.put("Entity", new OtherEntityRenderer000());
         s000.put("EntitySet", new SetRenderer000());
+        s000.put("EntitySetDrug", new SetDrugRenderer000());
         s000.put("ProcessNode", new ProcessNodeRenderer000());
         s000.put("EncapsulatedNode", new EncapsulatedNodeRenderer000());
         s000.put("FlowLine", new FlowlineRenderer000());
@@ -117,6 +118,7 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s050.put("Complex", new ComplexRenderer050());
         s050.put("Entity", new OtherEntityRenderer050());
         s050.put("EntitySet", new SetRenderer050());
+        s050.put("EntitySetDrug", new SetDrugRenderer050());
         s050.put("ProcessNode", new ProcessNodeRenderer050());
         s050.put("EncapsulatedNode", new EncapsulatedNodeRenderer050());
         s050.put("FlowLine", new FlowlineRenderer050());
@@ -139,6 +141,7 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s100.put("Complex", new ComplexRenderer100());
         s100.put("Entity", new OtherEntityRenderer100());
         s100.put("EntitySet", new SetRenderer100());
+        s100.put("EntitySetDrug", new SetDrugRenderer100());
         s100.put("ProcessNode", new ProcessNodeRenderer100());
         s100.put("EncapsulatedNode", new EncapsulatedNodeRenderer100());
         s100.put("FlowLine", new FlowlineRenderer100());
@@ -161,6 +164,7 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s300.put("Complex", new ComplexRenderer300());
         s300.put("Entity", new OtherEntityRenderer300());
         s300.put("EntitySet", new SetRenderer300());
+        s300.put("EntitySetDrug", new SetDrugRenderer300());
         s300.put("ProcessNode", new ProcessNodeRenderer300());
         s300.put("EncapsulatedNode", new EncapsulatedNodeRenderer300());
         s300.put("FlowLine", new FlowlineRenderer300());
@@ -184,6 +188,7 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s800.put("Complex", new ComplexRenderer800());
         s800.put("Entity", new OtherEntityRenderer800());
         s800.put("EntitySet", new SetRenderer800());
+        s800.put("EntitySetDrug", new SetDrugRenderer800());
         s800.put("ProcessNode", new ProcessNodeRenderer800());
         s800.put("EncapsulatedNode", new EncapsulatedNodeRenderer800());
         s800.put("FlowLine", new FlowlineRenderer800());
