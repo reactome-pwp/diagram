@@ -56,7 +56,7 @@ public abstract class CompartmentAbstractRenderer extends AbstractRenderer {
 
     public boolean isInsetsNeeded(Compartment compartment) {
         String name = compartment.getDisplayName();
-        return name != null && !name.endsWith("membrane");
+        return name != null && !name.endsWith("membrane") && !name.equals("Unidentified Compartment");
     }
 
     @Override
