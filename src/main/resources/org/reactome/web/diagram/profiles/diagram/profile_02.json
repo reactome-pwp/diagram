@@ -94,11 +94,11 @@
   },
   "entitysetdrug": {
     "fill": "#DBB2B2",
-    "fadeOutFill": "#D2CC97",
-    "lighterFill": "#DEE7C8",
+    "fadeOutFill": "#C1A6A6",
+    "lighterFill": "#EFDCDC",
     "stroke": "#5E0B12",
-    "fadeOutStroke": "#BFC78F",
-    "lighterStroke": "#9DBF91",
+    "fadeOutStroke": "#6D131B",
+    "lighterStroke": "#A0131E",
     "text": "#A00000",
     "fadeOutText": "#2020FF",
     "lighterText": "#1010FF"
@@ -207,11 +207,11 @@
   },
   "proteindrug": {
     "fill": "#EDACAC",
-    "fadeOutFill": "#D2CC97",
-    "lighterFill": "#DEE7C8",
+    "fadeOutFill": "#D8A0A0",
+    "lighterFill": "#FBEAEA",
     "stroke": "#5E0B12",
-    "fadeOutStroke": "#BFC78F",
-    "lighterStroke": "#9DBF91",
+    "fadeOutStroke": "#6D131B",
+    "lighterStroke": "#A0131E",
     "text": "#A00000",
     "fadeOutText": "#2020FF",
     "lighterText": "#1010FF"

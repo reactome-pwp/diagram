@@ -94,8 +94,8 @@
   },
   "entitysetdrug": {
     "fill": "#C6ABD4",
-    "fadeOutFill": "#CCDECC",
-    "lighterFill": "#E2FFE2",
+    "fadeOutFill": "#B1A1BA",
+    "lighterFill": "#E8EEEE",
     "stroke": "#000000",
     "fadeOutStroke": "#6C6C6C",
     "lighterStroke": "#000000",
