@@ -9,7 +9,7 @@
 
 .content {
     overflow: hidden;
-    height: 150px;
+    height: 110px;
 
     box-sizing: content-box !important;
     line-height: normal !important;
