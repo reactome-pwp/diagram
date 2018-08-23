@@ -11,8 +11,10 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.*;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
 import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.ContentLoadedEvent;
@@ -69,6 +71,8 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     private FlowPanel spinner;
 
     private List<Widget> resultWidgets = new ArrayList<>();
+
+    private final OverlayResource staticResource = new OverlayResource(DiagramFactory.INTERACTORS_INITIAL_RESOURCE, DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME, OverlayResource.ResourceType.STATIC);
 
     public DetailsInfoPanel(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -147,6 +151,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
 
     @Override
     public void onResultSelected(ResultSelectedEvent event) {
+        Console.info(event.toString());
         selectedResultItem = event.getSelectedResultItem();
 
         clearMainPanel();
@@ -157,9 +162,15 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
             show(false);
         } else if (LOCAL == event.getResultType()) {
             if (selectedResultItem instanceof ResultItem) {
-                LocalOccurrencesFactory.searchForInstanceInDiagram(((ResultItem) selectedResultItem).getStId(), args.getDiagramStId(), this);
+                ResultItem item = (ResultItem) selectedResultItem;
+                if(item.getExactType().equals("Interactor")) {
+                    populateWithInteractor(item);
+                    show(true);
+                } else {
+                    LocalOccurrencesFactory.searchForInstanceInDiagram(item.getStId(), args.getDiagramStId(), this);
+                }
             } else if (selectedResultItem instanceof InteractorSearchResult) {
-                populateWithInteractor();
+                populateWithInteractor((InteractorSearchResult) selectedResultItem);
                 show(true);
             }
         } else if (GLOBAL == event.getResultType()) {
@@ -265,14 +276,10 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         if (occurrences.getInDiagram()) {
             //Selected entity is inside the diagram
             GraphObject graphObject = context.getContent().getDatabaseObject(selection.getStId());
-            if(graphObject == null ) { //TODO check this
-//                Console.info(">>>> graphObject null: " + ((ResultItem) selectedResultItem).getStId()  );
-                return;
-            }
-            includeResultWidget(new DatabaseObjectListPanel("Directly in the diagram:", Collections.singletonList(graphObject), eventBus));
 
             Collection<GraphReactionLikeEvent> participatesIn = new HashSet<>();
-            if(graphObject!=null && !graphObject.getDiagramObjects().isEmpty()){
+            if(graphObject != null && !graphObject.getDiagramObjects().isEmpty()){
+                includeResultWidget(new DatabaseObjectListPanel("Directly in the diagram:", Collections.singletonList(graphObject), eventBus));
 
                 if(graphObject instanceof GraphPhysicalEntity) {
                     participatesIn = ((GraphPhysicalEntity) graphObject).participatesIn();
@@ -343,11 +350,20 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
                     .collect(Collectors.toList());
             includeResultWidget(new DatabaseObjectListPanel("Inside interacting pathway" + (list.size()>1 ? "s:" : ":"), list, eventBus));
         }
+
+        List<String> interactsWithList = occurrences.getInteractsWith();
+        if (interactsWithList != null && !interactsWithList.isEmpty()){
+            //Selected entity is inside an encapsulated "Interacting" pathway
+            Collection<GraphObject> list = interactsWithList.stream()
+                    .map(occ -> context.getContent().getDatabaseObject(occ))
+                    .collect(Collectors.toList());
+            int size = interactsWithList.size();
+            includeResultWidget(new DatabaseObjectListPanel("Interacts with " + size + " diagram entit" + (size > 1 ? "ies" : "y"), list, eventBus));
+        }
+
     }
 
-    private void populateWithInteractor() {
-        InteractorSearchResult selection = (InteractorSearchResult) selectedResultItem;
-
+    private void populateWithInteractor(InteractorSearchResult selection) {
         MapSet<Long, GraphObject> interactsWith = selection.getInteractsWith();
         for(Long interactionId:interactsWith.keySet()) {
             Set<GraphObject> interactors = new HashSet<>();
@@ -367,6 +383,15 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
                 title = title + "score: " + (score!=null ? NumberFormat.getFormat("0.000").format(score): "-") + " " + evidences;
                 includeResultWidget(new DatabaseObjectListPanel(title, interactors, eventBus));
             }
+        }
+    }
+
+    private void populateWithInteractor(ResultItem selection) {
+        List<SearchResultObject> rtn = context.getInteractors().queryForInteractors(staticResource, context.getContent(), selection.getIdentifier().toLowerCase());
+        if(rtn != null && rtn.size() == 1) {
+            populateWithInteractor((InteractorSearchResult) rtn.get(0));
+        } else {
+            Console.error("Ambiguous result... " + rtn.size());
         }
     }
 

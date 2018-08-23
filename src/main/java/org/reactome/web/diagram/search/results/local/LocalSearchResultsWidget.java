@@ -118,7 +118,7 @@ public class LocalSearchResultsWidget extends Composite implements ResultsWidget
             arguments = args;
             this.overlayResource = overlayResource;
 
-            dataProvider.setSearchArguments(args, selectedFacets, PREFIX);
+            dataProvider.setSearchArguments(args, selectedFacets, overlayResource, PREFIX);
             dataProvider.setExtraItemsToShow(null);
 
             //Include the results of the search in the interactors (by searching inside the graph)

@@ -20,9 +20,9 @@ import org.reactome.web.diagram.data.loader.FlaggedElementsLoader;
 import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
+import org.reactome.web.diagram.search.results.data.model.Occurrences;
 import org.reactome.web.diagram.util.Console;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -207,21 +207,34 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     }
 
     @Override
-    public void flaggedElementsLoaded(String term, Collection<String> toFlag, boolean notify) {
+    public void flaggedElementsLoaded(String term, Occurrences toFlag, boolean notify) {
         Set<DiagramObject> flagged = new HashSet<>();
-        for (String stId : toFlag) {
-            GraphObject graphObject = context.getContent().getDatabaseObject(stId);
-            if (graphObject != null) {
-                flagged.addAll(graphObject.getDiagramObjects());
-                //Next step gets all glyph in the diagram containing the target object
-                if (graphObject instanceof GraphPhysicalEntity) {
-                    GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
-                    for (GraphPhysicalEntity parentLocation : pe.getParentLocations()) {
-                        flagged.addAll(parentLocation.getDiagramObjects());
+        if(toFlag != null && toFlag.getOccurrences() != null) {
+            for (String stId : toFlag.getOccurrences()) {
+                GraphObject graphObject = context.getContent().getDatabaseObject(stId);
+                if (graphObject != null) {
+                    flagged.addAll(graphObject.getDiagramObjects());
+                    //Next step gets all glyph in the diagram containing the target object
+                    if (graphObject instanceof GraphPhysicalEntity) {
+                        GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
+                        for (GraphPhysicalEntity parentLocation : pe.getParentLocations()) {
+                            flagged.addAll(parentLocation.getDiagramObjects());
+                        }
                     }
                 }
             }
         }
+
+        //Flag those diagram entities that interact with the term
+        if(toFlag != null && toFlag.getInteractsWith() != null) {
+            for (String stId : toFlag.getInteractsWith()) {
+                GraphObject graphObject = context.getContent().getDatabaseObject(stId);
+                if (graphObject != null) {
+                    flagged.addAll(graphObject.getDiagramObjects());
+                }
+            }
+        }
+
         context.setFlagged(term, flagged);
         eventBus.fireEventFromSource(new DiagramObjectsFlaggedEvent(term, flagged, notify), this);
     }

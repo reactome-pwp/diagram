@@ -13,6 +13,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.view.client.ProvidesKey;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.InteractorSearchResult;
@@ -71,8 +72,9 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
     private SearchArguments previousSearchArguments;
 
     private OverlayResource overlayResource;
-
     private Map<Integer, Set<String>> selectedFacetsMap = new HashMap<>();
+
+    private boolean isSearchExpanded = false;
 
     /**
      * The key provider that provides the unique ID of a SearchResult.
@@ -85,7 +87,7 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
             return resultItem.getId();
         } else if (item instanceof InteractorSearchResult) {
             InteractorSearchResult interactorSearchResult = (InteractorSearchResult) item;
-            return interactorSearchResult.getAccession();
+            return interactorSearchResult.getAccession() + interactorSearchResult.getResource();
         }
         return null;
     };
@@ -156,10 +158,11 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         if(context != null && context.getInteractors() != null) {
             if(context.getInteractors().isResourceLoaded(event.getResource().getIdentifier())) {
                 overlayResource = event.getResource();
-                List<SearchResultObject> interactors = findInDiagramInteractors(searchArguments, overlayResource);
-                updateScopeNumbers(summary, interactors);
-                updateFacets(summary, interactors);
-                updateResult();
+                List<SearchResultObject> extraInteractors = isStaticResourceLoaded() ? null : findInDiagramInteractors(searchArguments, overlayResource);
+                updateScopeNumbers(summary, extraInteractors);
+                updateFacets(summary, extraInteractors);
+                updateResult(overlayResource, extraInteractors);
+
             }
         }
     }
@@ -168,20 +171,20 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
         overlayResource = LoaderManager.INTERACTORS_RESOURCE;
         if(context != null && context.getInteractors() != null) {
-            List<SearchResultObject> interactors = findInDiagramInteractors(searchArguments, overlayResource);
+            List<SearchResultObject> interactors = isStaticResourceLoaded() ? null : findInDiagramInteractors(searchArguments, overlayResource);
             updateScopeNumbers(summary, interactors);
             updateFacets(summary, interactors);
-            updateResult();
+            updateResult(overlayResource, interactors);
         }
     }
 
     @Override
     public void onSearchSummaryReceived(SearchSummary summary) {
         this.summary = summary;
-        List<SearchResultObject> interactors = findInDiagramInteractors(searchArguments, overlayResource);
+        List<SearchResultObject> interactors = isStaticResourceLoaded() ? null : findInDiagramInteractors(searchArguments, overlayResource);
         updateScopeNumbers(summary, interactors);
         updateFacets(summary, interactors);
-        updateResult();
+        updateResult(overlayResource, interactors);
     }
 
     @Override
@@ -190,7 +193,7 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         summary = null;
         updateScopeNumbers(null, null);
         updateFacets(null, null);
-        updateResult();
+        updateResult(overlayResource, null);
     }
 
     @Override
@@ -217,22 +220,24 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
     @Override
     public void onScopeChanged(int selected) {
         setActiveResultsWidget(selected);
-        updateResult();
+        updateResult(overlayResource, null);
     }
 
     @Override
     public void onPanelCollapsed(PanelCollapsedEvent event) {
         super.onPanelCollapsed(event);
+        isSearchExpanded = false;
     }
 
     @Override
     public void onPanelExpanded(PanelExpandedEvent event) {
         show(searchArguments != null);
+        isSearchExpanded = true;
     }
 
-    private void updateResult() {
-        show(searchArguments != null && searchArguments.hasValidQuery());
-        activeResultWidget.updateResults(searchArguments, overlayResource, findInDiagramInteractors(searchArguments, overlayResource));
+    private void updateResult(OverlayResource overlayResource, List<SearchResultObject> interactors) {
+        show(isSearchExpanded && searchArguments != null && searchArguments.hasValidQuery());
+        activeResultWidget.updateResults(searchArguments, overlayResource, interactors);
     }
 
     private void clearSelection() {
@@ -261,7 +266,7 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
                 localFacets = localResults.getFacets()!=null ? localResults.getFacets() : new ArrayList<>();
 
                 if(interactors!=null) {
-                    //Include the Interactor facet in the facets received by the server
+                    // Include the Interactor facet in the facets received by the server
                     localFacets = includeInteractorFacet(localFacets, interactors.size());
                 }
             }
@@ -306,8 +311,15 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
         scopeBar.setTotalResultsNumber(GLOBAL_SEARCH, globalResultsFound);
     }
 
-    private List<FacetContainer> includeInteractorFacet(List<FacetContainer> facets, final int count) {
+    private List<FacetContainer> includeInteractorFacet(List<FacetContainer> facets, int count) {
         List<FacetContainer> rtn = new ArrayList<>(facets);
+        Optional<FacetContainer> interactorFacet = rtn.stream().filter(f -> f.getName().equals("Interactor")).findAny();
+
+        if (interactorFacet.isPresent()) { //We need to add up the number of interactors provided by the API
+            count += interactorFacet.get().getCount();
+        }
+
+        int finalCount = count;
         rtn.add(new FacetContainer() {
             @Override
             public String getName() {
@@ -316,7 +328,7 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
 
             @Override
             public Integer getCount() {
-                return count;
+                return finalCount;
             }
         });
         return rtn;
@@ -339,6 +351,10 @@ public class ResultsPanel extends AbstractAccordionPanel implements ScopeBarPane
             }
         }
         return rtn;
+    }
+
+    private boolean isStaticResourceLoaded() {
+        return overlayResource.getIdentifier().equalsIgnoreCase(DiagramFactory.INTERACTORS_INITIAL_RESOURCE);
     }
 
     public static Resources RESOURCES;

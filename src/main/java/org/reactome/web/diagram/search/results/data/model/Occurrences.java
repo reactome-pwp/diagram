@@ -7,7 +7,9 @@ import java.util.List;
  */
 public interface Occurrences {
 
+    boolean getInDiagram();
+
     List<String> getOccurrences();
 
-    boolean getInDiagram();
+    List<String> getInteractsWith();
 }

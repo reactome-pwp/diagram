@@ -44,7 +44,7 @@ public class ResultSelectedEvent extends GwtEvent<ResultSelectedHandler> {
     @Override
     public String toString() {
         return "ResultSelectedEvent{" +
-                "selectedResultItem=" + selectedResultItem.getPrimarySearchDisplay() +
+                "selectedResultItem=" + (selectedResultItem!=null ? selectedResultItem.getPrimarySearchDisplay() : "null" )+
                 ", resultType=" + resultType +
                 '}';
     }

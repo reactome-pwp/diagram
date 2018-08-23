@@ -2,6 +2,7 @@ package org.reactome.web.diagram.search.results;
 
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.resources.client.ImageResource;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.results.data.model.Entry;
@@ -26,6 +27,7 @@ public class ResultItem implements SearchResultObject, Entry {
     private String referenceIdentifier;
     private String databaseName;
     private String referenceURL;
+    private String resource;
 
     private String primary;
     private String primaryTooltip;
@@ -44,6 +46,11 @@ public class ResultItem implements SearchResultObject, Entry {
         referenceIdentifier = entry.getReferenceIdentifier();
         databaseName = entry.getDatabaseName();
         referenceURL = entry.getReferenceURL();
+
+        // Note: All interactors coming from the server are from IntAct/Static
+        if (exactType.equalsIgnoreCase("Interactor")) {
+            resource = DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME;
+        }
 
         setCompartments(compartmentNames);
 
@@ -99,6 +106,10 @@ public class ResultItem implements SearchResultObject, Entry {
         return referenceURL;
     }
 
+    public String getResource() {
+        return resource;
+    }
+
     @Override
     public String getPrimarySearchDisplay() {
         return primary;
@@ -124,7 +135,7 @@ public class ResultItem implements SearchResultObject, Entry {
         primary = name;
         primaryTooltip = name;
         secondary = stId != null ? stId : dbId;
-        tertiary = compartments;
+        tertiary = exactType.equalsIgnoreCase("Interactor") ? resource : compartments;
 
         isDisplayed = (arguments.getDiagramStId().equalsIgnoreCase(stId));
 
