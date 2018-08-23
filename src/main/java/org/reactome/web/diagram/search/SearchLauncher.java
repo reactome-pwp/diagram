@@ -182,9 +182,6 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
     @Override
     public void onContentRequested(ContentRequestedEvent event) {
-//        this.input.setValue(""); // Clear searchbox value and fire the proper event
-//        optionsBtn.setEnabled(false);
-//        this.collapsePanel();
         this.context = null;
     }
 
@@ -201,7 +198,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
             }
         }
 
-        if(!this.input.getText().isEmpty() && isExpanded) {
+        if(!this.input.getText().isEmpty()) {
             performSearch();
         }
     }
