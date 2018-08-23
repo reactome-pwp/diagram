@@ -83,6 +83,9 @@ public interface GraphObjectImages extends ClientBundle {
     @Source("ReferenceRNASequence.png")
     ImageResource referenceRNASequence();
 
+    @Source("ReferenceRNASequence.png")
+    ImageResource referenceRNADrugSequence();
+
     @Source("SimpleEntity.png")
     ImageResource simpleEntity();
 
