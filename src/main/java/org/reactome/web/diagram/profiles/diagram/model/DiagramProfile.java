@@ -22,6 +22,8 @@ public interface DiagramProfile extends Serializable {
 
     DiagramProfileNode getComplex();
 
+    DiagramProfileNode getComplexdrug();
+
     @Deprecated
     DiagramProfileNode getEntity();
 

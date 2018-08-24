@@ -70,6 +70,18 @@
     "fadeOutText": "#000000",
     "lighterText": "#000000"
   },
+  "complexdrug": {
+    "fill": "#ABACD0",
+    "fadeOutFill": "#CCDECC",
+    "lighterFill": "#E2FFE2",
+    "stroke": "#000000",
+    "fadeOutStroke": "#6C6C6C",
+    "lighterStroke": "#000000",
+    "lineWidth": "0.5",
+    "text": "#A00000",
+    "fadeOutText": "#000000",
+    "lighterText": "#000000"
+  },
   "entity": {
     "fill": "#CCFFCC",
     "fadeOutFill": "#CCDECC",
