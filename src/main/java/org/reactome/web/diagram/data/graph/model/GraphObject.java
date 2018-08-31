@@ -46,7 +46,7 @@ public abstract class GraphObject implements Comparable<GraphObject>, SearchResu
     }
 
     public boolean addDiagramObject(DiagramObject diagramObject) {
-        if (diagramObject.getIsFadeOut() != null) return false;
+        if (diagramObject.getIsFadeOut() != null && diagramObject.getIsFadeOut()) return false;
         return this.diagramObjects.add(diagramObject);
     }
 
