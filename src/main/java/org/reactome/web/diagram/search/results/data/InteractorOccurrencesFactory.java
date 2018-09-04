@@ -18,13 +18,13 @@ import java.util.List;
  *
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public abstract class InteractorOccurencesFactory {
+public abstract class InteractorOccurrencesFactory {
     private static final String BASE_URL = DiagramFactory.SERVER + "/ContentService/interactors/static/molecule/##QUERY##/pathways?&species=##SPECIES##&onlyDiagrammed=true";
     private static Request request;
 
     public interface Handler {
-        void onInteractorOccurencesReceived(List<Pathway> pathways);
-        void onInteractorOccurencesError(String msg);
+        void onInteractorOccurrencesReceived(List<Pathway> pathways);
+        void onInteractorOccurrencesError(String msg);
     }
 
     public static void query(final String query, final String species, final Handler handler){
@@ -45,20 +45,20 @@ public abstract class InteractorOccurencesFactory {
                 public void onResponseReceived(Request request, Response response) {
                     switch (response.getStatusCode()){
                         case Response.SC_OK:
-                            handler.onInteractorOccurencesReceived(getPathways(response.getText()));
+                            handler.onInteractorOccurrencesReceived(getPathways(response.getText()));
                             break;
                         default:
-                            handler.onInteractorOccurencesError(response.getStatusText());
+                            handler.onInteractorOccurrencesError(response.getStatusText());
                     }
                 }
                 @Override
                 public void onError(Request request, Throwable exception) {
                     Console.error(exception.getCause());
-                    handler.onInteractorOccurencesError(exception.getMessage());
+                    handler.onInteractorOccurrencesError(exception.getMessage());
                 }
             });
         } catch (RequestException ex) {
-            handler.onInteractorOccurencesError(ex.getMessage());
+            handler.onInteractorOccurrencesError(ex.getMessage());
         }
     }
 
