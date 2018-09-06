@@ -60,6 +60,7 @@ public abstract class SearchResultImageMapper {
                     return genomeEncodeEntity;
                 case "protein":
                 case "referencegeneproduct":
+                case "referenceisoform":
                     return protein;
                 case "proteindrug":
                     return proteinDrug;
