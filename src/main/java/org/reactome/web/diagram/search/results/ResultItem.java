@@ -7,6 +7,9 @@ import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.search.results.data.model.Entry;
 import org.reactome.web.diagram.util.SearchResultImageMapper;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.classes.PhysicalEntity;
+import org.reactome.web.pwp.model.client.classes.ReferenceEntity;
 import org.reactome.web.pwp.model.client.factory.SchemaClass;
 
 import java.util.List;
@@ -50,6 +53,27 @@ public class ResultItem implements SearchResultObject, Entry {
         // Note: All interactors coming from the server are from IntAct/Static
         if (exactType.equalsIgnoreCase("Interactor")) {
             resource = DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME;
+        }
+
+        setCompartments(compartmentNames);
+
+        imageContainer = SearchResultImageMapper.getImage(exactType);
+    }
+
+    public ResultItem(DatabaseObject object) {
+        PhysicalEntity pe = object.cast();
+        stId = pe.getStId();
+        dbId = pe.getDbId().toString();
+        name = pe.getDisplayName();
+        exactType = pe.getSchemaClass().name;
+        compartmentNames = pe.getCompartment().stream()
+                                              .map(DatabaseObject::getDisplayName)
+                                              .collect(Collectors.toList());
+        ReferenceEntity re = pe.getReferenceEntity();
+        if (re != null) {
+            referenceIdentifier = re.getIdentifier();
+            databaseName = re.getDatabaseName();
+            referenceURL = re.getUrl();
         }
 
         setCompartments(compartmentNames);

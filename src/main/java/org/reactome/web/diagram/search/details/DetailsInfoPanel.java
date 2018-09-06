@@ -32,13 +32,15 @@ import org.reactome.web.diagram.search.infopanel.EnhancedListPanel;
 import org.reactome.web.diagram.search.infopanel.InteractorsListPanel;
 import org.reactome.web.diagram.search.panels.AbstractAccordionPanel;
 import org.reactome.web.diagram.search.results.ResultItem;
-import org.reactome.web.diagram.search.results.data.InteractorOccurencesFactory;
+import org.reactome.web.diagram.search.results.data.InteractorOccurrencesFactory;
 import org.reactome.web.diagram.search.results.data.model.Occurrences;
 import org.reactome.web.diagram.search.results.data.model.SearchError;
 import org.reactome.web.diagram.search.results.local.LocalOccurrencesFactory;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
 import org.reactome.web.pwp.model.client.classes.Pathway;
+import org.reactome.web.pwp.model.client.classes.Regulation;
 import org.reactome.web.pwp.model.client.common.ContentClientHandler;
 import org.reactome.web.pwp.model.client.content.ContentClient;
 import org.reactome.web.pwp.model.client.content.ContentClientError;
@@ -48,9 +50,6 @@ import org.reactome.web.pwp.model.client.util.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.reactome.web.diagram.search.events.ResultSelectedEvent.ResultType.GLOBAL;
-import static org.reactome.web.diagram.search.events.ResultSelectedEvent.ResultType.LOCAL;
-
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
@@ -59,6 +58,8 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         SearchPerformedHandler, AutoCompleteRequestedHandler,
         LocalOccurrencesFactory.Handler,
         ContentClientHandler.ObjectListLoaded<Pathway> {
+
+    private List<String> regulationTypes = Arrays.asList("regulation", "requirement", "positiveregulation", "negativeregulation");
 
     private EventBus eventBus;
     private Context context;
@@ -120,16 +121,16 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     public void onOccurrencesSuccess(Occurrences occurrences) {
         if (context == null)    return;
 
-        populateWithOccurences(occurrences);
+        populateWithLocalOccurrences(occurrences);
         hideSpinner();
-        show(true);
     }
 
     @Override
     public void onOccurrencesError(SearchError error) {
+        hideSpinner();
         switch(error.getCode()) {
             case Response.SC_NOT_FOUND:
-                // In case of a 404 there are simply no occurences and
+                // In case of a 404 there are simply no occurrences and
                 // we suppress the error.
                 break;
             default:
@@ -147,88 +148,54 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     @Override
     public void onOccurrencesException(String msg) {
         Console.error(msg);
+        hideSpinner();
     }
 
     @Override
     public void onResultSelected(ResultSelectedEvent event) {
-        Console.info(event.toString());
         selectedResultItem = event.getSelectedResultItem();
 
         clearMainPanel();
+        clearResults();
         mainPanel.add(titlePanel.setSelectedItem(selectedResultItem));
         showSpinner();
 
-        if(selectedResultItem == null) {
+        if (selectedResultItem == null) {
             show(false);
-        } else if (LOCAL == event.getResultType()) {
-            if (selectedResultItem instanceof ResultItem) {
-                ResultItem item = (ResultItem) selectedResultItem;
-                if(item.getExactType().equals("Interactor")) {
-                    populateWithInteractor(item);
-                    show(true);
-                } else {
-                    LocalOccurrencesFactory.searchForInstanceInDiagram(item.getStId(), args.getDiagramStId(), this);
-                }
-            } else if (selectedResultItem instanceof InteractorSearchResult) {
-                populateWithInteractor((InteractorSearchResult) selectedResultItem);
-                show(true);
-            }
-        } else if (GLOBAL == event.getResultType()) {
+        } else if (selectedResultItem instanceof ResultItem) {
             ResultItem item = (ResultItem) selectedResultItem;
-            if(item.getExactType().equalsIgnoreCase("interactor")) {
-                InteractorOccurencesFactory.query(((ResultItem) selectedResultItem).getId(), args.getSpecies(), new InteractorOccurencesFactory.Handler() {
+            if(item.getExactType().equalsIgnoreCase("Interactor")) {
+                populateWithLocalInteractor(item);
+                queryForInteractorOccurrences(item);
+            } else if(regulationTypes.contains(item.getExactType().toLowerCase())) {
+                ContentClient.query(item.getStId(), new ObjectLoaded<DatabaseObject>() {
                     @Override
-                    public void onInteractorOccurencesReceived(List<Pathway> pathways) {
-                        clearResults();
-                        if(pathways != null && !pathways.isEmpty()) {
-                            int size = pathways.size();
-                            includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus, context.getContent()));
-                            show(true);
-                        }
-                    }
-
-                    @Override
-                    public void onInteractorOccurencesError(String msg) {
-                        show(false);
-                        includeResultWidget(new Label("An error has occurred. ERROR: " + msg));
-                    }
-                });
-            } else {
-                ContentClient.getAncestors(item.getStId(), new AncestorsLoaded() {
-                    @Override
-                    public void onAncestorsLoaded(Ancestors ancestors) {
-                        if (context == null) return;
-
-                        Set<Pathway> pathways = new HashSet<>();
-                        for (Path ancestor : ancestors) {
-                            pathways.add(ancestor.getLastPathwayWithDiagram()); //We do not include subpathways in the list
-                        }
-
-                        if (!pathways.isEmpty() && !item.isDisplayed()) {
-                            int size = pathways.size();
-//                        includeResultWidget(new EventListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus));
-                            includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus, context.getContent()));
-                        }
+                    public void onObjectLoaded(DatabaseObject databaseObject) {
+                        DatabaseObject r = ((Regulation) databaseObject).getRegulator();
+                        selectedResultItem = new ResultItem(r);
+                        titlePanel.setIdentifier(r.getStId());
+                        LocalOccurrencesFactory.searchForInstanceInDiagram(r.getStId(), args.getDiagramStId(), DetailsInfoPanel.this);
                     }
 
                     @Override
                     public void onContentClientException(Type type, String message) {
-                        getPathways();
+
                     }
 
                     @Override
                     public void onContentClientError(ContentClientError error) {
-                        getPathways();
-                    }
 
-                    private void getPathways() {
-                        if (context == null) return;
-                        ContentClient.getPathwaysWithDiagramForEntity(((ResultItem) selectedResultItem).getStId(), false, context.getContent().getSpeciesName(), DetailsInfoPanel.this);
                     }
                 });
-
-                show(true);
+            } else {
+                LocalOccurrencesFactory.searchForInstanceInDiagram(item.getStId(), args.getDiagramStId(), this);
+                queryForContainingPathways(item);
             }
+            show(true);
+        } else if (selectedResultItem instanceof InteractorSearchResult) {
+            InteractorSearchResult item = (InteractorSearchResult) selectedResultItem;
+            populateWithLocalInteractor(item);
+            show(true);
         }
     }
 
@@ -251,27 +218,40 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
 
     @Override
     public void onObjectListLoaded(List<Pathway> list) {
+        hideSpinner();
         if(list != null && !list.isEmpty()) {
-            clearResults();
             int size = list.size();
             includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), list, eventBus, context.getContent()));
-            show(true);
         }
     }
 
     @Override
     public void onContentClientException(Type type, String message) {
-        show(false);
-        includeResultWidget(new Label("An error has occurred. ERROR: " + message));
+        hideSpinner();
+        Console.error("Error while retrieving containing pathways: " + message);
     }
 
     @Override
     public void onContentClientError(ContentClientError error) {
-        show(false);
-        includeResultWidget(new Label("An error has occurred. ERROR: " + error.getReason()));
+        hideSpinner();
+        switch(error.getCode()) {
+            case Response.SC_NOT_FOUND:
+                // In case of a 404 there are simply no occurrences and
+                // we suppress the error.
+                break;
+            default:
+                Console.error(new StringBuilder()
+                        .append(error.getReason())
+                        .append(" (")
+                        .append(error.getCode())
+                        .append(") ")
+                        .append(error.getMessage())
+                        .toString()
+                );
+        }
     }
 
-    private void populateWithOccurences(Occurrences occurrences) {
+    private void populateWithLocalOccurrences(Occurrences occurrences) {
         ResultItem selection = (ResultItem) selectedResultItem;
         if (occurrences.getInDiagram()) {
             //Selected entity is inside the diagram
@@ -363,7 +343,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
 
     }
 
-    private void populateWithInteractor(InteractorSearchResult selection) {
+    private void populateWithLocalInteractor(InteractorSearchResult selection) {
         MapSet<Long, GraphObject> interactsWith = selection.getInteractsWith();
         for(Long interactionId:interactsWith.keySet()) {
             Set<GraphObject> interactors = new HashSet<>();
@@ -386,17 +366,66 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         }
     }
 
-    private void populateWithInteractor(ResultItem selection) {
+    private void populateWithLocalInteractor(ResultItem selection) {
         List<SearchResultObject> rtn = context.getInteractors().queryForInteractors(staticResource, context.getContent(), selection.getIdentifier().toLowerCase());
         if(rtn != null && rtn.size() == 1) {
-            populateWithInteractor((InteractorSearchResult) rtn.get(0));
-        } else {
-            Console.error("Ambiguous result... " + rtn.size());
+            populateWithLocalInteractor((InteractorSearchResult) rtn.get(0));
         }
     }
 
+    private void queryForContainingPathways(ResultItem item) {
+        ContentClient.getAncestors(item.getStId(), new AncestorsLoaded() {
+            @Override
+            public void onAncestorsLoaded(Ancestors ancestors) {
+                if (context == null) return;
+
+                Set<Pathway> pathways = new HashSet<>();
+                for (Path ancestor : ancestors) {
+                    pathways.add(ancestor.getLastPathwayWithDiagram()); //We do not include subpathways in the list
+                }
+
+                if (!pathways.isEmpty() && !item.isDisplayed()) {
+                    int size = pathways.size();
+                    includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus, context.getContent()));
+                }
+            }
+
+            @Override
+            public void onContentClientException(Type type, String message) {
+                getPathways();
+            }
+
+            @Override
+            public void onContentClientError(ContentClientError error) {
+                getPathways();
+            }
+
+            private void getPathways() {
+                if (context == null) return;
+                ContentClient.getPathwaysWithDiagramForEntity(((ResultItem) selectedResultItem).getStId(), false, context.getContent().getSpeciesName(), DetailsInfoPanel.this);
+            }
+        });
+    }
+
+    private void queryForInteractorOccurrences(ResultItem item) {
+        InteractorOccurrencesFactory.query(item.getId(), args.getSpecies(), new InteractorOccurrencesFactory.Handler() {
+            @Override
+            public void onInteractorOccurrencesReceived(List<Pathway> pathways) {
+                if(pathways != null && !pathways.isEmpty()) {
+                    int size = pathways.size();
+                    includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus, context.getContent()));
+                }
+            }
+
+            @Override
+            public void onInteractorOccurrencesError(String msg) {
+                Console.warn("Error while retrieving interactor occurrences: " + msg);
+                hideSpinner();
+            }
+        });
+    }
+
     private void includeResultWidget(Widget widget) {
-        hideSpinner();
         mainPanel.add(widget);
         resultWidgets.add(widget);
     }
@@ -406,7 +435,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     }
 
     private void clearResults() {
-        resultWidgets.stream().forEach(w -> mainPanel.remove(w));
+        resultWidgets.forEach(w -> mainPanel.remove(w));
         resultWidgets.clear();
     }
 

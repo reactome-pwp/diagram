@@ -33,6 +33,7 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
         DiagramObjectsFlagResetHandler, DiagramObjectsFlaggedHandler {
     private EventBus eventBus;
     private SearchResultObject selectedItem;
+    private String identifier;
 
     private Label name;
     private IconToggleButton flagBtn;
@@ -56,10 +57,12 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
 
         if (selectedItem instanceof ResultItem) {
             ResultItem item = (ResultItem) selectedItem;
+            identifier = item.getIdentifier();
             termToFlagBy = item.getStId();
             populate(item);
         } else if (selectedItem instanceof InteractorSearchResult) {
             InteractorSearchResult item = (InteractorSearchResult) selectedItem;
+            identifier = item.getAccession();
             termToFlagBy = item.getAccession();
             populate(item);
         } else {
@@ -71,15 +74,20 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
         return this;
     }
 
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+        termToFlagBy = identifier;
+    }
+
     @Override
     public void onClick(ClickEvent event) {
         if(flagBtn.isActive()) {
             eventBus.fireEventFromSource(new DiagramObjectsFlagResetEvent(), this);
         } else {
             if (selectedItem instanceof ResultItem) {
-                eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(((ResultItem) selectedItem).getIdentifier()), this);
+                eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(identifier), this);
             } else if (selectedItem instanceof InteractorSearchResult) {
-                eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(((InteractorSearchResult) selectedItem).getAccession()), this);
+                eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(identifier), this);
             }
         }
     }
