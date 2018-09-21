@@ -16,9 +16,9 @@ public class ProteinRenderer800 extends ProteinRenderer300 {
         Node node = (Node) item;
         double w = node.getProp().getWidth();
         double h = node.getProp().getHeight();
-        if (h >= 35 && w >= h * 1.5) {
+        if (h >= 35 && w >= h * 1.5 && node.getIsFadeOut() == null) {
             drawProteinDetails(ctx, node, factor, offset, 6.33 * factor);
-        } else if (h >= 15 && w >= h * 1.2) {
+        } else if (h >= 15 && w >= h * 1.2 && node.getIsFadeOut() == null) {
             drawProteinDetails(ctx, node, factor, offset, 2.75 * factor);
         } else {
             super.drawText(ctx, item, factor, offset);
