@@ -42,7 +42,6 @@
     "stroke": "#000000",
     "fadeOutStroke": "#6C6C6C",
     "lighterStroke": "#000000",
-    "lineWidth": "0.5",
     "text": "#A00000",
     "fadeOutText": "#000000",
     "lighterText": "#000000"
@@ -70,6 +69,18 @@
     "fadeOutText": "#000000",
     "lighterText": "#000000"
   },
+  "complexdrug": {
+    "fill": "#ABACD0",
+    "fadeOutFill": "#CCDECC",
+    "lighterFill": "#E2FFE2",
+    "stroke": "#000000",
+    "fadeOutStroke": "#6C6C6C",
+    "lighterStroke": "#000000",
+    "lineWidth": "0.5",
+    "text": "#A00000",
+    "fadeOutText": "#000000",
+    "lighterText": "#000000"
+  },
   "entity": {
     "fill": "#CCFFCC",
     "fadeOutFill": "#CCDECC",
@@ -89,6 +100,17 @@
     "fadeOutStroke": "#000000",
     "lighterStroke": "#6C6C6C",
     "text": "#000000",
+    "fadeOutText": "#000000",
+    "lighterText": "#000000"
+  },
+  "entitysetdrug": {
+    "fill": "#ABACD0",
+    "fadeOutFill": "#CCDECC",
+    "lighterFill": "#E2FFE2",
+    "stroke": "#000000",
+    "fadeOutStroke": "#6C6C6C",
+    "lighterStroke": "#000000",
+    "text": "#A00000",
     "fadeOutText": "#000000",
     "lighterText": "#000000"
   },
@@ -194,6 +216,17 @@
     "fadeOutText": "#000000",
     "lighterText": "#000000"
   },
+  "proteindrug": {
+    "fill": "#ABACD0",
+    "fadeOutFill": "#CCDECC",
+    "lighterFill": "#E2FFE2",
+    "stroke": "#000000",
+    "fadeOutStroke": "#6C6C6C",
+    "lighterStroke": "#000000",
+    "text": "#A00000",
+    "fadeOutText": "#000000",
+    "lighterText": "#000000"
+  },
   "reaction": {
     "fill": "#FFFFFF",
     "fadeOutFill": "#6E6E6E",
@@ -214,6 +247,17 @@
     "fadeOutStroke": "#000000",
     "lighterStroke": "#6C6C6C",
     "text": "#000000",
+    "fadeOutText": "#000000",
+    "lighterText": "#000000"
+  },
+  "rnadrug": {
+    "fill": "#ABACD0",
+    "fadeOutFill": "#CCDECC",
+    "lighterFill": "#E2FFE2",
+    "stroke": "#000000",
+    "fadeOutStroke": "#6C6C6C",
+    "lighterStroke": "#000000",
+    "text": "#A00000",
     "fadeOutText": "#000000",
     "lighterText": "#000000"
   },

@@ -12,9 +12,19 @@ public interface SearchResultObject {
 
     String getPrimarySearchDisplay();
 
+    String getPrimaryTooltip();
+
     String getSecondarySearchDisplay();
 
-    void setSearchDisplay(String[] searchTerms);
+    default String getTertiarySearchDisplay() {
+        return "-";
+    }
+
+    void setSearchDisplay(SearchArguments arguments);
 
     SchemaClass getSchemaClass();
+
+    default boolean isDisplayed() {
+        return false;
+    }
 }

@@ -1,0 +1,72 @@
+.container {
+    background-color: rgba(88, 195, 229, 0.9);
+    padding: 4px 5px 5px 4px;
+    width: 333px;
+
+    border-radius: 6px 6px 0 0;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    box-sizing: content-box !important;
+}
+
+.container button {
+    position: relative;
+    color: white;
+    border: solid 1px white;
+    background: none rgb(88, 195, 229);
+    outline: none;
+    height: 20px;
+
+    flex-grow: 1;
+}
+
+.container button:last-child {
+    border-radius: 0 5px 5px 0;
+}
+
+.container button:first-child {
+    border-radius: 5px 0 0 5px;
+}
+
+.container button:hover {
+    background: none rgb(30, 148, 208);
+    border: solid 1px white;
+}
+
+.container button:disabled {
+    background: none rgb(88, 195, 229);
+    border: solid 1px white;
+}
+
+.container img {
+    float: left;
+    height: 12px;
+    width: auto;
+    margin-right: 5px;
+}
+
+.container div {
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: x-small;
+    font-weight: bold;
+    line-height: 1.1em;
+    width: 150px;           /* This prevents the buttons to readjust their width according to flex toolkit */
+
+    text-align: center !important;
+    vertical-align: center !important;
+
+    -webkit-touch-callout: none; /* Prevents selection */
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.buttonSelected {
+    background: none rgb(6, 107, 158) !important;
+    cursor: default;
+}

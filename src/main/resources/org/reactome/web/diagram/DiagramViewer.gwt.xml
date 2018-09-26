@@ -12,6 +12,7 @@
     <inherits name='org.reactome.web.diagram.style.DiagramStyle'/>
     <inherits name="org.reactome.web.analysis.Analysis"/>
     <inherits name="org.reactome.web.carrousel.Carrousel"/>
+    <inherits name="org.reactome.web.scroller.Scroller"/>
 
     <source path="client"/>
     <source path="common"/>

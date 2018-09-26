@@ -7,6 +7,7 @@ import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
 import org.reactome.web.diagram.data.layout.Connector;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.pwp.model.client.factory.SchemaClass;
 
@@ -21,6 +22,7 @@ public abstract class GraphObject implements Comparable<GraphObject>, SearchResu
     private String stId;
     private String displayName;
     private String primarySearchDisplay;
+    private String primaryTooltip;
     protected String secondarySearchDisplay;
 
     List<GraphPhysicalEntity> parents = new LinkedList<>();
@@ -44,6 +46,7 @@ public abstract class GraphObject implements Comparable<GraphObject>, SearchResu
     }
 
     public boolean addDiagramObject(DiagramObject diagramObject) {
+        if (diagramObject.getIsFadeOut() != null && diagramObject.getIsFadeOut()) return false;
         return this.diagramObjects.add(diagramObject);
     }
 
@@ -75,33 +78,26 @@ public abstract class GraphObject implements Comparable<GraphObject>, SearchResu
         return primarySearchDisplay;
     }
 
+    @Override
+    public String getPrimaryTooltip() {
+        return primaryTooltip;
+    }
+
     public String getSecondarySearchDisplay() {
         return secondarySearchDisplay;
     }
 
-    public void setSearchDisplay(String[] searchTerms) {
+    @Override
+    public void setSearchDisplay(SearchArguments arguments) {
         this.primarySearchDisplay = this.displayName;
+        this.primaryTooltip = this.displayName;
         this.secondarySearchDisplay = getSecondaryDisplayName();
 
-        if (searchTerms == null || searchTerms.length == 0) return;
-
-        StringBuilder sb = new StringBuilder("(");
-        for (String term : searchTerms) {
-            sb.append(term).append("|");
+        RegExp regExp = arguments.getHighlightingExpression();
+        if (regExp != null) {
+            this.primarySearchDisplay = regExp.replace(this.primarySearchDisplay, "<u><strong>$1</strong></u>");
+            this.secondarySearchDisplay = regExp.replace(this.secondarySearchDisplay, "<u><strong>$1</strong></u>");
         }
-        sb.delete(sb.length() - 1, sb.length()).append(")");
-        String term = sb.toString();
-        /**
-         * (term1|term2)    : term is between "(" and ")" because we are creating a group, so this group can
-         *                    be referred later.
-         * gi               : global search and case insensitive
-         * <b><u>$1</u></b> : instead of replacing by input, that would change the case, we replace it by $1,
-         *                    that is the reference to the first matched group. This means that we want to
-         *                    replace it using the exact word that was found.
-         */
-        RegExp regExp = RegExp.compile(term, "gi");
-        this.primarySearchDisplay = regExp.replace(this.primarySearchDisplay, "<u><strong>$1</strong></u>");
-        this.secondarySearchDisplay = regExp.replace(this.secondarySearchDisplay, "<u><strong>$1</strong></u>");
     }
 
     protected String getSecondaryDisplayName(){

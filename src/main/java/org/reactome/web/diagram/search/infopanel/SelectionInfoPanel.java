@@ -21,6 +21,7 @@ import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@Deprecated
 public class SelectionInfoPanel extends AbstractAccordionPanel implements SuggestionSelectedHandler,
         ContentRequestedHandler, ContentLoadedHandler {
     private EventBus eventBus;

@@ -20,6 +20,7 @@ import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
+ * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler {
 
@@ -88,10 +89,14 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s000.put("Protein", new ProteinRenderer000());
         s000.put("Chemical", new ChemicalRenderer000());
         s000.put("ChemicalDrug", new ChemicalDrugRenderer000());
+        s000.put("ProteinDrug", new ProteinDrugRenderer000());
+        s000.put("RNADrug", new RNADrugRenderer000());
         s000.put("Reaction", new ReactionRenderer000());
         s000.put("Complex", new ComplexRenderer000());
+        s000.put("ComplexDrug", new ComplexDrugRenderer000());
         s000.put("Entity", new OtherEntityRenderer000());
         s000.put("EntitySet", new SetRenderer000());
+        s000.put("EntitySetDrug", new SetDrugRenderer000());
         s000.put("ProcessNode", new ProcessNodeRenderer000());
         s000.put("EncapsulatedNode", new EncapsulatedNodeRenderer000());
         s000.put("FlowLine", new FlowlineRenderer000());
@@ -108,10 +113,14 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s050.put("Protein", new ProteinRenderer050());
         s050.put("Chemical", new ChemicalRenderer050());
         s050.put("ChemicalDrug", new ChemicalDrugRenderer050());
+        s050.put("ProteinDrug", new ProteinDrugRenderer050());
+        s050.put("RNADrug", new RNADrugRenderer050());
         s050.put("Reaction", new ReactionRenderer050());
         s050.put("Complex", new ComplexRenderer050());
+        s050.put("ComplexDrug", new ComplexDrugRenderer050());
         s050.put("Entity", new OtherEntityRenderer050());
         s050.put("EntitySet", new SetRenderer050());
+        s050.put("EntitySetDrug", new SetDrugRenderer050());
         s050.put("ProcessNode", new ProcessNodeRenderer050());
         s050.put("EncapsulatedNode", new EncapsulatedNodeRenderer050());
         s050.put("FlowLine", new FlowlineRenderer050());
@@ -128,10 +137,14 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s100.put("Protein", new ProteinRenderer100());
         s100.put("Chemical", new ChemicalRenderer100());
         s100.put("ChemicalDrug", new ChemicalDrugRenderer100());
+        s100.put("ProteinDrug", new ProteinDrugRenderer100());
+        s100.put("RNADrug", new RNADrugRenderer100());
         s100.put("Reaction", new ReactionRenderer100());
         s100.put("Complex", new ComplexRenderer100());
+        s100.put("ComplexDrug", new ComplexDrugRenderer100());
         s100.put("Entity", new OtherEntityRenderer100());
         s100.put("EntitySet", new SetRenderer100());
+        s100.put("EntitySetDrug", new SetDrugRenderer100());
         s100.put("ProcessNode", new ProcessNodeRenderer100());
         s100.put("EncapsulatedNode", new EncapsulatedNodeRenderer100());
         s100.put("FlowLine", new FlowlineRenderer100());
@@ -148,10 +161,14 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s300.put("Protein", new ProteinRenderer300());
         s300.put("Chemical", new ChemicalRenderer300());
         s300.put("ChemicalDrug", new ChemicalDrugRenderer300());
+        s300.put("ProteinDrug", new ProteinDrugRenderer300());
+        s300.put("RNADrug", new RNADrugRenderer300());
         s300.put("Reaction", new ReactionRenderer300());
         s300.put("Complex", new ComplexRenderer300());
+        s300.put("ComplexDrug", new ComplexDrugRenderer300());
         s300.put("Entity", new OtherEntityRenderer300());
         s300.put("EntitySet", new SetRenderer300());
+        s300.put("EntitySetDrug", new SetDrugRenderer300());
         s300.put("ProcessNode", new ProcessNodeRenderer300());
         s300.put("EncapsulatedNode", new EncapsulatedNodeRenderer300());
         s300.put("FlowLine", new FlowlineRenderer300());
@@ -169,10 +186,14 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s800.put("Protein", new ProteinRenderer800());
         s800.put("Chemical", new ChemicalRenderer800());
         s800.put("ChemicalDrug", new ChemicalDrugRenderer800());
+        s800.put("ProteinDrug", new ProteinDrugRenderer800());
+        s800.put("RNADrug", new RNADrugRenderer800());
         s800.put("Reaction", new ReactionRenderer800());
         s800.put("Complex", new ComplexRenderer800());
+        s800.put("ComplexDrug", new ComplexDrugRenderer800());
         s800.put("Entity", new OtherEntityRenderer800());
         s800.put("EntitySet", new SetRenderer800());
+        s800.put("EntitySetDrug", new SetDrugRenderer800());
         s800.put("ProcessNode", new ProcessNodeRenderer800());
         s800.put("EncapsulatedNode", new EncapsulatedNodeRenderer800());
         s800.put("FlowLine", new FlowlineRenderer800());

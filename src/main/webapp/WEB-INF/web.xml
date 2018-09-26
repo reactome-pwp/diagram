@@ -114,5 +114,4 @@
         <servlet-name>SVGProxy</servlet-name>
         <url-pattern>/download/current/ehld/*</url-pattern>
     </servlet-mapping>
-
 </web-app>

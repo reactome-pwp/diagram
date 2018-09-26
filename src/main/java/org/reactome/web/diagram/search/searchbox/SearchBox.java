@@ -1,6 +1,8 @@
 package org.reactome.web.diagram.search.searchbox;
 
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.TextBox;
@@ -15,7 +17,7 @@ import com.google.gwt.user.client.ui.TextBox;
  *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class SearchBox extends TextBox implements KeyUpHandler, KeyDownHandler {
+public class SearchBox extends TextBox implements KeyUpHandler {
 
     private final int searchDelay;
     private final Timer timer;
@@ -34,8 +36,8 @@ public class SearchBox extends TextBox implements KeyUpHandler, KeyDownHandler {
             }
         };
         this.value = "";
+
         addKeyUpHandler(this);
-        addKeyDownHandler(this);
     }
 
     public HandlerRegistration addSearchBoxUpdatedHandler(SearchBoxUpdatedHandler handler){
@@ -44,18 +46,6 @@ public class SearchBox extends TextBox implements KeyUpHandler, KeyDownHandler {
 
     public HandlerRegistration addSearchBoxArrowKeysHandler(SearchBoxArrowKeysHandler handler){
         return addHandler(handler, SearchBoxArrowKeysEvent.TYPE);
-    }
-
-    @Override
-    public void onKeyDown(KeyDownEvent event) {
-        int keyCode = event.getNativeKeyCode();
-        switch (keyCode){
-            case KeyCodes.KEY_UP:
-            case KeyCodes.KEY_DOWN:
-            case KeyCodes.KEY_ESCAPE:
-                event.stopPropagation(); event.preventDefault();
-                fireEvent(new SearchBoxArrowKeysEvent(keyCode));
-        }
     }
 
     @Override
@@ -68,7 +58,11 @@ public class SearchBox extends TextBox implements KeyUpHandler, KeyDownHandler {
             case KeyCodes.KEY_UP:
             case KeyCodes.KEY_DOWN:
             case KeyCodes.KEY_ESCAPE:
+            case KeyCodes.KEY_ENTER:
+            case KeyCodes.KEY_MAC_ENTER:
                 event.stopPropagation(); event.preventDefault();
+                timer.cancel();
+                fireEvent(new SearchBoxArrowKeysEvent(event.getNativeKeyCode()));
         }
     }
 

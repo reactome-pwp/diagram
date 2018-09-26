@@ -11,6 +11,11 @@ public interface Graph {
 
     String getStId();
 
+    /**
+     * The species name of the diagram. e.g. 'Homo sapiens'
+     */
+    String getSpeciesName();
+
     List<EntityNode> getNodes();
 
     List<EventNode> getEdges();

@@ -6,6 +6,7 @@ import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.model.images.InteractorImages;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
+import org.reactome.web.diagram.search.SearchArguments;
 import org.reactome.web.diagram.search.SearchResultObject;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.pwp.model.client.factory.SchemaClass;
@@ -27,7 +28,9 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     private MapSet<Long, GraphObject> interactsWith;
 
     private String primary;
+    private String primaryTooltip;
     private String secondary;
+    private String tertiary;
 
     public InteractorSearchResult(OverlayResource resource, String accession, String alias) {
         this.resource = resource;
@@ -48,6 +51,7 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
         }
     }
 
+    /* Important: the term has to be passed in lowercase */
     public boolean containsTerm(String term){
         String alias = this.alias != null ? this.alias : ""; //Alias can be null
         return alias.toLowerCase().contains(term) || accession.toLowerCase().contains(term);
@@ -98,8 +102,18 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     }
 
     @Override
+    public String getPrimaryTooltip() {
+        return primaryTooltip;
+    }
+
+    @Override
     public String getSecondarySearchDisplay() {
         return secondary;
+    }
+
+    @Override
+    public String getTertiarySearchDisplay() {
+        return tertiary;
     }
 
     @Override
@@ -108,36 +122,25 @@ public class InteractorSearchResult implements Comparable<InteractorSearchResult
     }
 
     @Override
-    public void setSearchDisplay(String[] searchTerms) {
+    public void setSearchDisplay(SearchArguments arguments) {
         if (alias != null) {
             primary = alias;
+            primaryTooltip = alias;
             secondary = accession;
         } else {
             primary = accession;
+            primaryTooltip = accession;
         }
         // Adding the number of evidences in the second line of the suggestion
         String evidenceStr = evidences == 0 ? "" : evidences == 1 ? evidences + " evidence" : evidences + " pieces of evidence";
         secondary += ", " + evidenceStr;
 
-        if (searchTerms == null || searchTerms.length == 0) return;
-
-        StringBuilder sb = new StringBuilder("(");
-        for (String term : searchTerms) {
-            sb.append(term).append("|");
+        tertiary = resource.getName();
+        RegExp regExp = arguments.getHighlightingExpression();
+        if (regExp != null) {
+            primary = regExp.replace(primary, "<u><strong>$1</strong></u>");
+            secondary = regExp.replace(secondary, "<u><strong>$1</strong></u>");
         }
-        sb.delete(sb.length() - 1, sb.length()).append(")");
-        String term = sb.toString();
-        /*
-         * (term1|term2)    : term is between "(" and ")" because we are creating a group, so this group can
-         *                    be referred later.
-         * gi               : global search and case insensitive
-         * <b><u>$1</u></b> : instead of replacing by input, that would change the case, we replace it by $1,
-         *                    that is the reference to the first matched group. This means that we want to
-         *                    replace it using the exact word that was found.
-         */
-        RegExp regExp = RegExp.compile(term, "gi");
-        primary = regExp.replace(primary, "<u><strong>$1</strong></u>");
-        secondary = regExp.replace(secondary, "<u><strong>$1</strong></u>");
     }
 
     @Override

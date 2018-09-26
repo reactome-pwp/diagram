@@ -1,0 +1,77 @@
+.container {
+    background-color: rgba(250, 250, 250, 0.9);
+    border: 1px #1e94d0;
+    border-radius: 5px;
+    position: relative;
+    margin: -4px 0 0 44px;
+    /*margin: -4px 0 0 31px;*/
+
+    float: left;
+    max-width: 245px; /* grows and shrinks with the parent */
+    max-height: 245px;
+    overflow: auto !important;
+    outline: none;
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: smaller !important;
+    line-height: normal !important;
+    vertical-align: baseline !important;
+
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+
+    -webkit-transition: height 1s;
+    -moz-transition: height 1s;
+    transition: height 1s;
+}
+
+.icon {
+    vertical-align: middle;
+}
+
+.autoCompleteList {
+    margin-bottom: 2px;
+}
+
+.divider {
+    display: block;
+    background-color: #23688b;
+
+    margin: 1px 0 0 0;
+
+    width: 100%; /* grows and shrinks with the parent */
+    height: 14px;
+    overflow: auto !important;
+    outline: none;
+}
+
+.dividerTitle {
+    float: left;
+    color: white;
+    font-size: smaller;
+    font-weight: bold;
+    margin: 0 0 2px 5px;
+}
+
+.dividerClearAll {
+    float: right;
+    color: white;
+    font-size: smaller;
+    font-weight: bold;
+    margin: 0 3px 2px 0;
+    cursor: pointer;
+}
+
+.dividerClearAll:hover{
+    color: yellow;
+}
+
+.recentSearchesList {
+    margin-bottom: 2px;
+}
+
+.deleteItem {
+    margin-left: 5px;
+    height: 12px;
+    width: auto;
+}

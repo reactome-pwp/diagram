@@ -1,13 +1,11 @@
 package org.reactome.web.diagram.data.loader;
 
 import com.google.gwt.http.client.*;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONParser;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.content.Content;
-
-import java.util.Collection;
-import java.util.HashSet;
+import org.reactome.web.diagram.search.results.data.SearchException;
+import org.reactome.web.diagram.search.results.data.SearchResultFactory;
+import org.reactome.web.diagram.search.results.data.model.Occurrences;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -15,7 +13,7 @@ import java.util.HashSet;
 public class FlaggedElementsLoader implements RequestCallback {
 
     public interface Handler {
-        void flaggedElementsLoaded(String term, Collection<String> toFlag, boolean notify);
+        void flaggedElementsLoaded(String term, Occurrences toFlag, boolean notify);
 
         void onFlaggedElementsLoaderError(Throwable exception);
     }
@@ -25,8 +23,8 @@ public class FlaggedElementsLoader implements RequestCallback {
     private String term;
     private Boolean notify;
 
-    Handler handler;
-    Request request;
+    private Handler handler;
+    private Request request;
 
     public FlaggedElementsLoader(Handler handler) {
         this.handler = handler;
@@ -58,17 +56,18 @@ public class FlaggedElementsLoader implements RequestCallback {
 
     @Override
     public void onResponseReceived(Request request, Response response) {
-        Collection<String> toFlag = new HashSet<>();
+        Occurrences toFlag = null;
         switch (response.getStatusCode()) {
             case Response.SC_OK:
-                JSONArray list = JSONParser.parseStrict(response.getText()).isArray();
-                for (int i = 0; i < list.size(); ++i) {
-                    toFlag.add(list.get(i).isString().stringValue());
+                try {
+                    toFlag = SearchResultFactory.getSearchObject(Occurrences.class, response.getText());
+                    handler.flaggedElementsLoaded(term, toFlag, notify);
+                } catch (SearchException ex) {
+                    handler.onFlaggedElementsLoaderError(ex);
                 }
-                handler.flaggedElementsLoaded(term, toFlag, notify);
                 break;
             case Response.SC_NOT_FOUND:
-                handler.flaggedElementsLoaded(term, new HashSet(), notify);
+                handler.flaggedElementsLoaded(term, null, notify);
                 break;
             default:
                 //TODO: Propagate the error from the response from the returned JSON instead?

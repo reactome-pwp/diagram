@@ -30,17 +30,21 @@ public class ThumbnailRendererManager {
 
     private void initialiseRenderers(){
 //        thumbnailMap.put("OrgGkRenderNote", new NoteThumbnailRenderer());
-        thumbnailMap.put("Compartment", new CompartmentThumbnailRenderer());
-        thumbnailMap.put("Protein",     new ProteinThumbnailRenderer());
-        thumbnailMap.put("Chemical",    new ChemicalThumbnailRenderer());
-        thumbnailMap.put("Reaction",    new ReactionThumbnailRenderer());
-        thumbnailMap.put("Complex",     new ComplexThumbnailRenderer());
-        thumbnailMap.put("Entity",      new OtherEntityThumbnailRenderer());
-        thumbnailMap.put("EntitySet",   new SetThumbnailRenderer());
-        thumbnailMap.put("ProcessNode", new ProcessNodeThumbnailRenderer());
-        thumbnailMap.put("FlowLine",    new FlowlineThumbnailRenderer());
-        thumbnailMap.put("Gene",        new GeneThumbnailRenderer());
-        thumbnailMap.put("RNA",         new RNAThumbnailRenderer());
+        thumbnailMap.put("Compartment",     new CompartmentThumbnailRenderer());
+        thumbnailMap.put("Protein",         new ProteinThumbnailRenderer());
+        thumbnailMap.put("ProteinDrug",     new ProteinDrugThumbnailRenderer());
+        thumbnailMap.put("Chemical",        new ChemicalThumbnailRenderer());
+        thumbnailMap.put("ChemicalDrug",    new ChemicalDrugThumbnailRenderer());
+        thumbnailMap.put("Reaction",        new ReactionThumbnailRenderer());
+        thumbnailMap.put("Complex",         new ComplexThumbnailRenderer());
+        thumbnailMap.put("ComplexDrug",     new ComplexDrugThumbnailRenderer());
+        thumbnailMap.put("Entity",          new OtherEntityThumbnailRenderer());
+        thumbnailMap.put("EntitySet",       new SetThumbnailRenderer());
+        thumbnailMap.put("EntitySetDrug",   new SetDrugThumbnailRenderer());
+        thumbnailMap.put("ProcessNode",     new ProcessNodeThumbnailRenderer());
+        thumbnailMap.put("FlowLine",        new FlowlineThumbnailRenderer());
+        thumbnailMap.put("Gene",            new GeneThumbnailRenderer());
+        thumbnailMap.put("RNA",             new RNAThumbnailRenderer());
 //        aux = new LinkThumbnailRenderer();
 //        thumbnailMap.put("EntitySetAndMemberLink", aux);
 //        thumbnailMap.put("EntitySetAndEntitySetLink", aux);

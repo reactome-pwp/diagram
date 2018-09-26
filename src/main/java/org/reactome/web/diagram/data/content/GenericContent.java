@@ -7,6 +7,7 @@ public abstract class GenericContent implements Content {
     protected Long dbId;
     protected String stableId;
     protected String displayName;
+    protected String speciesName;
 
     protected Boolean isDisease;
     protected Boolean forNormalDraw;
@@ -26,6 +27,8 @@ public abstract class GenericContent implements Content {
     public String getDisplayName() {
         return displayName;
     }
+
+    public String getSpeciesName() {return speciesName;}
 
     public Boolean getIsDisease() {
         return isDisease;
@@ -65,6 +68,10 @@ public abstract class GenericContent implements Content {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public void setSpeciesName(String speciesName) {
+        this.speciesName = speciesName;
     }
 
     public void setIsDisease(Boolean isDisease) {

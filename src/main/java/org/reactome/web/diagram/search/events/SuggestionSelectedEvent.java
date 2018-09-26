@@ -7,6 +7,7 @@ import org.reactome.web.diagram.search.handlers.SuggestionSelectedHandler;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@Deprecated
 public class SuggestionSelectedEvent extends GwtEvent<SuggestionSelectedHandler> {
     public static Type<SuggestionSelectedHandler> TYPE = new Type<>();
 

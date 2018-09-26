@@ -23,7 +23,7 @@ public interface GraphObjectImages extends ClientBundle {
     @Source("ConceptualEvent.png")
     ImageResource conceptualEvent();
 
-    @Source("SimpleEntity.png") //TODO
+    @Source("ChemicalDrug.png")
     ImageResource chemicalDrug();
 
     @Source("DefinedSet.png")
@@ -68,6 +68,9 @@ public interface GraphObjectImages extends ClientBundle {
     @Source("Polymerization.png")
     ImageResource polymerization();
 
+    @Source("ProteinDrug.png")
+    ImageResource proteinDrug();
+
     @Source("Reaction.png")
     ImageResource reaction();
 
@@ -79,6 +82,9 @@ public interface GraphObjectImages extends ClientBundle {
 
     @Source("ReferenceRNASequence.png")
     ImageResource referenceRNASequence();
+
+    @Source("ReferenceRNASequence.png")
+    ImageResource referenceRNADrugSequence();
 
     @Source("SimpleEntity.png")
     ImageResource simpleEntity();

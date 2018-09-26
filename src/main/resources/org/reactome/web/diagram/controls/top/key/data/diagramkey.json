@@ -46,8 +46,8 @@
       }
     },
     {
-      "displayName": "Genome encoded entity",
-      "renderableClass": "Entity",
+      "displayName": "Protein drug",
+      "renderableClass": "ProteinDrug",
       "position": {
         "x": 175,
         "y": 70
@@ -74,8 +74,8 @@
       }
     },
     {
-      "displayName": "Gene",
-      "renderableClass": "Gene",
+      "displayName": "RNA drug",
+      "renderableClass": "RNADrug",
       "position": {
         "x": 175,
         "y": 117
@@ -83,13 +83,13 @@
       "prop": {
         "x": 125,
         "y": 105,
-        "width": 93,
+        "width": 100,
         "height": 45
       }
     },
     {
-      "displayName": "Complex(es)",
-      "renderableClass": "Complex",
+      "displayName": "Set",
+      "renderableClass": "EntitySet",
       "position": {
         "x": 55,
         "y": 164
@@ -102,8 +102,8 @@
       }
     },
     {
-      "displayName": "Set(s)",
-      "renderableClass": "EntitySet",
+      "displayName": "Set drug",
+      "renderableClass": "EntitySetDrug",
       "position": {
         "x": 175,
         "y": 164
@@ -111,6 +111,62 @@
       "prop": {
         "x": 125,
         "y": 155,
+        "width": 100,
+        "height": 40
+      }
+    },
+    {
+      "displayName": "Complex",
+      "renderableClass": "Complex",
+      "position": {
+        "x": 55,
+        "y": 200
+      },
+      "prop": {
+        "x": 10,
+        "y": 202,
+        "width": 100,
+        "height": 40
+      }
+    },
+    {
+      "displayName": "Complex drug",
+      "renderableClass": "ComplexDrug",
+      "position": {
+        "x": 175,
+        "y": 200
+      },
+      "prop": {
+        "x": 125,
+        "y": 202,
+        "width": 100,
+        "height": 40
+      }
+    },
+    {
+      "displayName": "Gene",
+      "renderableClass": "Gene",
+      "position": {
+        "x": 55,
+        "y": 215
+      },
+      "prop": {
+        "x": 10,
+        "y": 255,
+        "width": 93,
+        "height": 45
+      }
+    },
+    {
+      "displayName": "Genome encoded entity",
+      "renderableClass": "Entity",
+      "position": {
+        "x": 175,
+        "y": 200
+      },
+      "prop": {
+        "x": 125,
+        "y": 255,
         "width": 100,
         "height": 40
       }
@@ -120,11 +176,11 @@
       "renderableClass": "ProcessNode",
       "position": {
         "x": 55,
-        "y": 200
+        "y": 300
       },
       "prop": {
         "x": 10,
-        "y": 202,
+        "y": 308,
         "width": 100,
         "height": 41
       }
@@ -134,11 +190,11 @@
       "renderableClass": "EncapsulatedNode",
       "position": {
         "x": 175,
-        "y": 200
+        "y": 300
       },
       "prop": {
         "x": 125,
-        "y": 202,
+        "y": 308,
         "width": 100,
         "height": 41
       }
@@ -152,7 +208,7 @@
       },
       "prop": {
         "x": 10,
-        "y": 250,
+        "y": 355,
         "width": 60,
         "height": 30
       }
@@ -165,7 +221,7 @@
       },
       "prop": {
         "x": 10,
-        "y": 290,
+        "y": 395,
         "width": 60,
         "height": 30
       }
@@ -178,7 +234,7 @@
       },
       "prop": {
         "x": 165,
-        "y": 270,
+        "y": 375,
         "width": 60,
         "height": 30
       }
@@ -193,7 +249,7 @@
     },
     "prop": {
       "x": 95,
-      "y": 282,
+      "y": 387,
       "width": 60,
       "height": 30
     }
@@ -206,50 +262,50 @@
         {
           "from": {
             "x": 70,
-            "y": 265
+            "y": 370
           },
           "to": {
             "x": 100,
-            "y": 285
+            "y": 390
           }
         },{
           "from": {
             "x": 70,
-            "y": 300
+            "y": 405
           },
           "to": {
             "x": 100,
-            "y": 285
+            "y": 390
           }
         },{
           "from": {
             "x": 100,
-            "y": 285
+            "y": 390
           },
           "to": {
             "x": 120,
-            "y": 285
+            "y": 390
           }
         },
         {
           "from": {
             "x": 130,
-            "y": 285
+            "y": 390
           },
           "to": {
             "x": 165,
-            "y": 285
+            "y": 390
           }
         }
       ],
       "reactionShape": {
         "a": {
           "x": 120,
-          "y": 280
+          "y": 385
         },
         "b": {
           "x": 130,
-          "y": 290
+          "y": 395
         },
         "type": "BOX",
         "empty": true
@@ -257,15 +313,15 @@
       "endShape" : {
         "a" : {
           "x" : 160,
-          "y" : 280
+          "y" : 385
         },
         "b" : {
           "x" : 165,
-          "y" : 285
+          "y" : 390
         },
         "c" : {
           "x" : 160,
-          "y" : 290
+          "y" : 395
         },
         "type" : "ARROW"
       }
