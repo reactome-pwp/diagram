@@ -52,6 +52,7 @@
 }
 
 .input {
+    display: inline-block;
     border-radius: 5px !important;
     position: relative !important;
     margin: 5px 0 0 4px !important;
