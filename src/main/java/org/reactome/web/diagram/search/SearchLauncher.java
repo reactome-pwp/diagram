@@ -15,7 +15,6 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.common.IconToggleButton;
-import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
@@ -47,8 +46,8 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
     private EventBus eventBus;
     private Context context;
 
-    private SearchBox input = null;
-    private PwpButton searchBtn = null;
+    private SearchBox input;
+    private IconButton searchBtn;
     private IconButton clearBtn;
     private IconButton executeBtn;
     private IconToggleButton optionsBtn;
@@ -67,7 +66,8 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
         this.eventBus = eventBus;
 
-        this.searchBtn = new PwpButton("Search in the diagram", RESOURCES.getCSS().launch(), this);
+        this.searchBtn = new IconButton("Search in the diagram", RESOURCES.searchIcon(), this);
+        this.searchBtn.setStyleName(RESOURCES.getCSS().launch());
         this.add(searchBtn);
 
         this.input = new SearchBox();
@@ -361,17 +361,8 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         @Source(SearchLauncherCSS.CSS)
         SearchLauncherCSS getCSS();
 
-        @Source("images/search_clicked.png")
-        ImageResource launchClicked();
-
-        @Source("images/search_disabled.png")
-        ImageResource launchDisabled();
-
-        @Source("images/search_hovered.png")
-        ImageResource launchHovered();
-
-        @Source("images/search_normal.png")
-        ImageResource launchNormal();
+        @Source("images/search.png")
+        ImageResource searchIcon();
 
         @Source("images/search_go.png")
         ImageResource searchGo();
