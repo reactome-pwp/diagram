@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.search.details;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.Response;
@@ -74,6 +75,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     private List<Widget> resultWidgets = new ArrayList<>();
 
     private final OverlayResource staticResource = new OverlayResource(DiagramFactory.INTERACTORS_INITIAL_RESOURCE, DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME, OverlayResource.ResourceType.STATIC);
+    private Collection<GraphObject> interactingPathways;
 
     public DetailsInfoPanel(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -154,6 +156,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     @Override
     public void onResultSelected(ResultSelectedEvent event) {
         selectedResultItem = event.getSelectedResultItem();
+        interactingPathways = new ArrayList<>();
 
         clearMainPanel();
         clearResults();
@@ -168,6 +171,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
                 populateWithLocalInteractor(item);
                 queryForInteractorOccurrences(item);
             } else if(regulationTypes.contains(item.getExactType().toLowerCase())) {
+                // In case this is a regulation we need an additional query to the server
                 ContentClient.query(item.getStId(), new ObjectLoaded<DatabaseObject>() {
                     @Override
                     public void onObjectLoaded(DatabaseObject databaseObject) {
@@ -179,17 +183,17 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
 
                     @Override
                     public void onContentClientException(Type type, String message) {
-
+                        //Nothing here
                     }
 
                     @Override
                     public void onContentClientError(ContentClientError error) {
-
+                        //Nothing here
                     }
                 });
             } else {
                 LocalOccurrencesFactory.searchForInstanceInDiagram(item.getStId(), args.getDiagramStId(), this);
-                queryForContainingPathways(item);
+                Scheduler.get().scheduleDeferred(() -> queryForContainingPathways(item));
             }
             show(true);
         } else if (selectedResultItem instanceof InteractorSearchResult) {
@@ -219,9 +223,19 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
     @Override
     public void onObjectListLoaded(List<Pathway> list) {
         hideSpinner();
-        if(list != null && !list.isEmpty()) {
+        // The following code removes the intersecting pathways between the 2 lists
+        if(list != null && !list.isEmpty() && interactingPathways != null) {
+            Set<String> interactingPathwayIds = interactingPathways.stream()
+                                                                   .map(GraphObject::getStId)
+                                                                   .collect(Collectors.toSet());
+            list = list.stream()
+                       .filter(pathway -> !interactingPathwayIds.contains(pathway.getStId()))
+                       .collect(Collectors.toList());
+
             int size = list.size();
-            includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), list, eventBus, context.getContent()));
+            if(!list.isEmpty()) {
+                includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), list, eventBus, context.getContent()));
+            }
         }
     }
 
@@ -325,10 +339,10 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         List<String> occList = occurrences.getOccurrences();
         if (occList != null && !occList.isEmpty()){
             //Selected entity is inside an encapsulated "Interacting" pathway
-            Collection<GraphObject> list = occList.stream()
+            interactingPathways = occList.stream()
                     .map(occ -> context.getContent().getDatabaseObject(occ))
                     .collect(Collectors.toList());
-            includeResultWidget(new DatabaseObjectListPanel("Inside interacting pathway" + (list.size()>1 ? "s:" : ":"), list, eventBus));
+            includeResultWidget(new DatabaseObjectListPanel("Inside " + interactingPathways.size() + " subpathway" + (interactingPathways.size()>1 ? "s:" : ":"), interactingPathways, eventBus));
         }
 
         List<String> interactsWithList = occurrences.getInteractsWith();
@@ -385,8 +399,18 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
                 }
 
                 if (!pathways.isEmpty() && !item.isDisplayed()) {
+
+                    Set<String> interactingPathwayIds = interactingPathways.stream()
+                                                                           .map(GraphObject::getStId)
+                                                                           .collect(Collectors.toSet());
+
+                    pathways = pathways.stream()
+                                       .filter(pathway -> !interactingPathwayIds.contains(pathway.getStId()))
+                                       .collect(Collectors.toSet());
                     int size = pathways.size();
-                    includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus, context.getContent()));
+                    if(!pathways.isEmpty()) {
+                        includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus, context.getContent()));
+                    }
                 }
             }
 

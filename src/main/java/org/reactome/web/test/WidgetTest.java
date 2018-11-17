@@ -20,7 +20,7 @@ import org.reactome.web.diagram.util.Console;
 public class WidgetTest implements EntryPoint {
 
     private final DiagramViewer diagram;
-    private static String currentPathway = "R-HSA-109582";
+    private static String currentPathway = "R-HSA-5638302"; //"R-HSA-975634"; //R-HSA-109582";
 //    private static String currentPathway = "R-HSA-5693567"; //Big one with plenty of overlap
     private static String currentAnalysis = "MjAxNjA5MzAwNTU3MjdfMg%3D%3D";
 
@@ -56,7 +56,7 @@ public class WidgetTest implements EntryPoint {
                     @Override
                     public void onContentLoaded(ContentLoadedEvent event) {
 //                        diagram.flagItems("NODAL");
-                        diagram.flagItems("F13B");
+                        diagram.flagItems("R-HSA-179837");
                     }
                 });
             }
@@ -158,7 +158,7 @@ public class WidgetTest implements EntryPoint {
         fp.add(new Button("Exp 1", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                diagram.setAnalysisToken("MjAxNzAxMzEwNTE0MDdfMw==","TOTAL");
+                diagram.setAnalysisToken("MjAxODAyMjEwOTQxMjhfMTA%253D","TOTAL");
             }
         }));
 

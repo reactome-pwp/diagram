@@ -42,7 +42,7 @@ public class ProteinRenderer300 extends ProteinAbstractRenderer {
         Node node = (Node) item;
         double w = node.getProp().getWidth();
         double h = node.getProp().getHeight();
-        if (h >= 35 && w >= h * 1.5) {
+        if (h >= 35 && w >= h * 1.5 && node.getIsFadeOut() == null) {
             drawProteinDetails(ctx, node, factor, offset, 6.33 * factor);
         } else {
             super.drawText(ctx, item, factor, offset);

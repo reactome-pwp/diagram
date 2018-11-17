@@ -31,7 +31,7 @@ public class ChemicalRenderer300 extends ChemicalAbstractRenderer {
         Node node = (Node) item;
         double w = node.getProp().getWidth();
         double h = node.getProp().getHeight();
-        if (h >= 30 && w >= h * 1.25) {
+        if (h >= 30 && w >= h * 1.25 && node.getIsFadeOut() == null) {
             drawChemicalDetails(ctx, node, factor, offset, RendererProperties.INTERACTOR_FONT_SIZE);
         } else {
             super.drawText(ctx, item, factor, offset);

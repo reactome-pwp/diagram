@@ -16,9 +16,9 @@ public class ChemicalRenderer800 extends ChemicalRenderer300 {
         Node node = (Node) item;
         double w = node.getProp().getWidth();
         double h = node.getProp().getHeight();
-        if (h >= 30 && w >= h * 1.25) {
+        if (h >= 30 && w >= h * 1.25 && node.getIsFadeOut() == null) {
             drawChemicalDetails(ctx, node, factor, offset, 6.33 * factor);
-        } else if (h >= 10 && w >= h * 1.1) {
+        } else if (h >= 10 && w >= h * 1.1 && node.getIsFadeOut() == null) {
             drawChemicalDetails(ctx, node, factor, offset, 2.75 * factor);
         } else {
             super.drawText(ctx, item, factor, offset);
