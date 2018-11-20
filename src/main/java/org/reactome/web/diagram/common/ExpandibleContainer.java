@@ -4,9 +4,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.SimplePanel;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,21 +17,18 @@ import java.util.Set;
  */
 public class ExpandibleContainer extends AbsolutePanel implements ClickHandler, MouseOverHandler, MouseOutHandler {
 
-    private SimplePanel primaryButton;
+    private IconButton primaryButton;
     private Set<Button> buttons;
     private boolean isExpanded = false;
 
-    public ExpandibleContainer(String tooltip, String style) {
+    public ExpandibleContainer(String tooltip, ImageResource imageResource, String style) {
         setStyleName(RESOURCES.getCSS().container());
-        this.primaryButton = new SimplePanel();
-        this.primaryButton.setTitle(tooltip);
-        this.primaryButton.setStyleName(style);
+        this.primaryButton = new IconButton(imageResource, style, tooltip,this);
         this.primaryButton.addStyleName(RESOURCES.getCSS().baseButtons());
         this.primaryButton.addStyleName(RESOURCES.getCSS().primaryButton());
         this.add(primaryButton);
 
         buttons = new HashSet<>();
-        primaryButton.addDomHandler(this, ClickEvent.getType());
         primaryButton.addDomHandler(event -> {                  // This is required because some mobile browsers fire the
             event.preventDefault(); event.stopPropagation();    // OnMouseOver event if before the Click event is fired
         }, MouseOverEvent.getType());

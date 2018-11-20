@@ -66,8 +66,7 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
 
         this.eventBus = eventBus;
 
-        this.searchBtn = new IconButton("Search in the diagram", RESOURCES.searchIcon(), this);
-        this.searchBtn.setStyleName(RESOURCES.getCSS().launch());
+        this.searchBtn = new IconButton(RESOURCES.searchIcon(), RESOURCES.getCSS().launch(),"Search in the diagram",this);
         this.add(searchBtn);
 
         this.input = new SearchBox();
