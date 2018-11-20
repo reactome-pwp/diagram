@@ -8,7 +8,8 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import org.reactome.web.diagram.common.PwpButton;
+import com.google.gwt.user.client.ui.Button;
+import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.events.ContentLoadedEvent;
 import org.reactome.web.diagram.events.ContentRequestedEvent;
 import org.reactome.web.diagram.events.ControlActionEvent;
@@ -25,12 +26,12 @@ public class NavigationControlPanel extends AbsolutePanel implements ClickHandle
 
     protected EventBus eventBus;
 
-    private PwpButton zoomIn;
-    private PwpButton zoomOut;
-    private PwpButton up;
-    private PwpButton right;
-    private PwpButton down;
-    private PwpButton left;
+    private IconButton zoomIn;
+    private IconButton zoomOut;
+    private IconButton up;
+    private IconButton right;
+    private IconButton down;
+    private IconButton left;
 
     public NavigationControlPanel(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -42,18 +43,19 @@ public class NavigationControlPanel extends AbsolutePanel implements ClickHandle
 
         ControlPanelCSS css = RESOURCES.getCSS();
 
-        this.zoomIn = new PwpButton("Zoom in", css.zoomIn(), this);
+        this.zoomIn = new IconButton(RESOURCES.zoomInIcon(), css.zoomIn(), "Zoom in", this);
         this.add(this.zoomIn);
-        this.zoomOut = new PwpButton("Zoom out", css.zoomOut(), this);
+
+        this.zoomOut = new IconButton(RESOURCES.zoomOutIcon(), css.zoomOut(), "Zoom out", this);
         this.add(this.zoomOut);
 
-        this.up = new PwpButton("Move up", css.up(), this);
+        this.up = new IconButton(RESOURCES.upIcon(), css.up(), "Move up", this);
         this.add(this.up);
-        this.left = new PwpButton("Move left", css.left(), this);
+        this.left = new IconButton(RESOURCES.leftIcon(), css.left(), "Move left", this);
         this.add(this.left);
-        this.right = new PwpButton("Move right", css.right(), this);
+        this.right = new IconButton(RESOURCES.rightIcon(), css.right(), "Move right", this);
         this.add(this.right);
-        this.down = new PwpButton("Move down", css.down(), this);
+        this.down = new IconButton(RESOURCES.downIcon(), css.down(), "Move down", this);
         this.add(this.down);
 
         this.setVisible(false);
@@ -62,7 +64,7 @@ public class NavigationControlPanel extends AbsolutePanel implements ClickHandle
     @Override
     public void onClick(ClickEvent event) {
         ControlAction action = ControlAction.NONE;
-        PwpButton btn = (PwpButton) event.getSource();
+        Button btn = (Button) event.getSource();
         if (btn.equals(this.zoomIn)) {
             action = ControlAction.ZOOM_IN;
         } else if (btn.equals(this.zoomOut)) {
@@ -120,101 +122,23 @@ public class NavigationControlPanel extends AbsolutePanel implements ClickHandle
         @Source(ControlPanelCSS.CSS)
         ControlPanelCSS getCSS();
 
-        @Source("images/down_clicked.png")
-        ImageResource downClicked();
+        @Source("images/down.png")
+        ImageResource downIcon();
 
-        @Source("images/down_disabled.png")
-        ImageResource downDisabled();
+        @Source("images/left.png")
+        ImageResource leftIcon();
 
-        @Source("images/down_hovered.png")
-        ImageResource downHovered();
+        @Source("images/right.png")
+        ImageResource rightIcon();
 
-        @Source("images/down_normal.png")
-        ImageResource downNormal();
+        @Source("images/up.png")
+        ImageResource upIcon();
 
-        @Source("images/fitall_clicked.png")
-        ImageResource fitallClicked();
+        @Source("images/zoomin.png")
+        ImageResource zoomInIcon();
 
-        @Source("images/fitall_disabled.png")
-        ImageResource fitallDisabled();
-
-        @Source("images/fitall_hovered.png")
-        ImageResource fitallHovered();
-
-        @Source("images/fitall_normal.png")
-        ImageResource fitallNormal();
-
-        @Source("images/left_clicked.png")
-        ImageResource leftClicked();
-
-        @Source("images/left_disabled.png")
-        ImageResource leftDisabled();
-
-        @Source("images/left_hovered.png")
-        ImageResource leftHovered();
-
-        @Source("images/left_normal.png")
-        ImageResource leftNormal();
-
-        @Source("images/open_clicked.png")
-        ImageResource openClicked();
-
-        @Source("images/open_disabled.png")
-        ImageResource openDisabled();
-
-        @Source("images/open_hovered.png")
-        ImageResource openHovered();
-
-        @Source("images/open_normal.png")
-        ImageResource openNormal();
-
-        @Source("images/right_clicked.png")
-        ImageResource rightClicked();
-
-        @Source("images/right_disabled.png")
-        ImageResource rightDisabled();
-
-        @Source("images/right_hovered.png")
-        ImageResource rightHovered();
-
-        @Source("images/right_normal.png")
-        ImageResource rightNormal();
-
-        @Source("images/up_clicked.png")
-        ImageResource upClicked();
-
-        @Source("images/up_disabled.png")
-        ImageResource upDisabled();
-
-        @Source("images/up_hovered.png")
-        ImageResource upHovered();
-
-        @Source("images/up_normal.png")
-        ImageResource upNormal();
-
-        @Source("images/zoomin_clicked.png")
-        ImageResource zoomInClicked();
-
-        @Source("images/zoomin_disabled.png")
-        ImageResource zoomInDisabled();
-
-        @Source("images/zoomin_hovered.png")
-        ImageResource zoomInHovered();
-
-        @Source("images/zoomin_normal.png")
-        ImageResource zoomInNormal();
-
-        @Source("images/zoomout_clicked.png")
-        ImageResource zoomOutClicked();
-
-        @Source("images/zoomout_disabled.png")
-        ImageResource zoomOutDisabled();
-
-        @Source("images/zoomout_hovered.png")
-        ImageResource zoomOutHovered();
-
-        @Source("images/zoomout_normal.png")
-        ImageResource zoomOutNormal();
+        @Source("images/zoomout.png")
+        ImageResource zoomOutIcon();
     }
 
     /**

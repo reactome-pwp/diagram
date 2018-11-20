@@ -5,147 +5,320 @@
     height: 46px;
 }
 
-@sprite .down {
-    gwt-image: 'downNormal';
-    outline: none;
-    background-repeat: no-repeat;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
+.down {
     position: absolute;
     left: 12px;
     top: 24px;
+    background-color: #58C3E5;
+    border: none;
+    outline: none;
+    border-radius: 12px;
+    color: white;
+    margin: 0;
+    padding: 0;
+    /*border: 0;*/
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
     box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 }
 
-@sprite .down:hover {
-    gwt-image: 'downHovered';
+.down>div {
+    margin: 0;
+    position: relative;
 }
 
-@sprite .down:active:hover {
-    gwt-image: 'downClicked';
+.down span {
+    display: none;
 }
 
-@sprite .left {
-    gwt-image: 'leftNormal';
-    outline: none;
-    background-repeat: no-repeat;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
+.down img {
+    display: block;
+    height: 16px;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+}
+
+.down:hover {
+    background-color: #1E95CF;
+    cursor: pointer !important;
+}
+
+.down:active:hover {
+    background-color: #066B9E;
+    cursor: pointer !important;
+}
+
+.down:disabled, .down:disabled:hover, .down:disabled:active{
+    background-color: #9a9c9e;
+    cursor: default !important;
+}
+
+.left {
     position: absolute;
     left: 0;
     top: 12px;
+    background-color: #58C3E5;
+    border: none;
+    outline: none;
+    border-radius: 12px;
+    color: white;
+    margin: 0;
+    padding: 0;
+    /*border: 0;*/
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
     box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 }
 
-@sprite .left:hover {
-    gwt-image: 'leftHovered';
+.left>div {
+    margin: 0;
+    position: relative;
 }
 
-@sprite .left:active:hover {
-    /*margin: 3px 7px;*/
-    gwt-image: 'leftClicked';
+.left span {
+    display: none;
 }
 
-@sprite .right {
-    gwt-image: 'rightNormal';
-    outline: none;
-    background-repeat: no-repeat;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
+.left img {
+    display: block;
+    height: 16px;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+}
+
+.left:hover {
+    background-color: #1E95CF;
+    cursor: pointer !important;
+}
+
+.left:active:hover {
+    background-color: #066B9E;
+    cursor: pointer !important;
+}
+
+.left:disabled, .left:disabled:hover, .left:disabled:active{
+    background-color: #9a9c9e;
+    cursor: default !important;
+}
+
+.right {
     position: absolute;
     left: 24px;
     top: 12px;
+    background-color: #58C3E5;
+    border: none;
+    outline: none;
+    border-radius: 12px;
+    color: white;
+    margin: 0;
+    padding: 0;
+    /*border: 0;*/
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
     box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 }
 
-@sprite .right:hover {
-    gwt-image: 'rightHovered';
+.right>div {
+    margin: 0;
+    position: relative;
 }
 
-@sprite .right:active:hover {
-    gwt-image: 'rightClicked';
+.right span {
+    display: none;
 }
 
-@sprite .up {
-    gwt-image: 'upNormal';
-    outline: none;
-    background-repeat: no-repeat;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
+.right img {
+    display: block;
+    height: 16px;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+}
+
+.right:hover {
+    background-color: #1E95CF;
+    cursor: pointer !important;
+}
+
+.right:active:hover {
+    background-color: #066B9E;
+    cursor: pointer !important;
+}
+
+.right:disabled, .right:disabled:hover, .right:disabled:active{
+    background-color: #9a9c9e;
+    cursor: default !important;
+}
+
+.up {
     position: absolute;
     left: 12px;
     top: 0;
+    background-color: #58C3E5;
+    border: none;
+    outline: none;
+    border-radius: 12px;
+    color: white;
+    margin: 0;
+    padding: 0;
+    /*border: 0;*/
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
     box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 }
 
-@sprite .up:hover {
-    gwt-image: 'upHovered';
+.up>div {
+    margin: 0;
+    position: relative;
 }
 
-@sprite .up:active:hover {
-    gwt-image: 'upClicked';
+.up span {
+    display: none;
 }
 
-@sprite .zoomIn {
-    gwt-image: 'zoomInNormal';
-    outline: none;
-    background-repeat: no-repeat;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
+.up img {
+    display: block;
+    height: 16px;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+}
+
+.up:hover {
+    background-color: #1E95CF;
+    cursor: pointer !important;
+}
+
+.up:active:hover {
+    background-color: #066B9E;
+    cursor: pointer !important;
+}
+
+.up:disabled, .up:disabled:hover, .up:disabled:active{
+    background-color: #9a9c9e;
+    cursor: default !important;
+}
+
+.zoomIn {
     position: absolute;
     left: 40px;
     top: 0;
+    background-color: #58C3E5;
+    border: none;
+    outline: none;
+    border-radius: 12px;
+    color: white;
+    margin: 0;
+    padding: 0;
+    /*border: 0;*/
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
     box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 }
 
-@sprite .zoomIn:hover {
-    gwt-image: 'zoomInHovered';
+.zoomIn>div {
+    margin: 0;
+    position: relative;
 }
 
-@sprite .zoomIn:active:hover {
-    gwt-image: 'zoomInClicked';
+.zoomIn span {
+    display: none;
 }
 
-@sprite .zoomOut {
-    gwt-image: 'zoomOutNormal';
-    outline: none;
-    background-repeat: no-repeat;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
+.zoomIn img {
+    display: block;
+    height: 16px;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+}
+
+.zoomIn:hover {
+    background-color: #1E95CF;
+    cursor: pointer !important;
+}
+
+.zoomIn:active:hover {
+    background-color: #066B9E;
+    cursor: pointer !important;
+}
+
+.zoomIn:disabled, .zoomIn:disabled:hover, .zoomIn:disabled:active{
+    background-color: #9a9c9e;
+    cursor: default !important;
+}
+
+.zoomOut {
     position: absolute;
     left: 40px;
     top: 24px;
+    background-color: #58C3E5;
+    border: none;
+    outline: none;
+    border-radius: 12px;
+    color: white;
+    margin: 0;
+    padding: 0;
+    /*border: 0;*/
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
     box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 }
 
-@sprite .zoomOut:hover {
-    gwt-image: 'zoomOutHovered';
+.zoomOut>div {
+    margin: 0;
+    position: relative;
 }
 
-@sprite .zoomOut:active:hover {
-    gwt-image: 'zoomOutClicked';
+.zoomOut span {
+    display: none;
+}
+
+.zoomOut img {
+    display: block;
+    height: 16px;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+}
+
+.zoomOut:hover {
+    background-color: #1E95CF;
+    cursor: pointer !important;
+}
+
+.zoomOut:active:hover {
+    background-color: #066B9E;
+    cursor: pointer !important;
+}
+
+.zoomOut:disabled, .zoomOut:disabled:hover, .zoomOut:disabled:active{
+    background-color: #9a9c9e;
+    cursor: default !important;
 }
