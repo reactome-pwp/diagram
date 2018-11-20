@@ -9,7 +9,8 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.diagram.client.visualisers.ehld.filters.FilterColour;
 import org.reactome.web.diagram.client.visualisers.ehld.filters.FilterFactory;
-import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
+import org.reactome.web.diagram.context.popups.export.ExportDialog;
+import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.util.position.MousePosition;
 import org.reactome.web.diagram.util.svg.SVGUtil;
 import org.vectomatic.dom.svg.*;
@@ -76,25 +77,16 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         sb = new StringBuilder();
     }
 
-    public void exportView(String stableId){
+    public void showExportDialog(final Context context, final String selected, final String flagged) {
         if(svg != null) {
             OMSVGSVGElement auxSVG = (OMSVGSVGElement) svg.cloneNode(true);
-            auxSVG.setViewBox(initialBB);
-
-            //Reset all transformations
-            sb.setLength(0);
-            sb.append("matrix(").append(initialTM.getA()).append(",").append(initialTM.getB()).append(",").append(initialTM.getC()).append(",")
-                    .append(initialTM.getD()).append(",").append(initialTM.getE()).append(",").append(initialTM.getF()).append(")");
-            for (OMSVGElement svgLayer : getRootLayers(auxSVG)) {
-                svgLayer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, sb.toString());
-            }
-
-            Image image = new Image();
-            image.setUrl("data:image/svg+xml;base64," + btoa(auxSVG.getMarkup()));
-            final ImageDownloadDialog downloadDialogBox = new ImageDownloadDialog(image, "svg", stableId);
-            downloadDialogBox.showCentered();
+            Image snapshot = new Image();
+            snapshot.setUrl("data:image/svg+xml;base64," + btoa(auxSVG.getMarkup()));
+            final ExportDialog dialog = new ExportDialog(context, selected, flagged, snapshot);
+            dialog.showCentered();
         }
     }
+
 
     native String btoa(String b64) /*-{
         return btoa(unescape(encodeURIComponent(b64)));
@@ -282,5 +274,18 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
             rtn = textElements.get(0);
         }
         return rtn;
+    }
+
+    private void resetAllTransformations(OMSVGSVGElement auxSVG) {
+        auxSVG.setViewBox(initialBB);
+
+        //Reset all transformations
+        sb.setLength(0);
+        sb.append("matrix(").append(initialTM.getA()).append(",").append(initialTM.getB()).append(",").append(initialTM.getC()).append(",")
+                .append(initialTM.getD()).append(",").append(initialTM.getE()).append(",").append(initialTM.getF()).append(")");
+        for (OMSVGElement svgLayer : getRootLayers(auxSVG)) {
+            svgLayer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, sb.toString());
+        }
+
     }
 }

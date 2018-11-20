@@ -34,8 +34,6 @@ import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 import java.util.Collection;
 import java.util.Set;
 
-import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
-
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
@@ -260,13 +258,9 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
     }
 
     @Override
-    public void exportView(Option option) {
+    public void exportView() {
         if (context != null) {
-            String stId = context.getContent().getStableId();
-            switch (option) {
-                case IMAGE: canvas.exportImage(stId); break;
-                case PPTX:  canvas.exportPPT(stId, layoutManager.getSelectedDiagramObjects(), layoutManager.getFlagged()); break;
-            }
+            canvas.showExportDialog(context, layoutManager.getSelectedDiagramObjects(), layoutManager.getFlagged());
         }
     }
 

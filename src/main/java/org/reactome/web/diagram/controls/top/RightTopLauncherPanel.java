@@ -7,9 +7,9 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
-import org.reactome.web.diagram.common.ExpandibleContainer;
-import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.controls.top.common.AbstractMenuDialog;
 import org.reactome.web.diagram.controls.top.illustrations.DiagramIllustrations;
 import org.reactome.web.diagram.controls.top.key.DiagramKey;
@@ -24,8 +24,6 @@ import java.util.Map;
 
 import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 import static org.reactome.web.diagram.data.content.Content.Type.SVG;
-import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option.IMAGE;
-import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option.PPTX;
 
 
 /**
@@ -39,12 +37,9 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
     private AbstractMenuDialog diagramKey;
     private Map<Content.Type, AbstractMenuDialog> keys;
 
-    private PwpButton illustrationsBtn;
-    private PwpButton captureBtn;
-    private PwpButton exportBtn;
-    private PwpButton diagramKeyBtn;
-
-    private ExpandibleContainer expContainer;
+    private IconButton illustrationsBtn;
+    private IconButton exportBtn;
+    private IconButton diagramKeyBtn;
 
     public RightTopLauncherPanel(EventBus eventBus) {
         this.setStyleName(RESOURCES.getCSS().launcherPanel());
@@ -57,19 +52,13 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
 
         this.diagramIllustrations = new DiagramIllustrations(eventBus);
 
-        this.illustrationsBtn = new PwpButton("Show illustrations", RESOURCES.getCSS().illustrations(), this);
+        this.illustrationsBtn = new IconButton(RESOURCES.illustrationsIcon(), RESOURCES.getCSS().illustrations(), "Show illustrations", this);
         this.add(illustrationsBtn);
 
-        this.captureBtn = new PwpButton("Export image", RESOURCES.getCSS().camera(), this);
+        this.exportBtn = new IconButton(RESOURCES.exportIcon(), RESOURCES.getCSS().export(), "Export diagram", this);
+        this.add(exportBtn);
 
-        this.exportBtn = new PwpButton("Export to pptx", RESOURCES.getCSS().exportPPT(), this);
-
-        expContainer = new ExpandibleContainer("Select one export option", RESOURCES.getCSS().export());
-        expContainer.addButton(captureBtn);
-        expContainer.addButton(exportBtn);
-        add(expContainer);
-
-        this.diagramKeyBtn = new PwpButton("Diagram key", RESOURCES.getCSS().key(), this);
+        this.diagramKeyBtn = new IconButton(RESOURCES.keyIcon(), RESOURCES.getCSS().key(), "Diagram key", this);
         this.add(this.diagramKeyBtn);
 
         eventBus.addHandler(ContentLoadedEvent.TYPE, this);
@@ -78,10 +67,9 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
 
     @Override
     public void onClick(ClickEvent event) {
-        PwpButton btn = (PwpButton) event.getSource();
-        if (btn.equals(this.captureBtn)) {
-            expContainer.collapse();
-            this.eventBus.fireEventFromSource(new CanvasExportRequestedEvent(IMAGE), this);
+        Button btn = (Button) event.getSource();
+        if (btn.equals(this.exportBtn)) {
+            this.eventBus.fireEventFromSource(new CanvasExportRequestedEvent(), this);
         } else if (btn.equals(this.diagramKeyBtn)) {
             if (this.diagramKey.isShowing()) {
                 this.diagramKey.hide();
@@ -94,9 +82,6 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
             } else {
                 this.diagramIllustrations.showRelativeTo(btn);
             }
-        } else if (btn.equals(this.exportBtn)) {
-            expContainer.collapse();
-            this.eventBus.fireEventFromSource(new CanvasExportRequestedEvent(PPTX), this);
         }
     }
 
@@ -104,11 +89,9 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
     public void onContentLoaded(ContentLoadedEvent event) {
         switch (event.getContext().getContent().getType()) {
             case DIAGRAM:
-                exportBtn.setVisible(true);
                 illustrationsBtn.setEnabled(true);
                 break;
             case SVG:
-                exportBtn.setVisible(false);
                 illustrationsBtn.setEnabled(false);
                 if (this.diagramIllustrations.isShowing()) {
                     this.diagramIllustrations.hide();
@@ -132,71 +115,25 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         ResourceCSS getCSS();
 
 
-        @Source("images/camera_clicked.png")
-        ImageResource cameraClicked();
+        @Source("images/camera.png")
+        ImageResource cameraIcon();
 
-        @Source("images/camera_disabled.png")
-        ImageResource cameraDisabled();
+        @Source("images/illustrations.png")
+        ImageResource illustrationsIcon();
 
-        @Source("images/camera_hovered.png")
-        ImageResource cameraHovered();
+        @Source("images/key.png")
+        ImageResource keyIcon();
 
-        @Source("images/camera_normal.png")
-        ImageResource cameraNormal();
-
-        @Source("images/illustrations_clicked.png")
-        ImageResource illustrationsClicked();
-
-        @Source("images/illustrations_disabled.png")
-        ImageResource illustrationsDisabled();
-
-        @Source("images/illustrations_hovered.png")
-        ImageResource illustrationsHovered();
-
-        @Source("images/illustrations_normal.png")
-        ImageResource illustrationsNormal();
-
-        @Source("images/key_clicked.png")
-        ImageResource keyClicked();
-
-        @Source("images/key_disabled.png")
-        ImageResource keyDisabled();
-
-        @Source("images/key_hovered.png")
-        ImageResource keyHovered();
-
-        @Source("images/key_normal.png")
-        ImageResource keyNormal();
-
-        @Source("images/export_hovered.png")
-        ImageResource exportHovered();
-
-        @Source("images/export_normal.png")
-        ImageResource exportNormal();
-
-        @Source("images/export2ppt_clicked.png")
-        ImageResource export2pptClicked();
-
-        @Source("images/export2ppt_disabled.png")
-        ImageResource export2pptDisabled();
-
-        @Source("images/export2ppt_hovered.png")
-        ImageResource export2pptHovered();
-
-        @Source("images/export2ppt_normal.png")
-        ImageResource export2pptNormal();
+        @Source("images/export.png")
+        ImageResource exportIcon();
 
     }
 
-    @CssResource.ImportedWithPrefix("diagram-LeftTopLauncher")
+    @CssResource.ImportedWithPrefix("diagram-RightTopLauncherPanel")
     public interface ResourceCSS extends CssResource {
         String CSS = "org/reactome/web/diagram/controls/top/RightTopLauncherPanel.css";
 
         String launcherPanel();
-
-        String camera();
-
-        String exportPPT();
 
         String export();
 

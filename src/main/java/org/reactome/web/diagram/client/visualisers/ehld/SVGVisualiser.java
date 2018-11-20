@@ -52,9 +52,7 @@ import org.vectomatic.dom.svg.utils.SVGConstants;
 import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 
 import java.util.*;
-
-import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
-
+import java.util.stream.Collectors;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -159,9 +157,22 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     }
 
     @Override
-    public void exportView(Option option) {
+    public void exportView() {
         if (context != null) {
-            exportView(context.getContent().getStableId());
+            // Concatenate selected items
+            String sel = null;
+            if (selected != null) {
+                sel = selected.getId().replace("REGION-", "");
+            }
+
+            // Concatenate flagged items
+            String flg = null;
+            if (flagged != null && !flagged.isEmpty()) {
+                flg = flagged.stream().map(n -> n.getId().replace("REGION-", "").toString()).collect(Collectors.joining(","));
+                Console.info("flg: " + flg);
+            }
+
+            showExportDialog(context, sel, flg);
         }
     }
 
