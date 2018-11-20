@@ -5,31 +5,30 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
-import org.reactome.web.diagram.events.CanvasExportRequestedEvent;
-import org.reactome.web.diagram.handlers.CanvasExportRequestedHandler;
-
-import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option.PPTX;
 
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class NotificationsContainer extends FlowPanel implements CanvasExportRequestedHandler {
+@Deprecated
+public class NotificationsContainer extends FlowPanel {
 
     public NotificationsContainer(EventBus eventBus) {
         this.setStyleName(RESOURCES.getCSS().container());
-
-        eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
         this.setVisible(true);
     }
 
-    @Override
-    public void onDiagramExportRequested(CanvasExportRequestedEvent event) {
-        if(event.getOption().equals(PPTX)) {
-            Notification notification = new ExpiringNotification("Your download will be completed shortly", 2000);
-            add(notification);
-            notification.display();
-        }
+//    @Override
+//    public void onCanvasExportRequested(CanvasExportRequestedEvent event) {
+//        if(event.getOption().equals(PPTX) || event.getOption().equals(SBGN)) {
+//                showNotification();
+//        }
+//    }
+
+    private void showNotification() {
+        Notification notification = new ExpiringNotification("Your download will be completed shortly", 2000);
+        add(notification);
+        notification.display();
     }
 
 
