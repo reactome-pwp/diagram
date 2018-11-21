@@ -12,13 +12,13 @@ import java.util.List;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public enum ImageDownloadType implements DownloadType {
-    SVG     ("SVG",     "/__STID__.svg__PARAMS__",   "SVG",     ImageFormatIcons.INSTANCE.SVGIcon()),
-    PNG     ("PNG",     "/__STID__.png__PARAMS__",   "PNG",     ImageFormatIcons.INSTANCE.PNGIcon(),    true),
-    JPEG    ("JPEG",    "/__STID__.jpeg__PARAMS__",  "JPEG",    ImageFormatIcons.INSTANCE.JPEGIcon(),   true),
-    JPG     ("JPG",     "/__STID__.jpg__PARAMS__",   "JPG",     ImageFormatIcons.INSTANCE.JPGIcon(),    true),
-    GIF     ("GIF",     "/__STID__.gif__PARAMS__",   "GIF",     ImageFormatIcons.INSTANCE.GIFIcon(),    true),
-    PPT     ("PPTX",    "/__STID__.pptx__PARAMS__",  "PPTX",    ImageFormatIcons.INSTANCE.PPTXIcon()),
-    SBGN    ("SBGN",    "/__STID__.sbgn__PARAMS__",  "SBGN",    ImageFormatIcons.INSTANCE.SBGNIcon());
+    SVG     ("SVG",     "/diagram/__STID__.svg__PARAMS__",   "SVG",     ImageFormatIcons.INSTANCE.SVGIcon()),
+    PNG     ("PNG",     "/diagram/__STID__.png__PARAMS__",   "PNG",     ImageFormatIcons.INSTANCE.PNGIcon(),    true),
+    JPEG    ("JPEG",    "/diagram/__STID__.jpeg__PARAMS__",  "JPEG",    ImageFormatIcons.INSTANCE.JPEGIcon(),   true),
+    JPG     ("JPG",     "/diagram/__STID__.jpg__PARAMS__",   "JPG",     ImageFormatIcons.INSTANCE.JPGIcon(),    true),
+    GIF     ("GIF",     "/diagram/__STID__.gif__PARAMS__",   "GIF",     ImageFormatIcons.INSTANCE.GIFIcon(),    true),
+    PPT     ("PPTX",    "/diagram/__STID__.pptx__PARAMS__",  "PPTX",    ImageFormatIcons.INSTANCE.PPTXIcon()),
+    SBGN    ("SBGN",    "/event/__STID__.sbgn__PARAMS__",    "SBGN",    ImageFormatIcons.INSTANCE.SBGNIcon());
 
     //NOTE: please put the quality values below in ascending order
     public static final List<Integer> QUALITIES = Arrays.asList(2, 5, 7);
@@ -35,7 +35,7 @@ public enum ImageDownloadType implements DownloadType {
 
     ImageDownloadType(String name, String templateURL, String tooltip, ImageResource icon, boolean hasQualityOptions) {
         this.name = name;
-        this.templateURL =  DiagramFactory.SERVER + "/ContentService/exporter/diagram" + templateURL;
+        this.templateURL =  DiagramFactory.SERVER + "/ContentService/exporter" + templateURL;
         this.tooltip = tooltip;
         this.icon = icon;
         this.hasQualityOptions = hasQualityOptions;
