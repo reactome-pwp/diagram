@@ -14,6 +14,7 @@ import org.reactome.web.diagram.context.popups.export.ExportDialog;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.DiagramStatus;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.*;
@@ -53,7 +54,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -270,7 +270,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         ctx.clearRect(0, 0, ctx.getCanvas().getWidth(), ctx.getCanvas().getHeight());
     }
 
-    public void showExportDialog(final Context context, final List<DiagramObject> selected, final Set<DiagramObject> flagged) {
+    public void showExportDialog(final Context context, final GraphObject selected, final String flagTerm) {
         final Context2d ctx = this.canvases.get(this.canvases.size() - 1).getContext2d();
         //This is silly but gives some visual feedback of the picture taking :D
         (new Timer() {
@@ -294,19 +294,8 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
                     Image snapshot = new Image();
                     snapshot.setUrl(ctx.getCanvas().toDataUrl("image/png"));
 
-                    // Concatenate selected items
-                    String sel = null;
-                    if (selected != null && !selected.isEmpty()) {
-                        sel = selected.stream().map(n -> n.getReactomeId().toString()).collect(Collectors.joining(","));
-                    }
-
-                    // Concatenate flagged items
-                    String flg = null;
-                    if (flagged != null && !flagged.isEmpty()) {
-                        flg = flagged.stream().map(n -> n.getReactomeId().toString()).collect(Collectors.joining(","));
-                    }
-
-                    final ExportDialog dialog = new ExportDialog(context, sel, flg, snapshot);
+                    String diagramStId = selected != null ? selected.getStId() : null;
+                    final ExportDialog dialog = new ExportDialog(context, diagramStId, flagTerm, snapshot);
                     dialog.showCentered();
                     cleanCanvas(ctx);
                 }

@@ -260,7 +260,7 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
     @Override
     public void exportView() {
         if (context != null) {
-            canvas.showExportDialog(context, layoutManager.getSelectedDiagramObjects(), layoutManager.getFlagged());
+            canvas.showExportDialog(context, layoutManager.getSelected(), context.getFlagTerm());
         }
     }
 
