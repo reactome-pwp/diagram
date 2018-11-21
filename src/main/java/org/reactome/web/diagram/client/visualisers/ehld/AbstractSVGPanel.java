@@ -87,7 +87,6 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         }
     }
 
-
     native String btoa(String b64) /*-{
         return btoa(unescape(encodeURIComponent(b64)));
     }-*/;

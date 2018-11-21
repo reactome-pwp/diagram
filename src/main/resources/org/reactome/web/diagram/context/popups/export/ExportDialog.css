@@ -133,8 +133,9 @@
     cursor: pointer;
 }
 
-.tabButton:hover {
-    background: none rgb(30, 148, 208);
+.tabButton:disabled, .tabButton:disabled:hover, .tabButton:disabled:active {
+    background: #9a9c9e;
+    cursor: default;
 }
 
 .tabButtonSelected {
