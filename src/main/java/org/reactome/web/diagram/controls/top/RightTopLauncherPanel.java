@@ -114,10 +114,6 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
 
-
-        @Source("images/camera.png")
-        ImageResource cameraIcon();
-
         @Source("images/illustrations.png")
         ImageResource illustrationsIcon();
 
