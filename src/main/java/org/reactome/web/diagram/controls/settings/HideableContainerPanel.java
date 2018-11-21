@@ -63,12 +63,7 @@ public class HideableContainerPanel extends FlowPanel implements ClickHandler {
         outerPanel.add(buttonsPanel);
         outerPanel.add(this.container);
 
-        showBtn = new PwpButton("Show/Hide settings", RESOURCES.getCSS().showHide(), new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent clickEvent) {
-               HideableContainerPanel.this.toggle();
-            }
-        });
+        showBtn = new PwpButton("Show/Hide settings", RESOURCES.getCSS().showHide(), clickEvent -> HideableContainerPanel.this.toggle());
 
         InlineLabel header = new InlineLabel("Settings");
         header.setStyleName(RESOURCES.getCSS().headerLabel());
@@ -151,13 +146,13 @@ public class HideableContainerPanel extends FlowPanel implements ClickHandler {
         @Source("tabs/aboutDiagram.html")
         TextResource aboutThis();
 
-        @Source("images/profiles_s.png")
+        @Source("images/profiles.png")
         ImageResource profilesTabIcon();
 
-        @Source("images/interactors_s.png")
+        @Source("images/interactors.png")
         ImageResource interactorsTabIcon();
 
-        @Source("images/about_s.png")
+        @Source("images/about.png")
         ImageResource aboutTabIcon();
 
         @Source("images/showHide.png")
