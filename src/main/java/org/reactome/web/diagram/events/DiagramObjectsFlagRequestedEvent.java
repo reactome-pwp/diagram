@@ -10,9 +10,11 @@ public class DiagramObjectsFlagRequestedEvent extends GwtEvent<DiagramObjectsFla
     public static final Type<DiagramObjectsFlagRequestHandler> TYPE = new Type<>();
 
     private String term;
+    private Boolean includeInteractors;
 
-    public DiagramObjectsFlagRequestedEvent(String term) {
+    public DiagramObjectsFlagRequestedEvent(String term, Boolean includeInteractors) {
         this.term = term;
+        this.includeInteractors = includeInteractors;
     }
 
     @Override
@@ -29,10 +31,15 @@ public class DiagramObjectsFlagRequestedEvent extends GwtEvent<DiagramObjectsFla
         return term;
     }
 
+    public Boolean getIncludeInteractors() {
+        return includeInteractors;
+    }
+
     @Override
     public String toString() {
-        return "DiagramObjectsFlagRequestEvent{" +
+        return "DiagramObjectsFlagRequestedEvent{" +
                 "term='" + term + '\'' +
+                ", includeInteractors=" + includeInteractors +
                 '}';
     }
 }
