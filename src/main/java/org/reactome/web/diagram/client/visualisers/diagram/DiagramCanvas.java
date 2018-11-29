@@ -493,7 +493,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         items = itemsDistribution.getAll("Reaction");
         if (!items.isEmpty()) { //No need to check for null here
             Renderer reactionRenderer = rendererManager.getRenderer("Reaction");
-            reactionRenderer.setColourProperties(reactions, colourProfileType);
+            reactionRenderer.setColourProperties(reactions, ColourProfileType.NORMAL);
             reactionRenderer.setColourProperties(this.fadeOut, ColourProfileType.FADE_OUT);
             for (DiagramObject item : items) {
                 if (item.getIsFadeOut() != null) {
