@@ -7,7 +7,7 @@
     <groupId>org.reactome.web</groupId>
     <artifactId>diagram</artifactId>
     <packaging>jar</packaging>
-    <version>3.6.2</version>
+    <version>3.6.3-SNAPSHOT</version>
     <name>Reactome Diagram Viewer</name>
 
     <description>
@@ -44,7 +44,7 @@
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
 
         <reactome.web.analysis-client>1.4.0</reactome.web.analysis-client>
-        <reactome.web.model>2.0.4</reactome.web.model>
+        <reactome.web.model>2.0.6-SNAPSHOT</reactome.web.model>
         <reactome.web.carrousel>1.0.2</reactome.web.carrousel>
         <reactome.web.scroller>1.0.2</reactome.web.scroller>
         <reactome.web.quadtree>1.2.0</reactome.web.quadtree>

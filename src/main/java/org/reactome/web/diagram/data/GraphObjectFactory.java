@@ -39,7 +39,6 @@ public abstract class GraphObjectFactory {
             case ENTITY_SET:                        dbObject = new GraphEntitySet((EntityNode) node);                       break;
             case ENTITY_WITH_ACCESSIONED_SEQUENCE:  dbObject = new GraphEntityWithAccessionedSequence((EntityNode) node);   break;
             case GENOME_ENCODED_ENTITY:             dbObject = new GraphGenomeEncodedEntity((EntityNode) node);             break;
-            case OPEN_SET:                          dbObject = new GraphOpenSet((EntityNode) node);                         break;
             case OTHER_ENTITY:                      dbObject = new GraphOtherEntity((EntityNode) node);                     break;
             case PATHWAY:                           dbObject = new GraphPathway((EntityNode) node);                         break;
             case TOP_LEVEL_PATHWAY:                 dbObject = new GraphPathway((EntityNode) node);                         break;
