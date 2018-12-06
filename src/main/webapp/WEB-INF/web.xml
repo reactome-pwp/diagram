@@ -16,7 +16,7 @@
             <param-name>proxyHost</param-name>
             <!--<param-value>localhost</param-value>-->
             <!--<param-value>reactome.org</param-value>-->
-            <param-value>reactomedev.oicr.on.ca</param-value>
+            <param-value>dev.reactome.org</param-value>
             <!--<param-value>reactomerelease.oicr.on.ca</param-value>-->
         </init-param>
         <init-param>
@@ -42,7 +42,7 @@
         <init-param>
             <param-name>proxyHost</param-name>
             <!--<param-value>localhost</param-value>-->
-            <param-value>reactomedev.oicr.on.ca</param-value>
+            <param-value>dev.reactome.org</param-value>
             <!--<param-value>reactome.org</param-value>-->
             <!--<param-value>reactomerelease.oicr.on.ca</param-value>-->
         </init-param>
