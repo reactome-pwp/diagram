@@ -7,15 +7,14 @@ import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.analysis.client.model.AnalysisType;
-import org.reactome.web.diagram.client.DiagramFactory;
-import org.reactome.web.diagram.context.popups.ImageDownloadDialog;
+import org.reactome.web.diagram.context.popups.export.ExportDialog;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.DiagramStatus;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.*;
@@ -55,7 +54,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -272,7 +270,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         ctx.clearRect(0, 0, ctx.getCanvas().getWidth(), ctx.getCanvas().getHeight());
     }
 
-    public void exportImage(final String diagramStId) {
+    public void showExportDialog(final Context context, final GraphObject selected, final String flagTerm) {
         final Context2d ctx = this.canvases.get(this.canvases.size() - 1).getContext2d();
         //This is silly but gives some visual feedback of the picture taking :D
         (new Timer() {
@@ -293,32 +291,16 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
                     for (int i = 0; i < canvases.size() - 1; i++) {
                         ctx.drawImage(canvases.get(i).getCanvasElement(), 0, 0);
                     }
-                    Image image = new Image();
-                    image.setUrl(ctx.getCanvas().toDataUrl("image/png"));
-                    final ImageDownloadDialog downloadDialogBox = new ImageDownloadDialog(image, "png",diagramStId);
-                    downloadDialogBox.showCentered();
+                    Image snapshot = new Image();
+                    snapshot.setUrl(ctx.getCanvas().toDataUrl("image/png"));
+
+                    String diagramStId = selected != null ? selected.getStId() : null;
+                    final ExportDialog dialog = new ExportDialog(context, diagramStId, flagTerm, snapshot);
+                    dialog.showCentered();
                     cleanCanvas(ctx);
                 }
             }
         }).scheduleRepeating(20);
-    }
-
-    public void exportPPT(final String diagramStId, final List<DiagramObject> selected, final Set<DiagramObject> flagged) {
-        //The following uses the SERVER because the widget needs to work when stand-alone
-        String url = DiagramFactory.SERVER + "/ContentService/exporter/diagram/"
-                + diagramStId + ".pptx?profile="
-                + DiagramColours.get().getSelectedProfileName();
-        // Add selected items
-        if (selected != null && !selected.isEmpty()) {
-            String sel = "&sel=" + selected.stream().map(n -> n.getReactomeId().toString()).collect(Collectors.joining(","));
-            url = url + sel;
-        }
-        //Add flagged items
-        if (flagged != null && !flagged.isEmpty()) {
-            String flg = "&flg=" + flagged.stream().map(n -> n.getReactomeId().toString()).collect(Collectors.joining(","));
-            url = url + flg;
-        }
-        Window.open(url, "_self", "");
     }
 
     public void notifyHoveredExpression(DiagramObject item, Coordinate model) {

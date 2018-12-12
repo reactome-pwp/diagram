@@ -194,8 +194,8 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     @Override
-    public void onDiagramExportRequested(CanvasExportRequestedEvent event) {
-        activeVisualiser.exportView(event.getOption());
+    public void onCanvasExportRequested(CanvasExportRequestedEvent event) {
+        activeVisualiser.exportView();
     }
 
     @Override
@@ -225,10 +225,10 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
             case FIT_ALL:       activeVisualiser.fitDiagram(true);  break;
             case ZOOM_IN:       activeVisualiser.zoomIn();                    break;
             case ZOOM_OUT:      activeVisualiser.zoomOut();                   break;
-            case UP:            activeVisualiser.padding(0, 10);      break;
-            case RIGHT:         activeVisualiser.padding(-10, 0);     break;
-            case DOWN:          activeVisualiser.padding(0, -10);     break;
-            case LEFT:          activeVisualiser.padding(10, 0);      break;
+            case UP:            activeVisualiser.padding(0, 10);     break;
+            case RIGHT:         activeVisualiser.padding(-10, 0);    break;
+            case DOWN:          activeVisualiser.padding(0, -10);    break;
+            case LEFT:          activeVisualiser.padding(10, 0);     break;
             case FIREWORKS:     overview();                                   break;
         }
     }

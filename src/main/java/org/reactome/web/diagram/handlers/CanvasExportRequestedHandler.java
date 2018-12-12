@@ -8,6 +8,6 @@ import org.reactome.web.diagram.events.CanvasExportRequestedEvent;
  */
 public interface CanvasExportRequestedHandler extends EventHandler {
 
-    void onDiagramExportRequested(CanvasExportRequestedEvent event);
+    void onCanvasExportRequested(CanvasExportRequestedEvent event);
 
 }

@@ -7,39 +7,42 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.client.DiagramFactory;
-import org.reactome.web.diagram.common.PwpButton;
+import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.events.ControlActionEvent;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class MainControlPanel extends FlowPanel implements ClickHandler {
 
     private EventBus eventBus;
-    private PwpButton fitAll;
-    private PwpButton fireworks;
+    private IconButton fitAll;
+    private IconButton fireworks;
 
     public MainControlPanel(EventBus eventBus) {
         this.eventBus = eventBus;
 
         this.addStyleName(RESOURCES.getCSS().mainControlPanel());
-        this.fitAll = new PwpButton("Show all", RESOURCES.getCSS().fitall(), this);
-        this.fireworks = new PwpButton("Pathway overview", RESOURCES.getCSS().fireworks(), this);
 
+        this.fitAll = new IconButton(RESOURCES.fitallIcon(), RESOURCES.getCSS().fitall(), "Show all", this);
         this.add(this.fitAll);
+
         if(DiagramFactory.SHOW_FIREWORKS_BTN) {
+            this.fireworks = new IconButton( RESOURCES.fireworksIcon(), RESOURCES.getCSS().fireworks(),"Pathway overview", this);
             this.add(this.fireworks);
         }
     }
 
     @Override
     public void onClick(ClickEvent event) {
-        PwpButton btn = (PwpButton) event.getSource();
-        if(btn.equals(this.fitAll)) {
+        Button btn = (Button) event.getSource();
+        if (btn.equals(this.fitAll)) {
             this.eventBus.fireEventFromSource(new ControlActionEvent(ControlAction.FIT_ALL), this);
-        }else if(btn.equals(this.fireworks)){
+        } else if(btn.equals(this.fireworks)) {
             this.eventBus.fireEventFromSource(new ControlActionEvent(ControlAction.FIREWORKS), this);
         }
     }
@@ -61,29 +64,11 @@ public class MainControlPanel extends FlowPanel implements ClickHandler {
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
 
-        @Source("images/fitall_clicked.png")
-        ImageResource fitallClicked();
+        @Source("images/fitall.png")
+        ImageResource fitallIcon();
 
-        @Source("images/fitall_disabled.png")
-        ImageResource fitallDisabled();
-
-        @Source("images/fitall_hovered.png")
-        ImageResource fitallHovered();
-
-        @Source("images/fitall_normal.png")
-        ImageResource fitallNormal();
-
-        @Source("images/fireworks_clicked.png")
-        ImageResource fireworksClicked();
-
-        @Source("images/fireworks_disabled.png")
-        ImageResource fireworksDisabled();
-
-        @Source("images/fireworks_hovered.png")
-        ImageResource fireworksHovered();
-
-        @Source("images/fireworks_normal.png")
-        ImageResource fireworksNormal();
+        @Source("images/fireworks.png")
+        ImageResource fireworksIcon();
     }
 
     /**

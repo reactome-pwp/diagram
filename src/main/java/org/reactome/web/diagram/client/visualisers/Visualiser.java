@@ -9,8 +9,6 @@ import org.reactome.web.diagram.data.layout.DiagramObject;
 
 import java.util.Set;
 
-import static org.reactome.web.diagram.events.CanvasExportRequestedEvent.Option;
-
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -27,7 +25,7 @@ public interface Visualiser extends IsWidget {
 
     void padding(int dX, int dY);
 
-    void exportView(Option option);
+    void exportView();
 
     void contentLoaded(Context context);
 

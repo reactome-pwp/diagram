@@ -25,7 +25,7 @@ public class IconButton extends Button {
             fp.add(image);
         }
 
-        if(!text.isEmpty()) {
+        if(text!=null && !text.isEmpty()) {
             label = new InlineLabel(text);
             fp.add(label);
         }
@@ -35,6 +35,13 @@ public class IconButton extends Button {
 
     public IconButton(String text, ImageResource imageResource, ClickHandler clickHandler) {
         this(text, imageResource);
+        addClickHandler(clickHandler);
+    }
+
+    public IconButton(ImageResource imageResource, String style, String tooltip, ClickHandler clickHandler) {
+        this(null, imageResource);
+        this.setStyleName(style);
+        this.setTitle(tooltip);
         addClickHandler(clickHandler);
     }
 

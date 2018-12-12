@@ -1,0 +1,70 @@
+.downloadItem {
+    height: 40px;
+    width: 40px;
+    margin: 10px 11px 0 0;
+    background-color: #58c3e5;
+    text-decoration: none;
+    color: white;
+    padding: 4px;
+    display: inline-block;
+    line-height: 1em;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+    overflow: hidden;
+
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+
+    white-space: nowrap;
+    direction: rtl;     /* Change this to make the options appear from the right*/
+}
+
+.downloadItem img {
+    display: inline-block;
+    width: 100%;
+    max-width: 40px;
+    height: auto;
+
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+}
+
+.downloadItem:hover {
+    background-color: #5cccee;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.35);
+}
+
+.downloadItemExpanded {
+    width: 106px;
+}
+
+.linkPanel {
+    display: inline-block;
+    width: 57px;
+    margin-right: 8px;
+    height: 40px;
+    vertical-align: top;
+}
+
+.linkItem {
+    background-color: #1e91d0;
+    display: block;
+    text-decoration: none;
+    font-size: small;
+    color: white;
+    border-radius: 3px;
+    text-align: center;
+    margin-top: 1px;
+}
+
+.linkItem:hover {
+    background-color: #0d57ab;
+    display: block;
+    text-decoration: none;
+    color: white;
+}
+
+.linkItem:visited {
+    text-decoration: none;
+    color: white;
+}

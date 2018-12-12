@@ -73,6 +73,11 @@
     transition: width 0.2s ease-in-out;
 }
 
+.buttonsPanel button img {
+    height: 16px;
+    width: auto;
+}
+
 .buttonsPanel button:hover {
     color: white;
     background: none rgb(88, 195, 229);
