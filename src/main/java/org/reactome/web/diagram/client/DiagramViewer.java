@@ -33,7 +33,7 @@ public interface DiagramViewer extends IsWidget, HasHandlers, RequiresResize {
 
     HandlerRegistration addAnalysisProfileChangedHandler(AnalysisProfileChangedHandler handler);
 
-    void flagItems(String identifier);
+    void flagItems(String identifier, Boolean includeInteractors);
 
     void highlightItem(String stableIdentifier);
 

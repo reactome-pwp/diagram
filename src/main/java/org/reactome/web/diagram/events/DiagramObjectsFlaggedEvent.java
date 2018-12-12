@@ -13,11 +13,13 @@ public class DiagramObjectsFlaggedEvent extends GwtEvent<DiagramObjectsFlaggedHa
     public static final Type<DiagramObjectsFlaggedHandler> TYPE = new Type<>();
 
     private String term;
+    private Boolean includeInteractors;
     private Set<DiagramObject> flaggedItems;
     private boolean notify;
 
-    public DiagramObjectsFlaggedEvent(String term, Set<DiagramObject> flaggedItems, boolean notify) {
+    public DiagramObjectsFlaggedEvent(String term, Boolean includeInteractors, Set<DiagramObject> flaggedItems, boolean notify) {
         this.term = term;
+        this.includeInteractors = includeInteractors;
         this.flaggedItems = flaggedItems;
         this.notify = notify;
     }
@@ -36,6 +38,10 @@ public class DiagramObjectsFlaggedEvent extends GwtEvent<DiagramObjectsFlaggedHa
         return term;
     }
 
+    public Boolean getIncludeInteractors() {
+        return includeInteractors;
+    }
+
     public Set<DiagramObject> getFlaggedItems() {
         return flaggedItems;
     }
@@ -48,6 +54,8 @@ public class DiagramObjectsFlaggedEvent extends GwtEvent<DiagramObjectsFlaggedHa
     public String toString() {
         return "DiagramObjectsFlaggedEvent{" +
                 "term='" + term + '\'' +
+                ", includeInteractors=" + includeInteractors +
+                ", flaggedItems=" + (flaggedItems != null ? flaggedItems.size() : 0) +
                 '}';
     }
 }
