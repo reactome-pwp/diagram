@@ -21,6 +21,7 @@ public class ImageTabPanel extends FlowPanel {
     private final String diagramStId;
     private final String selected;
     private final String flagged;
+    private final Boolean includeInteractors;
     private final AnalysisStatus status;
     private final String diagramProfile;
     private final String analysisProfile;
@@ -35,6 +36,7 @@ public class ImageTabPanel extends FlowPanel {
     public ImageTabPanel(final String diagramStId,
                          final String selected,
                          final String flagged,
+                         final Boolean includeInteractors,
                          final AnalysisStatus status,
                          final String diagramProfile,
                          final String analysisProfile,
@@ -42,6 +44,7 @@ public class ImageTabPanel extends FlowPanel {
         this.diagramStId = diagramStId;
         this.selected = selected;
         this.flagged = flagged;
+        this.includeInteractors = includeInteractors;
         this.status = status;
         this.diagramProfile = diagramProfile;
         this.analysisProfile = analysisProfile;
@@ -113,10 +116,14 @@ public class ImageTabPanel extends FlowPanel {
             params.add("diagramProfile=" + diagramProfile);
 
             if (selected != null) { params.add("sel=" + selected); }
-            if (flagged != null)  { params.add("flg=" + flagged); }
+            if (flagged != null)  {
+                params.add("flg=" + flagged);
+                params.add("flgInteractors=" + includeInteractors);
+            }
             if (status != null && !status.isEmpty()) {
                 params.add("token=" + status.getToken());
                 params.add("analysisProfile=" + analysisProfile);
+                params.add("resource=" + status.getResource());
             }
 
             String paramsStr = "?" + params.stream().collect(Collectors.joining("&"));

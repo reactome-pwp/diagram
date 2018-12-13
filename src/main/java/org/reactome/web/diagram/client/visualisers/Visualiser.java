@@ -65,7 +65,7 @@ public interface Visualiser extends IsWidget {
 
     void setSize(int width, int height);
 
-    void flagItems(Set<DiagramObject> flaggedItems);
+    void flagItems(Set<DiagramObject> flaggedItems, Boolean includeInteractors);
 
     void resetFlag();
 }

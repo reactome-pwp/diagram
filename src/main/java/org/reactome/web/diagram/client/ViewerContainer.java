@@ -205,7 +205,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     public void onDiagramObjectsFlagged(DiagramObjectsFlaggedEvent event) {
         context.setFlagTerm(event.getTerm());
         setWatermarkURL(context, activeVisualiser.getSelected());
-        activeVisualiser.flagItems(event.getFlaggedItems());
+        activeVisualiser.flagItems(event.getFlaggedItems(), event.getIncludeInteractors());
     }
 
     @Override

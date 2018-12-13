@@ -35,12 +35,13 @@ public class ExportDialog extends PopupPanel implements ClickHandler {
     private final Long diagramId;
     private final String selected;
     private final String flagged;
+    private final Boolean includeInteractors;
     private final Image snapshot;
     private final AnalysisStatus status;
 
     private final Content.Type contentType;
 
-    public ExportDialog(final Context context, final String selected, final String flagged, final Image snapshot){
+    public ExportDialog(final Context context, final String selected, final String flagged, final Boolean includeInteractors, final Image snapshot){
         super();
         this.setAutoHideEnabled(true);
         this.setModal(true);
@@ -54,6 +55,7 @@ public class ExportDialog extends PopupPanel implements ClickHandler {
         this.status = context.getAnalysisStatus();
         this.selected = selected;
         this.flagged = flagged;
+        this.includeInteractors = includeInteractors;
         this.contentType = context.getContent().getType();
 
         // Initialise the dialog
@@ -135,7 +137,7 @@ public class ExportDialog extends PopupPanel implements ClickHandler {
         this.tabContainer.setStyleName(RESOURCES.getCSS().tabContainer());
 
         this.tabContainer.add(new SnapshotTabPanel(diagramStId, snapshot, contentType));
-        this.tabContainer.add(new ImageTabPanel(diagramStId, selected, flagged, status, DiagramColours.get().getSelectedProfileName(), AnalysisColours.get().getSelectedProfileName(), contentType));
+        this.tabContainer.add(new ImageTabPanel(diagramStId, selected, flagged, includeInteractors, status, DiagramColours.get().getSelectedProfileName(), AnalysisColours.get().getSelectedProfileName(), contentType));
         this.tabContainer.add(new ContentTabPanel(diagramStId, diagramId));
 
         this.tabContainer.showWidget(0);

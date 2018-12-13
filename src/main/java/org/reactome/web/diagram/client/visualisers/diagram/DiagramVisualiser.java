@@ -65,6 +65,8 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
 
     private boolean forceDraw = false;
 
+    private Boolean includeInteractors;
+
     public DiagramVisualiser(EventBus eventBus) {
         super();
         this.eventBus = eventBus;
@@ -260,12 +262,13 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
     @Override
     public void exportView() {
         if (context != null) {
-            canvas.showExportDialog(context, layoutManager.getSelected(), context.getFlagTerm());
+            canvas.showExportDialog(context, layoutManager.getSelected(), context.getFlagTerm(), includeInteractors);
         }
     }
 
     @Override
-    public void flagItems(Set<DiagramObject> flaggedItems){
+    public void flagItems(Set<DiagramObject> flaggedItems, Boolean includeInteractors){
+        this.includeInteractors = includeInteractors;
         layoutManager.setFlagged(flaggedItems);
         forceDraw = true;
     }

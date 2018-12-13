@@ -66,6 +66,8 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
 
     protected boolean isSafari;
 
+    protected Boolean includeInteractors;
+
     public AbstractSVGPanel(EventBus eventBus) {
         this.eventBus = eventBus;
         getElement().getStyle().setBackgroundColor("white");
@@ -82,7 +84,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
             OMSVGSVGElement auxSVG = (OMSVGSVGElement) svg.cloneNode(true);
             Image snapshot = new Image();
             snapshot.setUrl("data:image/svg+xml;base64," + btoa(auxSVG.getMarkup()));
-            final ExportDialog dialog = new ExportDialog(context, selected, flagged, snapshot);
+            final ExportDialog dialog = new ExportDialog(context, selected, flagged, includeInteractors, snapshot);
             dialog.showCentered();
         }
     }

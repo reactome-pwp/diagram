@@ -270,7 +270,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         ctx.clearRect(0, 0, ctx.getCanvas().getWidth(), ctx.getCanvas().getHeight());
     }
 
-    public void showExportDialog(final Context context, final GraphObject selected, final String flagTerm) {
+    public void showExportDialog(final Context context, final GraphObject selected, final String flagTerm, final Boolean includeInteractors) {
         final Context2d ctx = this.canvases.get(this.canvases.size() - 1).getContext2d();
         //This is silly but gives some visual feedback of the picture taking :D
         (new Timer() {
@@ -294,8 +294,8 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
                     Image snapshot = new Image();
                     snapshot.setUrl(ctx.getCanvas().toDataUrl("image/png"));
 
-                    String diagramStId = selected != null ? selected.getStId() : null;
-                    final ExportDialog dialog = new ExportDialog(context, diagramStId, flagTerm, snapshot);
+                    String sel = selected != null ? selected.getStId() : null;
+                    final ExportDialog dialog = new ExportDialog(context, sel, flagTerm, includeInteractors, snapshot);
                     dialog.showCentered();
                     cleanCanvas(ctx);
                 }

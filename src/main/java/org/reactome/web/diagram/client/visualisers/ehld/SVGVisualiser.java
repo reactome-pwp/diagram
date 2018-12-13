@@ -1195,8 +1195,9 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
     }
 
     @Override
-    public void flagItems(Set<DiagramObject> flaggedItems){
+    public void flagItems(Set<DiagramObject> flaggedItems, Boolean includeInteractors){
         resetFlag();
+        this.includeInteractors = includeInteractors;
         for (DiagramObject diagramObject : flaggedItems) {
             if(diagramObject instanceof EHLDObject){
                 EHLDObject item = (EHLDObject) diagramObject;
