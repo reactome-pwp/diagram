@@ -7,7 +7,7 @@
     <groupId>org.reactome.web</groupId>
     <artifactId>diagram</artifactId>
     <packaging>jar</packaging>
-    <version>3.6.3-SNAPSHOT</version>
+    <version>3.6.3</version>
     <name>Reactome Diagram Viewer</name>
 
     <description>
