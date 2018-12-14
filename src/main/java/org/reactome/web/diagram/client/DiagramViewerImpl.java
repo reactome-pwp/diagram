@@ -46,6 +46,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     private AnalysisStatus analysisStatus;
     private InteractorsManager interactorsManager;
     private FlaggedElementsLoader flaggedElementsLoader = new FlaggedElementsLoader(this);
+    private Boolean includeInteractors = true;
 
     DiagramViewerImpl() {
         super();
@@ -101,13 +102,10 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     }
 
     @Override
-    public void flagItems(String identifier) {
-        if (context != null && identifier != null && !identifier.equals(viewerContainer.getFlagTerm())) {
-            Set<DiagramObject> flagged = context.getFlagged(identifier);
-            if (flagged == null) {
-                eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(identifier), this);
-            } else {
-                eventBus.fireEventFromSource(new DiagramObjectsFlaggedEvent(identifier, flagged, false), this);
+    public void flagItems(String identifier, Boolean includeInteractors) {
+        if (context != null && identifier != null) {
+            if(!identifier.equalsIgnoreCase(context.getFlagTerm()) || !this.includeInteractors.equals(includeInteractors)) {
+                eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(identifier, includeInteractors), this);
             }
         }
     }
@@ -203,7 +201,15 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     @Override
     public void onDiagramObjectsFlagRequested(DiagramObjectsFlagRequestedEvent event) {
         boolean notify = !event.getSource().equals(this);
-        flaggedElementsLoader.load(context.getContent(), event.getTerm(), notify);
+
+        context.setFlagTerm(event.getTerm());
+        this.includeInteractors = event.getIncludeInteractors();
+        Set<DiagramObject> flagged = context.getFlagged(context.getFlagTerm() + includeInteractors);
+        if(flagged == null) {
+            flaggedElementsLoader.load(context.getContent(), event.getTerm(), notify);
+        } else {
+            eventBus.fireEventFromSource(new DiagramObjectsFlaggedEvent(event.getTerm(), includeInteractors, flagged, notify), this);
+        }
     }
 
     @Override
@@ -226,7 +232,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         }
 
         //Flag those diagram entities that interact with the term
-        if(toFlag != null && toFlag.getInteractsWith() != null) {
+        if(toFlag != null && toFlag.getInteractsWith() != null && includeInteractors) {
             for (String stId : toFlag.getInteractsWith()) {
                 GraphObject graphObject = context.getContent().getDatabaseObject(stId);
                 if (graphObject != null) {
@@ -235,12 +241,13 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
             }
         }
 
-        context.setFlagged(term, flagged);
-        eventBus.fireEventFromSource(new DiagramObjectsFlaggedEvent(term, flagged, notify), this);
+        context.setFlagged(term + includeInteractors, flagged);
+        eventBus.fireEventFromSource(new DiagramObjectsFlaggedEvent(term, includeInteractors, flagged, notify), this);
     }
 
     @Override
     public void onFlaggedElementsLoaderError(Throwable exception) {
+        context.setFlagTerm(null);
         Console.error(exception.getMessage());
     }
 

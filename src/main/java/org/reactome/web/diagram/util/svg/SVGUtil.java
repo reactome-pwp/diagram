@@ -13,7 +13,7 @@ import java.util.List;
  */
 public abstract class SVGUtil {
 
-    private static final String STID_PATTERN = "R-[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
+    private static final String STID_PATTERN = "R-(?!ICO)[A-Z]{3}-[0-9]{3,}(\\.[0-9]+)?";
     private static final String STID_PATTERN_LITE = "R-[A-Z]{3}-[0-9]{3,}";
     private static RegExp regExp = RegExp.compile(STID_PATTERN);
     private static RegExp regExpLite = RegExp.compile(STID_PATTERN_LITE);

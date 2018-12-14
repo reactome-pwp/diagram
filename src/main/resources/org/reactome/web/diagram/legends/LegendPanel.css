@@ -253,9 +253,10 @@
 
 .flaggedItemsControl {
     /*centers in the middle*/
-    width: 260px;
-    margin-left:-130px; /* width and margin-left are related, please change both if needed */
+    width: 374px;
+    margin-left:-187px; /* width and margin-left are related, please change both if needed */
     left: 50%;
+    line-height: 30px;
 }
 
 .flaggedItemsControl span {
@@ -267,10 +268,18 @@
 }
 
 .flaggedItemsLabel {
-    width: 180px !important;
+    width: 160px !important;
     overflow:hidden;
     white-space:nowrap;
     text-overflow:ellipsis;
+}
+
+.flaggedItemsControl select {
+    vertical-align: text-bottom;
+    border: none;
+    margin: 5px 0 0 5px;
+    outline: none;
+    font-size: 12px;
 }
 
 .flaggedItemsControlMovedUp {

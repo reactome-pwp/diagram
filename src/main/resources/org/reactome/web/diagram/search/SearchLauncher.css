@@ -15,7 +15,6 @@
     transition: width 0.3s, max-height 0.1s;
 }
 
-
 .launchPanelExpanded{
     width: 345px;
 }
@@ -27,28 +26,51 @@
     border-bottom-right-radius: 5px;
 }
 
-@sprite .launch {
+.launch {
     float: left;
-    gwt-image:'launchNormal';
+    background-color: #58C3E5;
+    border: none;
     outline: none;
-    background-repeat:no-repeat;
+    border-radius: 16px;
+    color: white;
+    margin: 0;
+    padding: 0;
     border: 0;
-    cursor: pointer;
-    opacity: 0.7;
 }
 
-@sprite .launch:hover {
-    gwt-image:'launchHovered';
+.launch>div {
+    margin: 0;
+    position: relative;
 }
 
-@sprite .launch:active:hover {
-    gwt-image: 'launchClicked';
+.launch span {
+    display: none;
 }
 
-@sprite .launch:disabled, .launch:disabled:hover, .launch:disabled:active {
-    gwt-image: 'launchDisabled';
-    cursor: auto;
-    opacity: 1;
+.launch img {
+    display: block;
+    height: 32px;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+}
+
+.launch:hover {
+    background-color: #1E95CF;
+    cursor: pointer !important;
+}
+
+.launch:active:hover {
+    background-color: #066B9E;
+    cursor: pointer !important;
+}
+
+.launch:disabled, .launch:disabled:hover, .launch:disabled:active{
+    background-color: #9a9c9e;
+    cursor: default !important;
 }
 
 .input {

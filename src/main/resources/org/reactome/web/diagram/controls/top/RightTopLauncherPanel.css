@@ -4,149 +4,155 @@
     right: 10px;
 }
 
-@sprite .camera {
-    background-color: rgba(88, 195, 229, 0.8) ;
-    border: none;
-    border-radius: 16px;
-    height: 32px;
-    width: 32px;
+.illustrations {
     float: left;
-    margin-right: 10px;
+    background-color: #58C3E5;
+    border: none;
+    outline: none;
+    border-radius: 16px;
+    color: white;
+    margin: 0 10px 0 0;
+    padding: 0;
+    border: 0;
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
     box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
-
-    gwt-image: 'cameraNormal';
-    outline: none;
-    border: 0;
-    cursor: pointer;
 }
 
-@sprite .camera:hover {
-    gwt-image:'cameraHovered';
+.illustrations>div {
+    margin: 0;
+    position: relative;
 }
 
-@sprite .camera:active:hover {
-    gwt-image: 'cameraClicked';
+.illustrations span {
+    display: none;
 }
 
-@sprite .illustrations {
-    background-color: rgba(88, 195, 229, 0.8) ;
-    border: none;
-    border-radius: 16px;
+.illustrations img {
+    display: block;
     height: 32px;
-    width: 32px;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+}
+
+.illustrations:hover {
+    background-color: #1E95CF;
+    cursor: pointer !important;
+}
+
+.illustrations:active:hover {
+    background-color: #066B9E;
+    cursor: pointer !important;
+}
+
+.illustrations:disabled, .illustrations:disabled:hover, .illustrations:disabled:active{
+    background-color: #9a9c9e;
+    cursor: default !important;
+}
+
+.key {
     float: left;
-    margin-right: 10px;
+    background-color: #58C3E5;
+    border: none;
+    outline: none;
+    border-radius: 16px;
+    color: white;
+    margin: 0;
+    padding: 0;
+    border: 0;
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
     box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
-
-    gwt-image: 'illustrationsNormal';
-    outline: none;
-    border: 0;
-    cursor: pointer;
 }
 
-@sprite .illustrations:hover {
-    gwt-image:'illustrationsHovered';
+.key>div {
+    margin: 0;
+    position: relative;
 }
 
-@sprite .illustrations:disabled {
-    gwt-image:'illustrationsDisabled';
+.key span {
+    display: none;
 }
 
-@sprite .illustrations:active:hover {
-    gwt-image: 'illustrationsClicked';
-}
-
-@sprite .key {
-    background-color: rgba(88, 195, 229, 0.8) ;
-    border: none;
-    border-radius: 16px;
+.key img {
+    display: block;
     height: 32px;
-    width: 32px;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+}
+
+.key:hover {
+    background-color: #1E95CF;
+    cursor: pointer !important;
+}
+
+.key:active:hover {
+    background-color: #066B9E;
+    cursor: pointer !important;
+}
+
+.key:disabled, .illustrations:disabled:hover, .illustrations:disabled:active{
+    background-color: #9a9c9e;
+    cursor: default !important;
+}
+
+.export {
     float: left;
-    /*margin-right: 10px;*/
+    background-color: #58C3E5;
+    border: none;
+    outline: none;
+    border-radius: 16px;
+    color: white;
+    margin: 0 10px 0 0;
+    padding: 0;
+    border: 0;
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
     box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
-
-    gwt-image: 'keyNormal';
-    outline: none;
-    border: 0;
-    cursor: pointer;
 }
 
-@sprite .key:hover {
-    gwt-image:'keyHovered';
+.export>div {
+    margin: 0;
+    position: relative;
 }
 
-@sprite .key:active:hover {
-    gwt-image: 'keyClicked';
+.export span {
+    display: none;
 }
 
-@sprite .key:disabled {
-    gwt-image: 'keyDisabled';
-}
-
-@sprite .exportPPT {
-    background-color: rgba(88, 195, 229, 0.8) ;
-    border: none;
-    border-radius: 16px;
+.export img {
+    display: block;
     height: 32px;
-    width: 32px;
-    float: left;
-    margin-right: 10px;
-
-    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
-    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
-    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
-
-    gwt-image: 'export2pptNormal';
-    outline: none;
+    width: auto;
+    margin: 0;
+    padding: 0;
     border: 0;
-    cursor: pointer;
+
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
 }
 
-@sprite .exportPPT:hover {
-    gwt-image:'export2pptHovered';
+.export:hover {
+    background-color: #1E95CF;
+    cursor: pointer !important;
 }
 
-@sprite .exportPPT:active:hover {
-    gwt-image: 'export2pptClicked';
+.export:active:hover {
+    background-color: #066B9E;
+    cursor: pointer !important;
 }
 
-@sprite .exportPPT:disabled {
-    gwt-image: 'export2pptDisabled';
-}
-
-@sprite .export {
-    background-color: rgba(88, 195, 229, 0.8) ;
-    border: none;
-    border-radius: 16px;
-    height: 32px;
-    width: 32px;
-    float: left;
-    margin-right: 10px;
-
-    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
-    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
-    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
-
-    gwt-image: 'exportNormal';
-    outline: none;
-    border: 0;
-    cursor: pointer;
-}
-
-@sprite .export:hover {
-    gwt-image:'exportHovered';
-}
-
-@sprite .export:active:hover {
-    gwt-image: 'exportHovered';
+.export:disabled, .export:disabled:hover, .export:disabled:active{
+    background-color: #9a9c9e;
+    cursor: default !important;
 }

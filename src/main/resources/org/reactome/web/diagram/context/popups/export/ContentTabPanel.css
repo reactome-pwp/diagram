@@ -1,0 +1,61 @@
+.mainPanel {
+    max-width: 450px;
+    max-height: 500px;
+    width: 99%;
+    height: 100%;
+    padding: 0 0 0 4px;
+    color: #066B9E;
+
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: medium !important;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+.description {
+    margin-right: 6px;
+    margin-bottom: 10px;
+}
+
+.buttonsPanel {
+    display: block;
+    max-width: 400px;
+    max-height: 200px;
+}
+
+.itemPanel {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin-bottom: 5px;
+    background-color: #1e94d0;
+    padding: 5px;
+    border-radius: 5px 15px 5px 15px;
+}
+
+.itemIcon {
+    margin: 0 12px 0 8px;
+    width: 42px;
+    height: 42px;
+}
+
+.itemIcon img {
+    max-width: 42px;
+}
+
+.itemLabel {
+    color: white;
+    max-width: 80%;
+    font-size: small !important;
+    font-weight: bold;
+}
+
+.unselectable {
+    -webkit-touch-callout: none; /* Prevents selection */
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}

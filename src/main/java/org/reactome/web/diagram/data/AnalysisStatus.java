@@ -48,6 +48,10 @@ public class AnalysisStatus implements ExpressionColumnChangedHandler {
         return analysisSummary;
     }
 
+    public boolean isEmpty() {
+        return this.token == null || this.token.isEmpty();
+    }
+
     @Override
     public void onExpressionColumnChanged(ExpressionColumnChangedEvent e) {
         this.column = e.getColumn();
