@@ -46,7 +46,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     private AnalysisStatus analysisStatus;
     private InteractorsManager interactorsManager;
     private FlaggedElementsLoader flaggedElementsLoader = new FlaggedElementsLoader(this);
-    private Boolean includeInteractors = true;
+    private Boolean includeInteractors = false;
 
     DiagramViewerImpl() {
         super();

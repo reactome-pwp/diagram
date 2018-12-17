@@ -31,7 +31,7 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler, Ch
     private ListBox selector;
 
     private String term;
-    private Boolean includeInteractors = true;
+    private Boolean includeInteractors = false;
 
     public FlaggedItemsControl(final EventBus eventBus) {
         super(eventBus);
