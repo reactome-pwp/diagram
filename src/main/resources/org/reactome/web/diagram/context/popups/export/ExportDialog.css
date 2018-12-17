@@ -7,6 +7,7 @@
 
     font-family: Arial Unicode MS, Arial, sans-serif !important;
     font-size: small !important;
+    line-height: normal !important;
 }
 
 .mainPanel {
@@ -131,6 +132,7 @@
     width: 100%;
     height: auto;
     cursor: pointer;
+    line-height: normal !important;
 }
 
 .tabButton:disabled, .tabButton:disabled:hover, .tabButton:disabled:active {

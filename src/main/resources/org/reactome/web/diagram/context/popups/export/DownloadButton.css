@@ -18,6 +18,7 @@
 
     white-space: nowrap;
     direction: rtl;     /* Change this to make the options appear from the right*/
+    box-sizing: content-box;
 }
 
 .downloadItem img {
