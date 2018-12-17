@@ -14,7 +14,6 @@ import java.util.List;
 public enum ImageDownloadType implements DownloadType {
     SVG     ("SVG",     "/diagram/__STID__.svg__PARAMS__",   "SVG",     ImageFormatIcons.INSTANCE.SVGIcon()),
     PNG     ("PNG",     "/diagram/__STID__.png__PARAMS__",   "PNG",     ImageFormatIcons.INSTANCE.PNGIcon(),    true),
-    JPEG    ("JPEG",    "/diagram/__STID__.jpeg__PARAMS__",  "JPEG",    ImageFormatIcons.INSTANCE.JPEGIcon(),   true),
     JPG     ("JPG",     "/diagram/__STID__.jpg__PARAMS__",   "JPG",     ImageFormatIcons.INSTANCE.JPGIcon(),    true),
     GIF     ("GIF",     "/diagram/__STID__.gif__PARAMS__",   "GIF",     ImageFormatIcons.INSTANCE.GIFIcon(),    true),
     PPT     ("PPTX",    "/diagram/__STID__.pptx__PARAMS__",  "PPTX",    ImageFormatIcons.INSTANCE.PPTXIcon()),
@@ -75,9 +74,6 @@ public enum ImageDownloadType implements DownloadType {
 
         @Source("../images/export2gif.png")
         ImageResource GIFIcon();
-
-        @Source("../images/export2jpeg.png")
-        ImageResource JPEGIcon();
 
         @Source("../images/export2jpg.png")
         ImageResource JPGIcon();
