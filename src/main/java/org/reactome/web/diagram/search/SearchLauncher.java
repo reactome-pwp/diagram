@@ -13,6 +13,7 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.common.IconToggleButton;
 import org.reactome.web.diagram.data.Context;
@@ -190,10 +191,12 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         this.context = event.getContext();
 
         // Expand the panel by default unless the cookie is present
+        // Next, focus in the textbox by default unless DiagramFactory.RESPOND_TO_SEARCH_SHORTCUT
+        // is set to false (when integrated by third party apps)
         String expandSearch = Cookies.getCookie(SEARCH_EXPANDED_COOKIE);
         if (expandSearch == null || expandSearch.isEmpty()) {
             if(!isExpanded) {
-                this.expandPanel();
+                this.expandPanel(DiagramFactory.RESPOND_TO_SEARCH_SHORTCUT);
             }
         }
 
@@ -273,12 +276,18 @@ public class SearchLauncher extends AbsolutePanel implements ClickHandler,
         fireEvent(new OptionsCollapsedEvent());
     }
 
-    private void expandPanel(){
+    private void expandPanel() {
+        expandPanel(true);
+    }
+
+    private void expandPanel(boolean focus){
         addStyleName(RESOURCES.getCSS().launchPanelExpanded());
         input.addStyleName(RESOURCES.getCSS().inputActive());
         isExpanded = true;
         fireEvent(new PanelExpandedEvent());
-        focusTimer.schedule(FOCUS_IN_TEXTBOX_DELAY);
+        if(focus) {
+            focusTimer.schedule(FOCUS_IN_TEXTBOX_DELAY);
+        }
     }
 
     private void expandPanelVertically(){
