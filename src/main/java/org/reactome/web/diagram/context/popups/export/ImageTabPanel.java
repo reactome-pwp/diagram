@@ -7,6 +7,7 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.content.Content;
 
@@ -124,6 +125,9 @@ public class ImageTabPanel extends FlowPanel {
                 params.add("token=" + status.getToken());
                 params.add("analysisProfile=" + analysisProfile);
                 params.add("resource=" + status.getResource());
+                if (status.getAnalysisType() == AnalysisType.EXPRESSION) {
+                    params.add("expColumn=" + status.getColumn());
+                }
             }
 
             String paramsStr = "?" + params.stream().collect(Collectors.joining("&"));
