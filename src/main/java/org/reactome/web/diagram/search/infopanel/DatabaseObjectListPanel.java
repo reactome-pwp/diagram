@@ -5,8 +5,9 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
+import org.reactome.web.diagram.data.graph.model.GraphPathway;
+import org.reactome.web.diagram.data.graph.model.GraphSubpathway;
 
 import java.util.Collection;
 
@@ -40,7 +41,7 @@ public class DatabaseObjectListPanel extends FlowPanel {
             listItemLink.addClickHandler(InfoActionsHelper.getLinkClickHandler(object, eventBus, this));
             listItemLink.addMouseOverHandler(InfoActionsHelper.getLinkMouseOver(object, eventBus, this));
             listItemLink.addMouseOutHandler(InfoActionsHelper.getLinkMouseOut(eventBus, this));
-            if(object instanceof GraphEvent) {
+            if(object instanceof GraphSubpathway || object instanceof GraphPathway) {
                 listItemLink.addDoubleClickHandler(InfoActionsHelper.getLinkDoubleClickHandler(object, eventBus,this));
             }
             listItem.add(listItemLink);
