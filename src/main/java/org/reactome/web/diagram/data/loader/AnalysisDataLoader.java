@@ -149,6 +149,7 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
         for (GraphPathway graphPathway : diagramContent.getEncapsulatedPathways()) {
             pathways.add(graphPathway.getDbId().toString());
         }
-        AnalysisClient.getPathwaySummaries(analysisStatus.getToken(), analysisStatus.getResource(), pathways, this);
+        //It does not apply filter because the idea right now is to show the normal overlay with a message explaining whether the pathway falls within the filter
+        AnalysisClient.getPathwaySummaries(analysisStatus.getToken(), analysisStatus.getResource(), null, null, true, null, null, pathways, this);
     }
 }
