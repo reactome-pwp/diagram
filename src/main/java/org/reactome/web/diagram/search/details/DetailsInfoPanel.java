@@ -350,9 +350,13 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
             //Selected entity is inside an encapsulated "Interacting" pathway
             Collection<GraphObject> list = interactsWithList.stream()
                     .map(occ -> context.getContent().getDatabaseObject(occ))
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
-            int size = interactsWithList.size();
-            includeResultWidget(new DatabaseObjectListPanel("Interacts with " + size + " diagram entit" + (size > 1 ? "ies" : "y"), list, eventBus));
+
+            int size = list.size();
+            if (size > 0) {
+                includeResultWidget(new DatabaseObjectListPanel("Interacts with " + size + " diagram entit" + (size > 1 ? "ies" : "y"), list, eventBus));
+            }
         }
 
     }
@@ -435,6 +439,7 @@ public class DetailsInfoPanel extends AbstractAccordionPanel implements ResultSe
         InteractorOccurrencesFactory.query(item.getId(), args.getSpecies(), new InteractorOccurrencesFactory.Handler() {
             @Override
             public void onInteractorOccurrencesReceived(List<Pathway> pathways) {
+                hideSpinner();
                 if(pathways != null && !pathways.isEmpty()) {
                     int size = pathways.size();
                     includeResultWidget(new EnhancedListPanel("Present in " + size + " pathway diagram" + (size > 1 ? "s:" : ":"), pathways, eventBus, context.getContent()));
