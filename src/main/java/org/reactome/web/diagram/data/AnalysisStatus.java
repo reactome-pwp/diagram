@@ -2,6 +2,7 @@ package org.reactome.web.diagram.data;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.URL;
+import org.reactome.web.analysis.client.filter.ResultFilter;
 import org.reactome.web.analysis.client.model.AnalysisSummary;
 import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
@@ -67,6 +68,14 @@ public class AnalysisStatus implements ExpressionColumnChangedHandler {
 
     public void setExpressionSummary(ExpressionSummary expressionSummary) {
         this.expressionSummary = expressionSummary;
+    }
+
+    public ResultFilter getResultFilter() {
+        ResultFilter rtn = new ResultFilter();
+        // It does not apply any other filter options because the idea right now is to show the normal overlay with a
+        // message explaining whether the pathway falls within the filter
+        rtn.setResource(resource);
+        return rtn;
     }
 
     @Override
