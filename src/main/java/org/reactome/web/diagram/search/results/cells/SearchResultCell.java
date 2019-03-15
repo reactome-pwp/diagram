@@ -24,7 +24,7 @@ public class SearchResultCell extends AbstractCell<SearchResultObject> {
         @SafeHtmlTemplates.Template("" +
                 "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; height:44px; border-bottom:#efefef solid 1px \">" +
                     "<div title=\"{1}\" style=\"float:left; margin:15px 0 0 5px;\">{0}</div>" +
-                    "<div style=\"float:left; margin-left:10px; width:293px;\">" +
+                    "<div style=\"float:left; margin-left:10px; width:290px;\">" +
                         "<div title=\"{3}\" style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:small;\">" +
                             "{2}" +
                         "</div>" +
@@ -44,7 +44,7 @@ public class SearchResultCell extends AbstractCell<SearchResultObject> {
         @SafeHtmlTemplates.Template("" +
                 "<div style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; height:44px; border-bottom:#efefef solid 1px \">" +
                     "<div title=\"{1}\" style=\"float:left; margin:15px 0 0 5px;\">{0}</div>" +
-                    "<div style=\"float:left; margin-left:10px; width:293px;\">" +
+                    "<div style=\"float:left; margin-left:10px; width:290px;\">" +
                         "<div title=\"{3}\" style=\"overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:small;\">" +
                             "{2}" +
                         "</div>" +

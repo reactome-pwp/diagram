@@ -40,7 +40,7 @@ public class TitlePanel extends FlowPanel implements ClickHandler,
     private FlowPanel firstLine;
 
     private String termToFlagBy;
-    private Boolean includeInteractors = true;
+    private Boolean includeInteractors = false;
     private String flaggedTerm;
 
     public TitlePanel(EventBus eventBus) {

@@ -149,6 +149,6 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
         for (GraphPathway graphPathway : diagramContent.getEncapsulatedPathways()) {
             pathways.add(graphPathway.getDbId().toString());
         }
-        AnalysisClient.getPathwaySummaries(analysisStatus.getToken(), analysisStatus.getResource(), pathways, this);
+        AnalysisClient.getPathwaySummaries(analysisStatus.getToken(), analysisStatus.getResultFilter(), pathways, this);
     }
 }

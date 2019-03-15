@@ -280,6 +280,9 @@
     margin: 5px 0 0 5px;
     outline: none;
     font-size: 12px;
+    width: 73px;
+    height: unset;
+    -webkit-appearance: menulist;
 }
 
 .flaggedItemsControlMovedUp {
