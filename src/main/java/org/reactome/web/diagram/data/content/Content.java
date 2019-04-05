@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.data.content;
 
+import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphSubpathway;
@@ -55,6 +56,14 @@ public interface Content {
 
     GraphSubpathway getGraphSubpathway(Long dbId);
 
+    Collection<GraphSubpathway> getSubpathways();
+
+    /***
+     * Returns all the subpathway components of a given diagram, including
+     * pathway nodes (ugly green boxes and subpathways.
+     */
+    Collection<GraphObject> getAllInvolvedPathways();
+
     DiagramObject getDiagramObject(Long id);
 
     DiagramObject getDiagramObject(String id);
@@ -104,4 +113,8 @@ public interface Content {
     void clearDisplayedInteractors();
 
     Type getType();
+
+    EntityStatistics getStatistics();
+
+    void setStatistics(EntityStatistics statistics);
 }

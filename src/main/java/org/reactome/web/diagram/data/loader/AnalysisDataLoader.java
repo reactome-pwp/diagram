@@ -3,11 +3,12 @@ package org.reactome.web.diagram.data.loader;
 import com.google.gwt.event.shared.EventBus;
 import org.reactome.web.analysis.client.AnalysisClient;
 import org.reactome.web.analysis.client.AnalysisHandler;
+import org.reactome.web.analysis.client.filter.ResultFilter;
 import org.reactome.web.analysis.client.model.*;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.content.Content;
-import org.reactome.web.diagram.data.graph.model.GraphPathway;
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.events.AnalysisResultLoadedEvent;
 import org.reactome.web.diagram.events.AnalysisResultRequestedEvent;
 import org.reactome.web.diagram.events.DiagramInternalErrorEvent;
@@ -120,18 +121,18 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
         if (diagramContent.containsEncapsulatedPathways()) {
             getPathwaySummaries();
         } else {
-            eventBus.fireEventFromSource(new AnalysisResultLoadedEvent(analysisSummary, expressionSummary, elements, null, time), this);
+            eventBus.fireEventFromSource(new AnalysisResultLoadedEvent(analysisSummary, expressionSummary, elements, null, analysisStatus.getFilter(), time), this);
         }
     }
 
     @Override
     public void onPathwaySummariesLoaded(List<PathwaySummary> pathwaySummaries, long time) {
-        eventBus.fireEventFromSource(new AnalysisResultLoadedEvent(analysisSummary, expressionSummary, elements, pathwaySummaries, time), this);
+        eventBus.fireEventFromSource(new AnalysisResultLoadedEvent(analysisSummary, expressionSummary, elements, pathwaySummaries, analysisStatus.getFilter(), time), this);
     }
 
     @Override
     public void onPathwaySummariesNotFound(long time) {
-        eventBus.fireEventFromSource(new AnalysisResultLoadedEvent(analysisSummary, expressionSummary, elements, null, time), this);
+        eventBus.fireEventFromSource(new AnalysisResultLoadedEvent(analysisSummary, expressionSummary, elements, null, analysisStatus.getFilter(), time), this);
     }
 
     @Override
@@ -146,9 +147,16 @@ public class AnalysisDataLoader implements AnalysisHandler.Summary, AnalysisHand
 
     private void getPathwaySummaries(){
         List<String> pathways = new LinkedList<>();
-        for (GraphPathway graphPathway : diagramContent.getEncapsulatedPathways()) {
-            pathways.add(graphPathway.getDbId().toString());
+        for (GraphObject pathway : diagramContent.getAllInvolvedPathways()) {
+            pathways.add(pathway.getDbId().toString());
         }
-        AnalysisClient.getPathwaySummaries(analysisStatus.getToken(), analysisStatus.getResource(), pathways, this);
+
+        pathways.add(diagramContent.getDbId().toString());
+
+        // Use only a filter that contains the requested resource
+        ResultFilter emptyFilter = new ResultFilter();
+        emptyFilter.setResource(analysisStatus.getFilter().getResource());
+
+        AnalysisClient.getPathwaySummaries(analysisStatus.getToken(), emptyFilter, pathways, this);
     }
 }

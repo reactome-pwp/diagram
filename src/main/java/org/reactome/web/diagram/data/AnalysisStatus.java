@@ -2,6 +2,7 @@ package org.reactome.web.diagram.data;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.http.client.URL;
+import org.reactome.web.analysis.client.filter.ResultFilter;
 import org.reactome.web.analysis.client.model.AnalysisSummary;
 import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
@@ -14,16 +15,17 @@ import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
 public class AnalysisStatus implements ExpressionColumnChangedHandler {
 
     private String token;
-    private String resource;
+    private ResultFilter filter;
+
     private Integer column;
 
     private AnalysisSummary analysisSummary;
     private ExpressionSummary expressionSummary;
 
-    public AnalysisStatus(EventBus eventBus, String token, String resource) {
-        if(token==null) throw new RuntimeException("token cannot be null");
+    public AnalysisStatus(EventBus eventBus, String token, ResultFilter filter) {
+        if(token == null || filter == null) throw new RuntimeException("token cannot be null");
         this.token = URL.decode(token);
-        this.resource = resource==null?"TOTAL":resource;
+        this.filter = filter;
         this.column = 0;
         eventBus.addHandler(ExpressionColumnChangedEvent.TYPE, this);
     }
@@ -33,7 +35,11 @@ public class AnalysisStatus implements ExpressionColumnChangedHandler {
     }
 
     public String getResource() {
-        return resource;
+        return filter.getResource();
+    }
+
+    public ResultFilter getFilter() {
+        return filter;
     }
 
     public Integer getColumn() {
@@ -77,14 +83,14 @@ public class AnalysisStatus implements ExpressionColumnChangedHandler {
         AnalysisStatus that = (AnalysisStatus) o;
 
         return !(token != null ? !token.equals(that.token) : that.token != null) &&
-                !(resource != null ? !resource.equals(that.resource) : that.resource != null);
+                !(filter != null ? !filter.equals(that.filter) : that.filter != null);
 
     }
 
     @Override
     public int hashCode() {
         int result = token != null ? token.hashCode() : 0;
-        result = 31 * result + (resource != null ? resource.hashCode() : 0);
+        result = 31 * result + (filter != null ? filter.hashCode() : 0);
         return result;
     }
 
@@ -92,7 +98,7 @@ public class AnalysisStatus implements ExpressionColumnChangedHandler {
     public String toString() {
         return "AnalysisStatus{" +
                 "token='" + token + '\'' +
-                ", resource='" + resource + '\'' +
+                ", resource='" + filter.getResource() + '\'' +
                 '}';
     }
 }

@@ -8,6 +8,7 @@ import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPathway;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
+import org.reactome.web.diagram.data.graph.model.GraphSubpathway;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.SummaryItem;
@@ -61,6 +62,7 @@ public class Context {
 
     public void clearAnalysisOverlay() {
         analysisStatus = null;
+        content.setStatistics(null);
         for (GraphObject graphObject : content.getDatabaseObjects()) {
             if (graphObject instanceof GraphPhysicalEntity) {
                 ((GraphPhysicalEntity) graphObject).resetHit();
@@ -73,6 +75,8 @@ public class Context {
                 }
             } else if (graphObject instanceof GraphPathway) {
                 ((GraphPathway) graphObject).resetHit();
+            } else if (graphObject instanceof GraphSubpathway) {
+                ((GraphSubpathway) graphObject).resetHit();
             }
         }
     }
@@ -101,10 +105,18 @@ public class Context {
                 EntityStatistics statistics = pathwaySummary.getEntities();
                 if (statistics.getFound() > 0) {
                     //In this case process nodes DO NOT HAVE an identifier, but DO NOT use null here! use empty string
-                    GraphPathway pathway = (GraphPathway) this.content.getDatabaseObject(pathwaySummary.getDbId());
-                    Double percentage = statistics.getFound() / statistics.getTotal().doubleValue();
-                    if (percentage < ANALYSIS_MIN_PERCENTAGE) percentage = ANALYSIS_MIN_PERCENTAGE;
-                    pathway.setIsHit(percentage, pathwaySummary.getEntities().getExp(), statistics);
+                    GraphObject object = this.content.getDatabaseObject(pathwaySummary.getDbId());
+                    if (object instanceof GraphPathway) {
+                        GraphPathway pathway = (GraphPathway) object;
+                        Double percentage = statistics.getFound() / statistics.getTotal().doubleValue();
+                        if (percentage < ANALYSIS_MIN_PERCENTAGE) percentage = ANALYSIS_MIN_PERCENTAGE;
+                        pathway.setIsHit(percentage, pathwaySummary.getEntities().getExp(), statistics);
+                    } else if (object instanceof GraphSubpathway){
+                        GraphSubpathway subpathway = (GraphSubpathway) object;
+                        subpathway.setIsHit(statistics);
+                    } else if (content.getDbId().equals(pathwaySummary.getDbId())) {
+                        content.setStatistics(statistics);
+                    }
                 }
             }
         }

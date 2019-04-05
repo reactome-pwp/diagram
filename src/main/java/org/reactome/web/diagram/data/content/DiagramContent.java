@@ -123,6 +123,23 @@ public class DiagramContent extends GenericContent {
         return getGraphSubpathway(dbId.toString());
     }
 
+    @Override
+    public Collection<GraphSubpathway> getSubpathways() {
+        Set<GraphSubpathway> rtn = new HashSet<>();
+        if (subpathwaysCache != null) {
+            rtn.addAll(subpathwaysCache.values());
+        }
+        return rtn;
+    }
+
+    @Override
+    public Collection<GraphObject> getAllInvolvedPathways() {
+        Set<GraphObject> rtn = new HashSet<>();
+        rtn.addAll(encapsulatedPathways);
+        rtn.addAll(getSubpathways());
+        return rtn;
+    }
+
     public DiagramObject getDiagramObject(Long id) {
         return this.diagramObjectMap.get(id);
     }

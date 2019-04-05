@@ -4,6 +4,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RequiresResize;
+import org.reactome.web.analysis.client.filter.ResultFilter;
 import org.reactome.web.diagram.handlers.*;
 
 /**
@@ -55,7 +56,7 @@ public interface DiagramViewer extends IsWidget, HasHandlers, RequiresResize {
 
     void selectItem(Long dbIdentifier);
 
-    void setAnalysisToken(String token, String resource);
+    void setAnalysisToken(String token, ResultFilter filter);
 
     void setVisible(boolean visible);
 

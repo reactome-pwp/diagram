@@ -32,7 +32,6 @@ public class EHLDContent extends GenericContent {
         this.graphObjectCache = new HashMap<>();
         this.identifierMap = new MapSet<>();
         this.encapsulatedPathways = new HashSet<>();
-//        this.subpathwaysCache = new HashMap<>();
     }
 
     @Override
@@ -103,6 +102,19 @@ public class EHLDContent extends GenericContent {
     @Override
     public GraphSubpathway getGraphSubpathway(Long dbId) {
         return null;
+    }
+
+    @Override
+    public Collection<GraphSubpathway> getSubpathways() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public Collection<GraphObject> getAllInvolvedPathways() {
+        Set<GraphObject> rtn = new HashSet<>();
+        rtn.addAll(encapsulatedPathways);
+        rtn.addAll(getSubpathways());
+        return rtn;
     }
 
     @Override
