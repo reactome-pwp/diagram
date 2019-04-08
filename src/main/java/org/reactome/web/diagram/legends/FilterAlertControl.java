@@ -181,7 +181,7 @@ public class FilterAlertControl extends LegendPanel implements ClickHandler,
                     filteredOut.add(item);
                 }
             } else if (pId.equals(context.getContent().getDbId().toString())) {
-                displayedIsFilteredOut = (context.getContent().getStatistics() != null && hitPathways.contains(context.getContent().getDbId().toString()));
+                displayedIsFilteredOut = (context.getContent().getStatistics() != null && !hitPathways.contains(context.getContent().getDbId().toString()));
             }
         }
 
@@ -198,7 +198,7 @@ public class FilterAlertControl extends LegendPanel implements ClickHandler,
                     Label lb = new Label(" \u2022 " + item.getDisplayName());
                     lb.setStyleName(RESOURCES.getCSS().detailsItem());
                     lb.addClickHandler(e -> {
-                        if (selected != null && !selected.equals(item)) {
+                        if (selected == null || !selected.equals(item)) {
                             eventBus.fireEventFromSource(new GraphObjectSelectedEvent(item, true, true), this);
                         }
                     });
