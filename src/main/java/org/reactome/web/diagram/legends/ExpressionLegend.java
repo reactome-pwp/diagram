@@ -96,6 +96,9 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
     public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
         switch (event.getType()) {
             case EXPRESSION:
+            case GSVA:
+            case GSA_STATISTICS:
+            case GSA_REGULATION:
                 ExpressionSummary es = event.getExpressionSummary();
                 if (es != null) {
                     this.min = es.getMin();

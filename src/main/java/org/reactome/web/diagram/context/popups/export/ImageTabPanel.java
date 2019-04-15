@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.reactome.web.analysis.client.model.AnalysisType.*;
+
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
@@ -125,7 +127,8 @@ public class ImageTabPanel extends FlowPanel {
                 params.add("token=" + status.getToken());
                 params.add("analysisProfile=" + analysisProfile);
                 params.add("resource=" + status.getResource());
-                if (status.getAnalysisType() == AnalysisType.EXPRESSION) {
+                AnalysisType analysisType = status.getAnalysisType();
+                if (analysisType == EXPRESSION || analysisType == GSA_STATISTICS || analysisType == GSVA || analysisType == GSA_REGULATION) {
                     params.add("expColumn=" + status.getColumn());
                 }
             }

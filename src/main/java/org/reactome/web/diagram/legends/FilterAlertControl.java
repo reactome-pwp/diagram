@@ -107,6 +107,9 @@ public class FilterAlertControl extends LegendPanel implements ClickHandler,
             case OVERREPRESENTATION:
             case EXPRESSION:
             case SPECIES_COMPARISON:
+            case GSVA:
+            case GSA_STATISTICS:
+            case GSA_REGULATION: //TODO: This should change to the default behaviour now
                 this.token = event.getSummary().getToken();
                 this.filter = event.getFilter();
                 updateBasedOnFilter(filter);

@@ -26,6 +26,8 @@ import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
 
 import java.util.List;
 
+import static org.reactome.web.analysis.client.model.AnalysisType.*;
+
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -110,7 +112,8 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
 
     @Override
     public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
-        if (!event.isReset() && event.getType().equals(AnalysisType.EXPRESSION)) {
+        AnalysisType type = event.getType();
+        if (!event.isReset() && (type == EXPRESSION || type == GSA_STATISTICS || type == GSVA || type == GSA_REGULATION)) {
             this.currentCol = 0;
             this.eventBus.fireEventFromSource(new ExpressionColumnChangedEvent(this.currentCol), this);
             this.expressionSummary = event.getExpressionSummary();

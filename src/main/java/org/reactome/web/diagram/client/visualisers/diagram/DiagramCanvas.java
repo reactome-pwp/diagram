@@ -361,6 +361,9 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
                         renderer.drawEnrichment(interactors, entity, factor, offset);
                         break;
                     case EXPRESSION:
+                    case GSVA:
+                    case GSA_STATISTICS:
+                    case GSA_REGULATION:
                         renderer.drawExpression(interactors, entity, column, minExp, maxExp, factor, offset);
                         break;
                 }

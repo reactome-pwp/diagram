@@ -67,6 +67,9 @@ public class ItemsDistribution {
                                     }
                                     break;
                                 case EXPRESSION:
+                                case GSVA:
+                                case GSA_STATISTICS:
+                                case GSA_REGULATION:
                                     if(item.getIsDisease()!=null) {
                                         getOrCreate(renderableClass).add(RenderType.HIT_BY_EXPRESSION_DISEASE, item);
                                     }else{

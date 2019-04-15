@@ -826,6 +826,9 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                         overlayEntity(graphPathway.getStId(), percentage, hex2Rgb(enrichColour, 0.9f), HIT_BASIS_COLOUR);
                         break;
                     case EXPRESSION:
+                    case GSVA:
+                    case GSA_STATISTICS:
+                    case GSA_REGULATION:
                         percentage = graphPathway.isHit() ? graphPathway.getPercentage().floatValue() : 0;
 
                         String expressionColour = "#C2C2C2";

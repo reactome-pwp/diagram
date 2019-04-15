@@ -34,6 +34,8 @@ import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 import java.util.Collection;
 import java.util.Set;
 
+import static org.reactome.web.analysis.client.model.AnalysisType.*;
+
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
@@ -483,7 +485,7 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
     private void notifyHoveredExpression(DiagramObject item, Coordinate model) {
         if (context.getAnalysisStatus() != null) {
             AnalysisType type = context.getAnalysisStatus().getAnalysisType();
-            if (type.equals(AnalysisType.EXPRESSION)) {
+            if (type == EXPRESSION || type == GSA_STATISTICS || type == GSVA || type == GSA_REGULATION) {
                 //The reason why the notification is delegated to the canvas is because it keeps track of the
                 //expression changes already, so this do not need to be done here.
                 this.canvas.notifyHoveredExpression(item, model);
