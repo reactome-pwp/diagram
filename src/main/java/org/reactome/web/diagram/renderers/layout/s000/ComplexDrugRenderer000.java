@@ -23,6 +23,7 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public class ComplexDrugRenderer000 extends ComplexDrugAbstractRenderer {
     @Override
     public void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
@@ -105,6 +106,39 @@ public class ComplexDrugRenderer000 extends ComplexDrugAbstractRenderer {
         buffer.fillRect(prop.getX(), prop.getY(), prop.getWidth() * percentage, prop.getHeight());
 
         overlay.getOverlay().drawImage(buffer.getCanvas(), 0, 0); //TODO: Improve this to copy only the region
+        buffer.restore();
+    }
+
+    @Override
+    public void drawRegulation(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset){
+        GraphComplex complex = item.getGraphObject();
+        double percentage = complex.getHitParticipants().size() / (double) complex.getParticipants().size();
+
+        Node node = (Node) item;
+        NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+
+        ctx.save();
+        setColourProperties(ctx, ColourProfileType.ANALYSIS);
+        if(item.getIsDisease()!=null) ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
+        shape(ctx, prop, node.getNeedDashedBorder());
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        List<Double> expression = new LinkedList<>(complex.getParticipantsExpression(t).values());
+        Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
+        Double value = ExpressionUtil.median(expression);
+
+        AdvancedContext2d buffer = overlay.getBuffer();
+
+        buffer.save();
+        buffer.setFillStyle(AnalysisColours.get().regulationColorMap.getColor(value.intValue()));
+        buffer.octagon(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight(), RendererProperties.COMPLEX_RECT_ARC_WIDTH);
+        buffer.fill();
+        buffer.setGlobalCompositeOperation(Context2d.Composite.SOURCE_IN);
+        buffer.fillRect(prop.getX(), prop.getY(), prop.getWidth() * percentage, prop.getHeight());
+
+        overlay.getOverlay().drawImage(buffer.getCanvas(), 0, 0);
         buffer.restore();
     }
 

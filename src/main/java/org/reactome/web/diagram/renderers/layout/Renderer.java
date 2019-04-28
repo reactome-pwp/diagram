@@ -19,6 +19,8 @@ public interface Renderer {
 
     void drawExpression(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset);
 
+    void drawRegulation(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset);
+
     void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset);
 
     void drawHitInteractors(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset);

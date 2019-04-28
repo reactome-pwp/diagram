@@ -1,15 +1,16 @@
 package org.reactome.web.diagram.legends;
 
 import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.canvas.dom.client.CanvasGradient;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Cookies;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
 import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.diagram.common.PwpButton;
@@ -26,25 +27,35 @@ import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
-import org.reactome.web.diagram.profiles.analysis.model.AnalysisProfile;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
+import org.reactome.web.diagram.util.ColorMap;
 import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.ExpressionUtil;
-import org.reactome.web.diagram.util.gradient.ThreeColorGradient;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @SuppressWarnings("Duplicates")
-public class ExpressionLegend extends LegendPanel implements ClickHandler, MouseOverHandler, MouseOutHandler,
+public class RegulationLegend extends LegendPanel implements ClickHandler,
+        MouseOverHandler, MouseOutHandler, MouseMoveHandler,
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ContentRequestedHandler,
         ExpressionValueHoveredHandler, AnalysisProfileChangedHandler, ExpressionColumnChangedHandler,
         GraphObjectSelectedHandler, GraphObjectHoveredHandler, InteractorHoveredHandler {
+
+    private static String TOP_LABEL  = "Up regulated";
+    private static String BOTTOM_LABEL = "Down regulated";
+
+    private static String[] LABELS = {  "Significantly up regulated",
+                                        "Non significantly up regulated",
+                                        "Not found",
+                                        "Non significantly down regulated",
+                                        "Significantly down regulated"};
 
     private Canvas gradient;
     private Canvas flag;
@@ -61,29 +72,31 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
     private double min;
     private double max;
 
+    private int hoveredScaleIndex;
+
     private Content.Type type; //This is temporal
 
-    public ExpressionLegend(EventBus eventBus) {
+    public RegulationLegend(EventBus eventBus) {
         super(eventBus);
         this.gradient = createCanvas(30, 200);
         this.flag = createCanvas(50, 210);
+        this.flag.addMouseMoveHandler(this);
+        this.flag.setTitle(LABELS[hoveredScaleIndex]);
 
         //Setting the legend style
         addStyleName(RESOURCES.getCSS().expressionLegend());
 
-        fillGradient();
+        fillPalette();
 
         this.topLabel = new InlineLabel("");
-        this.topLabel.setSize("40px", "15px");
-        this.topLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-        this.add(this.topLabel, 5, 5);
+        this.topLabel.setStyleName(RESOURCES.getCSS().regulationLabel());
+        this.add(this.topLabel, 5, 3);
 
         this.add(this.gradient, 10, 25);
         this.add(this.flag, 0, 20);
 
         this.bottomLabel = new InlineLabel("");
-        this.bottomLabel.setSize("40px", "15px");
-        this.bottomLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        this.bottomLabel.setStyleName(RESOURCES.getCSS().regulationLabel());
         this.add(this.bottomLabel, 5, 230);
 
         this.addHelp();
@@ -96,27 +109,26 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
     @Override
     public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
         switch (event.getType()) {
-            case EXPRESSION:
-            case GSVA:
-            case GSA_STATISTICS:
+            case GSA_REGULATION:
                 ExpressionSummary es = event.getExpressionSummary();
                 if (es != null) {
                     this.min = es.getMin();
                     this.max = es.getMax();
-                    this.topLabel.setText(NumberFormat.getFormat("#.##E0").format(max));
-                    this.bottomLabel.setText(NumberFormat.getFormat("#.##E0").format(min));
+                    this.topLabel.setText(TOP_LABEL);
+                    this.bottomLabel.setText(BOTTOM_LABEL);
                 }
                 setVisible(true);
                 break;
             default:
                 setVisible(false);
         }
+
     }
 
     @Override
     public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
         Scheduler.get().scheduleDeferred(() -> {
-            fillGradient();
+            fillPalette();
             draw();
         });
     }
@@ -209,6 +221,13 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
         canvas.setCoordinateSpaceWidth(width);
         canvas.setCoordinateSpaceHeight(height);
         canvas.setPixelSize(width, height);
+
+        //Set text properties once
+        Context2d ctx = canvas.getContext2d();
+        ctx.setFont("bold 14px Arial");
+        ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
+        ctx.setTextAlign(Context2d.TextAlign.CENTER);
+
         return canvas;
     }
 
@@ -223,19 +242,19 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
             if (!hoveredValues.isEmpty()) {
                 String colour = DiagramColours.get().PROFILE.getProperties().getHovering();
                 for (Double value : hoveredValues) {
-                    double p = ThreeColorGradient.getPercentage(value, this.min, this.max);
+                    double p = ColorMap.getPercentage(value, this.min, this.max);
                     drawLeftPin(ctx, p, colour, colour);
                 }
                 if (hoveredValues.size() > 1) {
                     Double median = ExpressionUtil.median(hoveredValues);
-                    double p = ThreeColorGradient.getPercentage(median, this.min, this.max);
+                    double p = ColorMap.getPercentage(median, this.min, this.max);
                     colour = AnalysisColours.get().PROFILE.getExpression().getLegend().getMedian();
                     drawLeftPin(ctx, p, colour, colour);
                 }
             }
 
             if (this.expHovered != null) {
-                double p = ThreeColorGradient.getPercentage(this.expHovered, this.min, this.max);
+                double p = ColorMap.getPercentage(this.expHovered, this.min, this.max);
                 String colour = AnalysisColours.get().PROFILE.getExpression().getLegend().getHover();
                 drawLeftPin(ctx, p, colour, colour);
             }
@@ -244,12 +263,12 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
             if (!selectedValues.isEmpty()) {
                 String colour = DiagramColours.get().PROFILE.getProperties().getSelection();
                 for (Double value : selectedValues) {
-                    double p = ThreeColorGradient.getPercentage(value, this.min, this.max);
+                    double p = ColorMap.getPercentage(value, this.min, this.max);
                     drawRightPin(ctx, p, colour, colour);
                 }
                 if (selectedValues.size() > 1) {
                     Double median = ExpressionUtil.median(selectedValues);
-                    double p = ThreeColorGradient.getPercentage(median, this.min, this.max);
+                    double p = ColorMap.getPercentage(median, this.min, this.max);
                     colour = AnalysisColours.get().PROFILE.getExpression().getLegend().getMedian();
                     drawRightPin(ctx, p, colour, colour);
                 }
@@ -272,11 +291,11 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
         ctx.stroke();
         ctx.closePath();
 
-        ctx.beginPath();
-        ctx.moveTo(10, y);
-        ctx.lineTo(40, y);
-        ctx.stroke();
-        ctx.closePath();
+//        ctx.beginPath();
+//        ctx.moveTo(10, y);
+//        ctx.lineTo(40, y);
+//        ctx.stroke();
+//        ctx.closePath();
     }
 
     private void drawRightPin(Context2d ctx, double p, String stroke, String fill) {
@@ -292,28 +311,35 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
         ctx.stroke();
         ctx.closePath();
 
-        ctx.beginPath();
-        ctx.moveTo(10, y);
-        ctx.lineTo(40, y);
-        ctx.stroke();
-        ctx.closePath();
+//        ctx.beginPath();
+//        ctx.moveTo(10, y);
+//        ctx.lineTo(40, y);
+//        ctx.stroke();
+//        ctx.closePath();
     }
 
-    private void fillGradient() {
-        AnalysisProfile profile = AnalysisColours.get().PROFILE;
+    private void fillPalette() {
+        Map<Integer,String> colorMap = AnalysisColours.get().regulationColorMap.getPalette();
+
         Context2d ctx = this.gradient.getContext2d();
-        CanvasGradient grd = ctx.createLinearGradient(0, 0, 30, 200);
-
-        ThreeColorGradient gradient = new ThreeColorGradient(profile.getExpression().getGradient());
-        grd.addColorStop(0, gradient.getColor(0));
-        grd.addColorStop(0.5, gradient.getColor(0.5));
-        grd.addColorStop(1, gradient.getColor(1));
-
         ctx.clearRect(0, 0, this.gradient.getCoordinateSpaceWidth(), this.gradient.getCoordinateSpaceHeight());
-        ctx.setFillStyle(grd);
-        ctx.beginPath();
-        ctx.fillRect(0, 0, 30, 200);
-        ctx.closePath();
+        double height = this.gradient.getCoordinateSpaceHeight() / (double) colorMap.size();
+
+        int i = 0;
+        for (Integer key : colorMap.keySet()) {
+            ctx.setFillStyle(colorMap.get(key));
+            ctx.beginPath();
+            ctx.fillRect(0, i * height, 30, height);
+            ctx.closePath();
+
+            // Labels
+            ctx.setShadowColor("rgba(0,0,0,0.5)");
+            ctx.setShadowBlur(4);
+            ctx.setFillStyle("#FFFFFF");
+            ctx.fillText(key.toString(), 15, i * height + height/2.0);
+
+            i++;
+        }
     }
 
     private List<Double> getExpressionValues(GraphObject graphObject, int column) {
@@ -373,7 +399,7 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
 
         this.helpPanel = new FlowPanel();
         this.helpPanel.getElement().getStyle().setTextAlign(Style.TextAlign.CENTER);
-        HTMLPanel text = new HTMLPanel(RESOURCES.expressionLegendHelp().getText());
+        HTMLPanel text = new HTMLPanel(RESOURCES.regulationLegendHelp().getText());
         this.helpPanel.add(text);
 
         Anchor close = new Anchor("Got it!");
@@ -410,6 +436,17 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
     @Override
     public void onMouseOut(MouseOutEvent event) {
         this.hideHelp();
+    }
+
+    @Override
+    public void onMouseMove(MouseMoveEvent event) {
+        int y = event.getRelativeY(gradient.getElement());
+        int stepHeight = 40;
+        int scaleIndex = (y / stepHeight);
+        if (hoveredScaleIndex != scaleIndex) {
+            flag.setTitle(LABELS[scaleIndex]);
+            hoveredScaleIndex = scaleIndex;
+        }
     }
 
     private void showHelp() {

@@ -363,8 +363,10 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
                     case EXPRESSION:
                     case GSVA:
                     case GSA_STATISTICS:
-                    case GSA_REGULATION:
                         renderer.drawExpression(interactors, entity, column, minExp, maxExp, factor, offset);
+                        break;
+                    case GSA_REGULATION:
+                        renderer.drawRegulation(interactors, entity, column, minExp, maxExp, factor, offset);
                         break;
                 }
                 interactors.save();
@@ -454,13 +456,21 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
                 Set<DiagramObject> expressionNormal = target.getElements(RenderType.HIT_BY_EXPRESSION_NORMAL);
                 if (expressionNormal != null) {
                     renderer.setTextProperties(text, ColourProfileType.NORMAL);
-                    renderExpression(renderer, ctx, expressionNormal, column, minExp, maxExp, factor, offset);
+                    if (analysisType == AnalysisType.GSA_REGULATION) {
+                        renderRegulation(renderer, ctx, expressionNormal, column, minExp, maxExp, factor, offset);
+                    } else {
+                        renderExpression(renderer, ctx, expressionNormal, column, minExp, maxExp, factor, offset);
+                    }
                 }
                 Set<DiagramObject> expressionDisease = target.getElements(RenderType.HIT_BY_EXPRESSION_DISEASE);
                 if (expressionDisease != null) {
                     renderer.setTextProperties(text, ColourProfileType.NORMAL);
                     ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
-                    renderExpression(renderer, ctx, expressionDisease, column, minExp, maxExp, factor, offset);
+                    if (analysisType == AnalysisType.GSA_REGULATION) {
+                        renderRegulation(renderer, ctx, expressionDisease, column, minExp, maxExp, factor, offset);
+                    } else {
+                        renderExpression(renderer, ctx, expressionDisease, column, minExp, maxExp, factor, offset);
+                    }
                 }
                 Set<DiagramObject> hitInteractors = target.getElements(RenderType.HIT_INTERACTORS);
                 if(hitInteractors != null) {
@@ -551,6 +561,23 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         for (DiagramObject item : objects) {
             try {
                 renderer.drawExpression(ctx, overlay, item, c, min, max, factor, offset);
+            }catch (Exception e){
+                Console.error(e.getMessage(), this);
+            }
+            renderer.drawText(this.text, item, factor, offset);
+            if (item instanceof Node) {
+                Node node = (Node) item;
+                connectorRenderer.draw(this.reactions, this.fadeOut, this.reactionDecorators, node, factor, offset);
+            }
+        }
+    }
+
+    private void renderRegulation(Renderer renderer, AdvancedContext2d ctx, Set<DiagramObject> objects, int c, double min, double max, double factor, Coordinate offset) {
+        ConnectorRenderer connectorRenderer = this.rendererManager.getConnectorRenderer();
+        OverlayContext overlay = new OverlayContext(this.overlay, this.buffer);
+        for (DiagramObject item : objects) {
+            try {
+                renderer.drawRegulation(ctx, overlay, item, c, min, max, factor, offset);
             }catch (Exception e){
                 Console.error(e.getMessage(), this);
             }

@@ -21,6 +21,7 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public class ComplexRenderer100 extends ComplexAbstractRenderer {
     @Override
     public Double getExpressionHovered(DiagramObject item, Coordinate pos, int t) {
@@ -95,6 +96,52 @@ public class ComplexRenderer100 extends ComplexAbstractRenderer {
         for (Participant participant : Participant.asSortedList(complex.getParticipantsExpression(t))) {
             double value = participant.getExpression();
             buffer.setFillStyle(AnalysisColours.get().expressionGradient.getColor(value, min, max));
+            buffer.fillRect(x, prop.getY(), delta, prop.getHeight());
+            x += delta;
+        }
+
+        buffer.setGlobalCompositeOperation(Context2d.Composite.SOURCE_ATOP);
+        setColourProperties(buffer, ColourProfileType.ANALYSIS);
+        buffer.setLineWidth(ctx.getLineWidth());
+        shape(buffer, prop, node.getNeedDashedBorder());
+        buffer.stroke();
+
+        setTextProperties(buffer, ColourProfileType.ANALYSIS);
+        buffer.setShadowColor("#000000");
+        buffer.setShadowBlur(5.0);
+        buffer.setFillStyle(AnalysisColours.get().PROFILE.getExpression().getText());
+        drawText(buffer, item, factor, offset);
+
+        buffer.setGlobalCompositeOperation(Context2d.Composite.DESTINATION_IN);
+        buffer.octagon(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight(), RendererProperties.COMPLEX_RECT_ARC_WIDTH);
+        buffer.fill();
+
+        overlay.getOverlay().drawImage(buffer.getCanvas(), 0, 0); //TODO: Improve this to copy only the region
+        buffer.restore();
+    }
+
+    @Override
+    public void drawRegulation(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset) {
+        GraphComplex complex = item.getGraphObject();
+        Node node = (Node) item;
+        NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+
+        ctx.save();
+        setColourProperties(ctx, ColourProfileType.ANALYSIS);
+        if (item.getIsDisease() != null) ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
+        shape(ctx, prop, node.getNeedDashedBorder());
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        Double delta = prop.getWidth() / complex.getParticipants().size();
+        double x = prop.getX();
+
+        AdvancedContext2d buffer = overlay.getBuffer();
+        buffer.save();
+        for (Participant participant : Participant.asSortedList(complex.getParticipantsExpression(t))) {
+            double value = participant.getExpression();
+            buffer.setFillStyle(AnalysisColours.get().regulationColorMap.getColor((int) value));
             buffer.fillRect(x, prop.getY(), delta, prop.getHeight());
             x += delta;
         }

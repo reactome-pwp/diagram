@@ -29,6 +29,11 @@ public abstract class EncapsulatedNodeAbstractRenderer extends NodeAbstractRende
         drawAnalysisResult(ctx, overlay, item, factor, offset);
     }
 
+    @Override
+    public void drawRegulation(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset){
+        drawAnalysisResult(ctx, overlay, item, factor, offset);
+    }
+
     public abstract void drawAnalysisResult(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, Double factor, Coordinate offset);
 
     @Override

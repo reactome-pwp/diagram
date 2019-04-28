@@ -22,6 +22,7 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public class SetRenderer000 extends SetAbstractRenderer {
     @Override
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
@@ -118,6 +119,39 @@ public class SetRenderer000 extends SetAbstractRenderer {
         overlay.getOverlay().drawImage(buffer.getCanvas(), 0, 0); //TODO: Improve this to copy only the region
         buffer.restore();
     }
+
+    @Override
+    public void drawRegulation(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset){
+        GraphEntitySet set = item.getGraphObject();
+        double percentage = set.getHitParticipants().size() / (double) set.getParticipants().size();
+
+        Node node = (Node) item;
+        NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+
+        ctx.save();
+        setColourProperties(ctx, ColourProfileType.ANALYSIS);
+        if(item.getIsDisease()!=null) ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
+        ctx.rect(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight());
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        List<Double> expression = new LinkedList<>(set.getParticipantsExpression(t).values());
+        Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
+        Double value = ExpressionUtil.median(expression);
+
+        AdvancedContext2d buffer = overlay.getBuffer();
+        buffer.save();
+        buffer.setFillStyle(AnalysisColours.get().regulationColorMap.getColor(value.intValue()));
+        buffer.fillRect(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight());
+        buffer.fill();
+        buffer.setGlobalCompositeOperation(Context2d.Composite.SOURCE_IN);
+        buffer.fillRect(prop.getX(), prop.getY(), prop.getWidth() * percentage, prop.getHeight());
+
+        overlay.getOverlay().drawImage(buffer.getCanvas(), 0, 0); //TODO: Improve this to copy only the region
+        buffer.restore();
+    }
+
 
     @Override
     public boolean isVisible(DiagramObject item) {

@@ -55,6 +55,20 @@ public abstract class GeneAbstractRenderer extends NodeAbstractRenderer{
     }
 
     @Override
+    public void drawRegulation(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset) {
+        if(!isVisible(item)) return;
+        GraphObject graphObject = item.getGraphObject();
+        setRegulationColour(ctx, graphObject.getExpression(), min, max, t);
+
+        Node node = (Node) item;
+        NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+        ctx.setStrokeStyle(DiagramColours.get().PROFILE.getGene().getStroke());
+        fillTextHolder(ctx, prop);
+        shape(ctx, prop, node.getNeedDashedBorder());
+        ctx.stroke();
+    }
+
+    @Override
     public void drawText(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         if(isVisible(item) && item.getDisplayName() != null && !item.getDisplayName().isEmpty()) {
             TextMetrics metrics = ctx.measureText(item.getDisplayName());
