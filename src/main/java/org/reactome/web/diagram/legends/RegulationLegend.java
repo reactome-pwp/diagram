@@ -40,6 +40,7 @@ import java.util.Map;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 @SuppressWarnings("Duplicates")
 public class RegulationLegend extends LegendPanel implements ClickHandler,
@@ -56,6 +57,11 @@ public class RegulationLegend extends LegendPanel implements ClickHandler,
                                         "Not found",
                                         "Non significantly down regulated",
                                         "Significantly down regulated"};
+    private static String[] SYMBOLS = { "\u25BC\u25BC",
+                                        "\u25BC",
+                                        "-",
+                                        "\u25B2",
+                                        "\u25B2\u25B2"};
 
     private Canvas gradient;
     private Canvas flag;
@@ -224,7 +230,7 @@ public class RegulationLegend extends LegendPanel implements ClickHandler,
 
         //Set text properties once
         Context2d ctx = canvas.getContext2d();
-        ctx.setFont("bold 14px Arial");
+        ctx.setFont("bold 13px Arial");
         ctx.setTextBaseline(Context2d.TextBaseline.MIDDLE);
         ctx.setTextAlign(Context2d.TextAlign.CENTER);
 
@@ -336,7 +342,7 @@ public class RegulationLegend extends LegendPanel implements ClickHandler,
             ctx.setShadowColor("rgba(0,0,0,0.5)");
             ctx.setShadowBlur(4);
             ctx.setFillStyle("#FFFFFF");
-            ctx.fillText(key.toString(), 15, i * height + height/2.0);
+            ctx.fillText(SYMBOLS[key + 2], 15, i * height + height/2.0);
 
             i++;
         }
