@@ -49,8 +49,8 @@ public class RegulationLegend extends LegendPanel implements ClickHandler,
         ExpressionValueHoveredHandler, AnalysisProfileChangedHandler, ExpressionColumnChangedHandler,
         GraphObjectSelectedHandler, GraphObjectHoveredHandler, InteractorHoveredHandler {
 
-    private static String TOP_LABEL  = "Up regulated";
-    private static String BOTTOM_LABEL = "Down regulated";
+    private static String TOP_LABEL  = "Up-regulated";
+    private static String BOTTOM_LABEL = "Down-regulated";
 
     private static String[] LABELS = {  "Significantly up regulated",
                                         "Non significantly up regulated",
