@@ -69,6 +69,11 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
         return addHandler(handler, ChangeLabelsEvent.TYPE);
     }
 
+    public ContextDialogPanel setDiagramObject(DiagramObject item) {
+        this.item = item;
+        return this;
+    }
+
     @Override
     public void hide(boolean autoClosed) {
         //The idea is to keep the panels open if the pin is pressed

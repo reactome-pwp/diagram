@@ -179,7 +179,7 @@ public class Context {
         if (!dialogMap.containsKey(item.getGraphObject())) {
             dialogMap.put(item.getGraphObject(), new ContextDialogPanel(eventBus, item, this, canvas));
         } else {
-            dialogMap.get(item.getGraphObject()).show(true);
+            dialogMap.get(item.getGraphObject()).setDiagramObject(item).show(true);
         }
     }
 
