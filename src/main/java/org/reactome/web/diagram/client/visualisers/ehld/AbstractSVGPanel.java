@@ -82,6 +82,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
     public void showExportDialog(final Context context, final String selected, final String flagged) {
         if(svg != null) {
             OMSVGSVGElement auxSVG = (OMSVGSVGElement) svg.cloneNode(true);
+            auxSVG.removeAttribute("viewBox");
             Image snapshot = new Image();
             snapshot.setUrl("data:image/svg+xml;base64," + btoa(auxSVG.getMarkup()));
             final ExportDialog dialog = new ExportDialog(context, selected, flagged, includeInteractors, snapshot);
