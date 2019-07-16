@@ -56,7 +56,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * This is where the drawing of the classic diagrams takes place.
+ * The class features several stacked canvases for teh different layers.
+ *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHandler {
 
