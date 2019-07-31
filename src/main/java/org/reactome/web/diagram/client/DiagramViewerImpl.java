@@ -29,6 +29,7 @@ import java.util.Set;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 class DiagramViewerImpl extends AbstractDiagramViewer implements
         LayoutLoadedHandler, ContentRequestedHandler, ContentLoadedHandler, KeyDownHandler,
@@ -180,7 +181,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         analysisStatus.setExpressionSummary(event.getExpressionSummary());
         context.setAnalysisOverlay(analysisStatus, event.getFoundElements(), event.getPathwaySummaries());
         interactorsManager.setAnalysisOverlay(event.getFoundElements(), context.getContent().getIdentifierMap());
-        Scheduler.get().scheduleDeferred(() -> { //TODO NOT SURE THIS IS NEEDED...
+        Scheduler.get().scheduleDeferred(() -> {
             viewerContainer.loadAnalysis();
         });
     }

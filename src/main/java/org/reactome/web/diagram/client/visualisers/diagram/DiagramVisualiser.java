@@ -37,6 +37,7 @@ import java.util.Set;
 import static org.reactome.web.analysis.client.model.AnalysisType.*;
 
 /**
+ * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class DiagramVisualiser extends SimplePanel implements Visualiser,
@@ -432,7 +433,6 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
     @Override
     public void setVisible(boolean visible) {
         super.setVisible(visible);
-//        if (visible) onResize(); //ToDo check if this has to be moved one layer up
         if (context != null) {
             if (visible) context.restoreDialogs();
             else context.hideDialogs();
