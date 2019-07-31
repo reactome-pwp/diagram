@@ -201,7 +201,6 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
             this.eventBus.fireEventFromSource(event, this);
             GraphObject obj = hovered != null ? hovered.getGraphObject() : null;
             thumbnail.graphObjectHovered(obj);
-//            fireEvent(event);
         }
     }
 
@@ -213,7 +212,7 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
             InteractorHoveredEvent event = interactorsManager.setHovered(hovered);
             if (event != null) {
                 this.eventBus.fireEventFromSource(event, this);
-//                fireEvent(event); //needs outside notification
+
             }
         }
     }
