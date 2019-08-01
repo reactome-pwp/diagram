@@ -177,6 +177,10 @@
     margin-right: 10px;
 }
 
+.enrichmentLegend canvas {
+    outline: none;
+}
+
 .enrichmentControl {
     /*centers in the middle*/
     width: 390px;
@@ -199,6 +203,10 @@
     overflow: visible !important;
     float: left;
     margin-right: 10px;
+}
+
+.expressionLegend canvas {
+    outline: none;
 }
 
 .expressionLegendHelp {
@@ -549,4 +557,13 @@
 
 .detailsItem:last-child {
     margin-bottom: 15px;
+}
+
+.regulationLabel {
+    width: 40px;
+    height: 15px;
+    text-align: center;
+    font-size: 10px;
+    line-height: 0.9em;
+    position: absolute;
 }

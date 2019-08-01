@@ -37,6 +37,11 @@ public abstract class InteractorLinkAbstractRenderer extends InteractorAbstractR
     }
 
     @Override
+    public void drawRegulation(AdvancedContext2d ctx, DiagramInteractor item, int t, double min, double max, Double factor, Coordinate offset) {
+        draw(ctx, item, factor, offset);
+    }
+
+    @Override
     public void drawText(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
         //Nothing here
     }

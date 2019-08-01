@@ -117,6 +117,9 @@ public abstract class LegendPanel extends AbsolutePanel {
         @Source("help/expression.help.html")
         TextResource expressionLegendHelp();
 
+        @Source("help/regulation.help.html")
+        TextResource regulationLegendHelp();
+
         @Source("images/loader.gif")
         ImageResource loader();
 
@@ -240,6 +243,8 @@ public abstract class LegendPanel extends AbsolutePanel {
         String details();
 
         String detailsItem();
+
+        String regulationLabel();
 
     }
 
