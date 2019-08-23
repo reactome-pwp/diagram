@@ -46,6 +46,15 @@ public class InteractorEntityRenderer050 extends InteractorEntityAbstractRendere
     }
 
     @Override
+    public void drawRegulation(AdvancedContext2d ctx, DiagramInteractor item, int t, double min, double max, Double factor, Coordinate offset) {
+        double alpha = ctx.getGlobalAlpha();
+        ctx.save();
+        ctx.setGlobalAlpha((factor - 0.5) * alpha * 2);
+        super.drawRegulation(ctx, item, t, min, max, factor, offset);
+        ctx.restore();
+    }
+
+    @Override
     public void highlight(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
         double alpha = ctx.getGlobalAlpha();
         ctx.save();

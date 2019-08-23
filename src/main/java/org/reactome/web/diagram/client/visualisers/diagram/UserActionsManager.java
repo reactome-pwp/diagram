@@ -19,6 +19,7 @@ import org.reactome.web.diagram.util.position.MousePosition;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 class UserActionsManager implements MouseActionsHandlers {
 

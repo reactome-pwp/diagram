@@ -34,7 +34,10 @@ import uk.ac.ebi.pwp.structures.quadtree.client.Box;
 import java.util.Collection;
 import java.util.Set;
 
+import static org.reactome.web.analysis.client.model.AnalysisType.*;
+
 /**
+ * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class DiagramVisualiser extends SimplePanel implements Visualiser,
@@ -198,7 +201,6 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
             this.eventBus.fireEventFromSource(event, this);
             GraphObject obj = hovered != null ? hovered.getGraphObject() : null;
             thumbnail.graphObjectHovered(obj);
-//            fireEvent(event);
         }
     }
 
@@ -210,7 +212,7 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
             InteractorHoveredEvent event = interactorsManager.setHovered(hovered);
             if (event != null) {
                 this.eventBus.fireEventFromSource(event, this);
-//                fireEvent(event); //needs outside notification
+
             }
         }
     }
@@ -430,7 +432,6 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
     @Override
     public void setVisible(boolean visible) {
         super.setVisible(visible);
-//        if (visible) onResize(); //ToDo check if this has to be moved one layer up
         if (context != null) {
             if (visible) context.restoreDialogs();
             else context.hideDialogs();
@@ -483,7 +484,7 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
     private void notifyHoveredExpression(DiagramObject item, Coordinate model) {
         if (context.getAnalysisStatus() != null) {
             AnalysisType type = context.getAnalysisStatus().getAnalysisType();
-            if (type.equals(AnalysisType.EXPRESSION)) {
+            if (type == EXPRESSION || type == GSA_STATISTICS || type == GSVA || type == GSA_REGULATION) {
                 //The reason why the notification is delegated to the canvas is because it keeps track of the
                 //expression changes already, so this do not need to be done here.
                 this.canvas.notifyHoveredExpression(item, model);

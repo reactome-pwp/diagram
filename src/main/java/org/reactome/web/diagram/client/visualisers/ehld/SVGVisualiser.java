@@ -826,9 +826,28 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
                         overlayEntity(graphPathway.getStId(), percentage, hex2Rgb(enrichColour, 0.9f), HIT_BASIS_COLOUR);
                         break;
                     case EXPRESSION:
+                    case GSVA:
+                    case GSA_STATISTICS:
                         percentage = graphPathway.isHit() ? graphPathway.getPercentage().floatValue() : 0;
 
                         String expressionColour = "#C2C2C2";
+                        if (graphPathway.isHit()) {
+                            Double pValue = graphPathway.getStatistics().getpValue();
+                            if (pValue > 0 && pValue < AnalysisColours.THRESHOLD) {
+                                expressionColour = AnalysisColours.get().expressionGradient.getColor(
+                                        graphPathway.getExpression(selectedExpCol).floatValue(),
+                                        expressionSummary.getMin(),
+                                        expressionSummary.getMax()
+                                );
+                            }
+                        }
+
+                        overlayEntity(graphPathway.getStId(), percentage, hex2Rgb(expressionColour, 0.9f), HIT_BASIS_COLOUR);
+                        break;
+                    case GSA_REGULATION:
+                        percentage = graphPathway.isHit() ? graphPathway.getPercentage().floatValue() : 0;
+
+                        expressionColour = "#C2C2C2";
                         if (graphPathway.isHit()) {
                             Double pValue = graphPathway.getStatistics().getpValue();
                             if (pValue > 0 && pValue < AnalysisColours.THRESHOLD) {

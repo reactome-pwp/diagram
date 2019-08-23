@@ -10,6 +10,7 @@ import org.reactome.web.diagram.handlers.AnalysisProfileChangedHandler;
 import org.reactome.web.diagram.profiles.analysis.model.AnalysisProfile;
 import org.reactome.web.diagram.profiles.analysis.model.factory.AnalysisProfileException;
 import org.reactome.web.diagram.profiles.analysis.model.factory.AnalysisProfileFactory;
+import org.reactome.web.diagram.util.ColorMap;
 import org.reactome.web.diagram.util.gradient.ThreeColorGradient;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class AnalysisColours implements AnalysisProfileChangedHandler {
+    private EventBus eventBus;
 
     @SuppressWarnings("SpellCheckingInspection")
     private static final String PROFILE_COOKIE = "pathwaybrowser_analysis_colour";
@@ -30,7 +32,7 @@ public class AnalysisColours implements AnalysisProfileChangedHandler {
     public AnalysisProfile PROFILE;
     public ThreeColorGradient enrichmentGradient;
     public ThreeColorGradient expressionGradient;
-    private EventBus eventBus;
+    public ColorMap regulationColorMap;
 
     /**
      * If there is not match then we load the default one.
@@ -67,6 +69,7 @@ public class AnalysisColours implements AnalysisProfileChangedHandler {
         PROFILE = analysisProfile;
         enrichmentGradient = new ThreeColorGradient(PROFILE.getEnrichment().getGradient());
         expressionGradient = new ThreeColorGradient(PROFILE.getExpression().getGradient());
+        regulationColorMap = ColorMap.fromGradient(expressionGradient);
 
         //The strategy is to remove the cookie when the standard is selected so in case
         //we decide to change the standard profile in the future, that will propagate

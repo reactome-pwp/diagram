@@ -117,6 +117,9 @@ public abstract class LegendPanel extends AbsolutePanel {
         @Source("help/expression.help.html")
         TextResource expressionLegendHelp();
 
+        @Source("help/regulation.help.html")
+        TextResource regulationLegendHelp();
+
         @Source("images/loader.gif")
         ImageResource loader();
 
@@ -143,6 +146,12 @@ public abstract class LegendPanel extends AbsolutePanel {
 
         @Source("images/reload_normal.png")
         ImageResource reloadNormal();
+
+        @Source("images/filter_warning.png")
+        ImageResource filterWarningIcon();
+
+        @Source("images/warning.png")
+        ImageResource warningIcon();
     }
 
     /**
@@ -216,6 +225,27 @@ public abstract class LegendPanel extends AbsolutePanel {
         String reload();
 
         String unselectable();
+
+        String filterBtn();
+
+        String infoPanel();
+
+        String infoPanelTitle();
+
+        String infoPanelTag();
+
+        String filterAlertControl();
+
+        String learnMore();
+
+        String hide();
+
+        String details();
+
+        String detailsItem();
+
+        String regulationLabel();
+
     }
 
     protected EventBus eventBus;

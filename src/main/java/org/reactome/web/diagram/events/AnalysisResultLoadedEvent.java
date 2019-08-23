@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.events;
 
 import com.google.gwt.event.shared.GwtEvent;
+import org.reactome.web.analysis.client.filter.ResultFilter;
 import org.reactome.web.analysis.client.model.*;
 import org.reactome.web.diagram.handlers.AnalysisResultLoadedHandler;
 
@@ -17,13 +18,15 @@ public class AnalysisResultLoadedEvent extends GwtEvent<AnalysisResultLoadedHand
     private ExpressionSummary expressionSummary;
     private FoundElements foundElements;
     private List<PathwaySummary> pathwaySummaries;
+    private ResultFilter filter;
     private long time;
 
-    public AnalysisResultLoadedEvent(AnalysisSummary summary, ExpressionSummary expressionSummary, FoundElements foundElements, List<PathwaySummary> pathwaySummaries, long time) {
+    public AnalysisResultLoadedEvent(AnalysisSummary summary, ExpressionSummary expressionSummary, FoundElements foundElements, List<PathwaySummary> pathwaySummaries, ResultFilter filter, long time) {
         this.summary = summary;
         this.expressionSummary = expressionSummary;
         this.foundElements = foundElements;
         this.pathwaySummaries = pathwaySummaries == null ? new LinkedList<PathwaySummary>() : pathwaySummaries;
+        this.filter = filter;
         this.time = time;
     }
 
@@ -59,6 +62,10 @@ public class AnalysisResultLoadedEvent extends GwtEvent<AnalysisResultLoadedHand
 
     public boolean isReset() {
         return summary == null;
+    }
+
+    public ResultFilter getFilter() {
+        return filter;
     }
 
     public long getTime() {

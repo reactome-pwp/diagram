@@ -7,12 +7,15 @@
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
     box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+
+    -webkit-transition: height 0.1s;
+    -moz-transition: height 0.1s;
+    transition: height 0.1s;
 }
 
 .analysisControl{
     border-radius: 5px;
     margin-bottom: 10px;
-    /*bottom: 10px;*/
     height: 28px;
 
     /* Used to animate the positioning of the flaggedItems panel */
@@ -37,7 +40,6 @@
 }
 
 @sprite .close:active:hover {
-    /*margin: 3px 7px;*/
     gwt-image: 'closeClicked';
 }
 
@@ -175,10 +177,14 @@
     margin-right: 10px;
 }
 
+.enrichmentLegend canvas {
+    outline: none;
+}
+
 .enrichmentControl {
     /*centers in the middle*/
-    width: 260px;
-    margin-left:-130px; /* width and margin-left are related, please change both if needed */
+    width: 390px;
+    margin-left:-195px; /* width and margin-left are related, please change both if needed */
     left:50%;
 }
 
@@ -197,6 +203,10 @@
     overflow: visible !important;
     float: left;
     margin-right: 10px;
+}
+
+.expressionLegend canvas {
+    outline: none;
 }
 
 .expressionLegendHelp {
@@ -235,7 +245,7 @@
     text-overflow: ellipsis;
     display: inline-block;
     white-space: nowrap;
-    max-width: 225px;
+    max-width: 205px;
 
     line-height: normal !important;
 }
@@ -390,4 +400,170 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+.filterBtn {
+    float: right;
+    margin: 2px 5px 2px 4px;
+    background-color: #58C3E5;
+    border: none;
+    outline: none;
+    border-radius: 12px;
+    color: white;
+    padding: 0;
+    border: 0;
+}
+
+.filterBtn>div {
+    margin: 0;
+    position: relative;
+}
+
+.filterBtn span {
+    display: none;
+}
+
+.filterBtn img {
+    display: block;
+    height: 24px;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+}
+
+.filterBtn:hover {
+    background-color: #1E95CF;
+    cursor: pointer !important;
+}
+
+.filterBtn:active:hover {
+    background-color: #066B9E;
+    cursor: pointer !important;
+}
+
+.filterBtn:disabled, .filterBtn:disabled:hover, .filterBtn:disabled:active{
+    background-color: #9a9c9e;
+    cursor: default !important;
+}
+
+.infoPanel {
+    padding: 2px;
+    margin-top: 6px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+}
+
+.infoPanelTitle {
+    font-size: smaller;
+    color: #1E95CF;
+}
+
+.infoPanelTag {
+    background-color: #1E95CF;
+    color: white;
+    border-radius: 10px;
+    padding: 0 6px 0 6px;
+    margin: 2px 0 2px 0;
+    cursor: default;
+    line-height: normal;
+}
+
+.filterAlertControl {
+    background-color: #FFB300;
+    border: 1px solid #FFA000;
+    color: white;
+    border-radius: 5px;
+    position: relative;
+    margin-top: 10px;
+    height: 20px;
+    font-size: 14px;
+
+    /*centers in the middle*/
+    width: 330px;
+    margin-left: -165px; /* width and margin-left are related, please change both if needed */
+    left: 50%;
+
+    -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
+    box-shadow:         3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+
+    -webkit-transition: height 0.1s;
+    -moz-transition: height 0.1s;
+    transition: height 0.1s;
+}
+
+.filterAlertControl > img {
+    width: 17px;
+    height: auto;
+    float: left;
+    margin: 2px 4px;
+}
+
+.filterAlertControl span {
+    margin: 0 0 0 4px;
+    float: left;
+    font-weight: bold;
+
+    line-height: normal !important;
+}
+
+.learnMore {
+    color: #1e95cf;
+    font-size: 14px;
+    margin: 0 10px 0 0;
+    float: right;
+    cursor: pointer;
+}
+
+.learnMore:hover {
+    color: #066B9E;
+}
+
+.hide {
+    color: #1e95cf;
+    font-size: 14px;
+    margin: 0 4px 0 0;
+    float: right;
+    cursor: pointer;
+}
+
+.hide:hover {
+    color: #066B9E;
+}
+
+.details {
+    height: 80px;
+    width: 100%;
+    overflow-y: auto;
+    font-size: small;
+    line-height: normal;
+    color: #066B9E;
+}
+
+.detailsItem {
+    cursor: pointer;
+    color: #066B9E;
+}
+
+.detailsItem:hover {
+    color: #0d4f9e !important;
+}
+
+.detailsItem:last-child {
+    margin-bottom: 15px;
+}
+
+.regulationLabel {
+    width: 40px;
+    height: 15px;
+    text-align: center;
+    font-size: 10px;
+    line-height: 0.9em;
+    position: absolute;
 }

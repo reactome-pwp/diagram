@@ -10,7 +10,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-@Deprecated
 public class NotificationsContainer extends FlowPanel {
 
     public NotificationsContainer(EventBus eventBus) {

@@ -23,6 +23,7 @@ import java.util.List;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public class SetRenderer050 extends SetAbstractRenderer {
     @Override
     public Double getExpressionHovered(DiagramObject item, Coordinate pos, int t) {
@@ -96,6 +97,49 @@ public class SetRenderer050 extends SetAbstractRenderer {
         AdvancedContext2d buffer = overlay.getBuffer();
         buffer.save();
         buffer.setFillStyle(AnalysisColours.get().expressionGradient.getColor(value, min, max));
+        buffer.fillRect(prop.getX(), prop.getY(), prop.getWidth() * percentage, prop.getHeight());
+
+        buffer.setGlobalCompositeOperation(Context2d.Composite.SOURCE_ATOP);
+        buffer.setStrokeStyle(ctx.getStrokeStyle());
+        innerShape(buffer, prop, node.getNeedDashedBorder());
+        buffer.stroke();
+
+        buffer.setGlobalCompositeOperation(Context2d.Composite.DESTINATION_IN);
+        buffer.roundedRectangle(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight(), RendererProperties.ROUND_RECT_ARC_WIDTH);
+        buffer.fill();
+
+        buffer.setGlobalCompositeOperation(Context2d.Composite.SOURCE_ATOP);
+        setTextProperties(buffer, ColourProfileType.ANALYSIS);
+        buffer.setShadowColor("#000000");
+        buffer.setShadowBlur(5.0);
+        buffer.setFillStyle(AnalysisColours.get().PROFILE.getExpression().getText());
+        drawText(buffer, item, factor, offset);
+
+        overlay.getOverlay().drawImage(buffer.getCanvas(), 0, 0); //TODO: Improve this to copy only the region
+        buffer.restore();
+    }
+
+    @Override
+    public void drawRegulation(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset) {
+        GraphEntitySet set = item.getGraphObject();
+        double percentage = set.getHitParticipants().size() / (double) set.getParticipants().size();
+
+        Node node = (Node) item;
+        NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
+
+        ctx.save();
+        setColourProperties(ctx, ColourProfileType.ANALYSIS);
+        if(item.getIsDisease()!=null) ctx.setStrokeStyle(DiagramColours.get().PROFILE.getProperties().getDisease());
+        super.draw(ctx, item, factor, offset);
+        ctx.restore();
+
+        List<Double> expression = new LinkedList<>(set.getParticipantsExpression(t).values());
+        Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
+        double value = ExpressionUtil.median(expression);
+
+        AdvancedContext2d buffer = overlay.getBuffer();
+        buffer.save();
+        buffer.setFillStyle(AnalysisColours.get().regulationColorMap.getColor((int)value));
         buffer.fillRect(prop.getX(), prop.getY(), prop.getWidth() * percentage, prop.getHeight());
 
         buffer.setGlobalCompositeOperation(Context2d.Composite.SOURCE_ATOP);

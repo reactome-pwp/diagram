@@ -14,7 +14,10 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import org.reactome.web.diagram.common.PwpButton;
 
 /**
+ * This panel is displayed when the user selects one of the static illustrations (figures)
+ *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 class IllustrationPanel extends AbsolutePanel implements RequiresResize, ClickHandler {
 

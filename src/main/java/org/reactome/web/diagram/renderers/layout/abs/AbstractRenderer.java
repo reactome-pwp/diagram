@@ -43,6 +43,13 @@ public abstract class AbstractRenderer implements Renderer {
     }
 
     @Override
+    public void drawRegulation(AdvancedContext2d ctx, OverlayContext overlay, DiagramObject item, int t, double min, double max, Double factor, Coordinate offset){
+        GraphObject graphObject = item.getGraphObject();
+        setRegulationColour(ctx, graphObject.getExpression(), min, max, t);
+        draw(ctx, item, factor, offset); //By default the normal draw method is called
+    }
+
+    @Override
     public void drawHitInteractors(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         //Nothing here
     }
@@ -57,6 +64,19 @@ public abstract class AbstractRenderer implements Renderer {
                 value = expression.get(t);
             }
             ctx.setFillStyle(AnalysisColours.get().expressionGradient.getColor(value, min, max));
+        }catch (Exception e){
+            Console.error(e.getMessage(), this);
+        }
+    }
+
+
+    protected void setRegulationColour(AdvancedContext2d ctx, List<Double> expression, Double min, Double max, int t){
+        try {
+            double value = min;
+            if(expression!=null) {
+                value = expression.get(t);
+            }
+            ctx.setFillStyle(AnalysisColours.get().regulationColorMap.getColor((int) value));
         }catch (Exception e){
             Console.error(e.getMessage(), this);
         }

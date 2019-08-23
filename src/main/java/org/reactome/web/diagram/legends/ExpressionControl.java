@@ -6,9 +6,14 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
+import org.reactome.web.analysis.client.filter.ResultFilter;
 import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
+import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.AnalysisResetHandler;
@@ -20,6 +25,8 @@ import org.reactome.web.diagram.util.slider.SliderValueChangedEvent;
 import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
 
 import java.util.List;
+
+import static org.reactome.web.analysis.client.model.AnalysisType.*;
 
 
 /**
@@ -44,7 +51,12 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
     private PwpButton forwardBtn;
     private SpeedButton speedBtn;
     private PwpButton closeBtn;
+    private Button filterBtn;
     private Slider slider;
+    private FlowPanel infoPanel;
+
+    private ResultFilter filter;
+    private boolean isExpanded;
 
     public ExpressionControl(EventBus eventBus) {
         super(eventBus);
@@ -85,6 +97,14 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
         this.closeBtn = new PwpButton("Close", css.close(), this);
         this.add(this.closeBtn);
 
+        this.filterBtn = new IconButton(RESOURCES.filterWarningIcon(), css.filterBtn(), "Analysis results are filtered. Click to find out more.", this);
+        this.filterBtn.setVisible(false);
+        this.add(this.filterBtn);
+
+        this.infoPanel = new FlowPanel();
+        this.infoPanel.setStyleName(RESOURCES.getCSS().infoPanel());
+        this.add(infoPanel);
+
         this.initHandlers();
         this.initTimer();
         this.setVisible(false);
@@ -92,11 +112,19 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
 
     @Override
     public void onAnalysisResultLoaded(AnalysisResultLoadedEvent event) {
-        if (!event.isReset() && event.getType().equals(AnalysisType.EXPRESSION)) {
+        AnalysisType type = event.getType();
+        if (!event.isReset() && (type == EXPRESSION || type == GSA_STATISTICS || type == GSVA || type == GSA_REGULATION)) {
             this.currentCol = 0;
             this.eventBus.fireEventFromSource(new ExpressionColumnChangedEvent(this.currentCol), this);
             this.expressionSummary = event.getExpressionSummary();
             this.setName();
+
+            filter = event.getFilter();
+            updateFilterInfo();
+            if(isExpanded)
+                collapse();
+
+
             makeVisible(200); // Appear with delay
         } else {
             this.setVisible(false);
@@ -127,6 +155,8 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
             this.pause();
         else if (source.equals(this.forwardBtn))
             this.moveForward();
+        else if (source.equals(this.filterBtn))
+            toggleExpandedPanel();
     }
 
     private void initHandlers() {
@@ -227,5 +257,68 @@ public class ExpressionControl extends LegendPanel implements ClickHandler, Slid
         this.setVisible(false);
     }
 
+    private void updateFilterInfo() {
+        if (filter == null)  {
+            filterBtn.setVisible(false);
+        } else {
+            String resource = filter.getResource().equalsIgnoreCase("TOTAL") ? "" : filter.getResource();
+            double pValue =  filter.getpValue() == null ? 1d : filter.getpValue();
+            boolean includeDisease = filter.getIncludeDisease();
+            Integer min = filter.getMin();
+            Integer max = filter.getMax();
 
+            boolean filterApplied = !resource.isEmpty() || pValue != 1d || !includeDisease || min != null || max != null;
+
+            filterBtn.setVisible(filterApplied);
+
+            infoPanel.clear();
+            if (filterApplied) {
+                Label title = new Label("Applied filter:");
+                title.setStyleName(RESOURCES.getCSS().infoPanelTitle());
+                infoPanel.add(title);
+
+                if (!resource.isEmpty()) {
+                    addFilterTag(resource, "Selected resource is " + resource);
+                }
+
+                if (pValue != 1d) {
+                    addFilterTag("p ≤ " + pValue, "p-value is set to " + pValue);
+                }
+
+                if (!includeDisease) {
+                    addFilterTag("No disease", "Disease pathways are excluded");
+                }
+
+                if (min != null && max != null) {
+                    addFilterTag(min + "≤ size ≤" + max, "Only pathways with sizes between " + min + " and " + max + " are displayed");
+                }
+            }
+
+        }
+    }
+
+    private void addFilterTag(String text, String tooltip) {
+        Label lb = new Label(text);
+        lb.setStyleName(RESOURCES.getCSS().infoPanelTag());
+        lb.setTitle(tooltip);
+        infoPanel.add(lb);
+    }
+
+    private void toggleExpandedPanel() {
+        if (!isExpanded) {
+            expand();
+        } else {
+            collapse();
+        }
+    }
+
+    private void expand() {
+        setHeight("58px");
+        isExpanded = true;
+    }
+
+    private void collapse() {
+        setHeight("28px");
+        isExpanded = false;
+    }
 }

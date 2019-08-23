@@ -1,7 +1,10 @@
 package org.reactome.web.diagram.client;
 
 /**
+ * Provides a method to instantiate a Diagram Viewer
+ *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public abstract class DiagramFactory {
 

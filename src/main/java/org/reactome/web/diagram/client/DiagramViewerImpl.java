@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
+import org.reactome.web.analysis.client.filter.ResultFilter;
 import org.reactome.web.diagram.client.visualisers.Visualiser;
 import org.reactome.web.diagram.client.visualisers.diagram.InteractorsManager;
 import org.reactome.web.diagram.data.AnalysisStatus;
@@ -28,6 +29,7 @@ import java.util.Set;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 class DiagramViewerImpl extends AbstractDiagramViewer implements
         LayoutLoadedHandler, ContentRequestedHandler, ContentLoadedHandler, KeyDownHandler,
@@ -179,7 +181,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         analysisStatus.setExpressionSummary(event.getExpressionSummary());
         context.setAnalysisOverlay(analysisStatus, event.getFoundElements(), event.getPathwaySummaries());
         interactorsManager.setAnalysisOverlay(event.getFoundElements(), context.getContent().getIdentifierMap());
-        Scheduler.get().scheduleDeferred(() -> { //TODO NOT SURE THIS IS NEEDED...
+        Scheduler.get().scheduleDeferred(() -> {
             viewerContainer.loadAnalysis();
         });
     }
@@ -435,8 +437,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     }
 
     @Override
-    public void setAnalysisToken(String token, String resource) {
-        final AnalysisStatus analysisStatus = (token == null) ? null : new AnalysisStatus(eventBus, token, resource);
+    public void setAnalysisToken(String token, ResultFilter filter) {
+        final AnalysisStatus analysisStatus = (token == null) ? null : new AnalysisStatus(eventBus, token, filter);
         AnalysisTokenValidator.checkTokenAvailability(token, new AnalysisTokenValidator.TokenAvailabilityHandler() {
             @Override
             public void onTokenAvailabilityChecked(boolean available, String message) {

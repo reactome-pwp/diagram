@@ -102,9 +102,16 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         //Control panel
         this.add(new NavigationControlPanel(eventBus));
 
+        //Top Controls container
+        TopContainerPanel topContainerPanel = new TopContainerPanel();
+        this.add(topContainerPanel);
+
         //Bottom Controls container
         BottomContainerPanel bottomContainerPanel = new BottomContainerPanel();
         this.add(bottomContainerPanel);
+
+        //Panel notifying that a filter is present and has affected the display;
+        topContainerPanel.add(new FilterAlertControl(eventBus));
 
         //Flagged Objects control panel
         bottomContainerPanel.add(new FlaggedItemsControl(eventBus));
@@ -116,6 +123,9 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         //Expression legend and control panels
         rightContainerPanel.add(new ExpressionLegend(eventBus));
         bottomContainerPanel.add(new ExpressionControl(eventBus));
+
+        //Regulation legend
+        rightContainerPanel.add(new RegulationLegend(eventBus));
 
         //Interactors control panel
         bottomContainerPanel.add(new InteractorsControl(eventBus));
@@ -232,7 +242,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     @Override
     public void onGraphObjectSelected(final GraphObjectSelectedEvent event) {
         setWatermarkURL(this.context, event.getGraphObject());
-//        selectItem(event.getGraphObject()); //TODO check this...
     }
 
     @Override

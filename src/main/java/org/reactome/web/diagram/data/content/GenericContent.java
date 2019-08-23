@@ -1,5 +1,7 @@
 package org.reactome.web.diagram.data.content;
 
+import org.reactome.web.analysis.client.model.EntityStatistics;
+
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
@@ -11,6 +13,8 @@ public abstract class GenericContent implements Content {
 
     protected Boolean isDisease;
     protected Boolean forNormalDraw;
+
+    protected EntityStatistics statistics;
 
     protected boolean graphLoaded = false;
 
@@ -104,5 +108,13 @@ public abstract class GenericContent implements Content {
 
     public double getHeight() {
         return maxY - minY;
+    }
+
+    public EntityStatistics getStatistics() {
+        return statistics;
+    }
+
+    public void setStatistics(EntityStatistics statistics) {
+        this.statistics = statistics;
     }
 }

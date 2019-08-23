@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.data.graph.model;
 
 import com.google.gwt.resources.client.ImageResource;
+import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.diagram.data.graph.model.images.GraphObjectImages;
 import org.reactome.web.diagram.data.graph.raw.SubpathwayNode;
 import org.reactome.web.diagram.data.layout.DiagramObject;
@@ -15,6 +16,7 @@ import java.util.Set;
  */
 public class GraphSubpathway extends GraphEvent {
 
+    private EntityStatistics statistics;
     private Set<GraphEvent> containedEvents = new HashSet<>();
 
     public GraphSubpathway(SubpathwayNode subpathway) {
@@ -36,6 +38,18 @@ public class GraphSubpathway extends GraphEvent {
             }
         }
         return rtn;
+    }
+
+    public boolean isHit() {
+        return statistics != null;
+    }
+
+    public void setIsHit(EntityStatistics statistics){
+        this.statistics = statistics;
+    }
+
+    public void resetHit(){
+        this.statistics = null;
     }
 
     private List<DiagramObject> getSuperDiagramObjects(){

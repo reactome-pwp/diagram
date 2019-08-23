@@ -31,6 +31,7 @@ import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class InteractorsManager implements ContentLoadedHandler, ContentRequestedHandler,
         InteractorsCollapsedHandler, InteractorsResourceChangedHandler {
