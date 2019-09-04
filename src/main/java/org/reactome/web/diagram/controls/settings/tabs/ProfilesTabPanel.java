@@ -12,7 +12,9 @@ import org.reactome.web.diagram.events.AnalysisProfileChangedEvent;
 import org.reactome.web.diagram.events.ContentLoadedEvent;
 import org.reactome.web.diagram.events.DiagramProfileChangedEvent;
 import org.reactome.web.diagram.events.InteractorProfileChangedEvent;
+import org.reactome.web.diagram.handlers.AnalysisProfileChangedHandler;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
+import org.reactome.web.diagram.handlers.DiagramProfileChangedHandler;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.profiles.analysis.model.AnalysisProfile;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
@@ -27,7 +29,7 @@ import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class ProfilesTabPanel extends Composite implements ChangeHandler, ContentLoadedHandler {
+public class ProfilesTabPanel extends Composite implements ChangeHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler, ContentLoadedHandler {
     private EventBus eventBus;
     private ListBox colourProfiles;
     private ListBox analysisProfiles;

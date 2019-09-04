@@ -21,10 +21,17 @@ import org.reactome.web.diagram.data.loader.FlaggedElementsLoader;
 import org.reactome.web.diagram.data.loader.LoaderManager;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
+import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
+import org.reactome.web.diagram.profiles.analysis.model.AnalysisProfile;
+import org.reactome.web.diagram.profiles.diagram.DiagramColours;
+import org.reactome.web.diagram.profiles.diagram.model.DiagramProfile;
+import org.reactome.web.diagram.profiles.interactors.InteractorColours;
+import org.reactome.web.diagram.profiles.interactors.model.InteractorProfile;
 import org.reactome.web.diagram.search.results.data.model.Occurrences;
 import org.reactome.web.diagram.util.Console;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -507,5 +514,39 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     @Override
     public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
         fireEvent(event);
+    }
+
+    @Override
+    public List<String> getDiagramColorProfiles() {
+        return DiagramColours.ProfileType.getProfiles();
+    }
+
+    @Override
+    public List<String> getAnalysisColorProfiles() {
+        return AnalysisColours.ProfileType.getProfiles();
+    }
+
+    @Override
+    public List<String> getInteractorColorProfiles() {
+        return InteractorColours.ProfileType.getProfiles();
+    }
+
+    @Override
+    public void setDiagramColorProfile(String colorProfile) {
+        DiagramProfile profile = DiagramColours.ProfileType.getByName(colorProfile).getDiagramProfile();
+
+        eventBus.fireEventFromSource(new DiagramProfileChangedEvent(profile), this);
+    }
+
+    @Override
+    public void setAnalysisColorProfile(String colorProfile) {
+        AnalysisProfile profile = AnalysisColours.ProfileType.getByName(colorProfile).getAnalysisProfile();
+        eventBus.fireEventFromSource(new AnalysisProfileChangedEvent(profile), this);
+    }
+
+    @Override
+    public void setInteractorColorProfile(String colorProfile) {
+        InteractorProfile profile = InteractorColours.ProfileType.getByName(colorProfile).getDiagramProfile();
+        eventBus.fireEventFromSource(new InteractorProfileChangedEvent(profile), this);
     }
 }

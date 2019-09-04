@@ -184,6 +184,14 @@ public class WidgetTest implements EntryPoint {
 
         fp.add(getSelectionButton("R-HSA-111465", ""));
 
+
+        fp.add(new Button("Change Diagram Colour Profile", new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                diagram.setDiagramColorProfile("Standard");
+            }
+        }));
+
         return fp;
     }
 

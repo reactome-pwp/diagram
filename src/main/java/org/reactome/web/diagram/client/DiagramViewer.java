@@ -7,6 +7,8 @@ import com.google.gwt.user.client.ui.RequiresResize;
 import org.reactome.web.analysis.client.filter.ResultFilter;
 import org.reactome.web.diagram.handlers.*;
 
+import java.util.List;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -59,5 +61,17 @@ public interface DiagramViewer extends IsWidget, HasHandlers, RequiresResize {
     void setAnalysisToken(String token, ResultFilter filter);
 
     void setVisible(boolean visible);
+
+    List<String> getDiagramColorProfiles();
+
+    List<String> getAnalysisColorProfiles();
+
+    List<String> getInteractorColorProfiles();
+
+    void setDiagramColorProfile(String colorProfile);
+
+    void setAnalysisColorProfile(String colorProfile);
+
+    void setInteractorColorProfile(String colorProfile);
 
 }
