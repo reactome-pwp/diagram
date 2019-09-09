@@ -50,7 +50,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler, DiagramObjectsFlagRequestHandler,
         GraphObjectSelectedHandler, IllustrationSelectedHandler {
 
-    private EventBus eventBus;
+    protected EventBus eventBus;
     private Context context;
 
     private Map<Content.Type, Visualiser> visualisers;
