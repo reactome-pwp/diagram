@@ -57,6 +57,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     private Visualiser activeVisualiser;
 
     private IllustrationPanel illustration;
+    protected LeftTopLauncherPanel leftTopLauncher;
     private Anchor watermark;
 
     public static Timer windowScrolling = new Timer() {
@@ -69,6 +70,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.eventBus = eventBus;
 
         visualisers = new HashMap<>();
+        leftTopLauncher = new LeftTopLauncherPanel(eventBus);
 
         initialise();
         initHandlers();
@@ -139,7 +141,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.add(new NotificationsContainer(eventBus));
 
         //Launcher panels
-        this.add(new LeftTopLauncherPanel(eventBus));
+        this.add(leftTopLauncher);
         this.add(new RightTopLauncherPanel(eventBus));
 
 
@@ -373,7 +375,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         eventBus.fireEventFromSource(new FireworksOpenedEvent(context.getContent().getDbId()), this);
     }
 
-    private void setActiveVisualiser(Context context){
+    protected void setActiveVisualiser(Context context){
         if(context != null) {
             Visualiser visualiser = visualisers.get(context.getContent().getType());
             if (visualiser != null && activeVisualiser != visualiser) {
