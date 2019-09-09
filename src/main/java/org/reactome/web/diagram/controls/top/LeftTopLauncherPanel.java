@@ -12,6 +12,8 @@ import org.reactome.web.diagram.controls.top.search.SearchPanel;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class LeftTopLauncherPanel extends FlowPanel {
+	
+	private MainControlPanel mainControlPanel;
 
     public LeftTopLauncherPanel(EventBus eventBus) {
         this.setStyleName(RESOURCES.getCSS().launcherPanel());
@@ -19,12 +21,13 @@ public class LeftTopLauncherPanel extends FlowPanel {
         //Search panel
         this.add(new SearchPanel(eventBus));
         //Main Control panel
-        this.add(new MainControlPanel(eventBus));
+        mainControlPanel = new MainControlPanel(eventBus);
+        this.add(mainControlPanel);
 
         this.setVisible(true);
     }
 
-    public static Resources RESOURCES;
+	public static Resources RESOURCES;
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
@@ -41,4 +44,8 @@ public class LeftTopLauncherPanel extends FlowPanel {
 
         String launcherPanel();
     }
+    
+    public MainControlPanel getMainControlPanel() {
+		return mainControlPanel;
+	}
 }
