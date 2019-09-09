@@ -64,6 +64,9 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         public void run() { /* Nothing here */ }
     };
 
+    protected LeftTopLauncherPanel leftTopLauncherPanel;
+    protected RightTopLauncherPanel rightTopLauncherPanel;
+
     public ViewerContainer(EventBus eventBus) {
         this.getElement().setClassName("pwp-ViewerContainer");
         this.eventBus = eventBus;
@@ -139,8 +142,8 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.add(new NotificationsContainer(eventBus));
 
         //Launcher panels
-        this.add(new LeftTopLauncherPanel(eventBus));
-        this.add(new RightTopLauncherPanel(eventBus));
+        this.add(leftTopLauncherPanel = new LeftTopLauncherPanel(eventBus));
+        this.add(rightTopLauncherPanel = new RightTopLauncherPanel(eventBus));
 
 
         //Settings panel
@@ -373,7 +376,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         eventBus.fireEventFromSource(new FireworksOpenedEvent(context.getContent().getDbId()), this);
     }
 
-    private void setActiveVisualiser(Context context){
+    protected void setActiveVisualiser(Context context){
         if(context != null) {
             Visualiser visualiser = visualisers.get(context.getContent().getType());
             if (visualiser != null && activeVisualiser != visualiser) {
