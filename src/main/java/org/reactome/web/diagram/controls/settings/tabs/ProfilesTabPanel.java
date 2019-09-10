@@ -15,6 +15,7 @@ import org.reactome.web.diagram.events.InteractorProfileChangedEvent;
 import org.reactome.web.diagram.handlers.AnalysisProfileChangedHandler;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
 import org.reactome.web.diagram.handlers.DiagramProfileChangedHandler;
+import org.reactome.web.diagram.handlers.InteractorProfileChangedHandler;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.profiles.analysis.model.AnalysisProfile;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
@@ -29,7 +30,7 @@ import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class ProfilesTabPanel extends Composite implements ChangeHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler, ContentLoadedHandler {
+public class ProfilesTabPanel extends Composite implements ChangeHandler, DiagramProfileChangedHandler, AnalysisProfileChangedHandler, InteractorProfileChangedHandler, ContentLoadedHandler {
     private EventBus eventBus;
     private ListBox colourProfiles;
     private ListBox analysisProfiles;
@@ -88,6 +89,30 @@ public class ProfilesTabPanel extends Composite implements ChangeHandler, Diagra
         }
     }
 
+    @Override
+    public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
+        if (!event.getSource().equals(this)) {
+            AnalysisColours.get().setProfile(event.getAnalysisProfile());
+            setSelection(analysisProfiles, AnalysisColours.get().getSelectedProfileName());
+        }
+    }
+
+    @Override
+    public void onDiagramProfileChanged(DiagramProfileChangedEvent event) {
+        if (!event.getSource().equals(this)) {
+            DiagramColours.get().setProfile(event.getDiagramProfile());
+            setSelection(colourProfiles, DiagramColours.get().getSelectedProfileName());
+        }
+    }
+
+    @Override
+    public void onInteractorProfileChanged(InteractorProfileChangedEvent event) {
+        if (!event.getSource().equals(this)) {
+            InteractorColours.get().setProfile(event.getInteractorProfile());
+            setSelection(interactorProfiles, InteractorColours.get().getSelectedProfileName());
+        }
+    }
+
     private Widget getProfilesWidget(String title, ListBox profileListBox, List<String> profileNames){
         profileListBox.setMultipleSelect(false);
         for(String name : profileNames){
@@ -120,8 +145,10 @@ public class ProfilesTabPanel extends Composite implements ChangeHandler, Diagra
         interactorProfiles.addChangeHandler(this);
 
         eventBus.addHandler(ContentLoadedEvent.TYPE, this);
+        eventBus.addHandler(DiagramProfileChangedEvent.TYPE, this);
+        eventBus.addHandler(AnalysisProfileChangedEvent.TYPE, this);
+        eventBus.addHandler(InteractorProfileChangedEvent.TYPE, this);
     }
-
 
     public static Resources RESOURCES;
     static {

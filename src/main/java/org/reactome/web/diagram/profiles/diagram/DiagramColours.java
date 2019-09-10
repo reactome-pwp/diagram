@@ -58,7 +58,7 @@ public class DiagramColours implements DiagramProfileChangedHandler {
         this.setProfile(event.getDiagramProfile());
     }
 
-    private void setProfile(DiagramProfile diagramProfile){
+    public void setProfile(DiagramProfile diagramProfile){
         PROFILE = diagramProfile;
 
         //The strategy is to remove the cookie when the standard is selected so in case

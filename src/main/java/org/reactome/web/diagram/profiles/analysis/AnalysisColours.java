@@ -63,7 +63,7 @@ public class AnalysisColours implements AnalysisProfileChangedHandler {
         this.setProfile(event.getAnalysisProfile());
     }
 
-    private void setProfile(AnalysisProfile analysisProfile){
+    public void setProfile(AnalysisProfile analysisProfile){
         PROFILE = analysisProfile;
         enrichmentGradient = new ThreeColorGradient(PROFILE.getEnrichment().getGradient());
         expressionGradient = new ThreeColorGradient(PROFILE.getExpression().getGradient());

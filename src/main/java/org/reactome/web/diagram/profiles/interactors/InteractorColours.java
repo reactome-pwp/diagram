@@ -55,7 +55,7 @@ public class InteractorColours implements InteractorProfileChangedHandler {
         this.setProfile(event.getInteractorProfile());
     }
 
-    private void setProfile(InteractorProfile diagramProfile){
+    public void setProfile(InteractorProfile diagramProfile){
         PROFILE = diagramProfile;
 
         //The strategy is to remove the cookie when the standard is selected so in case

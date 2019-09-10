@@ -533,20 +533,25 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
 
     @Override
     public void setDiagramColorProfile(String colorProfile) {
-        DiagramProfile profile = DiagramColours.ProfileType.getByName(colorProfile).getDiagramProfile();
-
-        eventBus.fireEventFromSource(new DiagramProfileChangedEvent(profile), this);
+        if (!DiagramColours.get().getSelectedProfileName().equals(colorProfile)) {
+            DiagramProfile profile = DiagramColours.ProfileType.getByName(colorProfile).getDiagramProfile();
+            eventBus.fireEventFromSource(new DiagramProfileChangedEvent(profile), this);
+        }
     }
 
     @Override
     public void setAnalysisColorProfile(String colorProfile) {
-        AnalysisProfile profile = AnalysisColours.ProfileType.getByName(colorProfile).getAnalysisProfile();
-        eventBus.fireEventFromSource(new AnalysisProfileChangedEvent(profile), this);
+        if (!AnalysisColours.get().getSelectedProfileName().equals(colorProfile)) {
+            AnalysisProfile profile = AnalysisColours.ProfileType.getByName(colorProfile).getAnalysisProfile();
+            eventBus.fireEventFromSource(new AnalysisProfileChangedEvent(profile), this);
+        }
     }
 
     @Override
     public void setInteractorColorProfile(String colorProfile) {
-        InteractorProfile profile = InteractorColours.ProfileType.getByName(colorProfile).getDiagramProfile();
-        eventBus.fireEventFromSource(new InteractorProfileChangedEvent(profile), this);
+        if (!InteractorColours.get().getSelectedProfileName().equals(colorProfile)) {
+            InteractorProfile profile = InteractorColours.ProfileType.getByName(colorProfile).getDiagramProfile();
+            eventBus.fireEventFromSource(new InteractorProfileChangedEvent(profile), this);
+        }
     }
 }
