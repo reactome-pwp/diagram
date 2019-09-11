@@ -53,8 +53,8 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     protected EventBus eventBus;
     private Context context;
 
-    private Map<Content.Type, Visualiser> visualisers;
-    private Visualiser activeVisualiser;
+	protected Map<Content.Type, Visualiser> visualisers;
+    protected Visualiser activeVisualiser;
 
     private IllustrationPanel illustration;
     protected LeftTopLauncherPanel leftTopLauncher;
@@ -390,6 +390,10 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
             }
         }
     }
+    
+    public Context getContext() {
+		return context;
+	}
 
     public static Resources RESOURCES;
 
