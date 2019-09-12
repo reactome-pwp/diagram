@@ -50,13 +50,14 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler, DiagramObjectsFlagRequestHandler,
         GraphObjectSelectedHandler, IllustrationSelectedHandler {
 
-    private EventBus eventBus;
+    protected EventBus eventBus;
     private Context context;
 
-    private Map<Content.Type, Visualiser> visualisers;
-    private Visualiser activeVisualiser;
+	protected Map<Content.Type, Visualiser> visualisers;
+    protected Visualiser activeVisualiser;
 
     private IllustrationPanel illustration;
+    protected LeftTopLauncherPanel leftTopLauncher;
     private Anchor watermark;
 
     public static Timer windowScrolling = new Timer() {
@@ -72,6 +73,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.eventBus = eventBus;
 
         visualisers = new HashMap<>();
+        leftTopLauncher = new LeftTopLauncherPanel(eventBus);
 
         initialise();
         initHandlers();
@@ -142,9 +144,8 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.add(new NotificationsContainer(eventBus));
 
         //Launcher panels
-        this.add(leftTopLauncherPanel = new LeftTopLauncherPanel(eventBus));
-        this.add(rightTopLauncherPanel = new RightTopLauncherPanel(eventBus));
-
+        this.add(leftTopLauncher);
+        this.add(new RightTopLauncherPanel(eventBus));
 
         //Settings panel
         rightContainerPanel.add(new HideableContainerPanel(eventBus));
@@ -391,6 +392,10 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
             }
         }
     }
+    
+    public Context getContext() {
+		return context;
+	}
 
     public static Resources RESOURCES;
 

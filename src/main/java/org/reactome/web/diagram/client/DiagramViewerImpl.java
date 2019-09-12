@@ -31,7 +31,7 @@ import java.util.Set;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-class DiagramViewerImpl extends AbstractDiagramViewer implements
+public class DiagramViewerImpl extends AbstractDiagramViewer implements
         LayoutLoadedHandler, ContentRequestedHandler, ContentLoadedHandler, KeyDownHandler,
         InteractorsLoadedHandler, InteractorsResourceChangedHandler, InteractorsCollapsedHandler, InteractorHoveredHandler,
         InteractorsLayoutUpdatedHandler, InteractorsFilteredHandler, InteractorSelectedHandler,
@@ -50,15 +50,19 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     private FlaggedElementsLoader flaggedElementsLoader = new FlaggedElementsLoader(this);
     private Boolean includeInteractors = false;
 
-    DiagramViewerImpl() {
+    public DiagramViewerImpl() {
         super();
-        this.viewerContainer = new ViewerContainer(eventBus);
+        this.viewerContainer = createViewerContainer();
         this.loaderManager = new LoaderManager(eventBus);
         AnalysisDataLoader.initialise(eventBus);
         this.interactorsManager = new InteractorsManager(eventBus);
         this.initWidget(this.viewerContainer);
         this.getElement().addClassName("pwp-DiagramViewer"); //IMPORTANT!
     }
+
+	protected ViewerContainer createViewerContainer() {
+		return new ViewerContainer(eventBus);
+	}
 
     protected void initialise() {
         if(!initialised) { //initialised is defined in the AbstractDiagramViewer
