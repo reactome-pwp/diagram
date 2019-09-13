@@ -393,6 +393,10 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         }
     }
 
+    public Context getContext() {
+    	return this.context;
+    }
+    
     public static Resources RESOURCES;
 
     static {

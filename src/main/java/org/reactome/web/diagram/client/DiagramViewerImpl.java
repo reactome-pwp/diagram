@@ -53,7 +53,7 @@ public class DiagramViewerImpl extends AbstractDiagramViewer implements
     public DiagramViewerImpl() {
         super();
         this.viewerContainer = createViewerContainer();
-        this.loaderManager = new LoaderManager(eventBus);
+        this.loaderManager = createLoaderManager();
         AnalysisDataLoader.initialise(eventBus);
         this.interactorsManager = new InteractorsManager(eventBus);
         this.initWidget(this.viewerContainer);
@@ -62,6 +62,10 @@ public class DiagramViewerImpl extends AbstractDiagramViewer implements
 
 	protected ViewerContainer createViewerContainer() {
 		return new ViewerContainer(eventBus);
+	}
+	
+	protected LoaderManager createLoaderManager() {
+		return new LoaderManager(eventBus);
 	}
 
     protected void initialise() {
