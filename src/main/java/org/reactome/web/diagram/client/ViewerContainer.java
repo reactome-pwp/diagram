@@ -88,6 +88,8 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         for (Visualiser vis: visualisers.values()) {
             this.add(vis);
         }
+        
+        addExternalVisualisers();
 
         //Set this as default
         activeVisualiser = visualisers.get(DIAGRAM);
@@ -154,7 +156,10 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.add(this.illustration = new IllustrationPanel(), 0 , 0);
     }
 
-    public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
+    protected void addExternalVisualisers() {/* Nothing here */}
+
+
+	public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
         return activeVisualiser.highlightGraphObject(graphObject, notify);
     }
 
