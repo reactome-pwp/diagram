@@ -154,7 +154,7 @@ public class DiagramViewerImpl extends AbstractDiagramViewer implements
         }
     }
 
-    private void load(String identifier) { //TODO: stay here
+    protected void load(String identifier) { //TODO: stay here
         loaderManager.load(identifier);
     }
 
