@@ -1,5 +1,7 @@
 package org.reactome.web.diagram.client;
 
+import com.google.gwt.user.client.Window;
+
 /**
  * Provides a method to instantiate a Diagram Viewer
  *
