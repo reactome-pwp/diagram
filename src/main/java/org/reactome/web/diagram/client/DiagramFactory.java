@@ -30,9 +30,21 @@ public abstract class DiagramFactory {
     //The Reactome use case does not need to be sensible to SCROLL
     //This variable is meant to set up by DiagramJs or other resources using the GWT widget
     public static int SCROLL_SENSITIVITY = 0;
+    
+    private static DiagramViewerCreator creator = new DiagramViewerCreator() {
+        
+        @Override
+        public DiagramViewerImpl createDiagramView() {
+            return new DiagramViewerImpl();
+        }
+    };
+    
+    public static void setDiagramViewerCreator(DiagramViewerCreator creator1) {
+        creator = creator1;
+    }
 
     //Added for testing
     public static DiagramViewer createDiagramViewer() {
-        return new DiagramViewerImpl();
+        return creator.createDiagramView();
     }
 }
