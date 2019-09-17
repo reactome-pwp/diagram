@@ -1,7 +1,5 @@
 package org.reactome.web.diagram.client;
 
-import com.google.gwt.user.client.Window;
-
 /**
  * Provides a method to instantiate a Diagram Viewer
  *
@@ -33,13 +31,7 @@ public abstract class DiagramFactory {
     //This variable is meant to set up by DiagramJs or other resources using the GWT widget
     public static int SCROLL_SENSITIVITY = 0;
     
-    private static DiagramViewerCreator creator = new DiagramViewerCreator() {
-        
-        @Override
-        public DiagramViewerImpl createDiagramView() {
-            return new DiagramViewerImpl();
-        }
-    };
+    private static DiagramViewerCreator creator = (() -> new DiagramViewerImpl());
     
     public static void setDiagramViewerCreator(DiagramViewerCreator creator1) {
         creator = creator1;
