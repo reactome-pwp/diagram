@@ -44,11 +44,11 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     protected LruCache<String, Context> contextMap = new LruCache<>(5);
     private EventBus eventBus;
 
-    private SVGLoader svgLoader;
+    protected SVGLoader svgLoader;
     private LayoutLoader layoutLoader;
     private GraphLoader graphLoader;
     private InteractorsLoader interactorsLoader;
-    private Context context;
+    protected Context context;
 
     public LoaderManager(EventBus eventBus) {
         this.eventBus = eventBus;
