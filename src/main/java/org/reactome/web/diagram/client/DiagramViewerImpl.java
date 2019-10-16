@@ -44,7 +44,7 @@ public class DiagramViewerImpl extends AbstractDiagramViewer implements
 
     private Context context;
     private final ViewerContainer viewerContainer;
-    private LoaderManager loaderManager;
+    protected LoaderManager loaderManager;
     private AnalysisStatus analysisStatus;
     private InteractorsManager interactorsManager;
     private FlaggedElementsLoader flaggedElementsLoader = new FlaggedElementsLoader(this);
