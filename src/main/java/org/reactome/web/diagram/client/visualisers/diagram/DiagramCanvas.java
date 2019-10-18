@@ -1,14 +1,10 @@
 package org.reactome.web.diagram.client.visualisers.diagram;
 
-import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ContextMenuEvent;
-import com.google.gwt.event.dom.client.ContextMenuHandler;
-import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Image;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.diagram.context.popups.export.ExportDialog;
 import org.reactome.web.diagram.data.AnalysisStatus;
@@ -17,7 +13,12 @@ import org.reactome.web.diagram.data.DiagramStatus;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.interactors.model.DiagramInteractor;
 import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
-import org.reactome.web.diagram.data.layout.*;
+import org.reactome.web.diagram.data.layout.Coordinate;
+import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.layout.Edge;
+import org.reactome.web.diagram.data.layout.Node;
+import org.reactome.web.diagram.data.layout.NodeAttachment;
+import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
 import org.reactome.web.diagram.events.ExpressionValueHoveredEvent;
 import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
@@ -50,10 +51,15 @@ import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.actions.MouseActionsHandlers;
 import org.reactome.web.diagram.util.actions.UserActionsInstaller;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ContextMenuEvent;
+import com.google.gwt.event.dom.client.ContextMenuHandler;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Image;
 
 /**
  * This is where the drawing of the classic diagrams takes place.
@@ -104,7 +110,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
 
     private int column = 0;
     private Double hoveredExpression = null;
-
+    
     public DiagramCanvas(EventBus eventBus) {
         this.getElement().addClassName("pwp-DiagramCanvas");
         this.eventBus = eventBus;
@@ -485,6 +491,8 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
             }
         }
 
+        drawMoreData(items, entities);
+        
         cleanCanvas(this.buffer); //It could have been used for the expression overlay (it is fastest cleaning it once)
 
         //Reactions are rendered after all the other types. They have special characteristics.
@@ -515,6 +523,10 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
             shadowRenderer.draw(shadows, item, factor, offset);
             shadowRenderer.drawText(shadowsText, item, factor, offset);
         }
+    }
+    
+    protected void drawMoreData(Collection<DiagramObject> items, AdvancedContext2d ctx) {
+        OtherDataHandler.getHandler().renderOtherData(items, ctx);
     }
 
     private void renderItems(Renderer renderer, AdvancedContext2d ctx, Set<DiagramObject> objects, double factor, Coordinate offset) {
