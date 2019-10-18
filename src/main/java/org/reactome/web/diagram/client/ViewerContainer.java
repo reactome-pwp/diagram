@@ -51,7 +51,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         GraphObjectSelectedHandler, IllustrationSelectedHandler {
 
     protected EventBus eventBus;
-    private Context context;
+    protected Context context;
 
 	protected Map<Content.Type, Visualiser> visualisers;
     protected Visualiser activeVisualiser;
