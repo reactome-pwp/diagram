@@ -21,6 +21,7 @@ import org.reactome.web.diagram.data.layout.NodeAttachment;
 import org.reactome.web.diagram.data.layout.SummaryItem;
 import org.reactome.web.diagram.events.ExpressionColumnChangedEvent;
 import org.reactome.web.diagram.events.ExpressionValueHoveredEvent;
+import org.reactome.web.diagram.events.RenderOtherDataEvent;
 import org.reactome.web.diagram.handlers.ExpressionColumnChangedHandler;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
@@ -491,7 +492,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
             }
         }
 
-        drawMoreData(items, entities);
+        eventBus.fireEventFromSource(new RenderOtherDataEvent(rendererManager, items, entities), this);
         
         cleanCanvas(this.buffer); //It could have been used for the expression overlay (it is fastest cleaning it once)
 
@@ -523,10 +524,6 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
             shadowRenderer.draw(shadows, item, factor, offset);
             shadowRenderer.drawText(shadowsText, item, factor, offset);
         }
-    }
-    
-    protected void drawMoreData(Collection<DiagramObject> items, AdvancedContext2d ctx) {
-        OtherDataHandler.getHandler().renderOtherData(items, ctx);
     }
 
     private void renderItems(Renderer renderer, AdvancedContext2d ctx, Set<DiagramObject> objects, double factor, Coordinate offset) {
