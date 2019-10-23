@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.handlers.RenderOtherDataHandler;
+import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.renderers.layout.RendererManager;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
@@ -15,11 +16,13 @@ public class RenderOtherDataEvent extends GwtEvent<RenderOtherDataHandler>{
     private RendererManager rendererManager;
     private Collection<DiagramObject> items;
     private AdvancedContext2d ctx;
+    private OverlayContext overlay;
     
-    public RenderOtherDataEvent(RendererManager rendererManager, Collection<DiagramObject> items, AdvancedContext2d ctx) {
+    public RenderOtherDataEvent(RendererManager rendererManager, Collection<DiagramObject> items, AdvancedContext2d ctx, OverlayContext overlay) {
     	this.rendererManager = rendererManager;
     	this.items = items;
     	this.ctx = ctx;
+    	this.overlay = overlay;
     }
     
 	@Override
@@ -42,6 +45,10 @@ public class RenderOtherDataEvent extends GwtEvent<RenderOtherDataHandler>{
 
 	public AdvancedContext2d getCtx() {
 		return ctx;
+	}
+	
+	public OverlayContext getOverlay() {
+		return overlay;
 	}
 	
 	@Override

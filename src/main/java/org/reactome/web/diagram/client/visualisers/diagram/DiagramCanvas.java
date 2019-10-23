@@ -492,7 +492,10 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
             }
         }
 
-        eventBus.fireEventFromSource(new RenderOtherDataEvent(rendererManager, items, entities), this);
+        eventBus.fireEventFromSource(new RenderOtherDataEvent(rendererManager, 
+        													  items, 
+        													  entities,
+        													  new OverlayContext(this.overlay, this.buffer)), this);
         
         cleanCanvas(this.buffer); //It could have been used for the expression overlay (it is fastest cleaning it once)
 
