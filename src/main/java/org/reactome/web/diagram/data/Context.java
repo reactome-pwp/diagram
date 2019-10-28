@@ -36,7 +36,7 @@ public class Context {
     private String flagTerm;
     private SVGStatus svgStatus;
 
-    private Content content;
+	private Content content;
     private InteractorsContent interactors;
 
     private Map<GraphObject, ContextDialogPanel> dialogMap = new HashMap<>();
@@ -183,7 +183,15 @@ public class Context {
         }
     }
 
-    @Override
+    public Map<GraphObject, ContextDialogPanel> getDialogMap() {
+		return dialogMap;
+	}
+    
+    public void setDialogMap(Map<GraphObject, ContextDialogPanel> dialogMap) {
+		this.dialogMap = dialogMap;
+	}
+
+	@Override
     public String toString() {
         return "Context{" +
                 "content=" + content.getType() +
