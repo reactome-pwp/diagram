@@ -219,6 +219,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
             proteinsTable = new MoleculesTable<>("Proteins", proteins, analysisType, expColumns, min, max, selectedExpCol);
             proteinsTable.setHeight(getOptimalSize(proteins) + "px");
             proteinsTable.addMoleculeSelectedHandler(this);
+            eventBus.fireEventFromSource(new RenderOtherContextDialogInfoEvent(proteinsTable), this);
             vp.add(proteinsTable);
         }
         if (!chemicals.isEmpty()) {
