@@ -58,6 +58,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
     private IllustrationPanel illustration;
     protected LeftTopLauncherPanel leftTopLauncher;
+    protected BottomContainerPanel bottomContainerPanel;
     private Anchor watermark;
 
     public static Timer windowScrolling = new Timer() {
@@ -74,6 +75,8 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
         visualisers = new HashMap<>();
         leftTopLauncher = new LeftTopLauncherPanel(eventBus);
+        bottomContainerPanel = new BottomContainerPanel();
+
 
         initialise();
         initHandlers();
@@ -114,7 +117,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.add(topContainerPanel);
 
         //Bottom Controls container
-        BottomContainerPanel bottomContainerPanel = new BottomContainerPanel();
         this.add(bottomContainerPanel);
 
         //Panel notifying that a filter is present and has affected the display;
