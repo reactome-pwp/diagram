@@ -136,6 +136,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         if(dnasTable!=null) dnasTable.setMoleculesLabels(displayIds);
         if(polymersTable!=null) polymersTable.setMoleculesLabels(displayIds);
         if(othersTable!=null) othersTable.setMoleculesLabels(displayIds);
+        eventBus.fireEventFromSource(new RenderOtherContextDialogInfoEvent(proteinsTable), this);
     }
 
     private void loadExpressionValues(){
