@@ -128,6 +128,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         if(dnasTable!=null) dnasTable.redraw();
         if(polymersTable!=null) polymersTable.redraw();
         if(othersTable!=null) othersTable.redraw();
+        eventBus.fireEventFromSource(new RenderOtherContextDialogInfoEvent(proteinsTable), this);
     }
 
     private void changeLabels(boolean displayIds){
@@ -163,6 +164,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         if(dnasTable!=null) dnasTable.removeExpressionColumns();
         if(polymersTable!=null) polymersTable.removeExpressionColumns();
         if(othersTable!=null) othersTable.removeExpressionColumns();
+        eventBus.fireEventFromSource(new RenderOtherContextDialogInfoEvent(proteinsTable), this);
     }
 
     private void highlightColumn(int col){
