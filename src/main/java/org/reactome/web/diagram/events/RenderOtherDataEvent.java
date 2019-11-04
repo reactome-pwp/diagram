@@ -10,6 +10,11 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
 
 import com.google.gwt.event.shared.GwtEvent;
 
+/**
+ * 
+ * @author brunsont
+ *
+ */
 public class RenderOtherDataEvent extends GwtEvent<RenderOtherDataHandler>{
     public static Type<RenderOtherDataHandler> TYPE = new Type<RenderOtherDataHandler>();
 
