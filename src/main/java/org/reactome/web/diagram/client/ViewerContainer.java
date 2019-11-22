@@ -58,6 +58,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
     private IllustrationPanel illustration;
     protected LeftTopLauncherPanel leftTopLauncher;
+    protected RightContainerPanel rightContainerPanel;
     protected BottomContainerPanel bottomContainerPanel;
     private Anchor watermark;
 
@@ -75,6 +76,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
         visualisers = new HashMap<>();
         leftTopLauncher = new LeftTopLauncherPanel(eventBus);
+        rightContainerPanel = new RightContainerPanel();
         bottomContainerPanel = new BottomContainerPanel();
 
 
@@ -106,7 +108,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.addWatermark();
 
         //Right container
-        RightContainerPanel rightContainerPanel = new RightContainerPanel();
         this.add(rightContainerPanel);
 
         //Control panel
