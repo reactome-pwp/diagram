@@ -111,7 +111,8 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
             }
             fireEvent(new ChangeLabelsEvent(displayIds));
         }else if(btn.equals(pairwiseOverlayBtn)) {
-        	eventBus.fireEventFromSource(new PairwiseOverlayButtonClickedEvent(item.getGraphObject().getStId()), this);
+        	eventBus.fireEventFromSource(new PairwiseOverlayButtonClickedEvent(item.getGraphObject()), this);
+        	this.hide();
         }
         //Apply the right style here
         if(this.pinned) {

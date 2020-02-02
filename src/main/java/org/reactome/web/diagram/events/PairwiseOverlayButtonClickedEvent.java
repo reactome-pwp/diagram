@@ -1,5 +1,6 @@
 package org.reactome.web.diagram.events;
 
+import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.handlers.PairwiseOverlayButtonClickedHandler;
 
 import com.google.gwt.event.shared.GwtEvent;
@@ -7,14 +8,37 @@ import com.google.gwt.event.shared.GwtEvent;
 public class PairwiseOverlayButtonClickedEvent extends GwtEvent<PairwiseOverlayButtonClickedHandler>{
     public static Type<PairwiseOverlayButtonClickedHandler> TYPE = new Type<>();
 
-    private String diagramObjectAccession;
+    private GraphObject graphObject;
+    private String uniprot;
+    private String geneName;
     
-    public PairwiseOverlayButtonClickedEvent(String diagramObjectAccession) {
-    	this.diagramObjectAccession = diagramObjectAccession;
+    /**
+     * use to pass whole graph object for a complex
+     * @param graphObject
+     */
+    public PairwiseOverlayButtonClickedEvent(GraphObject graphObject) {
+    	this.graphObject = graphObject;
     }
     
-    public String getDiagramObjectAccession() {
-    	return this.diagramObjectAccession;
+    /**
+     * used to pass geneName for a single protein
+     * @param geneName
+     */
+    public PairwiseOverlayButtonClickedEvent(String uniprot, String geneName) {
+    	this.geneName = geneName;
+    	this.uniprot = uniprot;
+    }
+    
+    public GraphObject getGraphObject() {
+    	return this.graphObject;
+    }
+    
+    public String getGeneName() {
+    	return this.geneName;
+    }
+    
+    public String getUniprot() {
+    	return this.uniprot;
     }
     
 	@Override
@@ -29,7 +53,12 @@ public class PairwiseOverlayButtonClickedEvent extends GwtEvent<PairwiseOverlayB
 
 	@Override
 	public String toString() {
-		return "Opening pairwise view for: " + diagramObjectAccession;
+		if(graphObject != null)
+			return "Opening pairwise view for: " + graphObject.getStId();
+		else if(geneName != null)
+			return "Opening pairwise view for: " + getGeneName();
+		else
+			return "Opening pairwise view";
 	}
 	
 }
