@@ -111,6 +111,14 @@ public class HideableContainerPanel extends FlowPanel implements ClickHandler {
         this.btns.add(btn);
         return btn;
     }
+    
+    public List<Button> getButtons(){
+    	return btns;
+    }
+    
+    public DeckLayoutPanel getContainer() {
+    	return container;
+    }
 
     @Override
     public void onClick(ClickEvent event) {

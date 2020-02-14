@@ -60,6 +60,8 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     protected LeftTopLauncherPanel leftTopLauncher;
     protected RightContainerPanel rightContainerPanel;
     protected BottomContainerPanel bottomContainerPanel;
+    protected InteractorsControl interactorsControl;
+    protected HideableContainerPanel hideableContainerPanel;
     private Anchor watermark;
 
     public static Timer windowScrolling = new Timer() {
@@ -138,7 +140,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         rightContainerPanel.add(new RegulationLegend(eventBus));
 
         //Interactors control panel
-        bottomContainerPanel.add(new InteractorsControl(eventBus));
+        bottomContainerPanel.add(interactorsControl = new InteractorsControl(eventBus));
 
         //Info panel
         if (DiagramFactory.SHOW_INFO) {
@@ -153,7 +155,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.add(new RightTopLauncherPanel(eventBus));
 
         //Settings panel
-        rightContainerPanel.add(new HideableContainerPanel(eventBus));
+        rightContainerPanel.add(hideableContainerPanel = new HideableContainerPanel(eventBus));
 
         //Illustration panel
         this.add(this.illustration = new IllustrationPanel(), 0 , 0);
