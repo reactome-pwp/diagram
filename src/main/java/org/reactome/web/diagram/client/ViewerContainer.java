@@ -61,7 +61,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     protected RightContainerPanel rightContainerPanel;
     protected BottomContainerPanel bottomContainerPanel;
     protected InteractorsControl interactorsControl;
-    protected HideableContainerPanel hideableContainerPanel;
     private Anchor watermark;
 
     public static Timer windowScrolling = new Timer() {
@@ -155,7 +154,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.add(new RightTopLauncherPanel(eventBus));
 
         //Settings panel
-        rightContainerPanel.add(hideableContainerPanel = new HideableContainerPanel(eventBus));
+        rightContainerPanel.add(new HideableContainerPanel(eventBus));
 
         //Illustration panel
         this.add(this.illustration = new IllustrationPanel(), 0 , 0);
