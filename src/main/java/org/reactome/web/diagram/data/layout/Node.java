@@ -16,6 +16,8 @@ public interface Node extends NodeCommon {
     Boolean getTrivial();
     
     SummaryItem getInteractorsSummary();
+    
+    void setInteractorsSummary(SummaryItem interactorsSummary);
 
     //Keeping a pointer the the cached object improves performance avoiding searching for it every time it gets toggled
 
