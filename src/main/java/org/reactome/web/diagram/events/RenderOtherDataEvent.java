@@ -20,14 +20,14 @@ public class RenderOtherDataEvent extends GwtEvent<RenderOtherDataHandler>{
 
     private RendererManager rendererManager;
     private Collection<DiagramObject> items;
-    private AdvancedContext2d ctx;
-    private OverlayContext overlay;
+    private AdvancedContext2d overlay;
+    private OverlayContext overlayContext;
     
-    public RenderOtherDataEvent(RendererManager rendererManager, Collection<DiagramObject> items, AdvancedContext2d ctx, OverlayContext overlay) {
+    public RenderOtherDataEvent(RendererManager rendererManager, Collection<DiagramObject> items, AdvancedContext2d overlay, OverlayContext overlayContext) {
     	this.rendererManager = rendererManager;
     	this.items = items;
-    	this.ctx = ctx;
     	this.overlay = overlay;
+    	this.overlayContext = overlayContext;
     }
     
 	@Override
@@ -48,12 +48,12 @@ public class RenderOtherDataEvent extends GwtEvent<RenderOtherDataHandler>{
 		return items;
 	}
 
-	public AdvancedContext2d getCtx() {
-		return ctx;
+	public AdvancedContext2d getOverlay() {
+		return overlay;
 	}
 	
-	public OverlayContext getOverlay() {
-		return overlay;
+	public OverlayContext getOverlayContext() {
+		return overlayContext;
 	}
 	
 	@Override
