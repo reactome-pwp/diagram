@@ -104,7 +104,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
     private AdvancedContext2d interactors;
 
     private AdvancedContext2d buffer;
-
+    
     private TooltipContainer tooltipContainer;
     private Thumbnail thumbnail;
     private List<Canvas> canvases = new LinkedList<>();
@@ -683,9 +683,10 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         this.reactionDecorators = createCanvas(width, height);
 
         this.entities = createCanvas(width, height);
-        this.entitiesDecorators = createCanvas(width, height);
+//        this.entitiesDecorators = createCanvas(width, height);
         this.text = createCanvas(width, height);
         this.overlay = createCanvas(width, height);
+        this.entitiesDecorators = createCanvas(width, height);
         this.entitiesSelection = createCanvas(width, height);
         this.shadowsText = createCanvas(width, height);
 
@@ -696,7 +697,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         this.tooltipContainer = createToolTipContainer(width, height);
 
         this.buffer = createCanvas(width, height);  //Top-level canvas (mouse ctrl and buffer)
-
+        
         //Set the LineCap to round to avoid discontinuities in the reaction lines
         //NOTE: Setting the LineJoin cannot work as we draw every line segment separately
         this.reactions.setLineCap(Context2d.LineCap.ROUND);
