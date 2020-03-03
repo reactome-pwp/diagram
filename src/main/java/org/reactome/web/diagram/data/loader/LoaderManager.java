@@ -45,7 +45,7 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     private EventBus eventBus;
 
     protected SVGLoader svgLoader;
-    private LayoutLoader layoutLoader;
+    public LayoutLoader layoutLoader;
     private GraphLoader graphLoader;
     private InteractorsLoader interactorsLoader;
     protected Context context;
