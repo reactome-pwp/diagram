@@ -203,4 +203,10 @@ public class SetRenderer100 extends SetAbstractRenderer {
         }
         return super.getHovered(item, pos);
     }
+    
+    @Override
+    public void highlight(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
+        super.highlight(ctx, item, factor, offset);
+        drawSummaryItems(ctx, (Node) item, factor, offset);
+    }
 }

@@ -76,7 +76,6 @@ public abstract class NodeAbstractRenderer extends AbstractRenderer {
         NodeProperties prop = NodePropertiesFactory.transform(node.getProp(), factor, offset);
         shape(ctx, prop, node.getNeedDashedBorder());
         ctx.stroke();
-        drawSummaryItems(ctx, (Node)item, factor, offset);
     }
 
     @Override
