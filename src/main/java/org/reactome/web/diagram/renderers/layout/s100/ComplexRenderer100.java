@@ -180,6 +180,14 @@ public class ComplexRenderer100 extends ComplexAbstractRenderer {
                 return new HoveredItem(node.getId(), interactorsSummary);
             }
         }
+        if(node.getOtherDecoratorsList() != null) {
+	        List<SummaryItem> otherSummaries = node.getOtherDecoratorsList();
+	        for(SummaryItem summary : otherSummaries) {
+	        	if(summary == null) continue;
+	        	if(ShapeCategory.isHovered(summary.getShape(), pos))
+	        		return new HoveredItem(node.getId(), summary);
+	        }
+        }
         return super.getHovered(item, pos);
     }
     
