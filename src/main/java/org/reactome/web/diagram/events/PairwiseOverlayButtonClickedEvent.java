@@ -11,6 +11,7 @@ public class PairwiseOverlayButtonClickedEvent extends GwtEvent<PairwiseOverlayB
     private GraphObject graphObject;
     private String uniprot;
     private String geneName;
+    private String type;
     
     /**
      * use to pass whole graph object for a complex
@@ -22,11 +23,13 @@ public class PairwiseOverlayButtonClickedEvent extends GwtEvent<PairwiseOverlayB
     
     /**
      * used to pass geneName for a single protein
+     * type should be the initial type of popup to open. e.g.("TR" or "DG") from SummaryItemAbstractRenderer
      * @param geneName
      */
-    public PairwiseOverlayButtonClickedEvent(String uniprot, String geneName) {
+    public PairwiseOverlayButtonClickedEvent(String uniprot, String geneName, String type) {
     	this.geneName = geneName;
     	this.uniprot = uniprot;
+    	this.type = type;
     }
     
     public GraphObject getGraphObject() {
@@ -39,6 +42,10 @@ public class PairwiseOverlayButtonClickedEvent extends GwtEvent<PairwiseOverlayB
     
     public String getUniprot() {
     	return this.uniprot;
+    }
+    
+    public String getType() {
+    	return this.type;
     }
     
 	@Override
