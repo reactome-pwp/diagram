@@ -1,10 +1,16 @@
 package org.reactome.web.diagram.data.loader;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.http.client.*;
 import org.reactome.web.diagram.client.DiagramFactory;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.classes.Pathway;
+import org.reactome.web.pwp.model.client.common.ContentClientHandler;
+import org.reactome.web.pwp.model.client.content.ContentClient;
+import org.reactome.web.pwp.model.client.content.ContentClientError;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 import org.vectomatic.dom.svg.utils.OMSVGParser;
 import org.vectomatic.dom.svg.utils.ParserException;
@@ -19,7 +25,7 @@ import java.util.Set;
 public class SVGLoader implements RequestCallback {
 
     public interface Handler {
-        void onSvgLoaded(String stId, OMSVGSVGElement svg, long time);
+        void onSvgLoaded(String stId, boolean isInDisease, OMSVGSVGElement svg, long time);
 
         void onSvgLoaderError(String stId, Throwable exception);
     }
@@ -36,6 +42,8 @@ public class SVGLoader implements RequestCallback {
     private Handler handler;
     private Request request;
     private String stId;
+    private boolean inInDisease;
+    private boolean loaded = false;
 
     SVGLoader(Handler handler) {
         this.handler = handler;
@@ -50,6 +58,10 @@ public class SVGLoader implements RequestCallback {
 
     void load(String stId) {
         this.stId = stId;
+        getEventInformation(stId);
+    }
+
+    void loadSVGFile(String stId){
         if (!stId.endsWith(".svg")) stId = stId + ".svg";
 
         String url = PREFIX + stId + SUFFIX;
@@ -59,6 +71,38 @@ public class SVGLoader implements RequestCallback {
         } catch (RequestException e) {
             this.handler.onSvgLoaderError(stId, e);
         }
+
+    }
+
+    /**
+     * EHLDContent now has "isInDisease" attribute and we need to query the graph in order
+     * to fill that new attribute. We first load it and after load the svg.
+     *
+     * @param stId the stId
+     */
+    public void getEventInformation(String stId){
+        Scheduler.get().scheduleFixedPeriod(() -> {
+            if (loaded) return false;
+
+            ContentClient.query(stId, new ContentClientHandler.ObjectLoaded<DatabaseObject>() {
+                @Override
+                public void onObjectLoaded(DatabaseObject databaseObject) {
+                    Pathway pathway = (Pathway) databaseObject;
+                    inInDisease = pathway.getInDisease();
+                    loaded = true;
+                    // once loaded, now load the svg, and all the panels.
+                    loadSVGFile(stId);
+                }
+
+                @Override
+                public void onContentClientException(Type type, String message) {}
+
+                @Override
+                public void onContentClientError(ContentClientError error) {}
+            });
+
+            return  true;
+        }, 1000);
     }
 
     @Override
@@ -69,7 +113,7 @@ public class SVGLoader implements RequestCallback {
                     long start = System.currentTimeMillis();
                     OMSVGSVGElement svg = OMSVGParser.parse(response.getText(), false);
                     long time = System.currentTimeMillis() - start;
-                    this.handler.onSvgLoaded(stId, svg, time);
+                    this.handler.onSvgLoaded(stId, inInDisease, svg, time);
                 } catch (ParserException e) {
                     this.handler.onSvgLoaderError(stId, e);
                 }

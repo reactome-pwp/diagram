@@ -99,14 +99,12 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     }
 
     @Override
-    public void onSvgLoaded(String stId, OMSVGSVGElement svg, long time) {
-        Context context = new Context(ContentFactory.getContent(stId, svg));
+    public void onSvgLoaded(String stId, boolean isInDisease, OMSVGSVGElement svg, long time) {
+        Context context = new Context(ContentFactory.getContent(stId, isInDisease, svg));
         //caching the context
         contextMap.put(context.getContent().getStableId(), context);
         this.context = context;
         graphLoader.load(stId);
-//        eventBus.fireEventFromSource(new ContentLoadedEvent(svg), this);
-//        Nothing else here. Plan A finishes if there is an SVG
     }
 
     @Override

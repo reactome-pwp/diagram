@@ -100,7 +100,10 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         }
         diagramKey.hide();
         diagramKey = keys.get(event.getContext().getContent().getType());
-
+        // EHLD Disease uses different key
+        if (event.getContext().getContent().getType().equals(SVG) && event.getContext().getContent().getIsDisease()) {
+            ((EHLDKey) diagramKey).addDiseaseKey();
+        }
     }
 
 

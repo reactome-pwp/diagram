@@ -5,3 +5,11 @@
     width: 170px;
     height: auto;
 }
+
+.imageDisease {
+    margin-top: 10px;
+    margin-bottom: 8px;
+    outline: none;
+    width: 300px;
+    height: auto;
+}
