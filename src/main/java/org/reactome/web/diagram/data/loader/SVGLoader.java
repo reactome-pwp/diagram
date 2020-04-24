@@ -58,6 +58,7 @@ public class SVGLoader implements RequestCallback {
 
     void load(String stId) {
         this.stId = stId;
+        loaded = false;
         getEventInformation(stId);
     }
 
