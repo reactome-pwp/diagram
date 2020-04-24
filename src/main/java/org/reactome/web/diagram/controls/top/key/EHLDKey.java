@@ -40,6 +40,13 @@ public class EHLDKey extends AbstractMenuDialog implements ControlActionHandler 
         add(image);
     }
 
+    public void removeDiseaseKey() {
+        image.setResource(RESOURCES.ehldkey());
+        image.setStyleName(RESOURCES.getCSS().image());
+        add(image);
+    }
+
+
     @Override
     public void onControlAction(ControlActionEvent event) {
         if(event.getAction().equals(ControlAction.FIREWORKS)) {
@@ -61,7 +68,7 @@ public class EHLDKey extends AbstractMenuDialog implements ControlActionHandler 
         @Source(ResourceCSS.CSS)
         ResourceCSS getCSS();
 
-        @Source("data/EHLDKey2.png")
+        @Source("data/EHLDKey.png")
         ImageResource ehldkey();
 
         @Source("data/EHLDKey_disease.png")
