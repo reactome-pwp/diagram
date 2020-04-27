@@ -13,18 +13,22 @@ import org.reactome.web.diagram.controls.top.search.SearchPanel;
  */
 public class LeftTopLauncherPanel extends FlowPanel {
 	
+	private SearchPanel searchPanel;
 	private MainControlPanel mainControlPanel;
 
     public LeftTopLauncherPanel(EventBus eventBus) {
         this.setStyleName(RESOURCES.getCSS().launcherPanel());
 
         //Search panel
-        this.add(new SearchPanel(eventBus));
+        this.add(searchPanel = new SearchPanel(eventBus));
         //Main Control panel
-        mainControlPanel = new MainControlPanel(eventBus);
-        this.add(mainControlPanel);
+        this.add(mainControlPanel = new MainControlPanel(eventBus));
 
         this.setVisible(true);
+    }
+    
+    public SearchPanel getSearchPanel() {
+    	return searchPanel;
     }
     
     public MainControlPanel getMainControlPanel() {
