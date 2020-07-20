@@ -42,7 +42,7 @@ public class DiagramViewerImpl extends AbstractDiagramViewer implements
         DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         FireworksOpenedHandler, FlaggedElementsLoader.Handler {
 
-    private Context context;
+    protected Context context;
     private final ViewerContainer viewerContainer;
     protected LoaderManager loaderManager;
     private AnalysisStatus analysisStatus;
