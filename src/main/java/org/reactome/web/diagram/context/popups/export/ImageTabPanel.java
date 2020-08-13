@@ -128,7 +128,7 @@ public class ImageTabPanel extends FlowPanel {
                 params.add("analysisProfile=" + analysisProfile);
                 params.add("resource=" + status.getResource());
                 AnalysisType analysisType = status.getAnalysisType();
-                if (analysisType == EXPRESSION || analysisType == GSA_STATISTICS || analysisType == GSVA || analysisType == GSA_REGULATION) {
+                if ( (analysisType == EXPRESSION || analysisType == GSA_STATISTICS || analysisType == GSVA || analysisType == GSA_REGULATION) && type != ImageDownloadType.GIF) {
                     params.add("expColumn=" + status.getColumn());
                 }
             }
