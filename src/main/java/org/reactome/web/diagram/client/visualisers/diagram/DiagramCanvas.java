@@ -100,6 +100,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
 
     private TooltipContainer tooltipContainer;
     private Thumbnail thumbnail;
+    private Thumbnail staticthumbnail;
     private List<Canvas> canvases = new LinkedList<>();
 
     private int column = 0;
@@ -121,6 +122,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         InteractorColours.initialise(eventBus);
 
         this.thumbnail = new DiagramThumbnail(eventBus);
+//        this.staticthumbnail = new StaticIllustrationThumbnail(eventBus);
 
         this.initHandlers();
     }
@@ -144,6 +146,10 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
     public Thumbnail getThumbnail() {
         return thumbnail;
     }
+
+   // public Thumbnail getStaticthumbnail() {
+   //     return staticthumbnail;
+   // }
 
     public void halo(Collection<DiagramObject> items, Context context) {
         highlight(items, context, this.halo);
@@ -693,6 +699,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
 
         //Thumbnail
         this.add(this.thumbnail);
+        this.add(this.staticthumbnail);
     }
 
     private AdvancedContext2d createCanvas(int width, int height) {
