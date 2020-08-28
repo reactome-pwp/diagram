@@ -43,7 +43,7 @@ public class DiagramViewerImpl extends AbstractDiagramViewer implements
         FireworksOpenedHandler, FlaggedElementsLoader.Handler {
 
     protected Context context;
-    private final ViewerContainer viewerContainer;
+    protected final ViewerContainer viewerContainer;
     protected LoaderManager loaderManager;
     private AnalysisStatus analysisStatus;
     private InteractorsManager interactorsManager;
