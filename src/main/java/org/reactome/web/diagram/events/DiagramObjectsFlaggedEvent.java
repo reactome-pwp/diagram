@@ -12,10 +12,10 @@ import java.util.Set;
 public class DiagramObjectsFlaggedEvent extends GwtEvent<DiagramObjectsFlaggedHandler> {
     public static final Type<DiagramObjectsFlaggedHandler> TYPE = new Type<>();
 
-    private String term;
-    private Boolean includeInteractors;
-    private Set<DiagramObject> flaggedItems;
-    private boolean notify;
+    protected String term;
+    protected Boolean includeInteractors;
+    protected Set<DiagramObject> flaggedItems;
+    protected boolean notify;
 
     public DiagramObjectsFlaggedEvent(String term, Boolean includeInteractors, Set<DiagramObject> flaggedItems, boolean notify) {
         this.term = term;
