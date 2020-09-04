@@ -117,13 +117,9 @@ public class DiagramViewerImpl extends AbstractDiagramViewer implements
             if(!identifier.equalsIgnoreCase(context.getFlagTerm()) || !this.includeInteractors.equals(includeInteractors)) {
                 eventBus.fireEventFromSource(new DiagramObjectsFlagRequestedEvent(identifier, includeInteractors), this);
             }
-            else fireDiagramObjectsFlaggedEvent(identifier, includeInteractors);
         }
     }
 
-    protected void fireDiagramObjectsFlaggedEvent(String identifier, boolean includeInteractors) {
-		eventBus.fireEventFromSource(new DiagramObjectsFlaggedEvent(identifier, includeInteractors, context.getFlagged(identifier+includeInteractors), false), this);
-	}
 
 	@Override
     public void highlightItem(String stableIdentifier) {
