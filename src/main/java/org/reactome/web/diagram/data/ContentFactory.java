@@ -53,11 +53,12 @@ public abstract class ContentFactory {
         return content.init();
     }
 
-    public static Content getContent(String stId, OMSVGSVGElement svg) {
+    public static Content getContent(String stId, boolean isInDisease, OMSVGSVGElement svg) {
         EHLDContent content = new EHLDContent(svg);
 
         //Read and set general pathway information
         content.setStableId(stId);
+        content.setIsDisease(isInDisease);
 
         //Create EHLDObjects to include in the content
         List<EHLDObject> pathwayNodes = new LinkedList<>();

@@ -34,6 +34,19 @@ public class EHLDKey extends AbstractMenuDialog implements ControlActionHandler 
 
     }
 
+    public void addDiseaseKey(){
+        image.setResource(RESOURCES.ehldkeyDisease());
+        image.setStyleName(RESOURCES.getCSS().imageDisease());
+        add(image);
+    }
+
+    public void removeDiseaseKey() {
+        image.setResource(RESOURCES.ehldkey());
+        image.setStyleName(RESOURCES.getCSS().image());
+        add(image);
+    }
+
+
     @Override
     public void onControlAction(ControlActionEvent event) {
         if(event.getAction().equals(ControlAction.FIREWORKS)) {
@@ -58,6 +71,9 @@ public class EHLDKey extends AbstractMenuDialog implements ControlActionHandler 
         @Source("data/EHLDKey.png")
         ImageResource ehldkey();
 
+        @Source("data/EHLDKey_disease.png")
+        ImageResource ehldkeyDisease();
+
 //        @Source("data/fireworkskey.html")
 //        TextResource fireworkskey();
     }
@@ -70,5 +86,7 @@ public class EHLDKey extends AbstractMenuDialog implements ControlActionHandler 
         String CSS = "org/reactome/web/diagram/controls/top/key/EHLDKey.css";
 
         String image();
+
+        String imageDisease();
     }
 }

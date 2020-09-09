@@ -245,7 +245,7 @@
     text-overflow: ellipsis;
     display: inline-block;
     white-space: nowrap;
-    max-width: 205px;
+    max-width: 195px;
 
     line-height: normal !important;
 }
