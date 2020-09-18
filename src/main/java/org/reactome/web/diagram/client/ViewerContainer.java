@@ -35,6 +35,7 @@ import org.reactome.web.diagram.legends.*;
 import org.reactome.web.diagram.messages.AnalysisMessage;
 import org.reactome.web.diagram.messages.ErrorMessage;
 import org.reactome.web.diagram.messages.LoadingMessage;
+import org.reactome.web.diagram.thumbnail.diagram.StaticIllustrationThumbnail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +49,7 @@ import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         CanvasExportRequestedHandler, ControlActionHandler,
         DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler, DiagramObjectsFlagRequestHandler,
-        GraphObjectSelectedHandler, IllustrationSelectedHandler {
+        GraphObjectSelectedHandler {
 
     private EventBus eventBus;
     private Context context;
@@ -56,7 +57,8 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     private Map<Content.Type, Visualiser> visualisers;
     private Visualiser activeVisualiser;
 
-    private IllustrationPanel illustration;
+    private StaticIllustrationPanel staticIllustrationPanel;
+
     private Anchor watermark;
 
     public static Timer windowScrolling = new Timer() {
@@ -142,12 +144,12 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.add(new LeftTopLauncherPanel(eventBus));
         this.add(new RightTopLauncherPanel(eventBus));
 
-
         //Settings panel
         rightContainerPanel.add(new HideableContainerPanel(eventBus));
 
-        //Illustration panel
-        this.add(this.illustration = new IllustrationPanel(), 0 , 0);
+        // StaticIllustration panel - when clicking to open the image
+        this.add(this.staticIllustrationPanel = new StaticIllustrationPanel(), 0 , 0);
+        this.add(new StaticIllustrationThumbnail(eventBus, activeVisualiser, staticIllustrationPanel));
     }
 
     public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
@@ -170,7 +172,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         activeVisualiser.resetSelection(false);
         activeVisualiser.resetHighlight(false);
         activeVisualiser.contentRequested();
-        resetIllustration();
         setWatermarkVisible(false);
         context = null;
     }
@@ -245,11 +246,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     @Override
-    public void onIllustrationSelected(IllustrationSelectedEvent event) {
-        this.setIllustration(event.getUrl());
-    }
-
-    @Override
     public void onResize() {
         final int width = this.getOffsetWidth();
         final int height = this.getOffsetHeight();
@@ -264,12 +260,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     public boolean selectItem(GraphObject item, boolean notify) {
-        resetIllustration();
         return activeVisualiser.selectGraphObject(item, notify);
-    }
-
-    public void setIllustration(String url){
-        this.illustration.setUrl(url);
     }
 
     public boolean resetHighlight(boolean notify) {
@@ -278,12 +269,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
     public boolean resetSelection(boolean notify) {
         return activeVisualiser.resetSelection(notify);
-    }
-
-    public void resetIllustration(){
-        if(this.illustration!=null) {
-            this.illustration.reset();
-        }
     }
 
     public void resetAnalysis() {
@@ -363,8 +348,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
 
         eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
-
-        eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
 
         eventBus.addHandler(ControlActionEvent.TYPE, this);
     }

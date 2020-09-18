@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.reactome.web.diagram.common.IconButton;
 import org.reactome.web.diagram.controls.top.common.AbstractMenuDialog;
-import org.reactome.web.diagram.controls.top.illustrations.DiagramIllustrations;
 import org.reactome.web.diagram.controls.top.key.DiagramKey;
 import org.reactome.web.diagram.controls.top.key.EHLDKey;
 import org.reactome.web.diagram.data.content.Content;
@@ -33,11 +32,9 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
 
     private EventBus eventBus;
 
-    private DiagramIllustrations diagramIllustrations;
     private AbstractMenuDialog diagramKey;
     private Map<Content.Type, AbstractMenuDialog> keys;
 
-    private IconButton illustrationsBtn;
     private IconButton exportBtn;
     private IconButton diagramKeyBtn;
 
@@ -49,11 +46,6 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         this.keys.put(DIAGRAM, new DiagramKey(eventBus));
         this.keys.put(SVG, new EHLDKey(eventBus));
         this.diagramKey = keys.get(SVG);
-
-        this.diagramIllustrations = new DiagramIllustrations(eventBus);
-
-        this.illustrationsBtn = new IconButton(RESOURCES.illustrationsIcon(), RESOURCES.getCSS().illustrations(), "Show illustrations", this);
-        this.add(illustrationsBtn);
 
         this.exportBtn = new IconButton(RESOURCES.exportIcon(), RESOURCES.getCSS().export(), "Export diagram", this);
         this.add(exportBtn);
@@ -76,28 +68,11 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
             } else {
                 this.diagramKey.showRelativeTo(this.diagramKeyBtn);
             }
-        } else if (btn.equals(this.illustrationsBtn)) {
-            if (this.diagramIllustrations.isShowing()) {
-                this.diagramIllustrations.hide();
-            } else {
-                this.diagramIllustrations.showRelativeTo(btn);
-            }
         }
     }
 
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
-        switch (event.getContext().getContent().getType()) {
-            case DIAGRAM:
-                illustrationsBtn.setEnabled(true);
-                break;
-            case SVG:
-                illustrationsBtn.setEnabled(false);
-                if (this.diagramIllustrations.isShowing()) {
-                    this.diagramIllustrations.hide();
-                }
-                break;
-        }
         diagramKey.hide();
         diagramKey = keys.get(event.getContext().getContent().getType());
 
@@ -140,8 +115,6 @@ public class RightTopLauncherPanel extends FlowPanel implements ClickHandler, Co
         String launcherPanel();
 
         String export();
-
-        String illustrations();
 
         String key();
     }

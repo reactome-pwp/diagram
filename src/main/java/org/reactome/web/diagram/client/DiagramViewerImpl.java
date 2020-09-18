@@ -38,7 +38,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         AnalysisResultRequestedHandler, AnalysisResultLoadedHandler, AnalysisResetHandler, ExpressionColumnChangedHandler,
         GraphObjectHoveredHandler, GraphObjectSelectedHandler,
         DiagramObjectsFlagRequestHandler, DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler,
-        IllustrationSelectedHandler,
         DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         FireworksOpenedHandler, FlaggedElementsLoader.Handler {
 
@@ -84,8 +83,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         eventBus.addHandler(DiagramObjectsFlaggedEvent.TYPE, this);
         eventBus.addHandler(DiagramObjectsFlagRequestedEvent.TYPE, this);
         eventBus.addHandler(DiagramObjectsFlagResetEvent.TYPE, this);
-
-        eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
 
         eventBus.addHandler(InteractorsCollapsedEvent.TYPE, this);
         eventBus.addHandler(InteractorHoveredEvent.TYPE, this);
@@ -320,11 +317,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
     }
 
     @Override
-    public void onIllustrationSelected(IllustrationSelectedEvent event) {
-        this.viewerContainer.setIllustration(event.getUrl());
-    }
-
-    @Override
     public void onInteractorHovered(InteractorHoveredEvent event) {
         //In order to have fine grain hovering capabilities, this class is not taking actions for onInteractorHovered
         //when it is fired by its own, so we ONLY want to do the STANDARD action (highlight) when the event comes from
@@ -401,10 +393,6 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         if (this.context != null) {
             this.context.hideDialogs();
         }
-    }
-
-    private void resetIllustration() {
-        this.viewerContainer.resetIllustration();
     }
 
     @Override

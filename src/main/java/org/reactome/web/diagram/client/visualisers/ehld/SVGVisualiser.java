@@ -1239,6 +1239,10 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         updateUI();
     }
 
+    public SVGThumbnail getSVGThumbnail() {
+        return (SVGThumbnail)thumbnail;
+    }
+
     private boolean isDeltaValid(Coordinate delta) {
         return delta.getX() >= 2  || delta.getX() <= -2  || delta.getY() >= 2 || delta.getY() <= -2;
     }
