@@ -12,6 +12,7 @@ import org.reactome.web.diagram.client.visualisers.Visualiser;
 import org.reactome.web.diagram.client.visualisers.diagram.DiagramVisualiser;
 import org.reactome.web.diagram.client.visualisers.ehld.SVGVisualiser;
 import org.reactome.web.diagram.data.Context;
+import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.events.ContentLoadedEvent;
 import org.reactome.web.diagram.events.ContentRequestedEvent;
@@ -26,6 +27,8 @@ import org.reactome.web.pwp.model.client.common.ContentClientHandler;
 import org.reactome.web.pwp.model.client.content.ContentClient;
 import org.reactome.web.pwp.model.client.content.ContentClientError;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
+
+import java.util.Map;
 
 import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 
@@ -47,12 +50,12 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
 
     private String selectionIllustrationURL = null;
     private boolean selectionFigureLoadingInProgress = false;
-
+    private Map<Content.Type, Visualiser> visualisers;
     private Visualiser activeVisualiser;
 
-    public StaticIllustrationThumbnail(EventBus eventBus, Visualiser viz, StaticIllustrationPanel staticIllustrationPanel)  {
+    public StaticIllustrationThumbnail(EventBus eventBus, Map<Content.Type, Visualiser> visualisers, StaticIllustrationPanel staticIllustrationPanel)  {
         this.eventBus = eventBus;
-        this.activeVisualiser = viz;
+        this.visualisers = visualisers;
         this.staticIllustrationPanel = staticIllustrationPanel;
 
         initHandlers();
@@ -105,7 +108,7 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
 
         resetStaticIllustrationSelection();
 
-        if (activeVisualiser instanceof SVGVisualiser) return;
+       // if (activeVisualiser instanceof SVGVisualiser) return;
 
         selectionFigureLoadingInProgress = true;
         ContentClient.query(dbId, new ContentClientHandler.ObjectLoaded<DatabaseObject>() {
@@ -146,7 +149,7 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
             image.setTitle("Illustration for " + databaseObject.getDisplayName());
             image.setAltText("Illustration for " + databaseObject.getDisplayName());
             image.addClickHandler(clickEvent -> {
-                staticIllustrationPanel.setPanelElements(svg, url, databaseObject);
+                staticIllustrationPanel.setStaticIllustrationUrl(url);
                 if (staticIllustrationPanel.getStyleName().contains(StaticIllustrationPanel.RESOURCES.getCSS().panelShown())) {
                     staticIllustrationPanel.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelHidden());
                 } else {
@@ -164,7 +167,6 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
 
         selectStaticIllustrationFlowPanel.setStyleName(RESOURCES.getCSS().mainStaticThumbnails());
         selectStaticIllustrationFlowPanel.addStyleName(RESOURCES.getCSS().selectedStaticThumbnails());
-
         selectStaticIllustrationFlowPanel.getElement().getStyle().setLeft(getThumbnailCurrentPosition() + 10, Style.Unit.PX);
 
         if (url != null && !url.isEmpty()) {
@@ -173,7 +175,7 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
             image.setTitle("Illustration for " + databaseObject.getDisplayName());
             image.setAltText("Illustration for " + databaseObject.getDisplayName());
             image.addClickHandler(clickEvent -> {
-                staticIllustrationPanel.setPanelElements(svg, url, databaseObject);
+                staticIllustrationPanel.setStaticIllustrationUrl(url);
                 if (staticIllustrationPanel.getStyleName().contains(StaticIllustrationPanel.RESOURCES.getCSS().panelShown())) {
                     staticIllustrationPanel.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelHidden());
                 } else {
@@ -187,9 +189,15 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
     }
 
     private int getThumbnailCurrentPosition() {
-        if (activeVisualiser == null) return 0;
-        if (activeVisualiser instanceof DiagramVisualiser) return ((DiagramVisualiser) activeVisualiser).getDiagramThumbnail().getOffsetWidth();
-        if (activeVisualiser instanceof SVGVisualiser) return ((SVGVisualiser) activeVisualiser).getSVGThumbnail().getOffsetWidth();
+        if (activeVisualiser == null) {
+            return 0;
+        }
+        if (activeVisualiser instanceof DiagramVisualiser) {
+            return ((DiagramVisualiser) activeVisualiser).getDiagramThumbnail().getOffsetWidth();
+        }
+        if (activeVisualiser instanceof SVGVisualiser) {
+            return ((SVGVisualiser) activeVisualiser).getSVGThumbnail().getOffsetWidth();
+        }
         return 0;
     }
 
@@ -220,8 +228,9 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
     }
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
+        this.context = event.getContext();
+        activeVisualiser = visualisers.get(context.getContent().getType());
         if (event.getContext().getContent().getType() == DIAGRAM) {
-            this.context = event.getContext();
             addDiagramFigureToThumbnails();
         }
     }
@@ -254,7 +263,7 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
 
     @CssResource.ImportedWithPrefix("diagram-StaticIllustrationThumbnail")
     public interface ResourceCSS extends CssResource {
-        String CSS = "org/reactome/web/diagram/thumbnails/diagram/StaticIllustrationThumbnail.css";
+        String CSS = "org/reactome/web/diagram/thumbnail/StaticIllustrationThumbnail.css";
 
         String mainStaticThumbnails();
 

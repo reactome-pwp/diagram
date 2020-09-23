@@ -149,7 +149,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
         // StaticIllustration panel - when clicking to open the image
         this.add(this.staticIllustrationPanel = new StaticIllustrationPanel(), 0 , 0);
-        this.add(new StaticIllustrationThumbnail(eventBus, activeVisualiser, staticIllustrationPanel));
+        this.add(new StaticIllustrationThumbnail(eventBus, visualisers, staticIllustrationPanel));
     }
 
     public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
