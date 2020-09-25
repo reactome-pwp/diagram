@@ -152,24 +152,3 @@
 @sprite .close:active:hover {
     gwt-image: 'closeClicked';
 }
-
-@sprite .pairwiseOverlay{
-	gwt-image: 'pairwiseNormal';
-    outline: none;
-    background-repeat: no-repeat;
-    border: none;
-    border-radius: 16px;
-    cursor: pointer;
-    margin-right: 5px;
-    position: absolute;
-    top: 5px;
-    right: 65px;
-}
-
-@sprite .pairwiseOverlay:hover {
-	gwt-image: 'pairwiseHovered';
-}
-
-@sprite .pairwiseOverlay:active:hover {
-	gwt-image: 'pairwiseClicked';
-}

@@ -21,7 +21,6 @@ import org.reactome.web.diagram.data.layout.impl.BoundFactory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.data.layout.impl.ShapeFactory;
 import org.reactome.web.diagram.events.GraphObjectSelectedEvent;
-import org.reactome.web.diagram.events.PairwiseOverlayButtonClickedEvent;
 import org.reactome.web.diagram.handlers.GraphObjectSelectedHandler;
 
 /**
@@ -42,7 +41,6 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
     private Button changeLabels;
     private Button pin;
     private Button close;
-    private Button pairwiseOverlayBtn;
 
     public ContextDialogPanel(EventBus eventBus, DiagramObject item, Context context, Widget canvas) {
         super();
@@ -57,7 +55,6 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
         this.canvas = canvas;
 
         FlowPanel fp = new FlowPanel();
-        fp.add(this.pairwiseOverlayBtn = new PwpButton("Show Pairwise Relationships", RESOURCES.getCSS().pairwiseOverlay(), this));
         fp.add(this.changeLabels = new PwpButton("Show/hide Identifiers", RESOURCES.getCSS().labels(), this));
         fp.add(this.pin = new PwpButton("Keeps the panel visible", RESOURCES.getCSS().pin(), this));
         fp.add(this.close = new PwpButton("Close", RESOURCES.getCSS().close(), this));
@@ -110,9 +107,6 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
                 changeLabels.setStyleName(RESOURCES.getCSS().labels());
             }
             fireEvent(new ChangeLabelsEvent(displayIds));
-        }else if(btn.equals(pairwiseOverlayBtn)) {
-        	eventBus.fireEventFromSource(new PairwiseOverlayButtonClickedEvent(item.getGraphObject()), this);
-        	this.hide();
         }
         //Apply the right style here
         if(this.pinned) {
@@ -215,15 +209,6 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
 
         @Source("images/close_normal.png")
         ImageResource closeNormal();
-        
-        @Source("images/pairwise_normal.png")
-        ImageResource pairwiseNormal();
-        
-        @Source("images/pairwise_hovered.png")
-        ImageResource pairwiseHovered();
-        
-        @Source("images/pairwise_clicked.png")
-        ImageResource pairwiseClicked();
 
     }
 
@@ -248,6 +233,5 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
 
         String close();
         
-        String pairwiseOverlay();
     }
 }
