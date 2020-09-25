@@ -150,11 +150,12 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
             image.setAltText("Illustration for " + databaseObject.getDisplayName());
             image.addClickHandler(clickEvent -> {
                 staticIllustrationPanel.setStaticIllustrationUrl(url);
-                if (staticIllustrationPanel.getStyleName().contains(StaticIllustrationPanel.RESOURCES.getCSS().panelShown())) {
-                    staticIllustrationPanel.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelHidden());
-                } else {
-                    staticIllustrationPanel.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelShown());
-                }
+                staticIllustrationPanel.toggle();
+//                if (staticIllustrationPanel.getStyleName().contains(StaticIllustrationPanel.RESOURCES.getCSS().panelShown())) {
+//                    staticIllustrationPanel.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelHidden());
+//                } else {
+//                    staticIllustrationPanel.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelShown());
+//                }
             });
             mainStaticIllustrationFlowPanel.add(image);
             mainStaticIllustrationFlowPanel.setVisible(true);
@@ -176,11 +177,12 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
             image.setAltText("Illustration for " + databaseObject.getDisplayName());
             image.addClickHandler(clickEvent -> {
                 staticIllustrationPanel.setStaticIllustrationUrl(url);
-                if (staticIllustrationPanel.getStyleName().contains(StaticIllustrationPanel.RESOURCES.getCSS().panelShown())) {
-                    staticIllustrationPanel.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelHidden());
-                } else {
-                    staticIllustrationPanel.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelShown());
-                }
+                staticIllustrationPanel.toggle();
+//                if (staticIllustrationPanel.getStyleName().contains(StaticIllustrationPanel.RESOURCES.getCSS().panelShown())) {
+//                    staticIllustrationPanel.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelHidden());
+//                } else {
+//                    staticIllustrationPanel.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelShown());
+//                }
             });
             selectStaticIllustrationFlowPanel.add(image);
             selectStaticIllustrationFlowPanel.setVisible(true);
@@ -202,7 +204,10 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
     }
 
     public void resetStaticIllustrationSelection() {
-        if (staticIllustrationPanel != null) staticIllustrationPanel.clear();
+        if (staticIllustrationPanel != null) {
+            staticIllustrationPanel.reset();
+            staticIllustrationPanel.clear();
+        }
 
         diagramIllustrationURL = null;
         diagramFigureLoadingInProgress = false;
@@ -214,18 +219,10 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
     }
 
     public void resetAllStaticIllustration() {
-        if (staticIllustrationPanel != null) staticIllustrationPanel.clear();
-
-        diagramIllustrationURL = null;
-        diagramFigureLoadingInProgress = false;
-        selectionIllustrationURL = null;
-        selectionFigureLoadingInProgress = false;
-
+        resetStaticIllustrationSelection();
         if (mainStaticIllustrationFlowPanel != null ) remove(mainStaticIllustrationFlowPanel);
-
-        if (selectStaticIllustrationFlowPanel != null) remove(selectStaticIllustrationFlowPanel);
-
     }
+
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
         this.context = event.getContext();

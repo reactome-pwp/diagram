@@ -68,6 +68,15 @@ public class StaticIllustrationPanel extends AbsolutePanel implements RequiresRe
 //        onResize();
 //    }
 
+
+    public void toggle(){
+        if (this.getStyleName().contains(StaticIllustrationPanel.RESOURCES.getCSS().panelShown())) {
+            this.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelHidden());
+        } else {
+            this.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelShown());
+        }
+    }
+
     @Override
     public void onClick(ClickEvent event) {
         reset();
