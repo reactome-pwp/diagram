@@ -128,7 +128,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         if(dnasTable!=null) dnasTable.redraw();
         if(polymersTable!=null) polymersTable.redraw();
         if(othersTable!=null) othersTable.redraw();
-        eventBus.fireEventFromSource(new RenderOtherContextDialogInfoEvent(proteinsTable), this);
+        eventBus.fireEventFromSource(new ProteinsTableUpdatedEvent(proteinsTable), this);
     }
 
     private void changeLabels(boolean displayIds){
@@ -137,7 +137,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         if(dnasTable!=null) dnasTable.setMoleculesLabels(displayIds);
         if(polymersTable!=null) polymersTable.setMoleculesLabels(displayIds);
         if(othersTable!=null) othersTable.setMoleculesLabels(displayIds);
-        eventBus.fireEventFromSource(new RenderOtherContextDialogInfoEvent(proteinsTable), this);
+        eventBus.fireEventFromSource(new ProteinsTableUpdatedEvent(proteinsTable), this);
     }
 
     private void loadExpressionValues(){
@@ -164,7 +164,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         if(dnasTable!=null) dnasTable.removeExpressionColumns();
         if(polymersTable!=null) polymersTable.removeExpressionColumns();
         if(othersTable!=null) othersTable.removeExpressionColumns();
-        eventBus.fireEventFromSource(new RenderOtherContextDialogInfoEvent(proteinsTable), this);
+        eventBus.fireEventFromSource(new ProteinsTableUpdatedEvent(proteinsTable), this);
     }
 
     private void highlightColumn(int col){
@@ -222,7 +222,7 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
             proteinsTable = new MoleculesTable<>("Proteins", proteins, analysisType, expColumns, min, max, selectedExpCol);
             proteinsTable.setHeight(getOptimalSize(proteins) + "px");
             proteinsTable.addMoleculeSelectedHandler(this);
-            eventBus.fireEventFromSource(new RenderOtherContextDialogInfoEvent(proteinsTable), this);
+            eventBus.fireEventFromSource(new ProteinsTableUpdatedEvent(proteinsTable), this);
             vp.add(proteinsTable);
         }
         if (!chemicals.isEmpty()) {
