@@ -121,6 +121,11 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
             eventBus.fireEventFromSource(new GraphObjectSelectedEvent(object, true), this);
         }
     }
+    
+    public void reset() {
+    	removeExpressionValues();
+    	forceDraw();
+    }
 
     public void forceDraw(){
         if(proteinsTable!=null) proteinsTable.redraw();
@@ -164,7 +169,6 @@ public class MoleculesDialogPanel extends Composite implements AnalysisResultLoa
         if(dnasTable!=null) dnasTable.removeExpressionColumns();
         if(polymersTable!=null) polymersTable.removeExpressionColumns();
         if(othersTable!=null) othersTable.removeExpressionColumns();
-        eventBus.fireEventFromSource(new ProteinsTableUpdatedEvent(proteinsTable), this);
     }
 
     private void highlightColumn(int col){
