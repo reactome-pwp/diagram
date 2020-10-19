@@ -35,6 +35,8 @@
     </developers>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        
         <!-- Convenience property to set the GWT version -->
         <gwtVersion>2.8.2</gwtVersion>
         <gwtStyle>OBF</gwtStyle> <!-- OBF | PRETTY | DETAILED -->
