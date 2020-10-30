@@ -1,23 +1,17 @@
 
 .mainStaticThumbnails {
-    position: absolute;
-    bottom: 0;
-    left: 150px;
-    width: 130px;
-    height: 75px;
-    border: 1px solid grey;
+    width: inherit;
+    height: inherit;
     background-color: white;
+    position:absolute;
+    box-sizing: unset;
 }
 
 .mainStaticThumbnails img {
-    width: 130px;
-    height: inherit;
     background-color: white;
 }
 
 .mainStaticThumbnails svg {
-    width: 130px;
-    height: inherit;
     background-color: white;
 }
 .mainStaticThumbnails:hover{
@@ -26,8 +20,9 @@
 .mainStaticThumbnails svg a rect {
     box-shadow: 10px 10px #0d57ab ;
 }
-
+.selected {
+    border-color:  #4D4DFF !important;
+}
 .selectedStaticThumbnails {
-    border: 2px solid #4D4DFF;
-    height: 73px !important;
+
 }

@@ -35,7 +35,6 @@ import org.reactome.web.diagram.legends.*;
 import org.reactome.web.diagram.messages.AnalysisMessage;
 import org.reactome.web.diagram.messages.ErrorMessage;
 import org.reactome.web.diagram.messages.LoadingMessage;
-import org.reactome.web.diagram.thumbnail.diagram.StaticIllustrationThumbnail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,8 +55,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
     private Map<Content.Type, Visualiser> visualisers;
     private Visualiser activeVisualiser;
-
-    private StaticIllustrationPanel staticIllustrationPanel;
 
     private Anchor watermark;
 
@@ -147,9 +144,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         //Settings panel
         rightContainerPanel.add(new HideableContainerPanel(eventBus));
 
-        // StaticIllustration panel - when clicking to open the image
-        this.add(this.staticIllustrationPanel = new StaticIllustrationPanel(), 0 , 0);
-        this.add(new StaticIllustrationThumbnail(eventBus, visualisers, staticIllustrationPanel));
     }
 
     public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {

@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.diagram.context.popups.export.ExportDialog;
@@ -43,6 +44,7 @@ import org.reactome.web.diagram.renderers.layout.abs.ProteinAbstractRenderer;
 import org.reactome.web.diagram.renderers.layout.abs.SummaryItemAbstractRenderer;
 import org.reactome.web.diagram.thumbnail.Thumbnail;
 import org.reactome.web.diagram.thumbnail.diagram.DiagramThumbnail;
+import org.reactome.web.diagram.thumbnail.diagram.StaticIllustrationThumbnail;
 import org.reactome.web.diagram.tooltips.TooltipContainer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 import org.reactome.web.diagram.util.Console;
@@ -105,6 +107,8 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
     private int column = 0;
     private Double hoveredExpression = null;
 
+    private StaticIllustrationThumbnail staticIllustrationThumbnail;
+
     public DiagramCanvas(EventBus eventBus) {
         this.getElement().addClassName("pwp-DiagramCanvas");
         this.eventBus = eventBus;
@@ -121,6 +125,8 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         InteractorColours.initialise(eventBus);
 
         this.thumbnail = new DiagramThumbnail(eventBus);
+
+        this.staticIllustrationThumbnail = new StaticIllustrationThumbnail(eventBus);
 
         this.initHandlers();
     }
@@ -143,6 +149,10 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
 
     public Thumbnail getThumbnail() {
         return thumbnail;
+    }
+
+    public StaticIllustrationThumbnail getStaticIllustrationThumbnail() {
+        return staticIllustrationThumbnail;
     }
 
     public void halo(Collection<DiagramObject> items, Context context) {
@@ -256,6 +266,10 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         if(tooltipContainer!=null) {
             tooltipContainer.setWidth(width);
             tooltipContainer.setHeight(height);
+        }
+
+        if (staticIllustrationThumbnail != null) {
+            staticIllustrationThumbnail.resize(width);
         }
     }
 
@@ -691,8 +705,25 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         this.reactionsHighlight.setLineCap(Context2d.LineCap.ROUND);
         this.reactionsSelection.setLineCap(Context2d.LineCap.ROUND);
 
-        //Thumbnail
-        this.add(this.thumbnail);
+        //Thumbnails
+        this.add(createThumbnailsContainer());
+
+        this.add(staticIllustrationThumbnail.getStaticIllustrationPanel());
+    }
+
+    private FlowPanel createThumbnailsContainer() {
+        FlowPanel thumbnailContainer = new FlowPanel();
+        thumbnailContainer.getElement().addClassName("pwp-ThumbnailContainer");
+        Style style = thumbnailContainer.getElement().getStyle();
+        style.setDisplay(Style.Display.FLEX);
+        style.setPosition(Style.Position.ABSOLUTE);
+        style.setBottom(0, Style.Unit.PX);
+        style.setProperty("alignItems", "center");
+
+        thumbnailContainer.add(this.thumbnail);
+        thumbnailContainer.add(this.staticIllustrationThumbnail);
+
+        return thumbnailContainer;
     }
 
     private AdvancedContext2d createCanvas(int width, int height) {

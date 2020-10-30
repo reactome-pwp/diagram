@@ -8,11 +8,8 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import org.reactome.web.diagram.client.StaticIllustrationPanel;
-import org.reactome.web.diagram.client.visualisers.Visualiser;
-import org.reactome.web.diagram.client.visualisers.diagram.DiagramVisualiser;
-import org.reactome.web.diagram.client.visualisers.ehld.SVGVisualiser;
 import org.reactome.web.diagram.data.Context;
-import org.reactome.web.diagram.data.content.Content;
+import org.reactome.web.diagram.data.graph.model.GraphEvent;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.events.ContentLoadedEvent;
 import org.reactome.web.diagram.events.ContentRequestedEvent;
@@ -28,11 +25,19 @@ import org.reactome.web.pwp.model.client.content.ContentClient;
 import org.reactome.web.pwp.model.client.content.ContentClientError;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 
-import java.util.Map;
-
 import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 
 public class StaticIllustrationThumbnail extends FlowPanel implements ContentRequestedHandler, ContentLoadedHandler, GraphObjectSelectedHandler {
+
+    public static final int THUMBNAIL_RESIZE_THRESHOLD_1 = 950;
+    public static final int THUMBNAIL_RESIZE_THRESHOLD_2 = 850;
+    private static final int DEFAULT_WIDTH = 130;
+    private static final int DEFAULT_HEIGHT = 75;
+    private static final int DEFAULT_VIEWPORT_W = THUMBNAIL_RESIZE_THRESHOLD_1 + 300;
+    public static final double FACTOR_07 = 0.7;
+    public static final double FACTOR_05 = 0.5;
+    private boolean isLegendPanelVisible = false;
+    private double viewportWidth;
 
     private EventBus eventBus;
     private Context context;
@@ -50,15 +55,15 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
 
     private String selectionIllustrationURL = null;
     private boolean selectionFigureLoadingInProgress = false;
-    private Map<Content.Type, Visualiser> visualisers;
-    private Visualiser activeVisualiser;
 
-    public StaticIllustrationThumbnail(EventBus eventBus, Map<Content.Type, Visualiser> visualisers, StaticIllustrationPanel staticIllustrationPanel)  {
+    public StaticIllustrationThumbnail(EventBus eventBus) {
+        this.getElement().addClassName("pwp-StaticIllustrationThumbnail");
         this.eventBus = eventBus;
-        this.visualisers = visualisers;
-        this.staticIllustrationPanel = staticIllustrationPanel;
+        this.staticIllustrationPanel = new StaticIllustrationPanel();
 
         initHandlers();
+        resize(DEFAULT_VIEWPORT_W);
+        this.setStyle();
     }
 
     private void initHandlers() {
@@ -67,12 +72,50 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
         eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
     }
 
-    public void addDiagramFigureToThumbnails(){
+    public void diagramRendered(Context context) {
+        if (context == null) return;
+
+        // Analysis, Interactors or Flagging.
+        // Whenever one is showing,  we apply factor to the thumbnails resize
+        int interactors = (context.getContent() == null ? 0 : context.getContent().getNumberOfBurstEntities());
+        isLegendPanelVisible = context.getAnalysisStatus() != null  || context.getFlagTerm() != null || interactors > 0;
+
+        resize(this.viewportWidth);
+    }
+
+    /**
+     * It will be called at DiagramCanvas.setSize()
+     * when viewport threshold is below certain limit.
+     *
+     * @param viewportWidth don't confuse with width to resize.
+     */
+    public void resize(double viewportWidth) {
+        double factor = 1.0;
+
+        // analysis bar is generally bigger than flag and interactors bar, add a correction of 30pixels when this bar is visible.
+        int correction = context != null && context.getAnalysisStatus() != null ? 30 : 0;
+        this.viewportWidth = viewportWidth;
+
+        if(isLegendPanelVisible) {
+            if (viewportWidth <= THUMBNAIL_RESIZE_THRESHOLD_1 + correction &&
+                    viewportWidth >= THUMBNAIL_RESIZE_THRESHOLD_2 + correction) {
+                factor = FACTOR_07;
+            } else if (viewportWidth <= THUMBNAIL_RESIZE_THRESHOLD_2 + correction) {
+                factor = FACTOR_05;
+            }
+        }
+
+        int fW = (int) Math.round(DEFAULT_WIDTH * factor);
+        int fH = (int) Math.round(DEFAULT_HEIGHT * factor);
+
+        this.setWidth(fW + "px");
+        this.setHeight(fH + "px");
+    }
+
+    public void addDiagramFigureToThumbnails() {
         this.loadeddbId = this.context.getContent().getDbId();
 
         resetAllStaticIllustration();
-
-        if (activeVisualiser instanceof SVGVisualiser) return;
 
         diagramFigureLoadingInProgress = true;
         ContentClient.query(loadeddbId, new ContentClientHandler.ObjectLoaded<DatabaseObject>() {
@@ -108,8 +151,6 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
 
         resetStaticIllustrationSelection();
 
-       // if (activeVisualiser instanceof SVGVisualiser) return;
-
         selectionFigureLoadingInProgress = true;
         ContentClient.query(dbId, new ContentClientHandler.ObjectLoaded<DatabaseObject>() {
             @Override
@@ -139,68 +180,75 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
     }
 
     public void createMainStaticIllustrationFlowPanel(final DatabaseObject databaseObject, final String url) {
+        if (url == null || url.isEmpty()) return;
+
+        showStaticThumbnail();
+
         mainStaticIllustrationFlowPanel = new FlowPanel();
         mainStaticIllustrationFlowPanel.setStyleName(RESOURCES.getCSS().mainStaticThumbnails());
-        mainStaticIllustrationFlowPanel.getElement().getStyle().setLeft(getThumbnailCurrentPosition() + 10, Style.Unit.PX);
 
-        if (url != null && !url.isEmpty()) {
-            Image image = new Image(url);
-            image.setUrl(url);
-            image.setTitle("Illustration for " + databaseObject.getDisplayName());
-            image.setAltText("Illustration for " + databaseObject.getDisplayName());
-            image.addClickHandler(clickEvent -> {
-                staticIllustrationPanel.setStaticIllustrationUrl(url);
-                staticIllustrationPanel.toggle();
-//                if (staticIllustrationPanel.getStyleName().contains(StaticIllustrationPanel.RESOURCES.getCSS().panelShown())) {
-//                    staticIllustrationPanel.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelHidden());
-//                } else {
-//                    staticIllustrationPanel.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelShown());
-//                }
-            });
-            mainStaticIllustrationFlowPanel.add(image);
-            mainStaticIllustrationFlowPanel.setVisible(true);
-        }
+        Image image = new Image(url);
+        image.setUrl(url);
+        image.setTitle("Illustration for " + databaseObject.getDisplayName());
+        image.setAltText("Illustration for " + databaseObject.getDisplayName());
+        image.addClickHandler(clickEvent -> {
+            staticIllustrationPanel.setStaticIllustrationUrl(url);
+            staticIllustrationPanel.toggle();
+        });
+        mainStaticIllustrationFlowPanel.add(image);
+        mainStaticIllustrationFlowPanel.setVisible(true);
+
         add(mainStaticIllustrationFlowPanel);
     }
 
     public void createSelectStaticIllustration(final DatabaseObject databaseObject, final String url) {
-        selectStaticIllustrationFlowPanel = new FlowPanel();
+        if (url == null || url.isEmpty()) return;
 
+        showStaticThumbnail();
+
+        selectStaticIllustrationFlowPanel = new FlowPanel();
         selectStaticIllustrationFlowPanel.setStyleName(RESOURCES.getCSS().mainStaticThumbnails());
         selectStaticIllustrationFlowPanel.addStyleName(RESOURCES.getCSS().selectedStaticThumbnails());
-        selectStaticIllustrationFlowPanel.getElement().getStyle().setLeft(getThumbnailCurrentPosition() + 10, Style.Unit.PX);
+        this.getElement().addClassName(RESOURCES.getCSS().selected());
 
-        if (url != null && !url.isEmpty()) {
-            Image image = new Image(url);
-            image.setUrl(url);
-            image.setTitle("Illustration for " + databaseObject.getDisplayName());
-            image.setAltText("Illustration for " + databaseObject.getDisplayName());
-            image.addClickHandler(clickEvent -> {
-                staticIllustrationPanel.setStaticIllustrationUrl(url);
-                staticIllustrationPanel.toggle();
-//                if (staticIllustrationPanel.getStyleName().contains(StaticIllustrationPanel.RESOURCES.getCSS().panelShown())) {
-//                    staticIllustrationPanel.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelHidden());
-//                } else {
-//                    staticIllustrationPanel.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelShown());
-//                }
-            });
-            selectStaticIllustrationFlowPanel.add(image);
-            selectStaticIllustrationFlowPanel.setVisible(true);
-        }
+        Image image = new Image(url);
+        image.setUrl(url);
+        image.setTitle("Illustration for " + databaseObject.getDisplayName());
+        image.setAltText("Illustration for " + databaseObject.getDisplayName());
+        image.addClickHandler(clickEvent -> {
+            staticIllustrationPanel.setStaticIllustrationUrl(url);
+            staticIllustrationPanel.toggle();
+        });
+
+        selectStaticIllustrationFlowPanel.add(image);
+        selectStaticIllustrationFlowPanel.setVisible(true);
+
         add(selectStaticIllustrationFlowPanel);
     }
 
-    private int getThumbnailCurrentPosition() {
-        if (activeVisualiser == null) {
-            return 0;
-        }
-        if (activeVisualiser instanceof DiagramVisualiser) {
-            return ((DiagramVisualiser) activeVisualiser).getDiagramThumbnail().getOffsetWidth();
-        }
-        if (activeVisualiser instanceof SVGVisualiser) {
-            return ((SVGVisualiser) activeVisualiser).getSVGThumbnail().getOffsetWidth();
-        }
-        return 0;
+    private void setStyle() {
+        Style style = this.getElement().getStyle();
+
+        style.setBackgroundColor("white");
+        style.setBorderStyle(Style.BorderStyle.SOLID);
+        style.setBorderWidth(1, Style.Unit.PX);
+        style.setBorderColor("grey");
+        style.setBottom(0, Style.Unit.PX);
+        style.setMarginLeft(5, Style.Unit.PX);
+        style.setProperty("boxSizing", "unset");
+
+        // Invisible by default
+        style.setDisplay(Style.Display.NONE);
+    }
+
+    private void showStaticThumbnail() {
+        Style style = this.getElement().getStyle();
+        style.setDisplay(Style.Display.BLOCK);
+    }
+
+    private void hideStaticThumbnail() {
+        Style style = this.getElement().getStyle();
+        style.setDisplay(Style.Display.NONE);
     }
 
     public void resetStaticIllustrationSelection() {
@@ -214,8 +262,12 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
         selectionIllustrationURL = null;
         selectionFigureLoadingInProgress = false;
 
-        if (selectStaticIllustrationFlowPanel != null) remove(selectStaticIllustrationFlowPanel);
+        if (selectStaticIllustrationFlowPanel != null) {
+            this.getElement().removeClassName(RESOURCES.getCSS().selected());
+            remove(selectStaticIllustrationFlowPanel);
+        }
 
+        hideStaticThumbnail();
     }
 
     public void resetAllStaticIllustration() {
@@ -226,10 +278,14 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
         this.context = event.getContext();
-        activeVisualiser = visualisers.get(context.getContent().getType());
         if (event.getContext().getContent().getType() == DIAGRAM) {
+//            Scheduler.get().scheduleDeferred(this::addDiagramFigureToThumbnails);
             addDiagramFigureToThumbnails();
         }
+    }
+
+    public StaticIllustrationPanel getStaticIllustrationPanel() {
+        return staticIllustrationPanel;
     }
 
     @Override
@@ -238,19 +294,24 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
         this.context = null;
     }
 
+    @Override
+    public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
+
+        if (selectStaticIllustrationFlowPanel !=null) {
+            this.getElement().removeClassName(RESOURCES.getCSS().selected());
+            remove(selectStaticIllustrationFlowPanel);
+        }
+
+        if (event.getGraphObject() != null && event.getGraphObject() instanceof GraphEvent) {
+            addSelectionFigureToThumbnails(event.getGraphObject());
+        }
+    }
+
     public static Resources RESOURCES;
 
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
-    }
-
-    @Override
-    public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
-        if (selectStaticIllustrationFlowPanel !=null) remove(selectStaticIllustrationFlowPanel);
-        if (event.getGraphObject() != null) {
-            addSelectionFigureToThumbnails(event.getGraphObject());
-        }
     }
 
     public interface Resources extends ClientBundle {
@@ -265,6 +326,8 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
         String mainStaticThumbnails();
 
         String selectedStaticThumbnails();
+
+        String selected();
 
     }
 }

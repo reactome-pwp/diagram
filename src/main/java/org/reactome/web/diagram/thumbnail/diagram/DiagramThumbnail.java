@@ -52,6 +52,7 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
     private List<Canvas> canvases = new LinkedList<>();
 
     public DiagramThumbnail(EventBus eventBus) {
+        this.getElement().addClassName("pwp-DiagramThumbnail");
         this.eventBus = eventBus;
 
         this.compartments = this.createCanvas(0, 0);
@@ -293,12 +294,13 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
     }
 
     private void setStyle() {
+        this.getElement().getStyle().setProperty("position", "");
+
         Style style = this.getElement().getStyle();
         style.setBackgroundColor("white");
         style.setBorderStyle(Style.BorderStyle.SOLID);
         style.setBorderWidth(1, Style.Unit.PX);
         style.setBorderColor("grey");
-        style.setPosition(Style.Position.ABSOLUTE);
         style.setBottom(0, Style.Unit.PX);
     }
 
