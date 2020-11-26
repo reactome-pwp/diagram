@@ -33,7 +33,7 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
     private static final int HEIGHT = 75;
     private static final double MIN_LINE_WIDTH = 0.15;
 
-    private EventBus eventBus;
+    private final EventBus eventBus;
 
     private Content content;
     private Coordinate offset;
@@ -50,6 +50,9 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
     private Canvas frame;
 
     private List<Canvas> canvases = new LinkedList<>();
+
+    private int width;
+    private int height;
 
     public DiagramThumbnail(EventBus eventBus) {
         this.getElement().addClassName("pwp-DiagramThumbnail");
@@ -278,6 +281,8 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
     }
 
     private void resize(int w, int h) {
+        width = w;
+        height = h;
         this.setWidth(w + "px");
         this.setHeight(h + "px");
 
@@ -345,5 +350,10 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
             this.to = to.add(this.offset).multiply(this.factor);
             this.drawFrame();
         }
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
     }
 }

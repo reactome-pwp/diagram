@@ -7,22 +7,24 @@
     box-sizing: unset;
 }
 
-.mainStaticThumbnails img {
+.mainStaticThumbnails img, .mainStaticThumbnails svg {
+    width: inherit;
+    height: inherit;
     background-color: white;
 }
 
-.mainStaticThumbnails svg {
-    background-color: white;
-}
 .mainStaticThumbnails:hover{
     cursor: pointer !important;
 }
+
 .mainStaticThumbnails svg a rect {
     box-shadow: 10px 10px #0d57ab ;
 }
+
 .selected {
     border-color:  #4D4DFF !important;
 }
-.selectedStaticThumbnails {
 
+.selectedStaticThumbnails {
+    background-color: white;
 }

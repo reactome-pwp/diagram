@@ -29,4 +29,8 @@ public interface Thumbnail extends IsWidget {
     void setSelectedItem(String id);
 
     void viewportResized(Box visibleArea);
+
+    default int getWidth() {
+        return 0;
+    }
 }

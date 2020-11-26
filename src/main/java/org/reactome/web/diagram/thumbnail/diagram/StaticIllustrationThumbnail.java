@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.thumbnail.diagram;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
@@ -29,15 +30,15 @@ import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 
 public class StaticIllustrationThumbnail extends FlowPanel implements ContentRequestedHandler, ContentLoadedHandler, GraphObjectSelectedHandler {
 
-    public static final int THUMBNAIL_RESIZE_THRESHOLD_1 = 950;
-    public static final int THUMBNAIL_RESIZE_THRESHOLD_2 = 850;
+    public static final int THUMBNAIL_RESIZE_THRESHOLD_1 = 1000;
+    public static final int DIAGRAM_THUMBNAIL_MAX_WIDTH = 155;
     private static final int DEFAULT_WIDTH = 130;
     private static final int DEFAULT_HEIGHT = 75;
     private static final int DEFAULT_VIEWPORT_W = THUMBNAIL_RESIZE_THRESHOLD_1 + 300;
-    public static final double FACTOR_07 = 0.7;
-    public static final double FACTOR_05 = 0.5;
+    public static final double FACTOR_06 = 0.6;
     private boolean isLegendPanelVisible = false;
     private double viewportWidth;
+    private int diagramThumbnailsWidth;
 
     private EventBus eventBus;
     private Context context;
@@ -72,7 +73,7 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
         eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
     }
 
-    public void diagramRendered(Context context) {
+    public void diagramRendered(Context context, int diagramThumbnailWidth) {
         if (context == null) return;
 
         // Analysis, Interactors or Flagging.
@@ -80,36 +81,50 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
         int interactors = (context.getContent() == null ? 0 : context.getContent().getNumberOfBurstEntities());
         isLegendPanelVisible = context.getAnalysisStatus() != null  || context.getFlagTerm() != null || interactors > 0;
 
-        resize(this.viewportWidth);
+        // some cases the thumbnail is too wide leaving very little space for the static thumbnail
+        // the idea is to use the thumbnail as part of the correction while applying the FACTOR
+        resize(this.viewportWidth, diagramThumbnailWidth);
+    }
+
+    public void resize(double viewportWidth, int diagramThumbnailsWidth) {
+        this.viewportWidth = viewportWidth;
+        this.diagramThumbnailsWidth = diagramThumbnailsWidth;
+
+        int fW = (int) Math.round(DEFAULT_WIDTH * getFactor());
+        int fH = (int) Math.round(DEFAULT_HEIGHT * getFactor());
+
+        // adjusting flexing position in case it's too small
+        Element parent = this.getElement().getParentElement();
+        if (parent != null && parent.getStyle() != null) {
+            if (this.viewportWidth <= 800) parent.getStyle().setProperty("alignItems", "unset");
+            else parent.getStyle().setProperty("alignItems", "center");
+        }
+
+        this.setWidth(fW + "px");
+        this.setHeight(fH + "px");
+    }
+
+    private double getFactor() {
+        double factorRet = 1.0;
+
+        if (!isLegendPanelVisible) return factorRet;
+
+        int correction = (diagramThumbnailsWidth >= DIAGRAM_THUMBNAIL_MAX_WIDTH) ? 80 : 0;
+        if (viewportWidth <= THUMBNAIL_RESIZE_THRESHOLD_1 - correction) {
+            factorRet = FACTOR_06;
+        }
+
+        return factorRet;
     }
 
     /**
      * It will be called at DiagramCanvas.setSize()
      * when viewport threshold is below certain limit.
      *
-     * @param viewportWidth don't confuse with width to resize.
+     * @param viewportWidth note: don't confuse it with width to resize.
      */
     public void resize(double viewportWidth) {
-        double factor = 1.0;
-
-        // analysis bar is generally bigger than flag and interactors bar, add a correction of 30pixels when this bar is visible.
-        int correction = context != null && context.getAnalysisStatus() != null ? 30 : 0;
-        this.viewportWidth = viewportWidth;
-
-        if(isLegendPanelVisible) {
-            if (viewportWidth <= THUMBNAIL_RESIZE_THRESHOLD_1 + correction &&
-                    viewportWidth >= THUMBNAIL_RESIZE_THRESHOLD_2 + correction) {
-                factor = FACTOR_07;
-            } else if (viewportWidth <= THUMBNAIL_RESIZE_THRESHOLD_2 + correction) {
-                factor = FACTOR_05;
-            }
-        }
-
-        int fW = (int) Math.round(DEFAULT_WIDTH * factor);
-        int fH = (int) Math.round(DEFAULT_HEIGHT * factor);
-
-        this.setWidth(fW + "px");
-        this.setHeight(fH + "px");
+        resize(viewportWidth, 0);
     }
 
     public void addDiagramFigureToThumbnails() {
@@ -242,13 +257,14 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
     }
 
     private void showStaticThumbnail() {
-        Style style = this.getElement().getStyle();
-        style.setDisplay(Style.Display.BLOCK);
+        this.setVisible(true);
     }
 
     private void hideStaticThumbnail() {
-        Style style = this.getElement().getStyle();
-        style.setDisplay(Style.Display.NONE);
+        if ((mainStaticIllustrationFlowPanel != null && !mainStaticIllustrationFlowPanel.isVisible()) &&
+                (selectStaticIllustrationFlowPanel != null && !selectStaticIllustrationFlowPanel.isVisible())) return;
+
+        this.setVisible(false);
     }
 
     public void resetStaticIllustrationSelection() {
@@ -266,13 +282,12 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
             this.getElement().removeClassName(RESOURCES.getCSS().selected());
             remove(selectStaticIllustrationFlowPanel);
         }
-
-        hideStaticThumbnail();
     }
 
     public void resetAllStaticIllustration() {
         resetStaticIllustrationSelection();
         if (mainStaticIllustrationFlowPanel != null ) remove(mainStaticIllustrationFlowPanel);
+        hideStaticThumbnail();
     }
 
     @Override
@@ -296,7 +311,6 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
 
     @Override
     public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
-
         if (selectStaticIllustrationFlowPanel !=null) {
             this.getElement().removeClassName(RESOURCES.getCSS().selected());
             remove(selectStaticIllustrationFlowPanel);

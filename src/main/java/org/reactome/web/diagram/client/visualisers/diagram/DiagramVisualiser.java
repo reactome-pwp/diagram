@@ -162,7 +162,7 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
         canvas.flag(layoutManager.getFlagged(), context);
         long time = System.currentTimeMillis() - start;
         thumbnail.diagramRendered(context.getContent(), visibleArea);
-        staticIllustrationThumbnail.diagramRendered(context);
+        staticIllustrationThumbnail.diagramRendered(context, thumbnail.getWidth());
 
         this.eventBus.fireEventFromSource(new DiagramRenderedEvent(context.getContent(), visibleArea, items.size(), time), this);
     }
