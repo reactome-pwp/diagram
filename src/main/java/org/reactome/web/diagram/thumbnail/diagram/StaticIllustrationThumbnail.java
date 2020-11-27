@@ -8,6 +8,7 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.client.StaticIllustrationPanel;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.GraphEvent;
@@ -140,7 +141,7 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
                 if (databaseObject instanceof Event) {
                     final Event event = (Event) databaseObject;
                     for (Figure figure : event.getFigure()) {
-                        diagramIllustrationURL = figure.getUrl();
+                        diagramIllustrationURL = DiagramFactory.ILLUSTRATION_SERVER + figure.getUrl();
                         if (selectionIllustrationURL == null && !selectionFigureLoadingInProgress) {
                             createMainStaticIllustrationFlowPanel(databaseObject, diagramIllustrationURL);
                         }
@@ -174,7 +175,7 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
                 if (databaseObject instanceof Event) {
                     final Event event = (Event) databaseObject;
                     for (Figure figure : event.getFigure()) {
-                        selectionIllustrationURL = figure.getUrl();
+                        selectionIllustrationURL = DiagramFactory.ILLUSTRATION_SERVER + figure.getUrl();
                         if (diagramIllustrationURL == null && !diagramFigureLoadingInProgress) {
                             createSelectStaticIllustration(databaseObject, selectionIllustrationURL);
                         }
