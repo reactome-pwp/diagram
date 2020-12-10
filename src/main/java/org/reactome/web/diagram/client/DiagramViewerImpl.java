@@ -31,7 +31,7 @@ import java.util.Set;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-class DiagramViewerImpl extends AbstractDiagramViewer implements
+public class DiagramViewerImpl extends AbstractDiagramViewer implements
         LayoutLoadedHandler, ContentRequestedHandler, ContentLoadedHandler, KeyDownHandler,
         InteractorsLoadedHandler, InteractorsResourceChangedHandler, InteractorsCollapsedHandler, InteractorHoveredHandler,
         InteractorsLayoutUpdatedHandler, InteractorsFilteredHandler, InteractorSelectedHandler,
@@ -42,23 +42,31 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         DiagramProfileChangedHandler, AnalysisProfileChangedHandler,
         FireworksOpenedHandler, FlaggedElementsLoader.Handler {
 
-    private Context context;
-    private final ViewerContainer viewerContainer;
-    private LoaderManager loaderManager;
+    protected Context context;
+    protected final ViewerContainer viewerContainer;
+    protected LoaderManager loaderManager;
     private AnalysisStatus analysisStatus;
     private InteractorsManager interactorsManager;
     private FlaggedElementsLoader flaggedElementsLoader = new FlaggedElementsLoader(this);
-    private Boolean includeInteractors = false;
+    protected Boolean includeInteractors = false;
 
-    DiagramViewerImpl() {
+    public DiagramViewerImpl() {
         super();
-        this.viewerContainer = new ViewerContainer(eventBus);
-        this.loaderManager = new LoaderManager(eventBus);
+        this.viewerContainer = createViewerContainer();
+        this.loaderManager = createLoaderManager();
         AnalysisDataLoader.initialise(eventBus);
         this.interactorsManager = new InteractorsManager(eventBus);
         this.initWidget(this.viewerContainer);
         this.getElement().addClassName("pwp-DiagramViewer"); //IMPORTANT!
     }
+
+	protected ViewerContainer createViewerContainer() {
+		return new ViewerContainer(eventBus);
+	}
+	
+	protected LoaderManager createLoaderManager() {
+		return new LoaderManager(eventBus);
+	}
 
     protected void initialise() {
         if(!initialised) { //initialised is defined in the AbstractDiagramViewer
@@ -112,7 +120,8 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         }
     }
 
-    @Override
+
+	@Override
     public void highlightItem(String stableIdentifier) {
         try {
             GraphObject item = this.context.getContent().getDatabaseObject(stableIdentifier);
@@ -146,7 +155,7 @@ class DiagramViewerImpl extends AbstractDiagramViewer implements
         }
     }
 
-    private void load(String identifier) { //TODO: stay here
+    protected void load(String identifier) { //TODO: stay here
         loaderManager.load(identifier);
     }
 

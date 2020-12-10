@@ -6,10 +6,13 @@ import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.NodeProperties;
+import org.reactome.web.diagram.data.layout.SummaryItem;
+import org.reactome.web.diagram.data.layout.category.ShapeCategory;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
 import org.reactome.web.diagram.profiles.diagram.DiagramColours;
 import org.reactome.web.diagram.renderers.common.ColourProfileType;
+import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.renderers.common.OverlayContext;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.layout.abs.SetAbstractRenderer;
@@ -160,5 +163,33 @@ public class SetRenderer050 extends SetAbstractRenderer {
 
         overlay.getOverlay().drawImage(buffer.getCanvas(), 0, 0); //TODO: Improve this to copy only the region
         buffer.restore();
+    }
+    
+    @Override
+    @SuppressWarnings("Duplicates")
+    public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
+        Node node = (Node) item;
+
+        SummaryItem interactorsSummary = node.getInteractorsSummary();
+        if (interactorsSummary != null) {
+            if (ShapeCategory.isHovered(interactorsSummary.getShape(), pos)) {
+                return new HoveredItem(node.getId(), interactorsSummary);
+            }
+        }
+        if(node.getOtherDecoratorsList() != null) {
+	        List<SummaryItem> otherSummaries = node.getOtherDecoratorsList();
+	        for(SummaryItem summary : otherSummaries) {
+	        	if(summary == null) continue;
+	        	if(ShapeCategory.isHovered(summary.getShape(), pos))
+	        		return new HoveredItem(node.getId(), summary);
+	        }
+        }
+        return super.getHovered(item, pos);
+    }
+    
+    @Override
+    public void highlight(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
+        super.highlight(ctx, item, factor, offset);
+        drawSummaryItems(ctx, (Node) item, factor, offset);
     }
 }

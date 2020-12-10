@@ -88,6 +88,18 @@
 
 }
 
+.buttonsPanel button:disabled {
+	color: grey;
+	background: none grey;
+	width: auto
+}
+
+.buttonsPanel button:hover:disabled {
+    color: grey;
+    background: none grey;
+    width: auto
+}
+
 .unselectable {
     -webkit-touch-callout: none; /* Prevents selection */
     -webkit-user-select: none;

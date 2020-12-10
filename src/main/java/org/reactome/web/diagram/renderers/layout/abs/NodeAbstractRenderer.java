@@ -155,6 +155,11 @@ public abstract class NodeAbstractRenderer extends AbstractRenderer {
         if (interactorsSummary != null) {
             SummaryItemAbstractRenderer.draw(ctx, interactorsSummary, factor, offset);
         }
+        if(node.getOtherDecoratorsList() != null && node.getOtherDecoratorsList().size()>0) {
+        	node.getOtherDecoratorsList().forEach(x -> {
+        		SummaryItemAbstractRenderer.draw(ctx, x, factor, offset);
+        	});
+        }
     }
 
     public abstract void shape(AdvancedContext2d ctx, NodeProperties prop, Boolean needsDashed);

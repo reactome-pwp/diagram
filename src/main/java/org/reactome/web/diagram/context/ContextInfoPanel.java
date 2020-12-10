@@ -18,6 +18,7 @@ import org.reactome.web.diagram.data.graph.model.GraphEntityWithAccessionedSeque
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphSimpleEntity;
 import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.events.AnalysisResetEvent;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,6 +34,8 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
     private Button interactors;
 
     private DeckLayoutPanel container;
+    
+    private MoleculesDialogPanel moleculesDialogPanel;
 
     public ContextInfoPanel(ContextDialogPanel parent, EventBus eventBus, DiagramObject diagramObject, Context context) {
         FlowPanel buttonsPanel = new FlowPanel();
@@ -50,12 +53,12 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
 
         this.container = new DeckLayoutPanel();
         this.container.setStyleName(RESOURCES.getCSS().container());
-        MoleculesDialogPanel moleculesDialogPanel = new MoleculesDialogPanel(eventBus, diagramObject, context.getAnalysisStatus());
+        moleculesDialogPanel = new MoleculesDialogPanel(eventBus, diagramObject, context.getAnalysisStatus());
         PathwaysDialogPanel pathwaysDialogPanel = new PathwaysDialogPanel(eventBus, diagramObject, context);
         InteractorsDialogPanel interactorsDialogPanel = new InteractorsDialogPanel(eventBus, diagramObject, context);
         this.container.add(moleculesDialogPanel);
         this.container.add(pathwaysDialogPanel);
-        this.container.add(interactorsDialogPanel);
+//        this.container.add(interactorsDialogPanel);
         this.container.showWidget(0);
         this.container.setAnimationVertical(true);
         this.container.setAnimationDuration(500);
@@ -105,6 +108,10 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
             this.container.showWidget(2);
             ((InteractorsDialogPanel)this.container.getVisibleWidget()).forceDraw();
         }
+    }
+    
+    public void redraw() {
+    	this.moleculesDialogPanel.reset();
     }
 
     public static Resources RESOURCES;

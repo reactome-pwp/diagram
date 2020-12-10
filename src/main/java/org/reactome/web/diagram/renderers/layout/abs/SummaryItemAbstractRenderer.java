@@ -16,7 +16,8 @@ public abstract class SummaryItemAbstractRenderer {
         TL("#FFFFFF", "#FF8A65", "#B80000"),
         TR("#FFFFFF", "#F44336", "#B71C1C"),
         BR("#FFFFFF", "#ABABAB", "#ABABAB"),
-        BL("#FFFFFF", "#ABABAB", "#ABABAB");
+        BL("#FFFFFF", "#ABABAB", "#ABABAB"),
+    	DG("#FFFFFF", "#B89AE6", "#B89AE6");
 
         private String txtColour;
         private String stdColour;

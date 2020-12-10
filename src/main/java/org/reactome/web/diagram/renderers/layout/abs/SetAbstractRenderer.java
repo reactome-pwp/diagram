@@ -38,6 +38,7 @@ public abstract class SetAbstractRenderer extends NodeAbstractRenderer {
         ctx.stroke();
         innerShape(ctx, prop, node.getNeedDashedBorder());
         ctx.stroke();
+        drawSummaryItems(ctx, (Node)item, factor, offset);
     }
 
     @Override

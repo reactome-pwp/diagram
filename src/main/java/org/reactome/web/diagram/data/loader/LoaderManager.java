@@ -41,14 +41,14 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
     //the "user preferred" interactors resource will be selected
     public static OverlayResource INTERACTORS_RESOURCE = new OverlayResource(DiagramFactory.INTERACTORS_INITIAL_RESOURCE, DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME, OverlayResource.ResourceType.STATIC);
 
-    private LruCache<String, Context> contextMap = new LruCache<>(5);
+    protected LruCache<String, Context> contextMap = new LruCache<>(5);
     private EventBus eventBus;
 
-    private SVGLoader svgLoader;
-    private LayoutLoader layoutLoader;
+    protected SVGLoader svgLoader;
+    public LayoutLoader layoutLoader;
     private GraphLoader graphLoader;
     private InteractorsLoader interactorsLoader;
-    private Context context;
+    protected Context context;
 
     public LoaderManager(EventBus eventBus) {
         this.eventBus = eventBus;

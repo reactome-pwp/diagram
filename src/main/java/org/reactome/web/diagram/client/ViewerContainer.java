@@ -50,13 +50,18 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler, DiagramObjectsFlagRequestHandler,
         GraphObjectSelectedHandler, IllustrationSelectedHandler {
 
-    private EventBus eventBus;
-    private Context context;
+    protected EventBus eventBus;
+    protected Context context;
 
-    private Map<Content.Type, Visualiser> visualisers;
-    private Visualiser activeVisualiser;
+	protected Map<Content.Type, Visualiser> visualisers;
+    protected Visualiser activeVisualiser;
 
     private IllustrationPanel illustration;
+    protected LeftTopLauncherPanel leftTopLauncher;
+    protected RightContainerPanel rightContainerPanel;
+    protected BottomContainerPanel bottomContainerPanel;
+    protected InteractorsControl interactorsControl;
+    protected HideableContainerPanel hideableContainerPanel;
     private Anchor watermark;
 
     public static Timer windowScrolling = new Timer() {
@@ -64,11 +69,18 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         public void run() { /* Nothing here */ }
     };
 
+    protected LeftTopLauncherPanel leftTopLauncherPanel;
+    protected RightTopLauncherPanel rightTopLauncherPanel;
+
     public ViewerContainer(EventBus eventBus) {
         this.getElement().setClassName("pwp-ViewerContainer");
         this.eventBus = eventBus;
 
         visualisers = new HashMap<>();
+        leftTopLauncher = new LeftTopLauncherPanel(eventBus);
+        rightContainerPanel = new RightContainerPanel();
+        bottomContainerPanel = new BottomContainerPanel();
+
 
         initialise();
         initHandlers();
@@ -83,6 +95,8 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         for (Visualiser vis: visualisers.values()) {
             this.add(vis);
         }
+        
+        addExternalVisualisers();
 
         //Set this as default
         activeVisualiser = visualisers.get(DIAGRAM);
@@ -96,7 +110,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.addWatermark();
 
         //Right container
-        RightContainerPanel rightContainerPanel = new RightContainerPanel();
         this.add(rightContainerPanel);
 
         //Control panel
@@ -107,7 +120,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.add(topContainerPanel);
 
         //Bottom Controls container
-        BottomContainerPanel bottomContainerPanel = new BottomContainerPanel();
         this.add(bottomContainerPanel);
 
         //Panel notifying that a filter is present and has affected the display;
@@ -128,7 +140,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         rightContainerPanel.add(new RegulationLegend(eventBus));
 
         //Interactors control panel
-        bottomContainerPanel.add(new InteractorsControl(eventBus));
+        bottomContainerPanel.add(interactorsControl = new InteractorsControl(eventBus));
 
         //Info panel
         if (DiagramFactory.SHOW_INFO) {
@@ -139,18 +151,20 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.add(new NotificationsContainer(eventBus));
 
         //Launcher panels
-        this.add(new LeftTopLauncherPanel(eventBus));
+        this.add(leftTopLauncher);
         this.add(new RightTopLauncherPanel(eventBus));
 
-
         //Settings panel
-        rightContainerPanel.add(new HideableContainerPanel(eventBus));
+        rightContainerPanel.add(hideableContainerPanel = new HideableContainerPanel(eventBus));
 
         //Illustration panel
         this.add(this.illustration = new IllustrationPanel(), 0 , 0);
     }
 
-    public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
+    protected void addExternalVisualisers() {/* Nothing here */}
+
+
+	public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
         return activeVisualiser.highlightGraphObject(graphObject, notify);
     }
 
@@ -373,7 +387,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         eventBus.fireEventFromSource(new FireworksOpenedEvent(context.getContent().getDbId()), this);
     }
 
-    private void setActiveVisualiser(Context context){
+    protected void setActiveVisualiser(Context context){
         if(context != null) {
             Visualiser visualiser = visualisers.get(context.getContent().getType());
             if (visualiser != null && activeVisualiser != visualiser) {
@@ -389,6 +403,10 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         }
     }
 
+    public Context getContext() {
+    	return this.context;
+    }
+    
     public static Resources RESOURCES;
 
     static {

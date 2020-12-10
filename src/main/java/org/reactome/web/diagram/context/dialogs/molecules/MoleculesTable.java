@@ -196,7 +196,12 @@ public class MoleculesTable<T extends GraphPhysicalEntity> extends DataGrid<T> {
     }
 
 
-    public static Resources RESOURCES;
+    public ListDataProvider<T> getDataProvider() {
+		return dataProvider;
+	}
+
+
+	public static Resources RESOURCES;
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();

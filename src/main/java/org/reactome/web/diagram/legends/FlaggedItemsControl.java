@@ -24,14 +24,14 @@ public class FlaggedItemsControl extends LegendPanel implements ClickHandler, Ch
         DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler, DiagramObjectsFlagRequestHandler,
         AnalysisResultLoadedHandler, AnalysisResetHandler {
 
-    private InlineLabel msgLabel;
+    protected InlineLabel msgLabel;
     private Button closeBtn;
-    private Image loadingIcon;
-    private InlineLabel interactorsLabel;
-    private ListBox selector;
+    protected Image loadingIcon;
+    protected InlineLabel interactorsLabel;
+    protected ListBox selector;
 
-    private String term;
-    private Boolean includeInteractors = false;
+    protected String term;
+    protected Boolean includeInteractors = false;
 
     public FlaggedItemsControl(final EventBus eventBus) {
         super(eventBus);

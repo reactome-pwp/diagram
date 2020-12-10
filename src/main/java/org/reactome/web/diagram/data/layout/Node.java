@@ -16,10 +16,17 @@ public interface Node extends NodeCommon {
     Boolean getTrivial();
     
     SummaryItem getInteractorsSummary();
+    
+    void setInteractorsSummary(SummaryItem interactorsSummary);
 
     //Keeping a pointer the the cached object improves performance avoiding searching for it every time it gets toggled
 
     InteractorsSummary getDiagramEntityInteractorsSummary();
 
     void setDiagramEntityInteractorsSummary(InteractorsSummary interactorsSummary);
+    
+    //next to methods added so other decorator can be added based on SummaryItem interface
+    List<SummaryItem> getOtherDecoratorsList();
+    
+    void setOtherDecoratorsList(List<SummaryItem> otherDecoratorsList);
 }

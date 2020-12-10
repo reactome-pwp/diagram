@@ -20,4 +20,8 @@ public interface SummaryItem {
     void setHit(Boolean hit);
 
     Boolean getHit();
+    
+    void setLabel(String label);
+    
+    String getLabel();
 }

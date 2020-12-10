@@ -28,6 +28,8 @@ import org.reactome.web.diagram.handlers.GraphObjectSelectedHandler;
  */
 public class ContextDialogPanel extends DialogBox implements ClickHandler, GraphObjectSelectedHandler {
 
+	private EventBus eventBus;
+	
     private DiagramObject item;
     private GraphObject graphObject;
     private Context context;
@@ -39,6 +41,8 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
     private Button changeLabels;
     private Button pin;
     private Button close;
+    
+    private ContextInfoPanel contextInfoPanel;
 
     public ContextDialogPanel(EventBus eventBus, DiagramObject item, Context context, Widget canvas) {
         super();
@@ -46,6 +50,7 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
         setModal(false);
         setStyleName(RESOURCES.getCSS().popup());
 
+        this.eventBus = eventBus;
         this.item = item;
         this.graphObject = item.getGraphObject();
         this.context = context;
@@ -55,7 +60,7 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
         fp.add(this.changeLabels = new PwpButton("Show/hide Identifiers", RESOURCES.getCSS().labels(), this));
         fp.add(this.pin = new PwpButton("Keeps the panel visible", RESOURCES.getCSS().pin(), this));
         fp.add(this.close = new PwpButton("Close", RESOURCES.getCSS().close(), this));
-        fp.add(new ContextInfoPanel(this, eventBus, item, context));
+        fp.add(contextInfoPanel = new ContextInfoPanel(this, eventBus, item, context));
 
         setTitlePanel();
         setWidget(fp);
@@ -111,6 +116,10 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
         }else {
             pin.setStyleName(RESOURCES.getCSS().pin());
         }
+    }
+    
+    public void redraw() {
+    	this.contextInfoPanel.redraw();
     }
 
     public void restore(){
@@ -229,5 +238,6 @@ public class ContextDialogPanel extends DialogBox implements ClickHandler, Graph
         String pinActive();
 
         String close();
+        
     }
 }

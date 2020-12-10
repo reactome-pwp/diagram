@@ -20,10 +20,10 @@ public class LayoutLoader implements RequestCallback {
     public static String SUFFIX = ".json?v=" + LoaderManager.version;
 
 
-    private Handler handler;
-    private Request request;
+    protected Handler handler;
+    protected Request request;
 
-    LayoutLoader(Handler handler) {
+    protected LayoutLoader(Handler handler) {
         this.handler = handler;
     }
 
