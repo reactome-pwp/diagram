@@ -44,11 +44,10 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
     private EventBus eventBus;
     private Context context;
 
-    private Long loadeddbId;
     private FlowPanel mainStaticIllustrationFlowPanel;
     private FlowPanel selectStaticIllustrationFlowPanel;
 
-    private StaticIllustrationPanel staticIllustrationPanel;
+    private final StaticIllustrationPanel staticIllustrationPanel;
     private OMSVGSVGElement svg;
 
     // TODO set them to NULL once a diagarm changed
@@ -57,6 +56,8 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
 
     private String selectionIllustrationURL = null;
     private boolean selectionFigureLoadingInProgress = false;
+
+    private boolean mainStaticIllustrationAvailable = false;
 
     public StaticIllustrationThumbnail(EventBus eventBus) {
         this.getElement().addClassName("pwp-StaticIllustrationThumbnail");
@@ -129,12 +130,10 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
     }
 
     public void addDiagramFigureToThumbnails() {
-        this.loadeddbId = this.context.getContent().getDbId();
-
         resetAllStaticIllustration();
 
         diagramFigureLoadingInProgress = true;
-        ContentClient.query(loadeddbId, new ContentClientHandler.ObjectLoaded<DatabaseObject>() {
+        ContentClient.query(this.context.getContent().getDbId(), new ContentClientHandler.ObjectLoaded<DatabaseObject>() {
             @Override
             public void onObjectLoaded(DatabaseObject databaseObject) {
                 diagramFigureLoadingInProgress = false;
@@ -196,7 +195,12 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
     }
 
     public void createMainStaticIllustrationFlowPanel(final DatabaseObject databaseObject, final String url) {
-        if (url == null || url.isEmpty()) return;
+        if (url == null || url.isEmpty()) {
+            mainStaticIllustrationAvailable = false;
+            return;
+        }
+
+        mainStaticIllustrationAvailable = true;
 
         showStaticThumbnail();
 
@@ -281,8 +285,12 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
 
         if (selectStaticIllustrationFlowPanel != null) {
             this.getElement().removeClassName(RESOURCES.getCSS().selected());
-            remove(selectStaticIllustrationFlowPanel);
+            selectStaticIllustrationFlowPanel.setVisible(false);
         }
+
+        // Hide component when main Pathway (hasDiagram:true) doesn't have any static associated.
+        if (!mainStaticIllustrationAvailable) this.setVisible(false);
+
     }
 
     public void resetAllStaticIllustration() {
@@ -294,8 +302,8 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
     @Override
     public void onContentLoaded(ContentLoadedEvent event) {
         this.context = event.getContext();
+        mainStaticIllustrationAvailable = false;
         if (event.getContext().getContent().getType() == DIAGRAM) {
-//            Scheduler.get().scheduleDeferred(this::addDiagramFigureToThumbnails);
             addDiagramFigureToThumbnails();
         }
     }
@@ -312,9 +320,12 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
 
     @Override
     public void onGraphObjectSelected(GraphObjectSelectedEvent event) {
-        if (selectStaticIllustrationFlowPanel !=null) {
+        if (selectStaticIllustrationFlowPanel != null) {
             this.getElement().removeClassName(RESOURCES.getCSS().selected());
             remove(selectStaticIllustrationFlowPanel);
+
+            // Hide component when main Pathway (hasDiagram:true) doesn't have any static associated.
+            if (!mainStaticIllustrationAvailable) this.setVisible(false);
         }
 
         if (event.getGraphObject() != null && event.getGraphObject() instanceof GraphEvent) {
