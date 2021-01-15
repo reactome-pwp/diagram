@@ -162,20 +162,17 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
         canvas.flag(layoutManager.getFlagged(), context);
         long time = System.currentTimeMillis() - start;
         thumbnail.diagramRendered(context.getContent(), visibleArea);
-        staticIllustrationThumbnail.diagramRendered(context, thumbnail.getWidth());
+        staticIllustrationThumbnail.diagramRendered(context);
 
         this.eventBus.fireEventFromSource(new DiagramRenderedEvent(context.getContent(), visibleArea, items.size(), time), this);
     }
 
     private void drawInteractors(Box visibleArea) {
         if (context == null) return;
-//        long start = System.currentTimeMillis();
         String resource = interactorsManager.getCurrentResource();
         Collection<DiagramInteractor> items = context.getInteractors().getVisibleInteractors(resource, visibleArea);
         canvas.renderInteractors(items, context);
         canvas.highlightInteractor(interactorsManager.getHovered(), context);
-//        long time = System.currentTimeMillis() - start;
-//        this.eventBus.fireEventFromSource(new DiagramRenderedEvent(context.getContent(), visibleArea, items.size(), time), this);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.reactome.web.diagram.thumbnail.diagram;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.EventBus;
@@ -25,21 +26,19 @@ import org.reactome.web.pwp.model.client.classes.Figure;
 import org.reactome.web.pwp.model.client.common.ContentClientHandler;
 import org.reactome.web.pwp.model.client.content.ContentClient;
 import org.reactome.web.pwp.model.client.content.ContentClientError;
-import org.vectomatic.dom.svg.OMSVGSVGElement;
 
 import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 
 public class StaticIllustrationThumbnail extends FlowPanel implements ContentRequestedHandler, ContentLoadedHandler, GraphObjectSelectedHandler {
 
-    public static final int THUMBNAIL_RESIZE_THRESHOLD_1 = 1000;
-    public static final int DIAGRAM_THUMBNAIL_MAX_WIDTH = 155;
+    public static final int THUMBNAIL_RESIZE_THRESHOLD = 1000;
     private static final int DEFAULT_WIDTH = 130;
     private static final int DEFAULT_HEIGHT = 75;
-    private static final int DEFAULT_VIEWPORT_W = THUMBNAIL_RESIZE_THRESHOLD_1 + 300;
-    public static final double FACTOR_06 = 0.6;
+    private static final int DEFAULT_VIEWPORT_W = THUMBNAIL_RESIZE_THRESHOLD + 300;
+    public static final double FACTOR = 0.6;
+
     private boolean isLegendPanelVisible = false;
     private double viewportWidth;
-    private int diagramThumbnailsWidth;
 
     private EventBus eventBus;
     private Context context;
@@ -48,7 +47,6 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
     private FlowPanel selectStaticIllustrationFlowPanel;
 
     private final StaticIllustrationPanel staticIllustrationPanel;
-    private OMSVGSVGElement svg;
 
     // TODO set them to NULL once a diagarm changed
     private String diagramIllustrationURL = null;
@@ -75,7 +73,7 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
         eventBus.addHandler(GraphObjectSelectedEvent.TYPE, this);
     }
 
-    public void diagramRendered(Context context, int diagramThumbnailWidth) {
+    public void diagramRendered(Context context) {
         if (context == null) return;
 
         // Analysis, Interactors or Flagging.
@@ -85,12 +83,28 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
 
         // some cases the thumbnail is too wide leaving very little space for the static thumbnail
         // the idea is to use the thumbnail as part of the correction while applying the FACTOR
-        resize(this.viewportWidth, diagramThumbnailWidth);
+        resize(this.viewportWidth);
     }
 
-    public void resize(double viewportWidth, int diagramThumbnailsWidth) {
+    /**
+     * Apply factor when legend panel is visible and viewport exceeds threshold
+     * @return factor number
+     */
+    private double getFactor() {
+        double factorRet = 1.0;
+        if (!isLegendPanelVisible) return factorRet;
+        if (viewportWidth <= THUMBNAIL_RESIZE_THRESHOLD) factorRet = FACTOR;
+        return factorRet;
+    }
+
+    /**
+     * It will be called at DiagramCanvas.setSize()
+     * when viewport threshold is below certain limit.
+     *
+     * @param viewportWidth note: don't confuse it with width to resize.
+     */
+    public void resize(double viewportWidth) {
         this.viewportWidth = viewportWidth;
-        this.diagramThumbnailsWidth = diagramThumbnailsWidth;
 
         int fW = (int) Math.round(DEFAULT_WIDTH * getFactor());
         int fH = (int) Math.round(DEFAULT_HEIGHT * getFactor());
@@ -104,29 +118,6 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
 
         this.setWidth(fW + "px");
         this.setHeight(fH + "px");
-    }
-
-    private double getFactor() {
-        double factorRet = 1.0;
-
-        if (!isLegendPanelVisible) return factorRet;
-
-        int correction = (diagramThumbnailsWidth >= DIAGRAM_THUMBNAIL_MAX_WIDTH) ? 80 : 0;
-        if (viewportWidth <= THUMBNAIL_RESIZE_THRESHOLD_1 - correction) {
-            factorRet = FACTOR_06;
-        }
-
-        return factorRet;
-    }
-
-    /**
-     * It will be called at DiagramCanvas.setSize()
-     * when viewport threshold is below certain limit.
-     *
-     * @param viewportWidth note: don't confuse it with width to resize.
-     */
-    public void resize(double viewportWidth) {
-        resize(viewportWidth, 0);
     }
 
     public void addDiagramFigureToThumbnails() {
@@ -329,7 +320,11 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
         }
 
         if (event.getGraphObject() != null && event.getGraphObject() instanceof GraphEvent) {
-            addSelectionFigureToThumbnails(event.getGraphObject());
+            Scheduler.get().scheduleFixedPeriod(() -> {
+                if (!diagramFigureLoadingInProgress) return false;
+                addSelectionFigureToThumbnails(event.getGraphObject());
+                return true;
+            }, 2500);
         }
     }
 
