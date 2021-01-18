@@ -20,6 +20,7 @@ import org.reactome.web.diagram.events.GraphObjectSelectedEvent;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
 import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.handlers.GraphObjectSelectedHandler;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.pwp.model.client.classes.DatabaseObject;
 import org.reactome.web.pwp.model.client.classes.Event;
 import org.reactome.web.pwp.model.client.classes.Figure;
@@ -123,6 +124,7 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
     public void addDiagramFigureToThumbnails() {
         resetAllStaticIllustration();
 
+        Console.info("TEST HERE");
         diagramFigureLoadingInProgress = true;
         ContentClient.query(this.context.getContent().getDbId(), new ContentClientHandler.ObjectLoaded<DatabaseObject>() {
             @Override
@@ -320,11 +322,15 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
         }
 
         if (event.getGraphObject() != null && event.getGraphObject() instanceof GraphEvent) {
-            Scheduler.get().scheduleFixedPeriod(() -> {
-                if (!diagramFigureLoadingInProgress) return false;
+            if (DiagramFactory.WIDGET_JS) {
+                Scheduler.get().scheduleFixedPeriod(() -> {
+                    if(diagramFigureLoadingInProgress) return true; // will try again
+                    addSelectionFigureToThumbnails(event.getGraphObject());
+                    return false;
+                }, 2500);
+            } else {
                 addSelectionFigureToThumbnails(event.getGraphObject());
-                return true;
-            }, 2500);
+            }
         }
     }
 
