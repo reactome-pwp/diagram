@@ -43,7 +43,10 @@
     position: absolute;
     top: 7px;
     right: 10px;
-    border-radius: 12px;
+    border-radius: 18px;
+    width: 36px;
+    height: 36px;
+    background-size: 36px 36px;
 
     -webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 0 rgba(50, 50, 50, 0.75); /* Firefox 3.5 - 3.6 */
@@ -52,8 +55,16 @@
 
 @sprite .close:hover {
     gwt-image:'closeHovered';
+    border-radius: 18px;
+    width: 36px;
+    height: 36px;
+    background-size: 36px 36px;
 }
 
 @sprite .close:active:hover {
     gwt-image: 'closeClicked';
+    border-radius: 18px;
+    width: 36px;
+    height: 36px;
+    background-size: 36px 36px;
 }

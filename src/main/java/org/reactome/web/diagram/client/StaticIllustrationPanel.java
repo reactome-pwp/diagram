@@ -6,40 +6,75 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import org.reactome.web.diagram.common.PwpButton;
 
+
 /**
  * This panel is displayed when the user selects one of the static illustrations (figures)
- *
- * @author Antonio Fabregat <fabregat@ebi.ac.uk>
- * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-class IllustrationPanel extends AbsolutePanel implements RequiresResize, ClickHandler {
+public class StaticIllustrationPanel extends AbsolutePanel implements RequiresResize, ClickHandler {
 
     private ScrollPanel container;
 
-    public IllustrationPanel(){
+    public StaticIllustrationPanel(){
         setStyleName(RESOURCES.getCSS().panelHidden());
         this.getElement().addClassName("pwp-DiagramCanvas");
         container = new ScrollPanel();
         container.setStyleName(RESOURCES.getCSS().container());
-        add(container);
     }
 
-    public void setUrl(String url) {
-        setStyleName(RESOURCES.getCSS().panelShown());
+    public void create(String url) {
         this.getElement().addClassName("pwp-DiagramCanvas");
         container.clear();
         Image img = new Image(url);
         img.getElement().addClassName("pwp-DiagramCanvas");
         container.add(img);
+        add(container);
         add(new PwpButton("Close", RESOURCES.getCSS().close(), this));
         onResize();
+    }
+
+    public void setStaticIllustrationUrl(String url){
+        this.clear();
+        create(url);
+//        setSvg(null);
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+//        svg = null;
+    }
+
+//    public void setSvg(OMSVGSVGElement svg) {
+//        if(svg == null) {
+//            return;
+//        }
+//
+//        this.svg = svg;
+//        Element e  = this.container.getElement();
+//        if(e.getChildCount()>1) {
+//            e.replaceChild(svg.getElement(), e.getLastChild());
+//        } else {
+//            e.appendChild(svg.getElement());
+//        }
+//
+//        this.getElement().addClassName("pwp-DiagramCanvas");
+//        add(new PwpButton("Close", RESOURCES.getCSS().close(), this));
+//        onResize();
+//    }
+
+
+    public void toggle(){
+        if (this.getStyleName().contains(StaticIllustrationPanel.RESOURCES.getCSS().panelShown())) {
+            this.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelHidden());
+        } else {
+            this.setStyleName(StaticIllustrationPanel.RESOURCES.getCSS().panelShown());
+        }
     }
 
     @Override
@@ -56,14 +91,7 @@ class IllustrationPanel extends AbsolutePanel implements RequiresResize, ClickHa
     public void reset(){
         setStyleName(RESOURCES.getCSS().panelHidden());
         this.getElement().addClassName("pwp-DiagramCanvas");
-        (new Timer() {
-            @Override
-            public void run() {
-                container.clear();
-            }
-        }).schedule(300);
     }
-
 
     public static Resources RESOURCES;
     static {
@@ -85,12 +113,12 @@ class IllustrationPanel extends AbsolutePanel implements RequiresResize, ClickHa
         ImageResource closeNormal();
     }
 
-    @CssResource.ImportedWithPrefix("diagram-IllustrationsPanel")
+    @CssResource.ImportedWithPrefix("diagram-StaticIllustrationsPanel")
     public interface ResourceCSS extends CssResource {
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String CSS = "org/reactome/web/diagram/client/IllustrationsPanel.css";
+        String CSS = "org/reactome/web/diagram/client/StaticIllustrationsPanel.css";
 
         String panelHidden();
 

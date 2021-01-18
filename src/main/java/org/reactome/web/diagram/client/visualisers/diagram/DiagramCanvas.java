@@ -45,6 +45,7 @@ import org.reactome.web.diagram.renderers.layout.abs.ProteinAbstractRenderer;
 import org.reactome.web.diagram.renderers.layout.abs.SummaryItemAbstractRenderer;
 import org.reactome.web.diagram.thumbnail.Thumbnail;
 import org.reactome.web.diagram.thumbnail.diagram.DiagramThumbnail;
+import org.reactome.web.diagram.thumbnail.diagram.StaticIllustrationThumbnail;
 import org.reactome.web.diagram.tooltips.TooltipContainer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 import org.reactome.web.diagram.util.Console;
@@ -60,6 +61,7 @@ import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 
 /**
@@ -104,14 +106,16 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
     private AdvancedContext2d interactors;
 
     private AdvancedContext2d buffer;
-    
+
     private TooltipContainer tooltipContainer;
     private Thumbnail thumbnail;
     private List<Canvas> canvases = new LinkedList<>();
 
     private int column = 0;
     private Double hoveredExpression = null;
-    
+
+    private StaticIllustrationThumbnail staticIllustrationThumbnail;
+
     public DiagramCanvas(EventBus eventBus) {
         this.getElement().addClassName("pwp-DiagramCanvas");
         this.eventBus = eventBus;
@@ -128,6 +132,8 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         InteractorColours.initialise(eventBus);
 
         this.thumbnail = new DiagramThumbnail(eventBus);
+
+        this.staticIllustrationThumbnail = new StaticIllustrationThumbnail(eventBus);
 
         this.initHandlers();
     }
@@ -150,6 +156,10 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
 
     public Thumbnail getThumbnail() {
         return thumbnail;
+    }
+
+    public StaticIllustrationThumbnail getStaticIllustrationThumbnail() {
+        return staticIllustrationThumbnail;
     }
 
     public void halo(Collection<DiagramObject> items, Context context) {
@@ -263,6 +273,10 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         if(tooltipContainer!=null) {
             tooltipContainer.setWidth(width);
             tooltipContainer.setHeight(height);
+        }
+
+        if (staticIllustrationThumbnail != null) {
+            staticIllustrationThumbnail.resize(width);
         }
     }
 
@@ -492,11 +506,11 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
             }
         }
 
-        eventBus.fireEventFromSource(new RenderOtherDataEvent(rendererManager, 
-        													  items, 
+        eventBus.fireEventFromSource(new RenderOtherDataEvent(rendererManager,
+        													  items,
         													  entities,
         													  new OverlayContext(this.overlay, this.buffer)), this);
-        
+
         cleanCanvas(this.buffer); //It could have been used for the expression overlay (it is fastest cleaning it once)
 
         //Reactions are rendered after all the other types. They have special characteristics.
@@ -697,15 +711,32 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         this.tooltipContainer = createToolTipContainer(width, height);
 
         this.buffer = createCanvas(width, height);  //Top-level canvas (mouse ctrl and buffer)
-        
+
         //Set the LineCap to round to avoid discontinuities in the reaction lines
         //NOTE: Setting the LineJoin cannot work as we draw every line segment separately
         this.reactions.setLineCap(Context2d.LineCap.ROUND);
         this.reactionsHighlight.setLineCap(Context2d.LineCap.ROUND);
         this.reactionsSelection.setLineCap(Context2d.LineCap.ROUND);
 
-        //Thumbnail
-        this.add(this.thumbnail);
+        //Thumbnails
+        this.add(createThumbnailsContainer());
+
+        this.add(staticIllustrationThumbnail.getStaticIllustrationPanel());
+    }
+
+    private FlowPanel createThumbnailsContainer() {
+        FlowPanel thumbnailContainer = new FlowPanel();
+        thumbnailContainer.getElement().addClassName("pwp-ThumbnailContainer");
+        Style style = thumbnailContainer.getElement().getStyle();
+        style.setDisplay(Style.Display.FLEX);
+        style.setPosition(Style.Position.ABSOLUTE);
+        style.setBottom(0, Style.Unit.PX);
+        style.setProperty("alignItems", "center");
+
+        thumbnailContainer.add(this.thumbnail);
+        thumbnailContainer.add(this.staticIllustrationThumbnail);
+
+        return thumbnailContainer;
     }
 
     private AdvancedContext2d createCanvas(int width, int height) {

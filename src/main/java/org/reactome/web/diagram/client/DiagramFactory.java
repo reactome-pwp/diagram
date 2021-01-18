@@ -37,6 +37,9 @@ public abstract class DiagramFactory {
         creator = creator1;
     }
 
+    // To be set to true in Widgets
+    public static boolean WIDGET_JS = false;
+
     //Added for testing
     public static DiagramViewer createDiagramViewer() {
         return creator.createDiagramView();

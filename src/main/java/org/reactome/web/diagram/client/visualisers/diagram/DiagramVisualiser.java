@@ -26,6 +26,7 @@ import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.renderers.common.HoveredItem;
 import org.reactome.web.diagram.thumbnail.Thumbnail;
+import org.reactome.web.diagram.thumbnail.diagram.StaticIllustrationThumbnail;
 import org.reactome.web.diagram.util.ViewportUtils;
 import org.reactome.web.diagram.util.chemical.ChemicalImageLoader;
 import org.reactome.web.diagram.util.pdbe.PDBeLoader;
@@ -52,6 +53,7 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
 
     private final DiagramCanvas canvas; //Canvas only created once and reused every time a new diagram is loaded
     private Thumbnail thumbnail;
+    private StaticIllustrationThumbnail staticIllustrationThumbnail;
     private final DiagramManager diagramManager;
 
     private Context context;
@@ -99,6 +101,7 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
 
             canvas.initialise();
             thumbnail = canvas.getThumbnail();
+            staticIllustrationThumbnail = canvas.getStaticIllustrationThumbnail();
 
             this.initHandlers();
             AnimationScheduler.get().requestAnimationFrame(new AnimationScheduler.AnimationCallback() {
@@ -159,18 +162,17 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
         canvas.flag(layoutManager.getFlagged(), context);
         long time = System.currentTimeMillis() - start;
         thumbnail.diagramRendered(context.getContent(), visibleArea);
+        staticIllustrationThumbnail.diagramRendered(context);
+
         this.eventBus.fireEventFromSource(new DiagramRenderedEvent(context.getContent(), visibleArea, items.size(), time), this);
     }
 
     private void drawInteractors(Box visibleArea) {
         if (context == null) return;
-//        long start = System.currentTimeMillis();
         String resource = interactorsManager.getCurrentResource();
         Collection<DiagramInteractor> items = context.getInteractors().getVisibleInteractors(resource, visibleArea);
         canvas.renderInteractors(items, context);
         canvas.highlightInteractor(interactorsManager.getHovered(), context);
-//        long time = System.currentTimeMillis() - start;
-//        this.eventBus.fireEventFromSource(new DiagramRenderedEvent(context.getContent(), visibleArea, items.size(), time), this);
     }
 
     @Override

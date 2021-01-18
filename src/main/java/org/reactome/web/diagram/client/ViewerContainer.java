@@ -48,7 +48,7 @@ import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         CanvasExportRequestedHandler, ControlActionHandler,
         DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler, DiagramObjectsFlagRequestHandler,
-        GraphObjectSelectedHandler, IllustrationSelectedHandler {
+        GraphObjectSelectedHandler {
 
     protected EventBus eventBus;
     protected Context context;
@@ -56,7 +56,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 	protected Map<Content.Type, Visualiser> visualisers;
     protected Visualiser activeVisualiser;
 
-    private IllustrationPanel illustration;
     protected LeftTopLauncherPanel leftTopLauncher;
     protected RightContainerPanel rightContainerPanel;
     protected BottomContainerPanel bottomContainerPanel;
@@ -95,7 +94,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         for (Visualiser vis: visualisers.values()) {
             this.add(vis);
         }
-        
+
         addExternalVisualisers();
 
         //Set this as default
@@ -157,8 +156,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         //Settings panel
         rightContainerPanel.add(hideableContainerPanel = new HideableContainerPanel(eventBus));
 
-        //Illustration panel
-        this.add(this.illustration = new IllustrationPanel(), 0 , 0);
     }
 
     protected void addExternalVisualisers() {/* Nothing here */}
@@ -184,7 +181,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         activeVisualiser.resetSelection(false);
         activeVisualiser.resetHighlight(false);
         activeVisualiser.contentRequested();
-        resetIllustration();
         setWatermarkVisible(false);
         context = null;
     }
@@ -259,11 +255,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     @Override
-    public void onIllustrationSelected(IllustrationSelectedEvent event) {
-        this.setIllustration(event.getUrl());
-    }
-
-    @Override
     public void onResize() {
         final int width = this.getOffsetWidth();
         final int height = this.getOffsetHeight();
@@ -278,12 +269,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     public boolean selectItem(GraphObject item, boolean notify) {
-        resetIllustration();
         return activeVisualiser.selectGraphObject(item, notify);
-    }
-
-    public void setIllustration(String url){
-        this.illustration.setUrl(url);
     }
 
     public boolean resetHighlight(boolean notify) {
@@ -292,12 +278,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
     public boolean resetSelection(boolean notify) {
         return activeVisualiser.resetSelection(notify);
-    }
-
-    public void resetIllustration(){
-        if(this.illustration!=null) {
-            this.illustration.reset();
-        }
     }
 
     public void resetAnalysis() {
@@ -378,8 +358,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
         eventBus.addHandler(CanvasExportRequestedEvent.TYPE, this);
 
-        eventBus.addHandler(IllustrationSelectedEvent.TYPE, this);
-
         eventBus.addHandler(ControlActionEvent.TYPE, this);
     }
 
@@ -406,7 +384,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     public Context getContext() {
     	return this.context;
     }
-    
+
     public static Resources RESOURCES;
 
     static {

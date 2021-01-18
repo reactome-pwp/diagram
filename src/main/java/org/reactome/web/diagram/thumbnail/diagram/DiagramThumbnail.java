@@ -6,6 +6,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.content.Content;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.layout.Compartment;
@@ -32,8 +33,9 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
     private static final int FRAME = 26;
     private static final int HEIGHT = 75;
     private static final double MIN_LINE_WIDTH = 0.15;
+    private static final int MAX_WIDTH_THRESHOLD = 160;
 
-    private EventBus eventBus;
+    private final EventBus eventBus;
 
     private Content content;
     private Coordinate offset;
@@ -51,7 +53,11 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
 
     private List<Canvas> canvases = new LinkedList<>();
 
+    private int width;
+    private int height;
+
     public DiagramThumbnail(EventBus eventBus) {
+        this.getElement().addClassName("pwp-DiagramThumbnail");
         this.eventBus = eventBus;
 
         this.compartments = this.createCanvas(0, 0);
@@ -263,10 +269,17 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
 
         this.factor = HEIGHT / (this.content.getHeight() + FRAME);
         int width = (int) Math.ceil((this.content.getWidth() + FRAME) * this.factor);
+
+        if (DiagramFactory.WIDGET_JS && width >= MAX_WIDTH_THRESHOLD) {
+            // Adjusting DiagramThumbnail width in Widgets.
+            this.factor -= 0.01;
+            width = (int) Math.ceil((this.content.getWidth() + FRAME) * this.factor);
+        }
+
         this.resize(width, HEIGHT);
 
         this.offset = CoordinateFactory.get(FRAME / 2.0 - content.getMinX(), FRAME / 2.0 - content.getMinY());
-        this.items.getContext2d().setLineWidth(this.factor < MIN_LINE_WIDTH ? MIN_LINE_WIDTH : this.factor);
+        this.items.getContext2d().setLineWidth(Math.max(this.factor, MIN_LINE_WIDTH));
 
         this.setVisible(true);
         this.setVisibleArea(visibleArea);
@@ -277,6 +290,8 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
     }
 
     private void resize(int w, int h) {
+        width = w;
+        height = h;
         this.setWidth(w + "px");
         this.setHeight(h + "px");
 
@@ -293,12 +308,13 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
     }
 
     private void setStyle() {
+        this.getElement().getStyle().setProperty("position", "");
+
         Style style = this.getElement().getStyle();
         style.setBackgroundColor("white");
         style.setBorderStyle(Style.BorderStyle.SOLID);
         style.setBorderWidth(1, Style.Unit.PX);
         style.setBorderColor("grey");
-        style.setPosition(Style.Position.ABSOLUTE);
         style.setBottom(0, Style.Unit.PX);
     }
 
@@ -343,5 +359,10 @@ public class DiagramThumbnail extends AbsolutePanel implements Thumbnail,
             this.to = to.add(this.offset).multiply(this.factor);
             this.drawFrame();
         }
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
     }
 }
