@@ -262,6 +262,13 @@ public class DiagramVisualiser extends SimplePanel implements Visualiser,
     public void onAnalysisProfileChanged(AnalysisProfileChangedEvent event) {
         forceDraw = true;
     }
+    
+    /**
+     * Helper method so extensions of the diagram project have a way to force update after adding render information.
+     */
+    public void forceDraw() {
+    	forceDraw = true;
+    }
 
     @Override
     public void exportView() {
