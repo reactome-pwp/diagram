@@ -20,7 +20,6 @@ import org.reactome.web.diagram.events.GraphObjectSelectedEvent;
 import org.reactome.web.diagram.handlers.ContentLoadedHandler;
 import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.handlers.GraphObjectSelectedHandler;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.pwp.model.client.classes.DatabaseObject;
 import org.reactome.web.pwp.model.client.classes.Event;
 import org.reactome.web.pwp.model.client.classes.Figure;
@@ -124,7 +123,6 @@ public class StaticIllustrationThumbnail extends FlowPanel implements ContentReq
     public void addDiagramFigureToThumbnails() {
         resetAllStaticIllustration();
 
-        Console.info("TEST HERE");
         diagramFigureLoadingInProgress = true;
         ContentClient.query(this.context.getContent().getDbId(), new ContentClientHandler.ObjectLoaded<DatabaseObject>() {
             @Override
