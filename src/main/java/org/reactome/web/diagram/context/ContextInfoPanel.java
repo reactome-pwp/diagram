@@ -18,7 +18,6 @@ import org.reactome.web.diagram.data.graph.model.GraphEntityWithAccessionedSeque
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphSimpleEntity;
 import org.reactome.web.diagram.data.layout.DiagramObject;
-import org.reactome.web.diagram.events.AnalysisResetEvent;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -58,7 +57,7 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
         InteractorsDialogPanel interactorsDialogPanel = new InteractorsDialogPanel(eventBus, diagramObject, context);
         this.container.add(moleculesDialogPanel);
         this.container.add(pathwaysDialogPanel);
-//        this.container.add(interactorsDialogPanel);
+        this.container.add(interactorsDialogPanel);
         this.container.showWidget(0);
         this.container.setAnimationVertical(true);
         this.container.setAnimationDuration(500);
