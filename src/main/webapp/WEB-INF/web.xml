@@ -82,7 +82,7 @@
         <servlet-class>org.reactome.server.utils.proxy.StaticFilesProxyServlet</servlet-class>
         <init-param>
             <param-name>proxyFilePath</param-name>
-            <param-value>/Users/brunsont/Documents/reactome_web/fireworks/fireworks_layouts</param-value>
+            <param-value>/Users/reactome/Reactome/fireworks/static</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
@@ -97,7 +97,7 @@
         <servlet-class>org.reactome.server.utils.proxy.StaticFilesProxyServlet</servlet-class>
         <init-param>
             <param-name>proxyFilePath</param-name>
-            <param-value>/Users/brunsont/Documents/reactome_web/diagram/diagram-converter</param-value>
+            <param-value>/Users/reactome/Reactome/diagram/static</param-value>
             <!--<param-value>/Users/reactome/Reactome/diagram/slice</param-value>-->
         </init-param>
     </servlet>
@@ -113,7 +113,7 @@
         <servlet-class>org.reactome.server.utils.proxy.StaticFilesProxyServlet</servlet-class>
         <init-param>
             <param-name>proxyFilePath</param-name>
-            <param-value>/Users/brunsont/Documents/reactome_web/diagram/svg</param-value>
+            <param-value>/Users/reactome/Reactome/ehld</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
@@ -127,7 +127,7 @@
         <servlet-class>org.reactome.server.utils.proxy.ProxyServlet</servlet-class>
         <init-param>
             <param-name>proxyHost</param-name>
-            <param-value>reactome.org</param-value>
+            <param-value>dev.reactome.org</param-value>
         </init-param>
         <init-param>
             <param-name>proxyPort</param-name>
