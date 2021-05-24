@@ -143,7 +143,7 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
 
         float rWidth = width / bb.getWidth();
         float rHeight = height / bb.getHeight();
-        float zoom = (rWidth < rHeight) ? rWidth : rHeight;
+        float zoom = Math.min(rWidth, rHeight);
 
         float vpCX = width * 0.5f;
         float vpCY = height * 0.5f;
