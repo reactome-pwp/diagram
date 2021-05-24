@@ -227,7 +227,7 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
                     drawLeftPin(ctx, p, colour, colour);
                 }
                 if (hoveredValues.size() > 1) {
-                    Double median = ExpressionUtil.median(hoveredValues);
+                    double median = ExpressionUtil.median(hoveredValues);
                     double p = ThreeColorGradient.getPercentage(median, this.min, this.max);
                     colour = AnalysisColours.get().PROFILE.getExpression().getLegend().getMedian();
                     drawLeftPin(ctx, p, colour, colour);
@@ -248,7 +248,7 @@ public class ExpressionLegend extends LegendPanel implements ClickHandler, Mouse
                     drawRightPin(ctx, p, colour, colour);
                 }
                 if (selectedValues.size() > 1) {
-                    Double median = ExpressionUtil.median(selectedValues);
+                    double median = ExpressionUtil.median(selectedValues);
                     double p = ThreeColorGradient.getPercentage(median, this.min, this.max);
                     colour = AnalysisColours.get().PROFILE.getExpression().getLegend().getMedian();
                     drawRightPin(ctx, p, colour, colour);

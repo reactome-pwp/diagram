@@ -148,11 +148,11 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
         float vpCX = width * 0.5f;
         float vpCY = height * 0.5f;
 
-        float newCX = bb.getX() + (bb.getWidth()  * 0.5f);
+        float newCX = bb.getX() + (bb.getWidth() * 0.5f);
         float newCY = bb.getY() + (bb.getHeight() * 0.5f);
 
-        float corX = vpCX/zoom - newCX;
-        float corY = vpCY/zoom - newCY;
+        float corX = vpCX / zoom - newCX;
+        float corY = vpCY / zoom - newCY;
         return svg.createSVGMatrix().scale(zoom).translate(corX, corY);
     }
 

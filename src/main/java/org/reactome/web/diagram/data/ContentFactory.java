@@ -63,7 +63,7 @@ public abstract class ContentFactory {
         //Create EHLDObjects to include in the content
         List<EHLDObject> pathwayNodes = new LinkedList<>();
         Set<String> aux = new HashSet();
-        Long id = 0L;
+        long id = 0L;
         for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
             String stID = SVGUtil.keepStableId(child.getId());
             if(aux.add(stID)){
