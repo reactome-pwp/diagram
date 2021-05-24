@@ -140,16 +140,16 @@ public abstract class GraphPhysicalEntity extends GraphObject {
 
     @Override
     protected String getSecondaryDisplayName() {
-        String rtn = super.getSecondaryDisplayName();
-        if(identifier!=null) {
-            rtn += (rtn.isEmpty() ? "" : " ") + identifier ;
+        StringBuilder rtn = new StringBuilder(super.getSecondaryDisplayName());
+        if (identifier != null) {
+            rtn.append((rtn.length() == 0) ? "" : " ").append(identifier);
         }
         if(geneNames!=null){
             for (String geneName : geneNames) {
-                rtn +=  (rtn.isEmpty() ? "" : " ") + geneName;
+                rtn.append((rtn.length() == 0) ? "" : " ").append(geneName);
             }
         }
-        return rtn;
+        return rtn.toString();
     }
 
     public static Comparator<GraphPhysicalEntity> getDisplayNameComparator(){
