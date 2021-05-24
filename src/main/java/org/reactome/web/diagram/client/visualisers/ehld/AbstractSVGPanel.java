@@ -271,8 +271,8 @@ public abstract class AbstractSVGPanel extends AbsolutePanel {
 
     private OMElement getAnalysisText(OMElement element){
         OMElement rtn = null;
-        List<OMElement> textElements = getAllTextElementsFrom((OMNode) element);
-        if(textElements != null && textElements.size()>0) {
+        List<OMElement> textElements = getAllTextElementsFrom(element);
+        if (textElements != null && textElements.size() > 0) {
             rtn = textElements.get(0);
         }
         return rtn;
