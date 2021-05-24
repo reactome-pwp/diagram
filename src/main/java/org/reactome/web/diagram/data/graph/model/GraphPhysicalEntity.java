@@ -130,21 +130,11 @@ public abstract class GraphPhysicalEntity extends GraphObject {
 
     public Set<GraphReactionLikeEvent> participatesIn(){
         Set<GraphReactionLikeEvent> rtn = new HashSet<>();
-        for (GraphReactionLikeEvent rle : isInputIn) {
-            rtn.add(rle);
-        }
-        for (GraphReactionLikeEvent rle : isOutputIn) {
-            rtn.add(rle);
-        }
-        for (GraphReactionLikeEvent rle : isCatalystIn) {
-            rtn.add(rle);
-        }
-        for (GraphReactionLikeEvent rle : isActivatorIn) {
-            rtn.add(rle);
-        }
-        for (GraphReactionLikeEvent rle : isInhibitorIn) {
-            rtn .add(rle);
-        }
+        rtn.addAll(isInputIn);
+        rtn.addAll(isOutputIn);
+        rtn.addAll(isCatalystIn);
+        rtn.addAll(isActivatorIn);
+        rtn.addAll(isInhibitorIn);
         return rtn;
     }
 
