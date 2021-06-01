@@ -79,6 +79,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         leftTopLauncher = new LeftTopLauncherPanel(eventBus);
         rightContainerPanel = new RightContainerPanel();
         bottomContainerPanel = new BottomContainerPanel();
+        rightTopLauncherPanel = new RightTopLauncherPanel(eventBus);
 
 
         initialise();
@@ -151,7 +152,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
         //Launcher panels
         this.add(leftTopLauncher);
-        this.add(new RightTopLauncherPanel(eventBus));
+        this.add(rightTopLauncherPanel);
 
         //Settings panel
         rightContainerPanel.add(hideableContainerPanel = new HideableContainerPanel(eventBus));
