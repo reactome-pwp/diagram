@@ -13,6 +13,7 @@ import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.InteractorsContent;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
 import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
+import org.reactome.web.diagram.data.interactors.raw.RawInteractorEntity;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
 import org.reactome.web.diagram.util.MapSet;
@@ -20,6 +21,9 @@ import org.reactome.web.diagram.util.interactors.InteractorsExporter;
 import org.reactome.web.diagram.util.slider.Slider;
 import org.reactome.web.diagram.util.slider.SliderValueChangedEvent;
 import org.reactome.web.diagram.util.slider.SliderValueChangedHandler;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 
@@ -138,7 +142,8 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
 
     @Override
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
-        int totalInteractorsLoaded = event.getInteractors().getEntities().size();
+        List<RawInteractorEntity> entities = event.getInteractors().getEntities() == null ? Collections.EMPTY_LIST : event.getInteractors().getEntities();
+        int totalInteractorsLoaded = entities.size();
         if(totalInteractorsLoaded==0) {
             displayWarning(MSG_NO_INTERACTORS_FOUND + currentOverlayResource.getName());
             setTimer(DELAY);
