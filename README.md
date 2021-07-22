@@ -1,3 +1,6 @@
+# DO NOT MERGE THIS BRANCH WITH MASTER 
+This branch contains IDG specific changes. It removes the analysis tab from the details panel and removes the interactors tab from the context panel of a context selected entity.
+
 [<img src=https://user-images.githubusercontent.com/6883670/31999264-976dfb86-b98a-11e7-9432-0316345a72ea.png height=75 />](https://reactome.org)
 
 Diagram Viewer

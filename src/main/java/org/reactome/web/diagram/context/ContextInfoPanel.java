@@ -30,7 +30,7 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
     private List<Button> btns = new LinkedList<>();
     private Button molecules;
     private Button pathways;
-    private Button interactors;
+//    private Button interactors;
 
     private DeckLayoutPanel container;
     
@@ -41,12 +41,12 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
         buttonsPanel.setStyleName(RESOURCES.getCSS().buttonsPanel());
         buttonsPanel.add(this.molecules = getButton("Molecules", RESOURCES.molecules()));
         buttonsPanel.add(this.pathways = getButton("Pathways", RESOURCES.pathways()));
-        buttonsPanel.add(this.interactors = getButton("Interactors", RESOURCES.interactors()));
+//        buttonsPanel.add(this.interactors = getButton("Interactors", RESOURCES.interactors()));
         GraphObject graphObject = diagramObject.getGraphObject();
 
         // Disable the interactors' tab in case of anything else besides protein and chemical
         boolean enabled = graphObject instanceof GraphSimpleEntity || graphObject instanceof GraphEntityWithAccessionedSequence;
-        this.interactors.setEnabled(enabled);
+//        this.interactors.setEnabled(enabled);
 
         this.molecules.addStyleName(RESOURCES.getCSS().buttonSelected());
 
@@ -57,7 +57,7 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
         InteractorsDialogPanel interactorsDialogPanel = new InteractorsDialogPanel(eventBus, diagramObject, context);
         this.container.add(moleculesDialogPanel);
         this.container.add(pathwaysDialogPanel);
-        this.container.add(interactorsDialogPanel);
+//        this.container.add(interactorsDialogPanel);
         this.container.showWidget(0);
         this.container.setAnimationVertical(true);
         this.container.setAnimationDuration(500);
@@ -103,10 +103,10 @@ public class ContextInfoPanel extends Composite implements ClickHandler {
             ((MoleculesDialogPanel)this.container.getVisibleWidget()).forceDraw();
         }else if(btn.equals(this.pathways)){
             this.container.showWidget(1);
-        }else if(btn.equals(this.interactors)){
+        }/*else if(btn.equals(this.interactors)){
             this.container.showWidget(2);
             ((InteractorsDialogPanel)this.container.getVisibleWidget()).forceDraw();
-        }
+        }*/
     }
     
     public void redraw() {
