@@ -87,11 +87,11 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
                 eventBus.fireEventFromSource(new InteractorsCollapsedEvent(currentOverlayResource.getIdentifier()), this);
             }
             setVisible(false);
-        } else if(source.equals(this.downloadBtn)) {
+        } else if (source.equals(this.downloadBtn)) {
             if (context != null) {
                 MapSet<String, RawInteractor> interactors = context.getInteractors().getRawInteractorsPerResource(currentOverlayResource.getIdentifier());
-                if(interactors != null && !interactors.isEmpty()) {
-                    String filename = context.getContent().getStableId() + "_Interactors_" + currentOverlayResource.getName()+ ".csv";
+                if (interactors != null && !interactors.isEmpty()) {
+                    String filename = context.getContent().getStableId() + "_Interactors_" + currentOverlayResource.getName() + ".csv";
                     InteractorsExporter.exportInteractors(filename, interactors);
                 }
             }
@@ -144,10 +144,10 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     public void onInteractorsLoaded(InteractorsLoadedEvent event) {
         List<RawInteractorEntity> entities = event.getInteractors().getEntities() == null ? Collections.EMPTY_LIST : event.getInteractors().getEntities();
         int totalInteractorsLoaded = entities.size();
-        if(totalInteractorsLoaded==0) {
+        if (totalInteractorsLoaded == 0) {
             displayWarning(MSG_NO_INTERACTORS_FOUND + currentOverlayResource.getName());
             setTimer(DELAY);
-        }else {
+        } else {
             hideTimer.cancel();
             update();
         }
@@ -157,7 +157,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     @Override
     public void onInteractorsError(InteractorsErrorEvent event) {
         setVisible(true);
-        switch (event.getLevel()){
+        switch (event.getLevel()) {
             case WARNING:
                 displayWarning(event.getMessage());
                 setTimer(DELAY);
@@ -168,7 +168,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
                 break;
             case ERROR_RECOVERABLE:
                 displayError(event.getMessage());
-                reloadBtn.setTitle("Retry loading interactors from " + currentOverlayResource.getName() );
+                reloadBtn.setTitle("Retry loading interactors from " + currentOverlayResource.getName());
                 reloadBtn.setVisible(true);
                 break;
         }
