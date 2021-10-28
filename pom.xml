@@ -7,7 +7,7 @@
     <groupId>org.reactome.web</groupId>
     <artifactId>diagram</artifactId>
     <packaging>jar</packaging>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.0</version>
 
     <name>Diagram Viewer</name>
 
@@ -48,13 +48,13 @@
         <maven.compiler.target>11</maven.compiler.target>
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
 
-        <reactome.web.analysis-client>2.0.0-SNAPSHOT</reactome.web.analysis-client>
-        <reactome.web.model>2.2.0-SNAPSHOT</reactome.web.model>
-        <reactome.web.carrousel>1.1.0-SNAPSHOT</reactome.web.carrousel>
-        <reactome.web.scroller>1.1.0-SNAPSHOT</reactome.web.scroller>
-        <reactome.web.quadtree>1.2.0</reactome.web.quadtree>
+        <reactome.web.analysis-client>2.0.0</reactome.web.analysis-client>
+        <reactome.web.model>2.2.0</reactome.web.model>
+        <reactome.web.carrousel>1.1.3</reactome.web.carrousel>
+        <reactome.web.scroller>1.1.0</reactome.web.scroller>
+        <reactome.web.quadtree>1.3.0</reactome.web.quadtree>
 
-        <reactome.utils.version>1.1.0-SNAPSHOT</reactome.utils.version>
+        <reactome.utils.version>1.1.0</reactome.utils.version>
 
         <lib.gwt.svg.version>0.5.11</lib.gwt.svg.version>
 
