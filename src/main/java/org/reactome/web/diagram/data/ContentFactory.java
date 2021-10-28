@@ -63,7 +63,7 @@ public abstract class ContentFactory {
         //Create EHLDObjects to include in the content
         List<EHLDObject> pathwayNodes = new LinkedList<>();
         Set<String> aux = new HashSet();
-        Long id = 0L;
+        long id = 0L;
         for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
             String stID = SVGUtil.keepStableId(child.getId());
             if(aux.add(stID)){
@@ -233,11 +233,15 @@ public abstract class ContentFactory {
         interactors.getOrCreateRawInteractorCachedResource(resource);
 
         MapSet<String, GraphObject> identifierMap = context.getContent().getIdentifierMap();
-        for (RawInteractorEntity interactorEntity : rawInteractors.getEntities()) {
+        List<RawInteractorEntity> entities = rawInteractors.getEntities() == null ? Collections.EMPTY_LIST : rawInteractors.getEntities();
+
+        for (RawInteractorEntity interactorEntity : entities) {
             String acc = interactorEntity.getAcc();
             interactors.cacheInteractors(resource, acc, interactorEntity.getCount(), identifierMap);
-            for (RawInteractor rawInteractor : interactorEntity.getInteractors()) {
-                interactors.cache(resource, acc, rawInteractor);
+            if (interactorEntity.getInteractors() != null && !interactorEntity.getInteractors().isEmpty()) {
+                for (RawInteractor rawInteractor : interactorEntity.getInteractors()) {
+                    interactors.cache(resource, acc, rawInteractor);
+                }
             }
         }
     }

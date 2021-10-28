@@ -436,14 +436,11 @@ public class DiagramViewerImpl extends AbstractDiagramViewer implements
     @Override
     public void setAnalysisToken(String token, ResultFilter filter) {
         final AnalysisStatus analysisStatus = (token == null) ? null : new AnalysisStatus(eventBus, token, filter);
-        AnalysisTokenValidator.checkTokenAvailability(token, new AnalysisTokenValidator.TokenAvailabilityHandler() {
-            @Override
-            public void onTokenAvailabilityChecked(boolean available, String message) {
-                if (available) {
-                    loadAnalysis(analysisStatus);
-                } else {
-                    eventBus.fireEventFromSource(new DiagramInternalErrorEvent(message), DiagramViewerImpl.this);
-                }
+        AnalysisTokenValidator.checkTokenAvailability(token, (available, message) -> {
+            if (available) {
+                loadAnalysis(analysisStatus);
+            } else {
+                eventBus.fireEventFromSource(new DiagramInternalErrorEvent(message), DiagramViewerImpl.this);
             }
         });
     }

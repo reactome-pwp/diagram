@@ -5,6 +5,7 @@ import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.data.layout.factory.DiagramObjectException;
 import org.reactome.web.diagram.data.layout.factory.DiagramObjectsFactory;
+import org.reactome.web.pwp.model.client.util.ResponseUtils;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -58,7 +59,7 @@ public class LayoutLoader implements RequestCallback {
                 }
                 break;
             default:
-                this.handler.onLayoutLoaderError(new Exception(response.getStatusText()));
+                this.handler.onLayoutLoaderError(new Exception(ResponseUtils.getStatusText(response.getStatusCode())));
         }
     }
 

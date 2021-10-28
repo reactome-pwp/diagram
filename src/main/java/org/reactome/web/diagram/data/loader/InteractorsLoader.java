@@ -12,6 +12,8 @@ import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsExceptio
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsFactory;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.InteractorsErrorEvent;
+import org.reactome.web.diagram.util.Console;
+import org.reactome.web.pwp.model.client.util.ResponseUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -24,6 +26,7 @@ public class InteractorsLoader implements RequestCallback {
 
     public interface Handler {
         void interactorsLoaded(RawInteractors interactors, long time);
+
         void onInteractorsLoaderError(InteractorsException exception);
     }
 
@@ -38,24 +41,24 @@ public class InteractorsLoader implements RequestCallback {
         this.handler = handler;
     }
 
-    public void cancel(){
-        if(request!=null && request.isPending()){
+    public void cancel() {
+        if (request != null && request.isPending()) {
             request.cancel();
         }
     }
 
-    public void load(Content content, OverlayResource resource){
+    public void load(Content content, OverlayResource resource) {
         // Any previous request has to be canceled
         cancel();
 
-        if(resource==null){
+        if (resource == null) {
             this.handler.onInteractorsLoaderError(new InteractorsException(null, "Resource not specified"));
             return;
         }
         this.resource = resource;
 
         String post = getPostData(content.getDiagramObjects());
-        if(post != null){
+        if (post != null) {
             String url = "";
             switch (resource.getType()) {
                 case CUSTOM:
@@ -90,21 +93,21 @@ public class InteractorsLoader implements RequestCallback {
         StringBuilder post = new StringBuilder();
         for (DiagramObject diagramObject : items) {
             GraphObject graphObject = diagramObject.getGraphObject();
-            if(graphObject instanceof GraphPhysicalEntity){
+            if (graphObject instanceof GraphPhysicalEntity) {
                 GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
                 if (pe.getIdentifier() != null && ids.add(pe.getIdentifier())) { //this is to avoid re-iterating the set
                     post.append(pe.getIdentifier()).append(",");
                 }
             }
         }
-        if(post.length()>0) {
+        if (post.length() > 0) {
             post.delete(post.length() - 1, post.length());
             return post.toString();
         }
         return null;
     }
 
-    private void fireDeferredErrorEvent(final String resource, final String message, final InteractorsErrorEvent.Level level){
+    private void fireDeferredErrorEvent(final String resource, final String message, final InteractorsErrorEvent.Level level) {
         // Firing of the error event is deferred to ensure that InteractorsResourceChanged
         // event is handled first by the rest of the modules.
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
@@ -117,7 +120,7 @@ public class InteractorsLoader implements RequestCallback {
 
     @Override
     public void onResponseReceived(Request request, Response response) {
-        switch (response.getStatusCode()){
+        switch (response.getStatusCode()) {
             case Response.SC_OK:
                 long start = System.currentTimeMillis();
                 RawInteractors interactors;
@@ -131,7 +134,7 @@ public class InteractorsLoader implements RequestCallback {
                 this.handler.interactorsLoaded(interactors, time);
                 break;
             default:
-                this.handler.onInteractorsLoaderError(new InteractorsException(resource.getIdentifier(), response.getStatusText(), InteractorsErrorEvent.Level.ERROR_RECOVERABLE));
+                this.handler.onInteractorsLoaderError(new InteractorsException(resource.getIdentifier(), ResponseUtils.getStatusText(response.getStatusCode()), InteractorsErrorEvent.Level.ERROR_RECOVERABLE));
         }
 
     }

@@ -32,7 +32,7 @@ public class ContextMenuTrigger {
 
     public ContextMenuTrigger(NodeCommon node) {
         NodeProperties prop = node.getProp();
-        Double x = prop.getX() + prop.getWidth();
+        double x = prop.getX() + prop.getWidth();
         Double y = prop.getY();
         if (node.getRenderableClass().equals("Gene")) {
             y += prop.getHeight() * 3 / 4;
@@ -50,12 +50,12 @@ public class ContextMenuTrigger {
     }
 
     public boolean isHovered(Coordinate m) {
-        Double s = a.getY() * c.getX() - a.getX() * c.getY() + (c.getY() - a.getY()) * m.getX() + (a.getX() - c.getX()) * m.getY();
-        Double t = a.getX() * b.getY() - a.getY() * b.getX() + (a.getY() - b.getY()) * m.getX() + (b.getX() - a.getX()) * m.getY();
+        double s = a.getY() * c.getX() - a.getX() * c.getY() + (c.getY() - a.getY()) * m.getX() + (a.getX() - c.getX()) * m.getY();
+        double t = a.getX() * b.getY() - a.getY() * b.getX() + (a.getY() - b.getY()) * m.getX() + (b.getX() - a.getX()) * m.getY();
 
         if ((s < 0) != (t < 0)) return false;
 
-        Double aux = -b.getY() * c.getX() + a.getY() * (c.getX() - b.getX()) + a.getX() * (b.getY() - c.getY()) + b.getX() * c.getY();
+        double aux = -b.getY() * c.getX() + a.getY() * (c.getX() - b.getX()) + a.getX() * (b.getY() - c.getY()) + b.getX() * c.getY();
         if (aux < 0.0) {
             s = -s;
             t = -t;

@@ -97,7 +97,7 @@ public class ComplexRenderer050 extends ComplexAbstractRenderer {
 
         List<Double> expression = new LinkedList<>(complex.getParticipantsExpression(t).values());
         Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
-        Double value = ExpressionUtil.median(expression);
+        double value = ExpressionUtil.median(expression);
 
         AdvancedContext2d buffer = overlay.getBuffer();
         buffer.save();
@@ -136,11 +136,11 @@ public class ComplexRenderer050 extends ComplexAbstractRenderer {
 
         List<Double> expression = new LinkedList<>(complex.getParticipantsExpression(t).values());
         Collections.sort(expression);       //Collections.sort(expression, Collections.reverseOrder());
-        Double value = ExpressionUtil.median(expression);
+        double value = ExpressionUtil.median(expression);
 
         AdvancedContext2d buffer = overlay.getBuffer();
         buffer.save();
-        buffer.setFillStyle(AnalysisColours.get().regulationColorMap.getColor(value.intValue()));
+        buffer.setFillStyle(AnalysisColours.get().regulationColorMap.getColor((int) value));
         buffer.octagon(prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight(), RendererProperties.COMPLEX_RECT_ARC_WIDTH);
         buffer.fill();
         buffer.setGlobalCompositeOperation(Context2d.Composite.SOURCE_IN);
