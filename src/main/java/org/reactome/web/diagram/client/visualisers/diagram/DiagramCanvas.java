@@ -407,7 +407,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
     public void render(Collection<DiagramObject> items, Context context) {
         ColourProfileType colourProfileType = context.getColourProfileType();
         AnalysisStatus analysisStatus = context.getAnalysisStatus();
-        Double factor = context.getDiagramStatus().getFactor();
+        double factor = context.getDiagramStatus().getFactor();
         Coordinate offset = context.getDiagramStatus().getOffset();
         setCanvasesProperties(factor);
 
