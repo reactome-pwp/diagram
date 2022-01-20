@@ -225,7 +225,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         downloadBtn = new PwpButton(MSG_DOWNLOAD_TOOLTIP, RESOURCES.getCSS().download(), this);
         reloadBtn = new PwpButton("Retry loading interactors", RESOURCES.getCSS().reload(), this);
 
-        slider = new Slider(100, 24, 0.45, 1, 0.45, true);
+        slider = new Slider(100, 24, 0, 1, 0.45, true);
         slider.setTooltip("Use this slider to set the confidence threshold");
         slider.addSliderValueChangedHandler(this);
         slider.setStyleName(RESOURCES.getCSS().interactorsControlSlider());
