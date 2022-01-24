@@ -8,6 +8,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.InteractorsContent;
@@ -125,6 +126,15 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     @Override
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         currentOverlayResource = event.getResource();
+
+        if (currentOverlayResource.getIdentifier().equals(DiagramFactory.DISEASE_RESOURCE)) {
+            this.slider.setMin(0);
+            this.slider.setValue(DiagramFactory.DISEASE_RESOURCE_INITIAL_SCORE);
+        } else {
+            this.slider.setMin(DiagramFactory.INTERACTORS_RESOURCE_INITIAL_SCORE);
+            this.slider.setValue(DiagramFactory.INTERACTORS_RESOURCE_INITIAL_SCORE);
+        }
+
         hideTimer.cancel();
         //context is null when the diagram is in the process of loading (loading message is meant to be displayed)
         if (context == null || !context.getInteractors().isInteractorResourceCached(currentOverlayResource.getIdentifier())) {

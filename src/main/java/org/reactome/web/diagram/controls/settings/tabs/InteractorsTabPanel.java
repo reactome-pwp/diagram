@@ -76,7 +76,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
         lb.setStyleName(RESOURCES.getCSS().interactorLabel());
 
         intactResource = new OverlayResource(DiagramFactory.INTERACTORS_INITIAL_RESOURCE, DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME, OverlayResource.ResourceType.STATIC);
-        disgenetResource = new OverlayResource("disgenet", "DisGeNet", OverlayResource.ResourceType.STATIC);
+        disgenetResource = new OverlayResource(DiagramFactory.DISEASE_RESOURCE, DiagramFactory.DISEASE_RESOURCE_NAME, OverlayResource.ResourceType.STATIC);
 
         Stream.of(intactResource, disgenetResource).forEach((staticResource) -> {
             Console.log(staticResource.getName());
