@@ -12,7 +12,10 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
+import org.reactome.web.diagram.data.interactors.common.OverlayResource;
+import org.reactome.web.diagram.events.InteractorsResourceChangedEvent;
 import org.reactome.web.diagram.events.StructureImageLoadedEvent;
+import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
 import org.reactome.web.diagram.util.pdbe.model.PDBObject;
 import org.reactome.web.diagram.util.pdbe.model.QueryResult;
 
@@ -20,7 +23,9 @@ import org.reactome.web.diagram.util.pdbe.model.QueryResult;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @SuppressWarnings("Duplicates")
-public class PDBeLoader {
+public class PDBeLoader implements InteractorsResourceChangedHandler {
+
+    private OverlayResource currentResource;
 
     private static PDBeLoader loader;
 
@@ -44,6 +49,12 @@ public class PDBeLoader {
 
     private PDBeLoader(EventBus eventBus) {
         this.eventBus = eventBus;
+        eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
+    }
+
+    @Override
+    public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
+        this.currentResource = event.getResource();
     }
 
     public interface Handler {
