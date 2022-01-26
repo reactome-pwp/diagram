@@ -18,12 +18,12 @@ import org.reactome.web.diagram.util.AdvancedContext2d;
 public abstract class InteractorEntityAbstractRenderer extends InteractorAbstractRenderer {
 
     @Override
-    public void shape(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset){
+    public void shape(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
         InteractorEntity entity = (InteractorEntity) item;
         DiagramBox box = item.transform(factor, offset);
-        if(entity.isChemical()){
+        if (entity.isChemical()) {
             ctx.bubble(box.getMinX(), box.getMinY(), box.getMaxX(), box.getMaxY());
-        }else {
+        } else {
             ctx.beginPath();
             ctx.rect(box.getMinX(), box.getMinY(), box.getWidth(), box.getHeight());
         }
@@ -31,9 +31,9 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
 
     @Override
     public void draw(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
-        if(!item.isVisible()) return;
+        if (!item.isVisible()) return;
         shape(ctx, item, factor, offset);
-        if(((InteractorEntity) item).isChemical()) { //Only do extra stuff in case of chemicals (which is less likely)
+        if (((InteractorEntity) item).isChemical()) { //Only do extra stuff in case of chemicals (which is less likely)
             ctx.save();
             ctx.setFillStyle(InteractorColours.get().PROFILE.getChemical().getFill());
             ctx.fill();
@@ -47,7 +47,7 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
 
     @Override
     public void drawEnrichment(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
-        if(!item.isVisible()) return;
+        if (!item.isVisible()) return;
         Boolean isHIt = ((InteractorEntity) item).getIsHit();
         shape(ctx, item, factor, offset);
         boolean isHit = isHIt != null && isHIt;
@@ -68,20 +68,20 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
 
     @Override
     public void drawExpression(AdvancedContext2d ctx, DiagramInteractor item, int t, double min, double max, Double factor, Coordinate offset) {
-        if(!item.isVisible()) return;
+        if (!item.isVisible()) return;
         draw(ctx, item, factor, offset);
         Boolean isHIt = ((InteractorEntity) item).getIsHit();
         shape(ctx, item, factor, offset);
         boolean isHit = isHIt != null && isHIt;
         ctx.save();
-        if(isHit){
+        if (isHit) {
 //            ThreeColorGradient a = new ThreeColorGradient(AnalysisColours.get().PROFILE.getExpression().getGradient());
 //            ctx.setFillStyle(a.getColor(((InteractorEntity) item).getExp().get(t), min, max));
             ctx.setFillStyle(AnalysisColours.get().expressionGradient.getColor(((InteractorEntity) item).getExp().get(t), min, max));
-        }else{
-            if(((InteractorEntity) item).isChemical()) {
+        } else {
+            if (((InteractorEntity) item).isChemical()) {
                 ctx.setFillStyle(InteractorColours.get().PROFILE.getChemical().getLighterFill());
-            }else{
+            } else {
                 ctx.setFillStyle(InteractorColours.get().PROFILE.getProtein().getLighterFill());
             }
         }
@@ -92,19 +92,19 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
 
     @Override
     public void drawRegulation(AdvancedContext2d ctx, DiagramInteractor item, int t, double min, double max, Double factor, Coordinate offset) {
-        if(!item.isVisible()) return;
+        if (!item.isVisible()) return;
         draw(ctx, item, factor, offset);
         Boolean isHIt = ((InteractorEntity) item).getIsHit();
         shape(ctx, item, factor, offset);
         boolean isHit = isHIt != null && isHIt;
         ctx.save();
-        if(isHit){
+        if (isHit) {
 //            ctx.setFillStyle(AnalysisColours.get().expressionGradient.getColor(((InteractorEntity) item).getExp().get(t), min, max));
             ctx.setFillStyle(AnalysisColours.get().regulationColorMap.getColor(((InteractorEntity) item).getExp().get(t).intValue()));
-        }else{
-            if(((InteractorEntity) item).isChemical()) {
+        } else {
+            if (((InteractorEntity) item).isChemical()) {
                 ctx.setFillStyle(InteractorColours.get().PROFILE.getChemical().getLighterFill());
-            }else{
+            } else {
                 ctx.setFillStyle(InteractorColours.get().PROFILE.getProtein().getLighterFill());
             }
         }
@@ -115,14 +115,14 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
 
     @Override
     public void drawText(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
-        if(!item.isVisible()) return;
+        if (!item.isVisible()) return;
         InteractorEntity node = (InteractorEntity) item;
         String displayName = node.getDisplayName();
-        if(displayName == null) return;
+        if (displayName == null) return;
         DiagramBox box = item.transform(factor, offset);
         TextRenderer textRenderer = new TextRenderer(RendererProperties.WIDGET_FONT_SIZE, RendererProperties.NODE_TEXT_PADDING);
         TextMetrics metrics = ctx.measureText(displayName);
-        if(metrics.getWidth()<=box.getWidth() - 2 * RendererProperties.NODE_TEXT_PADDING) {
+        if (metrics.getWidth() <= box.getWidth() - 2 * RendererProperties.NODE_TEXT_PADDING) {
             textRenderer.drawTextSingleLine(ctx, displayName, box.getCentre());
         } else {
             textRenderer.drawTextMultiLine(ctx, displayName, NodePropertiesFactory.get(box));
@@ -131,8 +131,8 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
     }
 
     @Override
-    public void highlight(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset){
-        if(!item.isVisible()) return;
+    public void highlight(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
+        if (!item.isVisible()) return;
         shape(ctx, item, factor, offset);
         ctx.stroke();
     }
