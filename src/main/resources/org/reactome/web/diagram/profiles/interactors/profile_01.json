@@ -15,5 +15,13 @@
     "lighterStroke" : "#9E9E9E",
     "text": "#000000",
     "lighterText": "#424242"
+  },
+  "disease": {
+    "fill": "#E2EFF0",
+    "stroke": "#E35656",
+    "lighterFill" : "#80DEEA",
+    "lighterStroke" : "#9E9E9E",
+    "text": "#E35656",
+    "lighterText": "#424242"
   }
 }

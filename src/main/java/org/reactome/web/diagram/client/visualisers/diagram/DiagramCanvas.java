@@ -395,9 +395,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
                         break;
                 }
                 interactors.save();
-                InteractorProfile profile = InteractorColours.get().PROFILE;
-                InteractorProfileNode node = entity.isChemical() ? profile.getChemical() : profile.getProtein();
-                interactors.setFillStyle(node.getText());
+                interactors.setFillStyle(entity.getProfile().getText());
                 renderer.drawText(interactors, entity, factor, offset);
                 interactors.restore();
             }

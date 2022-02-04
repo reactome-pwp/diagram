@@ -6,6 +6,8 @@ import org.reactome.web.diagram.data.interactors.raw.RawInteractor;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
+import org.reactome.web.diagram.profiles.interactors.InteractorColours;
+import org.reactome.web.diagram.profiles.interactors.model.InteractorProfileNode;
 import org.reactome.web.diagram.util.chemical.ChemicalImageLoader;
 import org.reactome.web.diagram.util.pdbe.PDBeLoader;
 import org.reactome.web.diagram.util.pdbe.model.PDBObject;
@@ -80,6 +82,12 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
 
     private static boolean isDisease(String accession) {
         return accession.matches("^C\\d{7}$");
+    }
+
+    public InteractorProfileNode getProfile() {
+        if (disease) return InteractorColours.get().PROFILE.getDisease();
+        if (chemical) return InteractorColours.get().PROFILE.getChemical();
+        return InteractorColours.get().PROFILE.getProtein();
     }
 
     public Coordinate getCentre() {

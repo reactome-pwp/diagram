@@ -32,18 +32,16 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
     @Override
     public void draw(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
         if (!item.isVisible()) return;
+
         shape(ctx, item, factor, offset);
-        if (((InteractorEntity) item).isChemical()) { //Only do extra stuff in case of chemicals (which is less likely)
-            ctx.save();
-            ctx.setFillStyle(InteractorColours.get().PROFILE.getChemical().getFill());
-            ctx.fill();
-            ctx.stroke();
-            ctx.restore();
-        } else {
-            ctx.fill();
-            ctx.stroke();
-        }
+
+        InteractorEntity entity = (InteractorEntity) item;
+        ctx.setFillStyle(entity.getProfile().getFill());
+        ctx.setStrokeStyle(entity.getProfile().getStroke());
+        ctx.fill();
+        ctx.stroke();
     }
+
 
     @Override
     public void drawEnrichment(AdvancedContext2d ctx, DiagramInteractor item, Double factor, Coordinate offset) {
