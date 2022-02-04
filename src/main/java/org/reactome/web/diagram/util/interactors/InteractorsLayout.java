@@ -36,7 +36,6 @@ public class InteractorsLayout {
 
     public static boolean doLayout(Node node, InteractorEntity entity, int i, int n, boolean force) {
         if (entity == null || n == 0 || i < 0 || i > n) return false;
-        Console.log(entity.getDisplayName() + " i = " + i + ", n = " + n);
 
         if (force || !entity.isLaidOut()) {
             Coordinate center = getCentre(node.getProp());
@@ -46,7 +45,6 @@ public class InteractorsLayout {
             int edgeNodes = lp.nodeOnTop, nodeCount = 0, prevNodeCount = 0, edgeIndex;
 
             List<Integer> nodePerEdges = Arrays.asList(lp.nodeOnTop, lp.nodeOnRight, lp.nodeOnBottom, lp.nodeOnLeft);
-            Console.log(nodePerEdges);
             for (edgeIndex = 0; edgeIndex < nodePerEdges.size(); edgeIndex++) {
                 edgeNodes = nodePerEdges.get(edgeIndex);
                 prevNodeCount = nodeCount;
