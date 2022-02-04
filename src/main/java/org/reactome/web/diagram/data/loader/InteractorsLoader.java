@@ -30,7 +30,7 @@ public class InteractorsLoader implements RequestCallback {
         void onInteractorsLoaderError(InteractorsException exception);
     }
 
-    final static String PREFIX = "https://dev.reactome.org/ContentService/interactors/";
+    final static String PREFIX = DiagramFactory.SERVER + "/ContentService/interactors/";
 
     Handler handler;
     Request request;
@@ -68,8 +68,7 @@ public class InteractorsLoader implements RequestCallback {
                     if (resource.getName().equals(DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME)) {
                         url = PREFIX + "static/molecules/details/";
                     } else {
-                        //TODO Change to proxy based redirection
-                        url = "http://localhost:8080/disgenet/findByGenesAndMinScore";
+                        url = DiagramFactory.SERVER + "disgenet/findByGenes";
                     }
                     break;
                 case PSICQUIC:
