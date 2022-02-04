@@ -12,7 +12,6 @@ import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsExceptio
 import org.reactome.web.diagram.data.interactors.raw.factory.InteractorsFactory;
 import org.reactome.web.diagram.data.layout.DiagramObject;
 import org.reactome.web.diagram.events.InteractorsErrorEvent;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.pwp.model.client.util.ResponseUtils;
 
 import java.util.Collection;
@@ -30,7 +29,8 @@ public class InteractorsLoader implements RequestCallback {
         void onInteractorsLoaderError(InteractorsException exception);
     }
 
-    final static String PREFIX = DiagramFactory.SERVER + "/ContentService/interactors/";
+    final static String PREFIX_INTERACTOR = DiagramFactory.SERVER + "/ContentService/interactors/";
+    final static String PREFIX_DISEASE = DiagramFactory.SERVER + "/overlays/disgenet/";
 
     Handler handler;
     Request request;
@@ -62,17 +62,17 @@ public class InteractorsLoader implements RequestCallback {
             String url = "";
             switch (resource.getType()) {
                 case CUSTOM:
-                    url = PREFIX + "token/" + resource.getIdentifier();
+                    url = PREFIX_INTERACTOR + "token/" + resource.getIdentifier();
                     break;
                 case STATIC:
                     if (resource.getName().equals(DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME)) {
-                        url = PREFIX + "static/molecules/details/";
+                        url = PREFIX_INTERACTOR + "static/molecules/details/";
                     } else {
-                        url = DiagramFactory.SERVER + "disgenet/findByGenes";
+                        url = PREFIX_DISEASE + "findByGenes";
                     }
                     break;
                 case PSICQUIC:
-                    url = PREFIX + "psicquic/molecules/" + resource.getIdentifier() + "/details";
+                    url = PREFIX_INTERACTOR + "psicquic/molecules/" + resource.getIdentifier() + "/details";
                     break;
             }
             url += "?v=" + LoaderManager.version;
