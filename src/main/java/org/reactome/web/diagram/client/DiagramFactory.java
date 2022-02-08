@@ -35,7 +35,7 @@ public abstract class DiagramFactory {
     //This variable is meant to set up by DiagramJs or other resources using the GWT widget
     public static int SCROLL_SENSITIVITY = 0;
     
-    private static DiagramViewerCreator creator = (() -> new DiagramViewerImpl());
+    private static DiagramViewerCreator creator = DiagramViewerImpl::new;
     
     public static void setDiagramViewerCreator(DiagramViewerCreator creator1) {
         creator = creator1;

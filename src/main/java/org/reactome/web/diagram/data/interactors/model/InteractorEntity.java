@@ -22,10 +22,10 @@ import java.util.Set;
  */
 public class InteractorEntity extends DiagramInteractor implements Draggable, PDBeLoader.Handler, ChemicalImageLoader.Handler {
 
-    private String accession;
-    private String alias;
-    private boolean chemical;
-    private boolean disease;
+    private final String accession;
+    private final String alias;
+    private final boolean chemical;
+    private final boolean disease;
 
     private PDBObject pdbObject;
     private ImageElement image;
@@ -33,7 +33,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
     private boolean isHit;
     private List<Double> exp;
 
-    private Set<InteractorLink> links = new HashSet<>();
+    private final Set<InteractorLink> links = new HashSet<>();
 
     public InteractorEntity(RawInteractor rawInteractor) {
         super(rawInteractor.getAccURL());

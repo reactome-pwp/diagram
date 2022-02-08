@@ -357,9 +357,6 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
             }
         }
 
-        //By default we use the protein colour profile (NOTE: renderers will change it for chemicals and leave it for proteins save/restore)
-        interactors.setFillStyle(InteractorColours.get().PROFILE.getProtein().getFill());
-        interactors.setStrokeStyle(InteractorColours.get().PROFILE.getProtein().getStroke());
         Double factor = context.getDiagramStatus().getFactor();
         Coordinate offset = context.getDiagramStatus().getOffset();
         List<InteractorEntity> entities = new LinkedList<>();
