@@ -25,7 +25,7 @@ public abstract class DiagramFactory {
     //It has a value by default but it can be set to a different one so in every load
     //the "user preferred" interactors resource will be selected
     public static String INTERACTORS_INITIAL_RESOURCE = "static"; // -> null here means DO NOT LOAD interactors
-    public static String INTERACTORS_INITIAL_RESOURCE_NAME = "IntAct/Static"; // --> it should be null if the one above is null
+    public static String INTERACTORS_INITIAL_RESOURCE_NAME = "IntAct"; // --> it should be null if the one above is null
     public static double INTERACTORS_RESOURCE_INITIAL_SCORE = 0.45;
     public static String DISEASE_RESOURCE = "disgenet";
     public static String DISEASE_RESOURCE_NAME = "DisGeNet";

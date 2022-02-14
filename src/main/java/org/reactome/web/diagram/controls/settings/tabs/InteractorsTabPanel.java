@@ -70,9 +70,9 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
     public InteractorsTabPanel(EventBus eventBus) {
         this.eventBus = eventBus;
-        InfoLabel tabHeader = new InfoLabel("Interactor Overlays", RESOURCES.aboutThis());
+        InfoLabel tabHeader = new InfoLabel("Data Overlays", RESOURCES.aboutThis());
 
-        Label lb = new Label("Existing resources:");
+        Label lb = new Label("Available data source:");
         lb.setStyleName(RESOURCES.getCSS().interactorLabel());
 
         intactResource = new OverlayResource(DiagramFactory.INTERACTORS_INITIAL_RESOURCE, DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME, OverlayResource.ResourceType.STATIC);
