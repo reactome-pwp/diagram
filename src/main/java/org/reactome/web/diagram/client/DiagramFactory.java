@@ -14,9 +14,6 @@ public abstract class DiagramFactory {
     public static String SERVER = "";
     public static String ILLUSTRATION_SERVER = SERVER;  //This can be set separately (e.g. reactomedev case)
 
-    public static boolean SHOW_INFO = false;
-    public static boolean SHOW_FIREWORKS_BTN = true;
-
     public static boolean WATERMARK = true;
     public static String WATERMARK_BASE_URL = "https://reactome.org/PathwayBrowser/";
 

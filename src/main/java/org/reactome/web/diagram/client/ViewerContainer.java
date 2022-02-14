@@ -48,12 +48,12 @@ import static org.reactome.web.diagram.data.content.Content.Type.SVG;
 public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         CanvasExportRequestedHandler, ControlActionHandler,
         DiagramObjectsFlaggedHandler, DiagramObjectsFlagResetHandler, DiagramObjectsFlagRequestHandler,
-        GraphObjectSelectedHandler {
+        GraphObjectSelectedHandler, OptionalWidget.Handler {
 
     protected EventBus eventBus;
     protected Context context;
 
-	protected Map<Content.Type, Visualiser> visualisers;
+    protected Map<Content.Type, Visualiser> visualisers;
     protected Visualiser activeVisualiser;
 
     protected LeftTopLauncherPanel leftTopLauncher;
@@ -70,6 +70,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
     protected LeftTopLauncherPanel leftTopLauncherPanel;
     protected RightTopLauncherPanel rightTopLauncherPanel;
+    protected NavigationControlPanel navigationPanel;
 
     public ViewerContainer(EventBus eventBus) {
         this.getElement().setClassName("pwp-ViewerContainer");
@@ -91,7 +92,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         visualisers.put(DIAGRAM, new DiagramVisualiser(eventBus));
         visualisers.put(SVG, new SVGVisualiser(eventBus));
 
-        for (Visualiser vis: visualisers.values()) {
+        for (Visualiser vis : visualisers.values()) {
             this.add(vis);
         }
 
@@ -112,14 +113,19 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.add(rightContainerPanel);
 
         //Control panel
-        this.add(new NavigationControlPanel(eventBus));
+        if (OptionalWidget.NAVIGATION.isVisible()) {
+            navigationPanel = new NavigationControlPanel(eventBus);
+            this.add(navigationPanel);
+        }
 
         //Top Controls container
         TopContainerPanel topContainerPanel = new TopContainerPanel();
         this.add(topContainerPanel);
 
         //Bottom Controls container
-        this.add(bottomContainerPanel);
+        if (OptionalWidget.BOTTOM_POP_UP.isVisible()) {
+            this.add(bottomContainerPanel);
+        }
 
         //Panel notifying that a filter is present and has affected the display;
         topContainerPanel.add(new FilterAlertControl(eventBus));
@@ -142,7 +148,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         bottomContainerPanel.add(interactorsControl = new InteractorsControl(eventBus));
 
         //Info panel
-        if (DiagramFactory.SHOW_INFO) {
+        if (OptionalWidget.INFO.isVisible()) {
             this.add(new DiagramInfo(eventBus));
         }
 
@@ -154,14 +160,16 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         this.add(new RightTopLauncherPanel(eventBus));
 
         //Settings panel
-        rightContainerPanel.add(hideableContainerPanel = new HideableContainerPanel(eventBus));
+        if (OptionalWidget.COLLAPSABLE_MENU.isVisible()) {
+            rightContainerPanel.add(hideableContainerPanel = new HideableContainerPanel(eventBus));
+        }
 
     }
 
     protected void addExternalVisualisers() {/* Nothing here */}
 
 
-	public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
+    public boolean highlightGraphObject(GraphObject graphObject, boolean notify) {
         return activeVisualiser.highlightGraphObject(graphObject, notify);
     }
 
@@ -197,11 +205,11 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         activeVisualiser.interactorsFiltered();
     }
 
-    public void interactorsLayoutUpdated(){
+    public void interactorsLayoutUpdated() {
         activeVisualiser.interactorsLayoutUpdated();
     }
 
-    public void interactorsLoaded(){
+    public void interactorsLoaded() {
         activeVisualiser.interactorsLoaded();
     }
 
@@ -238,14 +246,30 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     @Override
     public void onControlAction(ControlActionEvent event) {
         switch (event.getAction()) {
-            case FIT_ALL:       activeVisualiser.fitDiagram(true);  break;
-            case ZOOM_IN:       activeVisualiser.zoomIn();                    break;
-            case ZOOM_OUT:      activeVisualiser.zoomOut();                   break;
-            case UP:            activeVisualiser.padding(0, 10);     break;
-            case RIGHT:         activeVisualiser.padding(-10, 0);    break;
-            case DOWN:          activeVisualiser.padding(0, -10);    break;
-            case LEFT:          activeVisualiser.padding(10, 0);     break;
-            case FIREWORKS:     overview();                                   break;
+            case FIT_ALL:
+                activeVisualiser.fitDiagram(true);
+                break;
+            case ZOOM_IN:
+                activeVisualiser.zoomIn();
+                break;
+            case ZOOM_OUT:
+                activeVisualiser.zoomOut();
+                break;
+            case UP:
+                activeVisualiser.padding(0, 10);
+                break;
+            case RIGHT:
+                activeVisualiser.padding(-10, 0);
+                break;
+            case DOWN:
+                activeVisualiser.padding(0, -10);
+                break;
+            case LEFT:
+                activeVisualiser.padding(10, 0);
+                break;
+            case FIREWORKS:
+                overview();
+                break;
         }
     }
 
@@ -263,7 +287,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         //Deffer the resizing of the rest
         Scheduler.get().scheduleDeferred(() -> {
             visualisers.values().stream()
-                    .filter(v -> v!=activeVisualiser)
+                    .filter(v -> v != activeVisualiser)
                     .forEach(v -> v.setSize(width, height));
         });
     }
@@ -304,7 +328,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     private void setWatermarkURL(Context context, GraphObject selection) {
-        if(watermark!=null) {
+        if (watermark != null) {
             StringBuilder href = new StringBuilder(DiagramFactory.WATERMARK_BASE_URL);
             String pathwayStId = context == null ? null : context.getContent().getStableId();
             if (pathwayStId != null && !pathwayStId.isEmpty()) {
@@ -326,14 +350,14 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         }
     }
 
-    private void setWatermarkVisible(boolean visible){
-        if(watermark!=null) {
+    private void setWatermarkVisible(boolean visible) {
+        if (watermark != null) {
             watermark.setVisible(visible);
         }
     }
 
-    private void addWatermark(){
-        if(DiagramFactory.WATERMARK) {
+    private void addWatermark() {
+        if (DiagramFactory.WATERMARK) {
             Image img = new Image(RESOURCES.logo());
             SafeHtml image = SafeHtmlUtils.fromSafeConstant(img.toString());
             watermark = new Anchor(image, DiagramFactory.WATERMARK_BASE_URL, "_blank");
@@ -346,7 +370,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
     private void initHandlers() {
         //Only add the window scroll handler if it makes sense
-        if(DiagramFactory.SCROLL_SENSITIVITY > 0) {
+        if (DiagramFactory.SCROLL_SENSITIVITY > 0) {
             Window.addWindowScrollHandler(event -> windowScrolling.schedule(DiagramFactory.SCROLL_SENSITIVITY));
         }
 
@@ -361,16 +385,16 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         eventBus.addHandler(ControlActionEvent.TYPE, this);
     }
 
-    private void overview(){
+    private void overview() {
         eventBus.fireEventFromSource(new FireworksOpenedEvent(context.getContent().getDbId()), this);
     }
 
-    protected void setActiveVisualiser(Context context){
-        if(context != null) {
+    protected void setActiveVisualiser(Context context) {
+        if (context != null) {
             Visualiser visualiser = visualisers.get(context.getContent().getType());
             if (visualiser != null && activeVisualiser != visualiser) {
                 for (Visualiser vis : visualisers.values()) {
-                    if(vis == visualiser) {
+                    if (vis == visualiser) {
                         vis.asWidget().setVisible(true);
                     } else {
                         vis.asWidget().setVisible(false);
@@ -382,8 +406,9 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     public Context getContext() {
-    	return this.context;
+        return this.context;
     }
+
 
     public static Resources RESOURCES;
 
@@ -405,6 +430,5 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         String CSS = "org/reactome/web/diagram/client/ViewerContainer.css";
 
         String watermark();
-
     }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.reactome.web.analysis.client.model.AnalysisType;
+import org.reactome.web.diagram.client.OptionalWidget;
 import org.reactome.web.diagram.context.popups.export.ExportDialog;
 import org.reactome.web.diagram.data.AnalysisStatus;
 import org.reactome.web.diagram.data.Context;
@@ -43,9 +44,11 @@ import org.reactome.web.diagram.renderers.layout.RendererManager;
 import org.reactome.web.diagram.renderers.layout.abs.AttachmentAbstractRenderer;
 import org.reactome.web.diagram.renderers.layout.abs.ProteinAbstractRenderer;
 import org.reactome.web.diagram.renderers.layout.abs.SummaryItemAbstractRenderer;
+import org.reactome.web.diagram.thumbnail.NullThumbnail;
 import org.reactome.web.diagram.thumbnail.Thumbnail;
 import org.reactome.web.diagram.thumbnail.diagram.DiagramThumbnail;
 import org.reactome.web.diagram.thumbnail.diagram.StaticIllustrationThumbnail;
+import org.reactome.web.diagram.thumbnail.ehld.SVGThumbnail;
 import org.reactome.web.diagram.tooltips.TooltipContainer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 import org.reactome.web.diagram.util.Console;
@@ -71,7 +74,7 @@ import com.google.gwt.user.client.ui.Image;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHandler {
+public class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHandler, OptionalWidget.Handler {
 
     private final RendererManager rendererManager;
     private final InteractorRendererManager interactorRendererManager;
@@ -131,7 +134,7 @@ class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChangedHand
         AnalysisColours.initialise(eventBus);
         InteractorColours.initialise(eventBus);
 
-        this.thumbnail = new DiagramThumbnail(eventBus);
+        thumbnail = OptionalWidget.THUMBNAIL.isVisible() ? new DiagramThumbnail(eventBus) : new NullThumbnail();
 
         this.staticIllustrationThumbnail = new StaticIllustrationThumbnail(eventBus);
 
