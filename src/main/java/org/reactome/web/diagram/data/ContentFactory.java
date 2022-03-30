@@ -66,7 +66,7 @@ public abstract class ContentFactory {
         long id = 0L;
         for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
             String stID = SVGUtil.keepStableId(child.getId());
-            if(aux.add(stID)){
+            if (aux.add(stID)) {
                 pathwayNodes.add(new EHLDObject(id++, stID)); //just a placeholder
             }
         }
@@ -76,7 +76,7 @@ public abstract class ContentFactory {
     }
 
     public static void fillGraphContent(Content content, Graph graph) {
-        if(content instanceof DiagramContent){
+        if (content instanceof DiagramContent) {
             fillGraphContent((DiagramContent) content, graph);
         } else if (content instanceof EHLDContent) {
             fillGraphContent((EHLDContent) content, graph);
@@ -103,7 +103,7 @@ public abstract class ContentFactory {
             if (obj instanceof GraphPathway) {
                 GraphPathway pathway = (GraphPathway) obj;
                 DiagramObject diagramObject = getDiagramObjectByStableId(node.getStId());
-                if(diagramObject!=null) {
+                if (diagramObject != null) {
                     pathway.addDiagramObject(diagramObject);
                     diagramObject.setGraphObject(pathway);
                 }
@@ -145,6 +145,13 @@ public abstract class ContentFactory {
                 }
 
                 //TODO: Need to keep parents and/or children?
+            }
+        }
+
+        for (EntityNode node : graph.getNodes()) {
+            GraphObject obj = content.getDatabaseObject(node.getDbId());
+            if (obj instanceof GraphComplex) {
+                content.cacheParticipants((GraphPhysicalEntity) obj);
             }
         }
 

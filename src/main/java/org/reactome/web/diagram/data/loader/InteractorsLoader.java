@@ -4,6 +4,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.http.client.*;
 import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.content.Content;
+import org.reactome.web.diagram.data.graph.model.GraphComplex;
 import org.reactome.web.diagram.data.graph.model.GraphObject;
 import org.reactome.web.diagram.data.graph.model.GraphPhysicalEntity;
 import org.reactome.web.diagram.data.interactors.common.OverlayResource;
@@ -98,9 +99,17 @@ public class InteractorsLoader implements RequestCallback {
         for (DiagramObject diagramObject : items) {
             GraphObject graphObject = diagramObject.getGraphObject();
             if (graphObject instanceof GraphPhysicalEntity) {
-                GraphPhysicalEntity pe = (GraphPhysicalEntity) graphObject;
-                if (pe.getIdentifier() != null && ids.add(pe.getIdentifier())) { //this is to avoid re-iterating the set
-                    post.append(pe.getIdentifier()).append(",");
+                if (graphObject instanceof GraphComplex) {
+                    GraphComplex complex = (GraphComplex) graphObject;
+                    Set<GraphPhysicalEntity> participants = complex.getParticipants();
+                    if (participants.size() == 1) {
+                        for (GraphPhysicalEntity participant: participants) {
+                            addPhysicalEntityToPost(participant, ids, post);
+                        }
+
+                    }
+                } else {
+                    addPhysicalEntityToPost((GraphPhysicalEntity) graphObject, ids, post);
                 }
             }
         }
@@ -109,6 +118,12 @@ public class InteractorsLoader implements RequestCallback {
             return post.toString();
         }
         return null;
+    }
+
+    private void addPhysicalEntityToPost(GraphPhysicalEntity participant, Set<String> ids, StringBuilder post) {
+        if (participant.getIdentifier() != null && ids.add(participant.getIdentifier())) { //this is to avoid re-iterating the set
+            post.append(participant.getIdentifier()).append(",");
+        }
     }
 
     private void fireDeferredErrorEvent(final String resource, final String message, final InteractorsErrorEvent.Level level) {

@@ -14,6 +14,17 @@ import java.util.Set;
  */
 public class GraphComplex extends GraphPhysicalEntity {
 
+    @Override
+    public String getIdentifier() {
+        Set<GraphPhysicalEntity> participants = getParticipants();
+        if (participants.size() == 1) {
+            for (GraphPhysicalEntity participant: participants) {
+                return participant.getIdentifier();
+            }
+        }
+        return identifier;
+    }
+
     public GraphComplex(EntityNode node) {
         super(node);
     }

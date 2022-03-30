@@ -27,6 +27,12 @@ import java.util.List;
 @SuppressWarnings("Duplicates")
 public class ComplexRenderer100 extends ComplexAbstractRenderer {
     @Override
+    public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
+        super.draw(ctx, item, factor, offset);
+        drawSummaryItems(ctx, (Node) item, factor, offset);
+    }
+
+    @Override
     public Double getExpressionHovered(DiagramObject item, Coordinate pos, int t) {
         GraphComplex complex = item.getGraphObject();
         NodeProperties prop = ((Node) item).getProp();

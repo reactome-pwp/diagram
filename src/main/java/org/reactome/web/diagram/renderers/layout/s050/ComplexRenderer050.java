@@ -28,6 +28,16 @@ import java.util.List;
  */
 @SuppressWarnings("Duplicates")
 public class ComplexRenderer050 extends ComplexAbstractRenderer {
+
+    @Override
+    public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
+        super.draw(ctx, item, factor, offset);
+        ctx.save();
+        ctx.setGlobalAlpha((factor - 0.5) * 2);
+        drawSummaryItems(ctx, (Node) item, factor, offset);
+        ctx.restore();
+    }
+
     @Override
     public Double getExpressionHovered(DiagramObject item, Coordinate pos, int t) {
         GraphComplex complex = item.getGraphObject();
@@ -182,6 +192,5 @@ public class ComplexRenderer050 extends ComplexAbstractRenderer {
     @Override
     public void highlight(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {
         super.highlight(ctx, item, factor, offset);
-        drawSummaryItems(ctx, (Node) item, factor, offset);
     }
 }
