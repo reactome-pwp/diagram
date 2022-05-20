@@ -127,12 +127,12 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
     public void onInteractorsResourceChanged(InteractorsResourceChangedEvent event) {
         currentOverlayResource = event.getResource();
 
-        if (currentOverlayResource.getIdentifier().equals(DiagramFactory.DISEASE_RESOURCE)) {
-            this.slider.setMin(0);
-            this.slider.setValue(DiagramFactory.DISEASE_RESOURCE_INITIAL_SCORE);
-        } else {
+        if (currentOverlayResource.getIdentifier().equals(DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME)) {
             this.slider.setMin(DiagramFactory.INTERACTORS_RESOURCE_INITIAL_SCORE);
             this.slider.setValue(DiagramFactory.INTERACTORS_RESOURCE_INITIAL_SCORE);
+        } else {
+            this.slider.setMin(0);
+            this.slider.setValue(DiagramFactory.DISEASE_RESOURCE_INITIAL_SCORE);
         }
 
         hideTimer.cancel();
