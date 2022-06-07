@@ -55,7 +55,6 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     private OverlayResource selectedResource;
     private OverlayResource intactResource;
     private OverlayResource disgenetResource;
-    private OverlayResource openTargetResource;
 
     //    private List<RadioButton> staticResourceBtns;
     private RadioButton intactResourceBtn;
@@ -78,9 +77,8 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
 
         intactResource = new OverlayResource(DiagramFactory.INTERACTORS_INITIAL_RESOURCE, DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME, OverlayResource.ResourceType.STATIC);
         disgenetResource = new OverlayResource(DiagramFactory.DISEASE_RESOURCE, DiagramFactory.DISEASE_RESOURCE_NAME, OverlayResource.ResourceType.STATIC);
-        openTargetResource = new OverlayResource(DiagramFactory.OPEN_TARGET_RESOURCE, DiagramFactory.OPEN_TARGET_RESOURCE_NAME, OverlayResource.ResourceType.STATIC);
 
-        Stream.of(intactResource, disgenetResource, openTargetResource).forEach((staticResource) -> {
+        Stream.of(intactResource, disgenetResource).forEach((staticResource) -> {
             RadioButton btn = new RadioButton("Resources", staticResource.getName());
             btn.setFormValue(staticResource.getIdentifier()); //use FormValue to keep the value
             btn.setTitle("Select " + staticResource.getName() + " as a resource");

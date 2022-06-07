@@ -19,8 +19,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.reactome.web.diagram.client.DiagramFactory.*;
-
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -34,7 +32,6 @@ public class InteractorsLoader implements RequestCallback {
 
     final static String PREFIX_INTERACTOR = DiagramFactory.SERVER + "/ContentService/interactors/";
     final static String PREFIX_DISEASE = DiagramFactory.SERVER + "/overlays/disgenet/";
-    final static String PREFIX_OPEN_TARGET = DiagramFactory.SERVER + "/overlays/open-target/";
 
     Handler handler;
     Request request;
@@ -69,12 +66,10 @@ public class InteractorsLoader implements RequestCallback {
                     url = PREFIX_INTERACTOR + "token/" + resource.getIdentifier();
                     break;
                 case STATIC:
-                    if (INTERACTORS_INITIAL_RESOURCE_NAME.equals(resource.getName())) {
+                    if (resource.getName().equals(DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME)) {
                         url = PREFIX_INTERACTOR + "static/molecules/details/";
-                    } else if (DISEASE_RESOURCE_NAME.equals(resource.getName())) {
+                    } else {
                         url = PREFIX_DISEASE + "findByGenes";
-                    } else if (OPEN_TARGET_RESOURCE_NAME.equals(resource.getName())) {
-                        url = PREFIX_OPEN_TARGET + "findByGenes";
                     }
                     break;
                 case PSICQUIC:
@@ -108,7 +103,7 @@ public class InteractorsLoader implements RequestCallback {
                     GraphComplex complex = (GraphComplex) graphObject;
                     Set<GraphPhysicalEntity> participants = complex.getParticipants();
                     if (participants.size() == 1) {
-                        for (GraphPhysicalEntity participant : participants) {
+                        for (GraphPhysicalEntity participant: participants) {
                             addPhysicalEntityToPost(participant, ids, post);
                         }
 

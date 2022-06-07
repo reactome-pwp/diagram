@@ -8,7 +8,6 @@ import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
 import org.reactome.web.diagram.profiles.interactors.InteractorColours;
 import org.reactome.web.diagram.profiles.interactors.model.InteractorProfileNode;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.chemical.ChemicalImageLoader;
 import org.reactome.web.diagram.util.pdbe.PDBeLoader;
 import org.reactome.web.diagram.util.pdbe.model.PDBObject;
@@ -43,7 +42,7 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
         this.isHit = rawInteractor.getIsHit() != null && rawInteractor.getIsHit();
         this.exp = rawInteractor.getExp();
         this.chemical = isChemical(accession);
-        this.disease = isDisease(rawInteractor.getAccURL());
+        this.disease = isDisease(accession);
     }
 
     public InteractorLink addLink(Node node, Long id, Integer evidences, String url, double score) {
@@ -81,8 +80,8 @@ public class InteractorEntity extends DiagramInteractor implements Draggable, PD
         return accession.matches("^(CHEBI|CHEMBL|ZINC).*");
     }
 
-    private static boolean isDisease(String accURL) {
-        return accURL.contains("disease");
+    private static boolean isDisease(String accession) {
+        return accession.matches("^C\\d{7}$");
     }
 
     public InteractorProfileNode getProfile() {

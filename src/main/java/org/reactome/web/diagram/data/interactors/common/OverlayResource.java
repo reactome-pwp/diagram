@@ -1,5 +1,7 @@
 package org.reactome.web.diagram.data.interactors.common;
 
+import org.reactome.web.diagram.client.DiagramFactory;
+
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */

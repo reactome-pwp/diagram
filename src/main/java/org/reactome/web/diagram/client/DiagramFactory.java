@@ -26,8 +26,6 @@ public abstract class DiagramFactory {
     public static double INTERACTORS_RESOURCE_INITIAL_SCORE = 0.45;
     public static String DISEASE_RESOURCE = "disgenet";
     public static String DISEASE_RESOURCE_NAME = "DisGeNet";
-    public static String OPEN_TARGET_RESOURCE = "open-target";
-    public static String OPEN_TARGET_RESOURCE_NAME = "Open Target";
     public static double DISEASE_RESOURCE_INITIAL_SCORE = 0.33;
 
     //The Reactome use case does not need to be sensible to SCROLL
