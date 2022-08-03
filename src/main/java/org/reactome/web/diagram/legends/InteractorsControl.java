@@ -177,7 +177,11 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
                 setTimer(DELAY);
                 break;
             case ERROR_RECOVERABLE:
-                displayError(event.getMessage());
+                if (event.getMessage().equals("Not Found")) {
+                    displayError(MSG_NO_INTERACTORS_FOUND + currentOverlayResource.getName());
+                } else {
+                    displayError(event.getMessage());
+                }
                 reloadBtn.setTitle("Retry loading interactors from " + currentOverlayResource.getName());
                 reloadBtn.setVisible(true);
                 break;
@@ -259,7 +263,7 @@ public class InteractorsControl extends LegendPanel implements ClickHandler, Sli
         eventBus.addHandler(InteractorsResourceChangedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLayoutUpdatedEvent.TYPE, this);
         eventBus.addHandler(InteractorsLoadedEvent.TYPE, this);
-        eventBus.addHandler(InteractorsErrorEvent.TYPE, this);
+       eventBus.addHandler(InteractorsErrorEvent.TYPE, this);
     }
 
     private void displayLoader(boolean visible, OverlayResource resource) {
