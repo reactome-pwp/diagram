@@ -35,6 +35,12 @@ import org.reactome.web.diagram.legends.*;
 import org.reactome.web.diagram.messages.AnalysisMessage;
 import org.reactome.web.diagram.messages.ErrorMessage;
 import org.reactome.web.diagram.messages.LoadingMessage;
+import org.reactome.web.diagram.util.Console;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.classes.Pathway;
+import org.reactome.web.pwp.model.client.common.ContentClientHandler;
+import org.reactome.web.pwp.model.client.content.ContentClient;
+import org.reactome.web.pwp.model.client.content.ContentClientError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,6 +68,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     protected InteractorsControl interactorsControl;
     protected HideableContainerPanel hideableContainerPanel;
     private Anchor watermark;
+    private Anchor pharmGKB;
 
     public static Timer windowScrolling = new Timer() {
         @Override
@@ -108,6 +115,9 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
         //Watermark
         this.addWatermark();
+
+        //collaborative PharmGKB
+        this.addPharmGKBLogo();
 
         //Right container
         this.add(rightContainerPanel);
@@ -178,18 +188,30 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     public void contentLoaded(final Context context) {
+        Console.log("1. content loaded");
         this.context = context;
+        setPharmGKBLogo(context);
         setWatermarkVisible(true);
+        Console.log("2. add watermark in content loaded ");
         setWatermarkURL(context, null);
         setActiveVisualiser(context);
         activeVisualiser.contentLoaded(context);
     }
 
     public void contentRequested() {
+        Console.log("3. content Requested");
         activeVisualiser.resetSelection(false);
         activeVisualiser.resetHighlight(false);
         activeVisualiser.contentRequested();
+        Console.log("4 . not add watermark in content request");
+        Console.log("before: setWatermarkVisible false");
         setWatermarkVisible(false);
+        Console.log("after: setWatermarkVisible false ");
+      //  Console.log("before: adjustPharmGKBPosition()");
+      //  adjustPharmGKBPosition();
+     //   Console.log("after: adjustPharmGKBPosition()");
+
+
         context = null;
     }
 
@@ -351,8 +373,22 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     private void setWatermarkVisible(boolean visible) {
+        Console.log(" setwatermarkVisible " + visible);
         if (watermark != null) {
             watermark.setVisible(visible);
+        }
+    }
+
+    private void setPharmGKBVisible(boolean visible) {
+        Console.log("setPharmGKBVisible " + visible);
+        if (pharmGKB != null) {
+            pharmGKB.setVisible(visible);
+        }
+    }
+
+    private void adjustPharmGKBPosition() {
+        if (pharmGKB != null) {
+            pharmGKB.setStyleName(RESOURCES.getCSS().pharmGKBAdjustPosition());
         }
     }
 
@@ -364,7 +400,20 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
             watermark.setTitle("Open this pathway in Reactome Pathway Browser");
             watermark.setStyleName(RESOURCES.getCSS().watermark());
             watermark.setVisible(false);
+            Console.log("add watermark function");
             add(watermark);
+        }
+    }
+
+    private void addPharmGKBLogo() {
+        if (DiagramFactory.PHARMGKB) {
+            Image img = new Image(RESOURCES.pharmGKB_logo());
+            SafeHtml image = SafeHtmlUtils.fromSafeConstant(img.toString());
+            pharmGKB = new Anchor(image, DiagramFactory.PHARMGKB_BASE_URL, "_blank");
+            pharmGKB.setStyleName(RESOURCES.getCSS().pharmGKB());
+            pharmGKB.setVisible(false);
+            Console.log("add collaborative function");
+            add(pharmGKB);
         }
     }
 
@@ -405,6 +454,32 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         }
     }
 
+    public void setPharmGKBLogo(Context context) {
+        if (pharmGKB != null) {
+            String stId = context == null ? null : context.getContent().getStableId();
+            ContentClient.query(stId, new ContentClientHandler.ObjectLoaded<DatabaseObject>() {
+                @Override
+                public void onObjectLoaded(DatabaseObject databaseObject) {
+                    if (databaseObject instanceof Pathway) {
+                        Pathway pa = (Pathway) databaseObject;
+                        setPharmGKBVisible(pa.getCrossReference().stream().anyMatch(id -> id.getDatabaseName().contains(DiagramFactory.PHARMGKB_DATABASE_NAME)));
+                        pharmGKB.setHref(pa.getCrossReference().get(0).getUrl());
+                    }
+                }
+
+                @Override
+                public void onContentClientException(Type type, String s) {
+                    // nothing here
+                }
+
+                @Override
+                public void onContentClientError(ContentClientError contentClientError) {
+                    //nothing here
+                }
+            });
+        }
+    }
+
     public Context getContext() {
         return this.context;
     }
@@ -423,6 +498,9 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
 
         @Source("images/watermark.png")
         ImageResource logo();
+
+        @Source("images/pharmGKB.png")
+        ImageResource pharmGKB_logo();
     }
 
     @CssResource.ImportedWithPrefix("diagram-ViewerContainer")
@@ -430,5 +508,9 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
         String CSS = "org/reactome/web/diagram/client/ViewerContainer.css";
 
         String watermark();
+
+        String pharmGKB();
+
+        String pharmGKBAdjustPosition();
     }
 }
