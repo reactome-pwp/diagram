@@ -36,6 +36,7 @@ import org.reactome.web.diagram.messages.AnalysisMessage;
 import org.reactome.web.diagram.messages.ErrorMessage;
 import org.reactome.web.diagram.messages.LoadingMessage;
 import org.reactome.web.diagram.util.Console;
+import org.reactome.web.pwp.model.client.classes.DatabaseIdentifier;
 import org.reactome.web.pwp.model.client.classes.DatabaseObject;
 import org.reactome.web.pwp.model.client.classes.Pathway;
 import org.reactome.web.pwp.model.client.common.ContentClientHandler;
@@ -44,6 +45,7 @@ import org.reactome.web.pwp.model.client.content.ContentClientError;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.reactome.web.diagram.data.content.Content.Type.DIAGRAM;
 import static org.reactome.web.diagram.data.content.Content.Type.SVG;
@@ -188,30 +190,20 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     public void contentLoaded(final Context context) {
-        Console.log("1. content loaded");
         this.context = context;
         setPharmGKBLogo(context);
         setWatermarkVisible(true);
-        Console.log("2. add watermark in content loaded ");
         setWatermarkURL(context, null);
         setActiveVisualiser(context);
         activeVisualiser.contentLoaded(context);
     }
 
     public void contentRequested() {
-        Console.log("3. content Requested");
         activeVisualiser.resetSelection(false);
         activeVisualiser.resetHighlight(false);
         activeVisualiser.contentRequested();
-        Console.log("4 . not add watermark in content request");
-        Console.log("before: setWatermarkVisible false");
         setWatermarkVisible(false);
-        Console.log("after: setWatermarkVisible false ");
-      //  Console.log("before: adjustPharmGKBPosition()");
-      //  adjustPharmGKBPosition();
-     //   Console.log("after: adjustPharmGKBPosition()");
-
-
+        setPharmGKBVisible(false);
         context = null;
     }
 
@@ -373,14 +365,12 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     private void setWatermarkVisible(boolean visible) {
-        Console.log(" setwatermarkVisible " + visible);
         if (watermark != null) {
             watermark.setVisible(visible);
         }
     }
 
     private void setPharmGKBVisible(boolean visible) {
-        Console.log("setPharmGKBVisible " + visible);
         if (pharmGKB != null) {
             pharmGKB.setVisible(visible);
         }
@@ -400,7 +390,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
             watermark.setTitle("Open this pathway in Reactome Pathway Browser");
             watermark.setStyleName(RESOURCES.getCSS().watermark());
             watermark.setVisible(false);
-            Console.log("add watermark function");
             add(watermark);
         }
     }
@@ -412,7 +401,6 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
             pharmGKB = new Anchor(image, DiagramFactory.PHARMGKB_BASE_URL, "_blank");
             pharmGKB.setStyleName(RESOURCES.getCSS().pharmGKB());
             pharmGKB.setVisible(false);
-            Console.log("add collaborative function");
             add(pharmGKB);
         }
     }
@@ -461,9 +449,15 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
                 @Override
                 public void onObjectLoaded(DatabaseObject databaseObject) {
                     if (databaseObject instanceof Pathway) {
-                        Pathway pa = (Pathway) databaseObject;
-                        setPharmGKBVisible(pa.getCrossReference().stream().anyMatch(id -> id.getDatabaseName().contains(DiagramFactory.PHARMGKB_DATABASE_NAME)));
-                        pharmGKB.setHref(pa.getCrossReference().get(0).getUrl());
+                        Pathway pathway = (Pathway) databaseObject;
+                        if(!pathway.getCrossReference().isEmpty()){
+                            setPharmGKBVisible(pathway.getCrossReference().stream().filter(Objects::nonNull).anyMatch(id -> id.getDatabaseName().contains(DiagramFactory.PHARMGKB_DATABASE_NAME)));
+                            for(DatabaseIdentifier databaseIdentifier: pathway.getCrossReference()){
+                                if(databaseIdentifier.getDatabaseName().equalsIgnoreCase(DiagramFactory.PHARMGKB_DATABASE_NAME)){
+                                    pharmGKB.setHref(databaseIdentifier.getUrl());
+                                }
+                            }
+                        }
                     }
                 }
 
