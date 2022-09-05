@@ -190,21 +190,25 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     public void contentLoaded(final Context context) {
+        Console.log("contentLoaded starts");
         this.context = context;
         setPharmGKBLogo(context);
         setWatermarkVisible(true);
         setWatermarkURL(context, null);
         setActiveVisualiser(context);
         activeVisualiser.contentLoaded(context);
+        Console.log("contentLoaded  ends");
     }
 
     public void contentRequested() {
+        Console.log("contentRequested() starts");
         activeVisualiser.resetSelection(false);
         activeVisualiser.resetHighlight(false);
         activeVisualiser.contentRequested();
         setWatermarkVisible(false);
         setPharmGKBVisible(false);
         context = null;
+        Console.log("contentRequested() starts");
     }
 
     public void expressionColumnChanged() {
@@ -451,9 +455,9 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
                     if (databaseObject instanceof Pathway) {
                         Pathway pathway = (Pathway) databaseObject;
                         if(!pathway.getCrossReference().isEmpty()){
-                            setPharmGKBVisible(pathway.getCrossReference().stream().filter(Objects::nonNull).anyMatch(id -> id.getDatabaseName().contains(DiagramFactory.PHARMGKB_DATABASE_NAME)));
+                            setPharmGKBVisible(pathway.getCrossReference().stream().filter(Objects::nonNull).anyMatch(id -> id.getDatabaseName().contains(DiagramFactory.PHARMGKB_RESOURCE)));
                             for(DatabaseIdentifier databaseIdentifier: pathway.getCrossReference()){
-                                if(databaseIdentifier.getDatabaseName().equalsIgnoreCase(DiagramFactory.PHARMGKB_DATABASE_NAME)){
+                                if(databaseIdentifier.getDatabaseName().equalsIgnoreCase(DiagramFactory.PHARMGKB_RESOURCE)){
                                     pharmGKB.setHref(databaseIdentifier.getUrl());
                                 }
                             }

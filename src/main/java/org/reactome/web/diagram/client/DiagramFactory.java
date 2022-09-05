@@ -18,7 +18,7 @@ public abstract class DiagramFactory {
     public static boolean PHARMGKB = true;
     public static String WATERMARK_BASE_URL = "https://reactome.org/PathwayBrowser/";
     public static String PHARMGKB_BASE_URL = "https://www.pharmgkb.org/";
-    public static String PHARMGKB_DATABASE_NAME = "GlyCosmos"; //PharmGKB
+    public static String PHARMGKB_RESOURCE = "PharmGKB";
 
     public static boolean RESPOND_TO_SEARCH_SHORTCUT = true; // Listen to ctrl (or cmd) + F and expand the search input
 
