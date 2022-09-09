@@ -21,8 +21,8 @@
   "disease": {
     "fill": "#E2EFF0",
     "stroke": "#E35656",
-    "lighterFill" : "#80DEEA",
-    "lighterStroke" : "#9E9E9E",
+    "lighterFill" : "#E2EFF0",
+    "lighterStroke" : "#FCA3A3",
     "darkerStroke": "#BA3C3C",
     "text": "#E35656",
     "lighterText": "#424242"

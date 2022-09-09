@@ -51,8 +51,10 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
         ctx.save();
         if (isHit) {
             ctx.setFillStyle(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax());
+            ctx.setStrokeStyle(((InteractorEntity) item).getProfile().getStroke());
         } else {
-            ctx.setFillStyle(((InteractorEntity) item).getProfile().getFill());
+            ctx.setFillStyle(((InteractorEntity) item).getProfile().getLighterFill());
+            ctx.setStrokeStyle(((InteractorEntity) item).getProfile().getLighterStroke());
         }
         ctx.setStrokeStyle(((InteractorEntity) item).getProfile().getStroke());
         ctx.fill();
@@ -70,10 +72,11 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
         ctx.save();
         if (isHit) {
             ctx.setFillStyle(AnalysisColours.get().expressionGradient.getColor(((InteractorEntity) item).getExp().get(t), min, max));
+            ctx.setStrokeStyle(((InteractorEntity) item).getProfile().getStroke());
         } else {
-            ctx.setFillStyle(((InteractorEntity) item).getProfile().getFill());
+            ctx.setFillStyle(((InteractorEntity) item).getProfile().getLighterFill());
+            ctx.setStrokeStyle(((InteractorEntity) item).getProfile().getLighterStroke());
         }
-        ctx.setStrokeStyle(((InteractorEntity) item).getProfile().getStroke());
         ctx.fill();
         ctx.stroke();
         ctx.restore();
@@ -89,8 +92,10 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
         ctx.save();
         if (isHit) {
             ctx.setFillStyle(AnalysisColours.get().regulationColorMap.getColor(((InteractorEntity) item).getExp().get(t).intValue()));
+            ctx.setStrokeStyle(((InteractorEntity) item).getProfile().getStroke());
         } else {
-            ctx.setFillStyle(((InteractorEntity) item).getProfile().getFill());
+            ctx.setFillStyle(((InteractorEntity) item).getProfile().getLighterFill());
+            ctx.setStrokeStyle(((InteractorEntity) item).getProfile().getLighterStroke());
         }
         ctx.setStrokeStyle(((InteractorEntity) item).getProfile().getStroke());
         ctx.fill();
