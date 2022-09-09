@@ -7,7 +7,6 @@ import org.reactome.web.diagram.data.interactors.model.InteractorEntity;
 import org.reactome.web.diagram.data.layout.Coordinate;
 import org.reactome.web.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.web.diagram.profiles.analysis.AnalysisColours;
-import org.reactome.web.diagram.profiles.interactors.InteractorColours;
 import org.reactome.web.diagram.renderers.common.RendererProperties;
 import org.reactome.web.diagram.renderers.layout.abs.TextRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
@@ -53,12 +52,9 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
         if (isHit) {
             ctx.setFillStyle(AnalysisColours.get().PROFILE.getEnrichment().getGradient().getMax());
         } else {
-            if (((InteractorEntity) item).isChemical()) {
-                ctx.setFillStyle(InteractorColours.get().PROFILE.getChemical().getLighterFill());
-            } else {
-                ctx.setFillStyle(InteractorColours.get().PROFILE.getProtein().getLighterFill());
-            }
+            ctx.setFillStyle(((InteractorEntity) item).getProfile().getFill());
         }
+        ctx.setStrokeStyle(((InteractorEntity) item).getProfile().getStroke());
         ctx.fill();
         ctx.stroke();
         ctx.restore();
@@ -73,16 +69,11 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
         boolean isHit = isHIt != null && isHIt;
         ctx.save();
         if (isHit) {
-//            ThreeColorGradient a = new ThreeColorGradient(AnalysisColours.get().PROFILE.getExpression().getGradient());
-//            ctx.setFillStyle(a.getColor(((InteractorEntity) item).getExp().get(t), min, max));
             ctx.setFillStyle(AnalysisColours.get().expressionGradient.getColor(((InteractorEntity) item).getExp().get(t), min, max));
         } else {
-            if (((InteractorEntity) item).isChemical()) {
-                ctx.setFillStyle(InteractorColours.get().PROFILE.getChemical().getLighterFill());
-            } else {
-                ctx.setFillStyle(InteractorColours.get().PROFILE.getProtein().getLighterFill());
-            }
+            ctx.setFillStyle(((InteractorEntity) item).getProfile().getFill());
         }
+        ctx.setStrokeStyle(((InteractorEntity) item).getProfile().getStroke());
         ctx.fill();
         ctx.stroke();
         ctx.restore();
@@ -97,15 +88,11 @@ public abstract class InteractorEntityAbstractRenderer extends InteractorAbstrac
         boolean isHit = isHIt != null && isHIt;
         ctx.save();
         if (isHit) {
-//            ctx.setFillStyle(AnalysisColours.get().expressionGradient.getColor(((InteractorEntity) item).getExp().get(t), min, max));
             ctx.setFillStyle(AnalysisColours.get().regulationColorMap.getColor(((InteractorEntity) item).getExp().get(t).intValue()));
         } else {
-            if (((InteractorEntity) item).isChemical()) {
-                ctx.setFillStyle(InteractorColours.get().PROFILE.getChemical().getLighterFill());
-            } else {
-                ctx.setFillStyle(InteractorColours.get().PROFILE.getProtein().getLighterFill());
-            }
+            ctx.setFillStyle(((InteractorEntity) item).getProfile().getFill());
         }
+        ctx.setStrokeStyle(((InteractorEntity) item).getProfile().getStroke());
         ctx.fill();
         ctx.stroke();
         ctx.restore();
