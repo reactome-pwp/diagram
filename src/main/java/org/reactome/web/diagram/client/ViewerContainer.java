@@ -190,25 +190,21 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
     }
 
     public void contentLoaded(final Context context) {
-        Console.log("contentLoaded starts");
         this.context = context;
         setPharmGKBLogo(context);
         setWatermarkVisible(true);
         setWatermarkURL(context, null);
         setActiveVisualiser(context);
         activeVisualiser.contentLoaded(context);
-        Console.log("contentLoaded  ends");
     }
 
     public void contentRequested() {
-        Console.log("contentRequested() starts");
         activeVisualiser.resetSelection(false);
         activeVisualiser.resetHighlight(false);
         activeVisualiser.contentRequested();
         setWatermarkVisible(false);
         setPharmGKBVisible(false);
         context = null;
-        Console.log("contentRequested() starts");
     }
 
     public void expressionColumnChanged() {

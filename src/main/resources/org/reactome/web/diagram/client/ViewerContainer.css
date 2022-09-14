@@ -27,7 +27,7 @@
 
 .pharmGKB img{
     width: auto;
-    height: 23px;
+    height: 36px;
     opacity: 0.5;
 
     -webkit-transition: height 0.3s ease-in-out, opacity 0.3s ease-in-out;
@@ -36,7 +36,7 @@
 }
 
 .pharmGKB:hover img{
-    height: 32px;
+    height: 42px;
     opacity: 0.9;
 }
 
@@ -48,8 +48,8 @@
 
 .pharmGKBAdjustPosition img{
     width: auto;
-    height: 25px;
-    opacity: 0.5;
+    height: 36px;
+    opacity: 0.6;
 
     -webkit-transition: height 0.3s ease-in-out, opacity 0.3s ease-in-out;
     -moz-transition: height 0.3s ease-in-out, opacity 0.3s ease-in-out;
