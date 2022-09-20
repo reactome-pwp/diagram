@@ -35,7 +35,6 @@ import org.reactome.web.diagram.legends.*;
 import org.reactome.web.diagram.messages.AnalysisMessage;
 import org.reactome.web.diagram.messages.ErrorMessage;
 import org.reactome.web.diagram.messages.LoadingMessage;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.pwp.model.client.classes.DatabaseIdentifier;
 import org.reactome.web.pwp.model.client.classes.DatabaseObject;
 import org.reactome.web.pwp.model.client.classes.Pathway;
@@ -399,6 +398,7 @@ public class ViewerContainer extends AbsolutePanel implements RequiresResize,
             Image img = new Image(RESOURCES.pharmGKB_logo());
             SafeHtml image = SafeHtmlUtils.fromSafeConstant(img.toString());
             pharmGKB = new Anchor(image, DiagramFactory.PHARMGKB_BASE_URL, "_blank");
+            pharmGKB.getElement().setId("pharmGKB");
             pharmGKB.setStyleName(RESOURCES.getCSS().pharmGKB());
             pharmGKB.setVisible(false);
             add(pharmGKB);
