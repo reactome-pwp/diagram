@@ -29,7 +29,6 @@ import org.reactome.web.diagram.data.interactors.raw.RawResource;
 import org.reactome.web.diagram.data.loader.InteractorsResourceLoader;
 import org.reactome.web.diagram.events.*;
 import org.reactome.web.diagram.handlers.*;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.diagram.util.MapSet;
 import org.reactome.web.diagram.util.interactors.InteractorsExporter;
 
@@ -56,7 +55,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     private OverlayResource intactResource;
     private OverlayResource disgenetResource;
 
-    //    private List<RadioButton> staticResourceBtns;
+    private List<RadioButton> staticResourceBtns = new ArrayList<>();
     private RadioButton intactResourceBtn;
     private FlowPanel liveResourcesFP;
     private FlowPanel customResourcesFP;
@@ -92,6 +91,7 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
             summaryLabel.setTitle("Total number of unique interactors for this diagram");
             summaryLabel.setVisible(false);
             resourceWidgets.put(staticResource.getIdentifier(), Arrays.asList(btn, summaryLabel));
+            staticResourceBtns.add(btn);
         });
 
         intactResourceBtn = (RadioButton) resourceWidgets.get(DiagramFactory.INTERACTORS_INITIAL_RESOURCE).get(0);
@@ -462,11 +462,13 @@ public class InteractorsTabPanel extends Composite implements ClickHandler, Valu
     }
 
     private void enableStaticResourceBtn(boolean isEnabled) {
-        intactResourceBtn.setEnabled(isEnabled);
-        if (isEnabled) {
-            intactResourceBtn.removeStyleName(RESOURCES.getCSS().interactorResourceBtnDisabled());
-        } else {
-            intactResourceBtn.addStyleName(RESOURCES.getCSS().interactorResourceBtnDisabled());
+        for (RadioButton btn : staticResourceBtns) {
+            btn.setEnabled(isEnabled);
+            if (isEnabled) {
+                btn.removeStyleName(RESOURCES.getCSS().interactorResourceBtnDisabled());
+            } else {
+                btn.addStyleName(RESOURCES.getCSS().interactorResourceBtnDisabled());
+            }
         }
     }
 
