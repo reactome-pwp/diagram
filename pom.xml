@@ -12,7 +12,7 @@
     <name>Diagram Viewer</name>
 
     <parent>
-        <groupId>org.reactome.server</groupId>
+        <groupId>org.reactome.maven</groupId>
         <artifactId>reactome-pwp-parent</artifactId>
         <version>1.0.0</version>
     </parent>
@@ -51,8 +51,6 @@
         <maven.compiler.target>11</maven.compiler.target>
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
 
-
-        <lib.gwt.svg.version>0.5.11</lib.gwt.svg.version>
 
         <appModule>org.reactome.web.diagram.DiagramViewer</appModule>
         <appName>${appModule}</appName>
@@ -293,26 +291,26 @@
         </extensions>
     </build>
 
-    <repositories>
-        <repository>
-            <id>central</id>
-            <name>Central Repository</name>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <layout>default</layout>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>central_1</id>
-            <name>Maven Repository Switchboard</name>
-            <url>https://repo1.maven.org/maven2</url>
-            <layout>default</layout>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>central</id>-->
+<!--            <name>Central Repository</name>-->
+<!--            <url>https://repo.maven.apache.org/maven2</url>-->
+<!--            <layout>default</layout>-->
+<!--            <snapshots>-->
+<!--                <enabled>false</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
+<!--        <repository>-->
+<!--            <id>central_1</id>-->
+<!--            <name>Maven Repository Switchboard</name>-->
+<!--            <url>https://repo1.maven.org/maven2</url>-->
+<!--            <layout>default</layout>-->
+<!--            <snapshots>-->
+<!--                <enabled>false</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
+<!--    </repositories>-->
 
 
     <pluginRepositories>
