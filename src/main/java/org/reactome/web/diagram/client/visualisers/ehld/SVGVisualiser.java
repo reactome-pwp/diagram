@@ -1089,7 +1089,7 @@ public class SVGVisualiser extends AbstractSVGPanel implements Visualiser,
         defs = (OMSVGDefsElement) SVGUtil.getOrCreateDefs(svg, baseDefs);
 
         // Add the inline CSS classes for overlaying analysis results
-        SVGUtil.addInlineStyle(svg, OVERLAY_TEXT_CLASS, OVERLAY_TEXT_STYLE);
+        SVGUtil.addInlineWithChildrenStyle(svg, OVERLAY_TEXT_CLASS, OVERLAY_TEXT_STYLE);
         SVGUtil.addInlineStyle(svg, ANALYSIS_INFO_CLASS, ANALYSIS_INFO_STYLE);
 
         // Add the event handlers
