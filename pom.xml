@@ -7,14 +7,14 @@
     <groupId>org.reactome.web</groupId>
     <artifactId>diagram</artifactId>
     <packaging>jar</packaging>
-    <version>4.1.4</version>
+    <version>4.1.5-SNAPSHOT</version>
 
     <name>Diagram Viewer</name>
 
     <parent>
         <groupId>org.reactome.maven</groupId>
         <artifactId>reactome-pwp-parent</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3-SNAPSHOT</version>
     </parent>
 
     <description>
@@ -44,7 +44,7 @@
     <properties>
 
         <!-- Convenience property to set the GWT version -->
-        <gwtStyle>OBF</gwtStyle> <!-- OBF | PRETTY | DETAILED -->
+        <gwtStyle>PRETTY</gwtStyle> <!-- OBF | PRETTY | DETAILED -->
 
         <!-- GWT needs at least java 1.8 -->
         <maven.compiler.source>11</maven.compiler.source>
@@ -89,7 +89,7 @@
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-codeserver</artifactId>
             <scope>provided</scope>
-            <exclusions>
+             <exclusions>
                 <exclusion>
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-webapp</artifactId>
@@ -229,8 +229,8 @@
                     <codeserverArgs>
                         <arg>-bindAddress</arg>
                         <arg>0.0.0.0</arg>
-                        <arg>-gen</arg>
-                        <arg>${project.build.directory}/.generated</arg>
+                        <!-- <arg>-gen</arg> -->
+                        <!-- <arg>${project.build.directory}/.generated</arg> -->
                     </codeserverArgs>
                     <warDir>${project.build.directory}/${project.build.finalName}</warDir>
                     <classpathScope>compile+runtime</classpathScope>
@@ -278,7 +278,6 @@
                 <extensions>true</extensions>
                 <version>${maven.deploy.version}</version>
             </plugin>
-
         </plugins>
 
         <!-- scp support for deployment (MVN 3) -->
