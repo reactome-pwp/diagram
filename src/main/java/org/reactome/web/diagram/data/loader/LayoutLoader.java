@@ -5,6 +5,7 @@ import org.reactome.web.diagram.client.DiagramFactory;
 import org.reactome.web.diagram.data.layout.Diagram;
 import org.reactome.web.diagram.data.layout.factory.DiagramObjectException;
 import org.reactome.web.diagram.data.layout.factory.DiagramObjectsFactory;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.pwp.model.client.util.ResponseUtils;
 
 /**

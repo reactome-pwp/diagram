@@ -35,6 +35,9 @@ public abstract class GraphObjectFactory {
             case CANDIDATE_SET:                     dbObject = new GraphCandidateSet((EntityNode) node);                    break;
             case CHEMICAL_DRUG:                     dbObject = new GraphChemicalDrug((EntityNode) node);                    break;
             case COMPLEX:                           dbObject = new GraphComplex((EntityNode) node);                         break;
+            case CELL_LINEAGE_PATH:                 dbObject = new GraphPathway((EntityNode) node);                         break;
+            case CELL_DEVELOPMENT_STEP:             dbObject = new GraphCellDevelopmentStep((EventNode) node);              break;
+            case CELL:                              dbObject = new GraphCell((EntityNode) node);                            break;
             case DEFINED_SET:                       dbObject = new GraphDefinedSet((EntityNode) node);                      break;
             case ENTITY_SET:                        dbObject = new GraphEntitySet((EntityNode) node);                       break;
             case ENTITY_WITH_ACCESSIONED_SEQUENCE:  dbObject = new GraphEntityWithAccessionedSequence((EntityNode) node);   break;
