@@ -73,7 +73,7 @@ public abstract class SetAbstractRenderer extends NodeAbstractRenderer {
                     prop.getY() + RendererProperties.SEPARATION,
                     prop.getWidth() - RendererProperties.SEPARATION * 2,
                     prop.getHeight() - RendererProperties.SEPARATION * 2,
-                    RendererProperties.ROUND_RECT_ARC_WIDTH,
+                    RendererProperties.ROUND_RECT_ARC_WIDTH - RendererProperties.SEPARATION,
                     RendererProperties.DASHED_LINE_PATTERN);
         } else {
             ctx.roundedRectangle(
@@ -81,7 +81,7 @@ public abstract class SetAbstractRenderer extends NodeAbstractRenderer {
                     prop.getY() + RendererProperties.SEPARATION,
                     prop.getWidth() - RendererProperties.SEPARATION * 2,
                     prop.getHeight() - RendererProperties.SEPARATION * 2,
-                    RendererProperties.ROUND_RECT_ARC_WIDTH
+                    RendererProperties.ROUND_RECT_ARC_WIDTH - RendererProperties.SEPARATION
             );
         }
     }
