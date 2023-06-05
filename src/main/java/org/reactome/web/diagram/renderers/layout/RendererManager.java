@@ -93,6 +93,7 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s000.put("RNADrug", new RNADrugRenderer000());
         s000.put("Reaction", new ReactionRenderer000());
         s000.put("Complex", new ComplexRenderer000());
+        s000.put("Cell", new CellRenderer000());
         s000.put("ComplexDrug", new ComplexDrugRenderer000());
         s000.put("Entity", new OtherEntityRenderer000());
         s000.put("EntitySet", new SetRenderer000());
@@ -117,6 +118,7 @@ public class RendererManager implements DiagramZoomHandler, ContentLoadedHandler
         s050.put("RNADrug", new RNADrugRenderer050());
         s050.put("Reaction", new ReactionRenderer050());
         s050.put("Complex", new ComplexRenderer050());
+        s050.put("Cell", new CellRenderer050());
         s050.put("ComplexDrug", new ComplexDrugRenderer050());
         s050.put("Entity", new OtherEntityRenderer050());
         s050.put("EntitySet", new SetRenderer050());

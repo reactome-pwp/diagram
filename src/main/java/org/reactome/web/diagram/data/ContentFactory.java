@@ -77,6 +77,7 @@ public abstract class ContentFactory {
 
     public static void fillGraphContent(Content content, Graph graph) {
         if (content instanceof DiagramContent) {
+
             fillGraphContent((DiagramContent) content, graph);
         } else if (content instanceof EHLDContent) {
             fillGraphContent((EHLDContent) content, graph);

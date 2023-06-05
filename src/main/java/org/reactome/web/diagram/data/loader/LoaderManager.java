@@ -16,6 +16,7 @@ import org.reactome.web.diagram.handlers.ContentLoadedHandler;
 import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.handlers.InteractorsRequestCanceledHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
+import org.reactome.web.diagram.util.Console;
 import org.reactome.web.pwp.model.client.util.LruCache;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 
