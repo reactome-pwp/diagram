@@ -16,7 +16,6 @@ import org.reactome.web.diagram.handlers.ContentLoadedHandler;
 import org.reactome.web.diagram.handlers.ContentRequestedHandler;
 import org.reactome.web.diagram.handlers.InteractorsRequestCanceledHandler;
 import org.reactome.web.diagram.handlers.InteractorsResourceChangedHandler;
-import org.reactome.web.diagram.util.Console;
 import org.reactome.web.pwp.model.client.util.LruCache;
 import org.vectomatic.dom.svg.OMSVGSVGElement;
 
@@ -36,19 +35,19 @@ public class LoaderManager implements SVGLoader.Handler, LayoutLoader.Handler, G
         InteractorsResourceChangedHandler, InteractorsRequestCanceledHandler, ContentRequestedHandler, ContentLoadedHandler {
 
     //Every time the diagram widget is loaded will retrieve new data from the sever
-    public static String version = "" + System.currentTimeMillis(); //UNIQUE per session
+    public static String version = String.valueOf(System.currentTimeMillis()); //UNIQUE per session
 
     //It has a value by default but it can be set to a different one so in every load
     //the "user preferred" interactors resource will be selected
     public static OverlayResource INTERACTORS_RESOURCE = new OverlayResource(DiagramFactory.INTERACTORS_INITIAL_RESOURCE, DiagramFactory.INTERACTORS_INITIAL_RESOURCE_NAME, OverlayResource.ResourceType.STATIC);
 
     protected LruCache<String, Context> contextMap = new LruCache<>(5);
-    private EventBus eventBus;
+    private final EventBus eventBus;
 
     protected SVGLoader svgLoader;
     public LayoutLoader layoutLoader;
-    private GraphLoader graphLoader;
-    private InteractorsLoader interactorsLoader;
+    private final GraphLoader graphLoader;
+    private final InteractorsLoader interactorsLoader;
     protected Context context;
 
     public LoaderManager(EventBus eventBus) {

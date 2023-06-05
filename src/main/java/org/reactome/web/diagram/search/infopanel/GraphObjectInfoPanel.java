@@ -8,7 +8,6 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.diagram.data.Context;
 import org.reactome.web.diagram.data.graph.model.*;
 import org.reactome.web.diagram.data.loader.LoaderManager;
-import org.reactome.web.diagram.util.Console;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -104,7 +103,6 @@ public class GraphObjectInfoPanel extends Composite {
                     } else if(parentLocation instanceof GraphEntitySet){
                         sets.add((GraphEntitySet) parentLocation);
                     }else if(parentLocation instanceof GraphCell){
-                        Console.error("cells in GraphObjectInfoPanel ");
                         cells.add((GraphCell) parentLocation);
                     }
                 }

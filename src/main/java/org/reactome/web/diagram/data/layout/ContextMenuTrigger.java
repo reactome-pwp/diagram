@@ -6,23 +6,22 @@ import org.reactome.web.diagram.data.layout.impl.CoordinateFactory;
  * This is the small triangle that appears inside a diagram node and
  * triggers the display of the context menu.
  * It is defined by 3 points:
- *
- *  [b]\
- *  |   \
- *  |    \
- *  |    [a]
- *  |    /
- *  |   /
- *  [c]/
- *
+ * <p>
+ * [b]\
+ * |   \
+ * |    \
+ * |    [a]
+ * |    /
+ * |   /
+ * [c]/
  *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class ContextMenuTrigger {
 
-    private Coordinate a;
-    private Coordinate b;
-    private Coordinate c;
+    private final Coordinate a;
+    private final Coordinate b;
+    private final Coordinate c;
 
     ContextMenuTrigger(Coordinate a, Coordinate b, Coordinate c) {
         this.a = a;
@@ -34,13 +33,17 @@ public class ContextMenuTrigger {
         NodeProperties prop = node.getProp();
         double x = prop.getX() + prop.getWidth();
         Double y = prop.getY();
-        if (node.getRenderableClass().equals("Gene")) {
+        String renderableClass = node.getRenderableClass();
+        if (renderableClass.equals("Gene")) {
             y += prop.getHeight() * 3 / 4;
+        } else if (renderableClass.equals("Cell")) {
+            y += prop.getHeight() * 3 / 4;
+            x -= 2;
         } else {
             y += prop.getHeight() / 2;
         }
 
-        if (node.getRenderableClass().equals("EntitySet")) {
+        if (renderableClass.equals("EntitySet")) {
             x -= 3;
         }
 

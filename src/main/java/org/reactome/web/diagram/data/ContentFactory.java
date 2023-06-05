@@ -62,7 +62,7 @@ public abstract class ContentFactory {
 
         //Create EHLDObjects to include in the content
         List<EHLDObject> pathwayNodes = new LinkedList<>();
-        Set<String> aux = new HashSet();
+        Set<String> aux = new HashSet<>();
         long id = 0L;
         for (OMElement child : SVGUtil.getAnnotatedOMElements(svg)) {
             String stID = SVGUtil.keepStableId(child.getId());
@@ -77,7 +77,6 @@ public abstract class ContentFactory {
 
     public static void fillGraphContent(Content content, Graph graph) {
         if (content instanceof DiagramContent) {
-
             fillGraphContent((DiagramContent) content, graph);
         } else if (content instanceof EHLDContent) {
             fillGraphContent((EHLDContent) content, graph);

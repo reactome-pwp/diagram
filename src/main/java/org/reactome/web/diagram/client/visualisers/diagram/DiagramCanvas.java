@@ -69,7 +69,7 @@ public class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChan
 
     private final RendererManager rendererManager;
     private final InteractorRendererManager interactorRendererManager;
-    private EventBus eventBus;
+    private final EventBus eventBus;
 
     private AdvancedContext2d compartments;
     private AdvancedContext2d shadows;
@@ -102,13 +102,13 @@ public class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChan
     private AdvancedContext2d buffer;
 
     private TooltipContainer tooltipContainer;
-    private Thumbnail thumbnail;
-    private List<Canvas> canvases = new LinkedList<>();
+    private final Thumbnail thumbnail;
+    private final List<Canvas> canvases = new LinkedList<>();
 
     private int column = 0;
     private Double hoveredExpression = null;
 
-    private StaticIllustrationThumbnail staticIllustrationThumbnail;
+    private final StaticIllustrationThumbnail staticIllustrationThumbnail;
 
     public DiagramCanvas(EventBus eventBus) {
         this.getElement().addClassName("pwp-DiagramCanvas");
@@ -775,6 +775,7 @@ public class DiagramCanvas extends AbsolutePanel implements ExpressionColumnChan
                 rtn = this.compartments;
                 break;
             case "Protein":
+            case "Cell":
             case "Chemical":
             case "ChemicalDrug":
             case "ProteinDrug":
