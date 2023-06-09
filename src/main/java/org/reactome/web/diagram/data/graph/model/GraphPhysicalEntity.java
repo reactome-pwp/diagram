@@ -12,6 +12,7 @@ public abstract class GraphPhysicalEntity extends GraphObject {
     protected String identifier;
     protected List<String> geneNames = new ArrayList<>();
     protected String sampleIdentifier;
+    protected String referenceType;
     protected List<GraphPhysicalEntity> children = new ArrayList<>();
 
     private List<GraphReactionLikeEvent> isInputIn = new ArrayList<>();
@@ -25,6 +26,7 @@ public abstract class GraphPhysicalEntity extends GraphObject {
     public GraphPhysicalEntity(EntityNode node) {
         super(node);
         this.identifier = node.getIdentifier();
+        this.referenceType = node.getReferenceType();
         if (node.getGeneNames() != null) this.geneNames = node.getGeneNames();
     }
 
@@ -85,6 +87,10 @@ public abstract class GraphPhysicalEntity extends GraphObject {
 
     public List<String> getGeneNames() {
         return geneNames;
+    }
+
+    public String getReferenceType() {
+        return referenceType;
     }
 
     public Set<GraphPhysicalEntity> getParticipants() {
