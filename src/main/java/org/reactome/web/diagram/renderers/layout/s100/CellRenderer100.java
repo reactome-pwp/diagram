@@ -7,10 +7,6 @@ import org.reactome.web.diagram.renderers.layout.abs.CellAbstractRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
 
 
-/**
- * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
- * @author Antonio Fabregat <fabregat@ebi.ac.uk>
- */
 public class CellRenderer100 extends CellAbstractRenderer {
     @Override
     public void draw(AdvancedContext2d ctx, DiagramObject item, Double factor, Coordinate offset) {

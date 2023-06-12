@@ -13,9 +13,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
- */
+
 public class CellRenderer000 extends CellAbstractRenderer {
 
     protected static double getMedianValue(DiagramObject item, int t) {

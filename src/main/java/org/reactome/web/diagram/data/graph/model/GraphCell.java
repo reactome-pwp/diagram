@@ -5,9 +5,6 @@ import org.reactome.web.diagram.data.graph.model.images.GraphObjectImages;
 import org.reactome.web.diagram.data.graph.raw.EntityNode;
 
 
-/**
- * @author Antonio Fabregat <fabregat@ebi.ac.uk>
- */
 public class GraphCell extends GraphCompositeEntity {
 
     public GraphCell(EntityNode node) {

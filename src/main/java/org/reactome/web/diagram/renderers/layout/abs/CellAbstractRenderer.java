@@ -20,9 +20,7 @@ import java.util.function.Function;
 
 import static org.reactome.web.diagram.renderers.common.RendererProperties.*;
 
-/**
- * @author Antonio Fabregat <fabregat@ebi.ac.uk>
- */
+
 public abstract class CellAbstractRenderer extends NodeAbstractRenderer {
 
     private String nucleusFill;
