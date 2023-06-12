@@ -23,7 +23,7 @@ public class WidgetTest implements EntryPoint {
     //    private static String currentPathway = "R-HSA-5693567"; //Big one with plenty of overlap
     //    private static String currentPathway = "R-HSA-9006115"; //Complex interactors
     private static String currentPathway = "R-HSA-9725554"; //Cell
-    private static String currentAnalysis = "MjAxNjA5MzAwNTU3MjdfMg%3D%3D";
+    private static String currentAnalysis = "MjAyMzA2MTIxMzE4NDRfNA%3D%3D"; // Cell expression
 
     private TextBox pathwayTB;
     private TextBox analysisTokenTB;

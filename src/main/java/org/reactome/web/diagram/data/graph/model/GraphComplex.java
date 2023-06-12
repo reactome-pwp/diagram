@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class GraphComplex extends GraphPhysicalEntity {
+public class GraphComplex extends GraphCompositeEntity {
 
     @Override
     public String getIdentifier() {
@@ -29,40 +29,6 @@ public class GraphComplex extends GraphPhysicalEntity {
         super(node);
     }
 
-    @Override
-    public boolean isHit() {
-        for (GraphPhysicalEntity entity : children) {
-            if(entity.isHit()) return true;
-        }
-        return false;
-    }
-
-    @Override
-    public Set<GraphPhysicalEntity> getParticipants(){
-        Set<GraphPhysicalEntity> rtn = new HashSet<>();
-        for (GraphPhysicalEntity child : children) {
-            rtn.addAll(child.getParticipants());
-        }
-        return rtn;
-    }
-
-    @Override
-    public Set<GraphPhysicalEntity> getHitParticipants() {
-        Set<GraphPhysicalEntity> rtn = new HashSet<>();
-        for (GraphPhysicalEntity child : children) {
-            rtn.addAll(child.getHitParticipants());
-        }
-        return rtn;
-    }
-
-    @Override
-    public Map<String, Double> getParticipantsExpression(int column){
-        Map<String, Double> rtn = new HashMap<>();
-        for (GraphPhysicalEntity child : children) {
-            rtn.putAll(child.getParticipantsExpression(column));
-        }
-        return rtn;
-    }
 
     @Override
     public ImageResource getImageResource() {

@@ -1,12 +1,10 @@
 package org.reactome.web.diagram.renderers.layout.s100;
 
-import org.reactome.web.diagram.data.layout.*;
-import org.reactome.web.diagram.data.layout.category.ShapeCategory;
-import org.reactome.web.diagram.renderers.common.HoveredItem;
+import org.reactome.web.diagram.data.layout.Coordinate;
+import org.reactome.web.diagram.data.layout.DiagramObject;
+import org.reactome.web.diagram.data.layout.Node;
 import org.reactome.web.diagram.renderers.layout.abs.CellAbstractRenderer;
 import org.reactome.web.diagram.util.AdvancedContext2d;
-
-import java.util.List;
 
 
 /**
@@ -29,35 +27,7 @@ public class CellRenderer100 extends CellAbstractRenderer {
         drawAttachments(ctx, node, factor, offset, false);
         drawSummaryItems(ctx, node, factor, offset);
     }
-
-    @Override
-    @SuppressWarnings("Duplicates")
-    public HoveredItem getHovered(DiagramObject item, Coordinate pos) {
-        Node node = (Node) item;
-        if (node.getNodeAttachments() != null) {
-            for (NodeAttachment attachment : node.getNodeAttachments()) {
-                if (ShapeCategory.isHovered(attachment.getShape(), pos)) {
-                    return new HoveredItem(node.getId(), attachment);
-                }
-            }
-        }
-
-        SummaryItem interactorsSummary = node.getInteractorsSummary();
-        if (interactorsSummary != null) {
-            if (ShapeCategory.isHovered(interactorsSummary.getShape(), pos)) {
-                return new HoveredItem(node.getId(), interactorsSummary);
-            }
-        }
-        if(node.getOtherDecoratorsList() != null) {
-	        List<SummaryItem> otherSummaries = node.getOtherDecoratorsList();
-	        for(SummaryItem summary : otherSummaries) {
-	        	if(summary == null) continue;
-	        	if(ShapeCategory.isHovered(summary.getShape(), pos))
-	        		return new HoveredItem(node.getId(), summary);
-	        }
-        }
-        return super.getHovered(item, pos);
-    }
+    
 
     @Override
     public boolean nodeAttachmentsVisible() {
